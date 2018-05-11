@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServerGeoLocation;
 
 /**
@@ -48,8 +49,8 @@ public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
      * {@inheritDoc}
      */
     @Override
-    public IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname, final short countryCode,
-            final IMonitoringController monitoringCtr) throws Exception {
+    public IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname,
+            final ISOCountryCode countryCode, final IMonitoringController monitoringCtr) throws Exception {
 
         final Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
         ServerGeoLocation record = null;

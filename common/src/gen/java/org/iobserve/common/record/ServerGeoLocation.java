@@ -22,7 +22,6 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.GeoLocation;
@@ -36,22 +35,21 @@ import org.iobserve.common.record.GeoLocation;
 public class ServerGeoLocation extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, GeoLocation {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
-			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
+			 + TYPE_SIZE_INT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
 			 + TYPE_SIZE_STRING; // ServerGeoLocation.address
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEvent.timestamp
-		short.class, // GeoLocation.countryCode
+		ISOCountryCode.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
 	};
 	
 	/** default constants. */
-	public static final short COUNTRY_CODE = 49;
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -8861531009608180516L;
+	private static final long serialVersionUID = -413384511659446310L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -63,7 +61,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	
 	/** property declarations. */
 	private final long timestamp;
-	private final short countryCode;
+	private final ISOCountryCode countryCode;
 	private final String hostname;
 	private final String address;
 	
@@ -79,7 +77,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param address
 	 *            address
 	 */
-	public ServerGeoLocation(final long timestamp, final short countryCode, final String hostname, final String address) {
+	public ServerGeoLocation(final long timestamp, final ISOCountryCode countryCode, final String hostname, final String address) {
 		this.timestamp = timestamp;
 		this.countryCode = countryCode;
 		this.hostname = hostname == null?"":hostname;
@@ -93,13 +91,13 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
 		AbstractMonitoringRecord.checkArray(values, TYPES);
 		this.timestamp = (Long) values[0];
-		this.countryCode = (Short) values[1];
+		this.countryCode = (ISOCountryCode) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
 	}
@@ -112,13 +110,13 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
 		this.timestamp = (Long) values[0];
-		this.countryCode = (Short) values[1];
+		this.countryCode = (ISOCountryCode) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
 	}
@@ -132,7 +130,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 */
 	public ServerGeoLocation(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		this.timestamp = deserializer.getLong();
-		this.countryCode = deserializer.getShort();
+		this.countryCode = deserializer.getEnumeration(ISOCountryCode.class);
 		this.hostname = deserializer.getString();
 		this.address = deserializer.getString();
 	}
@@ -140,7 +138,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -159,7 +157,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
-		serializer.putShort(this.getCountryCode());
+		serializer.putInt(this.getCountryCode().ordinal());
 		serializer.putString(this.getHostname());
 		serializer.putString(this.getAddress());
 	}
@@ -191,7 +189,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -239,7 +237,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	}
 	
 	
-	public final short getCountryCode() {
+	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;
 	}
 	

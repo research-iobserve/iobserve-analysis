@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+import org.iobserve.common.record.ISOCountryCode;
+
 /**
  * ToDo .
  *
@@ -34,8 +36,8 @@ public class DummyCountryInvestigator implements ICountryInvestigator {
      * {@inheritDoc}
      */
     @Override
-    public short getServerGeoLocationCountry() {
-        return 0;
+    public ISOCountryCode getServerGeoLocationCountry() {
+        return ISOCountryCode.EVIL_EMPIRE;
     }
 
 }

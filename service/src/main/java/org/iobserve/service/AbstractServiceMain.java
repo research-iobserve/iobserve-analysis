@@ -113,7 +113,7 @@ public abstract class AbstractServiceMain<T extends Configuration> {
             public void run() {
                 try {
                     synchronized (execution) {
-                        execution.abortEventually();
+                        execution.abortEventually(); // TODO replace by different termination logic
                         AbstractServiceMain.this.shutdownService();
                     }
                 } catch (final Exception e) { // NOCS NOPMD

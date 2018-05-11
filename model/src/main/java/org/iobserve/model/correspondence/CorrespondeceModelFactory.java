@@ -29,9 +29,11 @@ import org.iobserve.model.utils.StringUtils;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
- * @version 1.0
+ * @version 0.0.2
  *
+ * @deprecated since 0.0.3 jss-paper
  */
+@Deprecated
 public final class CorrespondeceModelFactory {
 
     /** singleton instance of factory. */

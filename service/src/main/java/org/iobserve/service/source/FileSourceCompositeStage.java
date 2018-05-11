@@ -61,7 +61,7 @@ public class FileSourceCompositeStage extends CompositeStage implements ISourceC
 
         final Collection<File> directories = this.collectDirectories(directoryNames);
 
-        if (directories.size() == 0) {
+        if (directories.isEmpty()) {
             FileSourceCompositeStage.LOGGER.error("No valid directory found.");
             throw new ConfigurationException("No valid directory found.");
         }

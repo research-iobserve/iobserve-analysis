@@ -31,21 +31,21 @@ import kieker.common.record.io.IValueDeserializer;
 public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
 	
 	/** default constants. */
-	public static final String URL = "";
-	private static final long serialVersionUID = 5255447408894554636L;
+	public static final String SERVICE = "";
+	private static final long serialVersionUID = -7649457401311508334L;
 	
 		
 	/** property declarations. */
-	private final String url;
+	private final String service;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param url
-	 *            url
+	 * @param service
+	 *            service
 	 */
-	public AbstractContainerEvent(final String url) {
-		this.url = url == null?"":url;
+	public AbstractContainerEvent(final String service) {
+		this.service = service == null?"":service;
 	}
 
 
@@ -57,12 +57,12 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #AbstractContainerEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected AbstractContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.url = (String) values[0];
+		this.service = (String) values[0];
 	}
 
 	
@@ -73,14 +73,14 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	 *            when the record could not be deserialized
 	 */
 	public AbstractContainerEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		this.url = deserializer.getString();
+		this.service = deserializer.getString();
 	}
 	
 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -107,15 +107,15 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
 			return false;
 		}
-		if (!this.getUrl().equals(castedRecord.getUrl())) {
+		if (!this.getService().equals(castedRecord.getService())) {
 			return false;
 		}
 		
 		return true;
 	}
 	
-	public final String getUrl() {
-		return this.url;
+	public final String getService() {
+		return this.service;
 	}
 	
 }

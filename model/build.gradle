@@ -86,6 +86,7 @@ sourceSets {
 	main {
 		java {
 			srcDir 'src/main/java'
+			srcDir 'src/main/model'
 			srcDir 'src/gen/java'
 			srcDir 'src/gen/java-factory'
 		}

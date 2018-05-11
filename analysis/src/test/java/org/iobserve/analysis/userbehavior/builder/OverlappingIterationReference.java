@@ -18,7 +18,7 @@ package org.iobserve.analysis.userbehavior.builder;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -92,7 +92,7 @@ public final class OverlappingIterationReference {
         final int lengthOfSequence2 = 2 * loopCount2;
 
         final ReferenceElements referenceElements = new ReferenceElements();
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
 
         // In the following the reference usage model is created
@@ -189,7 +189,7 @@ public final class OverlappingIterationReference {
      * @param loopCount2
      *            loop counter 2
      */
-    private static void createMatchingEntryAndExitEvents(final EntryCallSequenceModel entryCallSequenceModel,
+    private static void createMatchingEntryAndExitEvents(final UserSessionCollectionModel entryCallSequenceModel,
             final int lengthOfSequence1, final int lengthOfSequence2, final int loopCount1, final int loopCount2) {
         for (int i = 0; i < entryCallSequenceModel.getUserSessions().size(); i++) {
             // According to the randomly set parameter one of the sequences is iterated twice and

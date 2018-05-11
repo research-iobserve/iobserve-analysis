@@ -20,7 +20,7 @@ import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -41,7 +41,7 @@ public class PCMModelHandlerMockup implements IPCMModelHandler {
     private final ResourceEnvironment resourceEnvironmentModel;
     private final System systemModel;
     private final UsageModel usageModel;
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModel correspondenceModel;
     private final Repository repositoryModel;
     private final CloudProfile cloudProfileModel;
     private final CostRepository costModel;
@@ -49,7 +49,7 @@ public class PCMModelHandlerMockup implements IPCMModelHandler {
     private final QMLDeclarations qmlDeclarationsModel;
 
     public PCMModelHandlerMockup(final Allocation allocationModel, final ResourceEnvironment resourceEnvironmentModel,
-            final System systemModel, final UsageModel usageModel, final ICorrespondence correspondenceModel,
+            final System systemModel, final UsageModel usageModel, final CorrespondenceModel correspondenceModel,
             final Repository repositoryModel, final CloudProfile cloudProfileModel, final CostRepository costModel,
             final DecisionSpace designDecisionModel, final QMLDeclarations qmlDeclarationsModel) {
         this.allocationModel = allocationModel;
@@ -85,7 +85,7 @@ public class PCMModelHandlerMockup implements IPCMModelHandler {
     }
 
     @Override
-    public ICorrespondence getCorrespondenceModel() {
+    public CorrespondenceModel getCorrespondenceModel() {
         return this.correspondenceModel;
     }
 

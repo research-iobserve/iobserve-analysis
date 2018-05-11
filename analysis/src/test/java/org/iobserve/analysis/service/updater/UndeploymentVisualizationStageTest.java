@@ -27,6 +27,7 @@ import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +35,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -69,11 +72,11 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelProvider<ResourceEnvironment, ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelProvider<Allocation, AssemblyContext> mockedAssemblyContextModelProvider;
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelProvider<org.palladiosimulator.pcm.system.System, org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -116,7 +119,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
         final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
-                UndeploymentVisualizationStageTest.testCorrespondent);
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
 
         undeployedEvent.setResourceContainer(this.testResourceContainer);
 

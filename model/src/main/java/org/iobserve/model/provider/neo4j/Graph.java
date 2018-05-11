@@ -26,8 +26,11 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
  *
  * @author Lars Bluemke
  *
+ * @param <T>
+ *            type of the graph
+ *
  */
-public class Graph {
+public class Graph<T> {
 
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;

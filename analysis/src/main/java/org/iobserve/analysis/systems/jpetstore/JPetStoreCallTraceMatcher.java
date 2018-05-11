@@ -19,8 +19,7 @@ import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 
 /**

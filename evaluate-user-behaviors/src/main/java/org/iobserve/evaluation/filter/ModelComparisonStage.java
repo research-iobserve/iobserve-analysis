@@ -16,17 +16,17 @@
 package org.iobserve.evaluation.filter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.CallInformation;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
 
@@ -77,10 +77,10 @@ public class ModelComparisonStage extends AbstractStage {
         if (this.referenceModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
 
-            result.getBaselineNodes().addAll(this.referenceModel.getNodes());
-            result.getBaselineEdges().addAll(this.referenceModel.getEdges());
-            result.getTestModelNodes().addAll(this.testModel.getNodes());
-            result.getTestModelEdges().addAll(this.testModel.getEdges());
+            result.getBaselineNodes().addAll(Arrays.asList(this.referenceModel.getNodes()));
+            result.getBaselineEdges().addAll(Arrays.asList(this.referenceModel.getEdges()));
+            result.getTestModelNodes().addAll(Arrays.asList(this.testModel.getNodes()));
+            result.getTestModelEdges().addAll(Arrays.asList(this.testModel.getEdges()));
 
             /** M2: Similarity Ratio */
             /**
@@ -157,8 +157,7 @@ public class ModelComparisonStage extends AbstractStage {
      *            source edge
      * @return returns the matching edge or null when no match was found
      */
-    private EntryCallEdge findMatchingModelEdge(final Set<EntryCallEdge> entryCallEdges,
-            final EntryCallEdge sourceEdge) {
+    private EntryCallEdge findMatchingModelEdge(final EntryCallEdge[] entryCallEdges, final EntryCallEdge sourceEdge) {
         for (final EntryCallEdge entryCallEdge : entryCallEdges) {
             if (sourceEdge.getSource().getSignature().equals(entryCallEdge.getSource().getSignature())
                     && sourceEdge.getTarget().getSignature().equals(entryCallEdge.getTarget().getSignature())) {
@@ -175,8 +174,8 @@ public class ModelComparisonStage extends AbstractStage {
      * @param testModelCallInformationSet
      * @return list of missing call information
      */
-    private List<CallInformation> computeAdditionalInformation(final Set<CallInformation> firstCallInformationSet,
-            final Set<CallInformation> lastCallInformationSet) {
+    private List<CallInformation> computeAdditionalInformation(final CallInformation[] firstCallInformationSet,
+            final CallInformation[] lastCallInformationSet) {
         final List<CallInformation> result = new ArrayList<>();
         for (final CallInformation firstCallInformation : firstCallInformationSet) {
             boolean found = false;
@@ -202,7 +201,7 @@ public class ModelComparisonStage extends AbstractStage {
      *            the baseline node
      * @return the matching test model node, or null on fail
      */
-    private EntryCallNode findMatchingModelNode(final Set<EntryCallNode> entryCallNodes,
+    private EntryCallNode findMatchingModelNode(final EntryCallNode[] entryCallNodes,
             final EntryCallNode baselineNode) {
         for (final EntryCallNode testModelNode : entryCallNodes) {
             if (testModelNode.getSignature().equals(baselineNode.getSignature())) {

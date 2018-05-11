@@ -18,7 +18,7 @@ package org.iobserve.stages.general;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 
 /**
  * Interface for matchers to identify the proper events from a trace which represent an entry level

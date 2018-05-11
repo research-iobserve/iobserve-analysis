@@ -3,6 +3,7 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
+
         
         ////////// Goomph //////////
         // make it easy to test a snapshot version of goomph
@@ -14,10 +15,14 @@ buildscript {
 	// make sure we don't cache stale snapshot versions
 	configurations.all {
 		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+
+        // maven { url "https://plugins.gradle.org/m2/" } // shadow
+
     }
 
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
          
         ////////// Goomph //////////      
         // a bunch of eclipse stuff
@@ -43,6 +48,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
+
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+    }
+}
 
 def confDir = "${project.rootDir}/qa-configurations"
 

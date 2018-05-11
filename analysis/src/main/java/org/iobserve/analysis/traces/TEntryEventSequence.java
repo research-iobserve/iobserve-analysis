@@ -20,8 +20,8 @@ import java.io.IOException;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -42,14 +42,14 @@ import org.slf4j.LoggerFactory;
  *
  * @version 1.0
  */
-public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TEntryEventSequence extends AbstractConsumerStage<UserSessionCollectionModel> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TEntryEventSequence.class);
 
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
     /** usage model provider. */
-    private final ModelProvider<UsageModel> usageModelProvider;
+    private final ModelProvider<UsageModel, UsageModel> usageModelProvider;
 
     private final int varianceOfUserGroups;
 
@@ -79,7 +79,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
      *            type of workload
      */
     public TEntryEventSequence(final ICorrespondence correspondenceModel,
-            final ModelProvider<UsageModel> usageModelProvider,
+            final ModelProvider<UsageModel, UsageModel> usageModelProvider,
             final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
             final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
@@ -95,7 +95,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     }
 
     @Override
-    protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
+    protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
         // Resets the current usage model
         final UsageModel model = this.usageModelProvider.readRootComponent(UsageModel.class);
         int numberOfUserGroups = model.getUsageScenario_UsageModel().size();

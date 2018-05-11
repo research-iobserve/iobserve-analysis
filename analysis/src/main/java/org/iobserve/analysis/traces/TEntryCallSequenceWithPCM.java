@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
@@ -47,7 +47,7 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** output ports. */
-    private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    private final OutputPort<UserSessionCollectionModel> outputPort = this.createOutputPort();
 
     /**
      * Create this filter.
@@ -83,7 +83,7 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
                     .collect(Collectors.toList());
 
             if (!listToSend.isEmpty()) {
-                this.outputPort.send(new EntryCallSequenceModel(listToSend));
+                this.outputPort.send(new UserSessionCollectionModel(listToSend));
             }
         }
     }
@@ -91,7 +91,7 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
     /**
      * @return output port
      */
-    public OutputPort<EntryCallSequenceModel> getOutputPort() {
+    public OutputPort<UserSessionCollectionModel> getOutputPort() {
         return this.outputPort;
     }
 

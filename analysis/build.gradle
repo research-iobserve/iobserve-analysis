@@ -1,7 +1,29 @@
+// SHADOW
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = 'org.iobserve.analysis.AnalysisMain'
+
+buildscript {
+    repositories {
+    	// SHADOW
+    	jcenter()
+        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
+        maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
+    }
+
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+
+// SHADOW
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.analysis.AnalysisMain'
+//}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,15 +41,14 @@ dependencies {
 
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'commons-io:commons-io:2.5'
-	compile group: 'org.glassfish', name: 'javax.json', version: '1.1.2'
-	compile group: 'org.json', name: 'json', version: '20180130'
+	compile 'org.glassfish:javax.json:1.1.2'
+	compile 'org.json:json:20180130'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
-	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
 
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     

@@ -20,7 +20,7 @@ import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -30,7 +30,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Interface for model handlers. Enables mocking implementations for testing for example.
- * 
+ *
  * @author Lars Bluemke
  *
  */
@@ -68,7 +68,7 @@ public interface IPCMModelHandler {
     /**
      * @return correspondence model
      */
-    ICorrespondence getCorrespondenceModel();
+    CorrespondenceModel getCorrespondenceModel();
 
     /**
      * @return repository model provider

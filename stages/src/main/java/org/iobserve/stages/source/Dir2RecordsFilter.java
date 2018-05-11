@@ -21,7 +21,6 @@ import java.util.Comparator;
 
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryCreationFilter;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
-import kieker.analysisteetime.plugin.reader.filesystem.format.binary.file.BinaryFile2RecordFilter;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.filesystem.BinaryCompressionMethod;
 import kieker.common.util.filesystem.FSUtil;
@@ -91,6 +90,10 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 "UTF-8");
         final BinaryFile2RecordFilter binaryFile2RecordFilter = new BinaryFile2RecordFilter(
                 this.classNameRegistryRepository);
+        // TODO this is a hack, as the fileExtensionSwitch does not work properly with composed
+        // extensions
+        final BinaryFile2RecordFilter decompBinaryStream2RecordFilter = new BinaryFile2RecordFilter(
+                this.classNameRegistryRepository);
 
         this.recordMerger = new Merger<>();
 
@@ -98,6 +101,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
         final OutputPort<File> binFileOutputPort = fileExtensionSwitch
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
+        final OutputPort<File> xzFileOutputPort = fileExtensionSwitch.addFileExtension(".xz");
 
         // connect ports by pipes
         this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
@@ -106,8 +110,11 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.connectPorts(normalFileOutputPort, datFile2RecordFilter.getInputPort());
         this.connectPorts(binFileOutputPort, binaryFile2RecordFilter.getInputPort());
 
+        this.connectPorts(xzFileOutputPort, decompBinaryStream2RecordFilter.getInputPort());
+
         this.connectPorts(datFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
         this.connectPorts(binaryFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
+        this.connectPorts(decompBinaryStream2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
 
         // prepare pipeline
         this.classNameRegistryCreationFilter = localClassNameRegistryCreationFilter;

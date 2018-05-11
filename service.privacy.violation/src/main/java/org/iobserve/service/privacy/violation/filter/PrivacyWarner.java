@@ -21,7 +21,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -35,9 +35,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
-    private final ModelProvider<System> systemModelGraphProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<System> systemModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -55,9 +55,9 @@ public class PrivacyWarner extends AbstractStage {
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
      */
-    public PrivacyWarner(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public PrivacyWarner(final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<System> systemModelGraphProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -65,20 +65,30 @@ public class PrivacyWarner extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
+        java.lang.System.out.print("Execution started");
         final Warnings warnings = new Warnings();
-
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
-
+        this.createAnalysisGraph();
         if (deployedEvent != null) {
             // TODO generate warnings after the last deployment
-        } else if (undeployedEvent != null) {
+            java.lang.System.out.print("Received Deployment");
+            java.lang.System.out.print("CountryCode: " + deployedEvent.getCountryCode());
+            java.lang.System.out.print("Service: " + deployedEvent.getService());
+        }
+        if (undeployedEvent != null) {
             // TODO generate warnings after the last undeployment
+            java.lang.System.out.print("Received undeployment");
         }
 
         this.probesOutputPort.send(warnings);
 
         this.warningsOutputPort.send(warnings);
+    }
+
+    private void createAnalysisGraph() {
+        java.lang.System.out.print("Starting creation of Analysis Graph");
+        java.lang.System.out.print(this.allocationModelGraphProvider.readComponentByType(Allocation.class));
     }
 
     public OutputPort<Warnings> getProbesOutputPort() {

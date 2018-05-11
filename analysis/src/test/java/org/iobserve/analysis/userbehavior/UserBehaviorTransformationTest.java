@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;
@@ -72,8 +73,9 @@ public final class UserBehaviorTransformationTest {
 
         final ICorrespondence correspondenceModel = null; // TODO load that model
         final GraphLoader graphLoader = new GraphLoader(null); // TODO fix location
-        final Graph graph = graphLoader.createRepositoryModelGraph();
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph);
+        final Graph<Repository> graph = graphLoader.createModelGraph(Repository.class);
+        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(
+                graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.readRootComponent(Repository.class));
 

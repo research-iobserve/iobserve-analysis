@@ -79,6 +79,8 @@ public class DeploymentContextListener extends AbstractDeploymentContextListener
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
         this.monitoringCtrl.newMonitoringRecord(
                 new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
+        // TODO remove if not necessary
+        this.monitoringCtrl.terminateMonitoring();
     }
 
 }

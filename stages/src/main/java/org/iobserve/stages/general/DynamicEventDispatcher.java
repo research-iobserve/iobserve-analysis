@@ -52,6 +52,8 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
 
     private IEventMatcher<? extends Object> rootEventMatcher;
 
+    private IEventMatcher<? extends Object> defaultMatcher;
+
     /**
      * Create a new dynamic dispatcher.
      *
@@ -66,8 +68,13 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
      */
     public DynamicEventDispatcher(final IEventMatcher<? extends Object> rootEventMatcher, final boolean countEvents,
             final boolean reportUnknown, final boolean outputOther) {
-        this.rootEventMatcher = rootEventMatcher;
-        this.assignPorts(rootEventMatcher);
+        if (rootEventMatcher == null) {
+            this.defaultMatcher = new AllEventNoRelayMatcher();
+            this.rootEventMatcher = this.defaultMatcher;
+        } else {
+            this.rootEventMatcher = rootEventMatcher;
+            this.assignPorts(rootEventMatcher);
+        }
         this.countEvents = countEvents;
         this.reportUnknown = reportUnknown;
         this.outputOther = outputOther;
@@ -136,9 +143,9 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
         super.onTerminating();
     }
 
-    public void registerOutput(final IEventMatcher<? extends Object> leaveEventMatcher) {
+    public void registerOutput(final IEventMatcher<? extends Object> leaveEventMatcher) throws ConfigurationException {
         leaveEventMatcher.setOutputPort(this.createOutputPort());
-        if (this.rootEventMatcher == null) {
+        if (this.rootEventMatcher == this.defaultMatcher) {
             this.rootEventMatcher = leaveEventMatcher;
         } else {
             IEventMatcher<? extends Object> eventMatcher = this.rootEventMatcher;

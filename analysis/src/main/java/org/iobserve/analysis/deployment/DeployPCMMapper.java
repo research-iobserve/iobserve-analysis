@@ -15,19 +15,20 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
+import java.util.List;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy_EJBDeployedEvent;
 import org.iobserve.common.record.Privacy_ServletDeployedEvent;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.
@@ -37,19 +38,17 @@ import org.slf4j.LoggerFactory;
  */
 public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeployPCMMapper.class);
-
-    private final ICorrespondence correspondence;
+    private final IModelProvider<AssemblyEntry> correspondenceModelProvider;
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
     /**
      * Create a deployed event mapper.
      *
-     * @param correspondence
+     * @param correspondenceModelProvider
      *            correspondence model handler
      */
-    public DeployPCMMapper(final ICorrespondence correspondence) {
-        this.correspondence = correspondence;
+    public DeployPCMMapper(final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+        this.correspondenceModelProvider = correspondenceModelProvider;
     }
 
     /**
@@ -79,17 +78,22 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
-        final Correspondent correspondent = this.correspondence.getCorrespondent(context).get();
-        if (correspondent != null) {
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
+                .readOnlyComponentByName(AssemblyEntry.class, context);
 
+        if (assemblyEntry.size() == 1) {
             if (event instanceof Privacy_EJBDeployedEvent) {
-                this.outputPort.send(new PCMDeployedEvent(service, correspondent, url,
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
                         ((Privacy_EJBDeployedEvent) event).getCountryCode()));
             } else {
-                this.outputPort.send(new PCMDeployedEvent(service, correspondent, url, (short) 0));
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
+                        ISOCountryCode.EVIL_EMPIRE));
             }
-        } else {
-            DeployPCMMapper.LOGGER.warn("No correspondent found for {}.", service);
+        } else if (assemblyEntry.isEmpty()) {
+            this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);
+        } else if (assemblyEntry.size() > 1) {
+            this.logger.error("Deplyoment failed: Multiple corresponding assembly context {} found on {}.", context,
+                    service);
         }
     }
 
@@ -101,16 +105,22 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
-        final Correspondent correspondent = this.correspondence.getCorrespondent(context).get();
-        if (correspondent != null) {
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
+                .readOnlyComponentByName(AssemblyEntry.class, context);
+
+        if (assemblyEntry.size() == 1) {
             if (event instanceof Privacy_ServletDeployedEvent) {
-                this.outputPort.send(new PCMDeployedEvent(service, correspondent, url,
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
                         ((Privacy_ServletDeployedEvent) event).getCountryCode()));
             } else {
-                this.outputPort.send(new PCMDeployedEvent(service, correspondent, url, (short) 0));
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
+                        ISOCountryCode.EVIL_EMPIRE));
             }
-        } else {
-            DeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
+        } else if (assemblyEntry.isEmpty()) {
+            this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);
+        } else if (assemblyEntry.size() > 1) {
+            this.logger.error("Deplyoment failed: Multiple corresponding assembly context {} found on {}.", context,
+                    service);
         }
     }
 

@@ -21,7 +21,6 @@ import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IPayloadCharacterization;
 
@@ -111,7 +110,7 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationObjectEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public EntryLevelBeforeOperationObjectEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -129,7 +128,7 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationObjectEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected EntryLevelBeforeOperationObjectEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -166,7 +165,7 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -237,7 +236,7 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

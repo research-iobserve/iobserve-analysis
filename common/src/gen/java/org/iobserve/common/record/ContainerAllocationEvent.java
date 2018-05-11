@@ -21,7 +21,6 @@ import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.AbstractContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IAllocationEvent;
 
@@ -33,28 +32,28 @@ import org.iobserve.common.record.IAllocationEvent;
  */
 public class ContainerAllocationEvent extends AbstractContainerEvent implements IAllocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING; // AbstractContainerEvent.url
+	public static final int SIZE = TYPE_SIZE_STRING; // AbstractContainerEvent.service
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // AbstractContainerEvent.url
+		String.class, // AbstractContainerEvent.service
 	};
 	
 	private static final long serialVersionUID = -6028448119522385906L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
-		"url",
+		"service",
 	};
 	
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param url
-	 *            url
+	 * @param service
+	 *            service
 	 */
-	public ContainerAllocationEvent(final String url) {
-		super(url);
+	public ContainerAllocationEvent(final String service) {
+		super(service);
 	}
 
 	/**
@@ -64,7 +63,7 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerAllocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ContainerAllocationEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -79,7 +78,7 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerAllocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ContainerAllocationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -100,13 +99,13 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl(),
+			this.getService(),
 		};
 	}
 	/**
@@ -115,7 +114,7 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
-		serializer.putString(this.getUrl());
+		serializer.putString(this.getService());
 	}
 	
 	/**
@@ -145,7 +144,7 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -172,7 +171,7 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
 			return false;
 		}
-		if (!this.getUrl().equals(castedRecord.getUrl())) {
+		if (!this.getService().equals(castedRecord.getService())) {
 			return false;
 		}
 		
