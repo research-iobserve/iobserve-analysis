@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,104 +40,99 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Christian Wulf
  *
- * @since 1.0
+ * @since 1.14
  */
 public final class Dir2RecordsFilter extends CompositeStage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
 
-    private final ClassNameRegistryCreationFilter classNameRegistryCreationFilter;
-    private final Merger<IMonitoringRecord> recordMerger;
+	private final ClassNameRegistryCreationFilter classNameRegistryCreationFilter;
+	private final Merger<IMonitoringRecord> recordMerger;
 
-    private ClassNameRegistryRepository classNameRegistryRepository;
+	private ClassNameRegistryRepository classNameRegistryRepository;
 
-    /**
-     * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
-     */
-    public Dir2RecordsFilter() {
-        this(new ClassNameRegistryRepository());
-    }
+	/**
+	 * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
+	 */
+	public Dir2RecordsFilter() {
+		this(new ClassNameRegistryRepository());
+	}
 
-    /**
-     * Constructor for an external class name registry.
-     *
-     * @param classNameRegistryRepository
-     *            a class name registry
-     */
-    public Dir2RecordsFilter(final ClassNameRegistryRepository classNameRegistryRepository) {
-        this.classNameRegistryRepository = classNameRegistryRepository;
+	/**
+	 * Constructor for an external class name registry.
+	 *
+	 * @param classNameRegistryRepository
+	 *			a class name registry
+	 */
+	public Dir2RecordsFilter(final ClassNameRegistryRepository classNameRegistryRepository) {
+		this.classNameRegistryRepository = classNameRegistryRepository;
 
-        // create stages
-        final ClassNameRegistryCreationFilter localClassNameRegistryCreationFilter = new ClassNameRegistryCreationFilter(
-                this.classNameRegistryRepository);
-        final Directory2FilesFilter directory2FilesFilter = new Directory2FilesFilter(new Comparator<File>() {
+		// create stages
+		final ClassNameRegistryCreationFilter localClassNameRegistryCreationFilter = new ClassNameRegistryCreationFilter(this.classNameRegistryRepository);
+		final Directory2FilesFilter directory2FilesFilter = new Directory2FilesFilter(new Comparator<File>() {
 
-            @Override
-            public int compare(final File o1, final File o2) {
-                try {
-                    return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
-                } catch (final IOException e) {
-                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e); // NOPMD
-                    return 0;
-                }
-            }
+			@Override
+			public int compare(final File o1, final File o2) {
+				try {
+					return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
+				} catch (final IOException e) {
+					Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e); // NOPMD
+					return 0;
+				}
+			}
 
-        });
+		});
 
-        final FileExtensionSwitch fileExtensionSwitch = new FileExtensionSwitch();
+		final FileExtensionSwitch fileExtensionSwitch = new FileExtensionSwitch();
 
-        final DatFileToRecordStage datFile2RecordFilter = new DatFileToRecordStage(this.classNameRegistryRepository,
-                "UTF-8");
-        final BinaryFile2RecordFilter binaryFile2RecordFilter = new BinaryFile2RecordFilter(
-                this.classNameRegistryRepository);
-        // TODO this is a hack, as the fileExtensionSwitch does not work properly with composed
-        // extensions
-        final BinaryFile2RecordFilter decompBinaryStream2RecordFilter = new BinaryFile2RecordFilter(
-                this.classNameRegistryRepository);
+		final DatFileToRecordStage datFile2RecordFilter = new DatFileToRecordStage(this.classNameRegistryRepository,
+				"UTF-8");
+		final BinaryFile2RecordFilter binaryFile2RecordFilter = new BinaryFile2RecordFilter(this.classNameRegistryRepository);
+		// TODO this is a hack, as the fileExtensionSwitch does not work properly with composed extensions
+		final BinaryFile2RecordFilter decompBinaryStream2RecordFilter = new BinaryFile2RecordFilter(this.classNameRegistryRepository);
 
-        this.recordMerger = new Merger<>();
+		this.recordMerger = new Merger<>();
 
-        // store ports due to readability reasons
-        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
-        final OutputPort<File> binFileOutputPort = fileExtensionSwitch
-                .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
-        final OutputPort<File> xzFileOutputPort = fileExtensionSwitch.addFileExtension(".xz");
+		// store ports due to readability reasons
+		final OutputPort<File> datFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
+		final OutputPort<File> binFileOutputPort = fileExtensionSwitch.addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
+		final OutputPort<File> xzFileOutputPort = fileExtensionSwitch.addFileExtension(".xz");
 
-        // connect ports by pipes
-        this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
-        this.connectPorts(directory2FilesFilter.getOutputPort(), fileExtensionSwitch.getInputPort());
+		// connect ports by pipes
+		this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
+		this.connectPorts(directory2FilesFilter.getOutputPort(), fileExtensionSwitch.getInputPort());
 
-        this.connectPorts(normalFileOutputPort, datFile2RecordFilter.getInputPort());
-        this.connectPorts(binFileOutputPort, binaryFile2RecordFilter.getInputPort());
+		this.connectPorts(datFileOutputPort, datFile2RecordFilter.getInputPort());
+		this.connectPorts(binFileOutputPort, binaryFile2RecordFilter.getInputPort());
 
-        this.connectPorts(xzFileOutputPort, decompBinaryStream2RecordFilter.getInputPort());
+		this.connectPorts(xzFileOutputPort, decompBinaryStream2RecordFilter.getInputPort());
 
-        this.connectPorts(datFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
-        this.connectPorts(binaryFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
-        this.connectPorts(decompBinaryStream2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
+		this.connectPorts(datFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
+		this.connectPorts(binaryFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
+		this.connectPorts(decompBinaryStream2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
 
-        // prepare pipeline
-        this.classNameRegistryCreationFilter = localClassNameRegistryCreationFilter;
-    }
+		// prepare pipeline
+		this.classNameRegistryCreationFilter = localClassNameRegistryCreationFilter;
+	}
 
-    public AbstractStage getFirstStage() {
-        return this.classNameRegistryCreationFilter;
-    }
+	public AbstractStage getFirstStage() {
+		return this.classNameRegistryCreationFilter;
+	}
 
-    public InputPort<File> getInputPort() {
-        return this.classNameRegistryCreationFilter.getInputPort();
-    }
+	public InputPort<File> getInputPort() {
+		return this.classNameRegistryCreationFilter.getInputPort();
+	}
 
-    public OutputPort<IMonitoringRecord> getOutputPort() {
-        return this.recordMerger.getOutputPort();
-    }
+	public OutputPort<IMonitoringRecord> getOutputPort() {
+		return this.recordMerger.getOutputPort();
+	}
 
-    public ClassNameRegistryRepository getClassNameRegistryRepository() {
-        return this.classNameRegistryRepository;
-    }
+	public ClassNameRegistryRepository getClassNameRegistryRepository() {
+		return this.classNameRegistryRepository;
+	}
 
-    public void setClassNameRegistryRepository(final ClassNameRegistryRepository classNameRegistryRepository) {
-        this.classNameRegistryRepository = classNameRegistryRepository;
-    }
+	public void setClassNameRegistryRepository(final ClassNameRegistryRepository classNameRegistryRepository) {
+		this.classNameRegistryRepository = classNameRegistryRepository;
+	}
 
 }
