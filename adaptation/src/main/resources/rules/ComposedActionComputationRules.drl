@@ -64,7 +64,7 @@ then
     		.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
 end
 
-rule "Create change repository action"
+rule "Create change repository component action"
 	salience 0
 when
 	$systemAdaptationModel : SystemAdaptation()
