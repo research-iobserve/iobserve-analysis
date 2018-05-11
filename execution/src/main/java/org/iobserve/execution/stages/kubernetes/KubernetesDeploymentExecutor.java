@@ -17,6 +17,8 @@ package org.iobserve.execution.stages.kubernetes;
 
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
 import org.iobserve.execution.stages.IExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodBuilder;
@@ -30,6 +32,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  */
 public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
         implements IExecutor<DeployComponentAction> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesDeploymentExecutor.class);
 
     public KubernetesDeploymentExecutor(final String ip, final String port) {
         super(ip, port);
@@ -63,7 +66,10 @@ public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
                 /**/ .build(); //
 
         final Pod result = client.pods().create(pod);
-        System.out.println("Created pod " + result.getMetadata().getName());
+
+        if (KubernetesDeploymentExecutor.LOGGER.isDebugEnabled()) {
+            KubernetesDeploymentExecutor.LOGGER.debug("Created pod " + result.getMetadata().getName());
+        }
     }
 
 }

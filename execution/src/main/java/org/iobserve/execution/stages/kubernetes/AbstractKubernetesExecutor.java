@@ -37,8 +37,7 @@ public abstract class AbstractKubernetesExecutor {
     public KubernetesClient getConnection() {
         final String masterUrl = "http://" + this.ip + ":" + this.port;
         final Config config = new ConfigBuilder().withMasterUrl(masterUrl).build();
-        final KubernetesClient kubernetes = new DefaultKubernetesClient(config);
-        return kubernetes;
+        return new DefaultKubernetesClient(config);
     }
 
 }

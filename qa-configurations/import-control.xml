@@ -10,6 +10,8 @@
 	<allow pkg="teetime"/>
 
 	<allow pkg="de.uka.ipd.sdq"/>
+	
+	<allow pkg="io.fabric8.kubernetes"/>
 
 	<allow pkg="org.apache"/>
     <allow pkg="org.codehaus"/>

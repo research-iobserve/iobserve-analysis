@@ -45,7 +45,9 @@ public class KubernetesUndeploymentExecutor extends AbstractKubernetesExecutor
 
         client.pods().inNamespace(namespace).withName(podName).delete();
 
-        KubernetesUndeploymentExecutor.LOGGER.debug("Successfully deleted pod with name " + podName);
+        if (KubernetesUndeploymentExecutor.LOGGER.isDebugEnabled()) {
+            KubernetesUndeploymentExecutor.LOGGER.debug("Successfully deleted pod with name " + podName);
+        }
     }
 
 }
