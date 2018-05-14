@@ -15,12 +15,22 @@
  ***************************************************************************/
 package org.iobserve.execution.cli;
 
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
+import java.io.File;
+import java.io.IOException;
 
-import org.iobserve.execution.configurations.ExecutionConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
+
+import kieker.common.configuration.Configuration;
+
+import org.eclipse.emf.common.util.URI;
+import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.provider.file.CorrespondenceModelHandler;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Main class for iObserve's execution service.
@@ -28,41 +38,82 @@ import org.slf4j.LoggerFactory;
  * @author Lars Bluemke
  *
  */
-public class ExecutionMain {
+public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfiguration> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecutionMain.class);
+    @Parameter(names = "--help", help = true)
+    private boolean help; // NOPMD access through reflection
+
+    @Parameter(names = { "-c",
+            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
+
+    private File configurationFile;
 
     public static void main(final String[] args) {
-        new ExecutionMain().run();
-
+        new ExecutionMain().run("Execution Service", "execution", args);
     }
 
-    private void run() {
-        final Execution<ExecutionConfiguration> execution = new Execution<>(new ExecutionConfiguration(null, null));
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        boolean configurationGood = true;
 
-        this.shutdownHook(execution);
+        try {
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT) != null;
 
-        ExecutionMain.LOG.debug("Running Execution");
+            final File executionPlanDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(executionPlanDirectory,
+                    "Executionplan directory", commander);
 
-        execution.executeBlocking();
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME) != null;
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP) != null;
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT) != null;
 
-        ExecutionMain.LOG.debug("Done");
+            final File correspondenceModelFile = new File(
+                    configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI));
+            configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
+                    "Correspondence model file");
+
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX) != null;
+
+            return configurationGood;
+        } catch (final IOException e) {
+            return false;
+        }
     }
 
-    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (execution) {
-                    execution.abortEventually();
-                    ExecutionMain.this.shutdownService();
-                }
-            }
-        }));
+    @Override
+    protected KubernetesExecutionConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
+        final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
+        final File executionPlanDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_DIRECTORY));
+        final String executionPlanName = configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME);
+        final String kubernetesMasterIp = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP);
+        final String kubernetesMasterPort = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT);
+        final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
+                .load(URI.createFileURI(configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI)));
+        final String imagePrefix = configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX);
 
+        return new KubernetesExecutionConfiguration(executionPlanInputPort, executionPlanDirectory, executionPlanName,
+                kubernetesMasterIp, kubernetesMasterPort, correspondenceModel, imagePrefix);
     }
 
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    @Override
     protected void shutdownService() {
-        // TODO serialize PCM models.
+
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return this.configurationFile;
     }
 }

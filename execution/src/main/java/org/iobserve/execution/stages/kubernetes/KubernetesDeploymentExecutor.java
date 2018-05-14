@@ -17,6 +17,7 @@ package org.iobserve.execution.stages.kubernetes;
 
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
 import org.iobserve.execution.stages.IExecutor;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +34,19 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
         implements IExecutor<DeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesDeploymentExecutor.class);
+    private final CorrespondenceModel correspondenceModel;
 
-    public KubernetesDeploymentExecutor(final String ip, final String port) {
+    public KubernetesDeploymentExecutor(final String ip, final String port,
+            final CorrespondenceModel correspondenceModel, final String imagePrefix) {
         super(ip, port);
+        this.correspondenceModel = correspondenceModel;
     }
 
     @Override
     public void execute(final DeployComponentAction action) {
         final KubernetesClient client = this.getConnection();
+
+        this.correspondenceModel.getParts();
 
         final Pod pod = new PodBuilder() //
                 /**/ .withApiVersion("v1") //
