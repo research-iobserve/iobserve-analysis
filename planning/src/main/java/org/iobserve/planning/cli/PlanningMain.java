@@ -58,7 +58,7 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
         boolean configurationGood = true;
 
         try {
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
 
             final File runtimeModelDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
@@ -71,17 +71,17 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
                     "PerOpteryx RCP Executable Directory", commander);
 
             // LQNS directory is not mandatory
-            if (configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY) != null) {
+            if (!configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY).isEmpty()) {
                 final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
-                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir,
-                        "PerOpteryx RCP Executable Directory", commander);
+                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir, "LQNS Executable Directory",
+                        commander);
             }
 
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME) != null;
-            configurationGood &= configuration
-                    .getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT) != null;
-            configurationGood &= configuration
-                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
+                    .isEmpty();
+            configurationGood &= !configuration
+                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {

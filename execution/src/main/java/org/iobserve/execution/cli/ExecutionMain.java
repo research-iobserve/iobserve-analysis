@@ -62,23 +62,23 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
         boolean configurationGood = true;
 
         try {
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
 
             final File executionPlanDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(executionPlanDirectory,
                     "Executionplan Directory", commander);
 
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME) != null;
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP) != null;
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT).isEmpty();
 
             final File correspondenceModelFile = new File(
                     configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI));
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
                     "Correspondence Model File");
 
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {

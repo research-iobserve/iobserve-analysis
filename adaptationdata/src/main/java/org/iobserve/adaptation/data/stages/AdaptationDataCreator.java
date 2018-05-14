@@ -39,6 +39,7 @@ public class AdaptationDataCreator extends CompositeStage {
         this.modelCollector = new ModelCollector();
         this.modelGraphCreator = new ModelGraphCreator();
 
+        this.modelCollector.declareActive();
         this.connectPorts(this.modelCollector.getOutputPort(), this.modelGraphCreator.getInputPort());
     }
 

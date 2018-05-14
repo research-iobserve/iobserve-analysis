@@ -58,8 +58,9 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
         boolean configurationGood = true;
 
         try {
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT) != null;
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
+                    .isEmpty();
 
             final File runtimeModelDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
@@ -71,13 +72,10 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
                     "Redeployment Model Directory", commander);
 
-            final File executionPlanURI = new File(
-                    configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
-            configurationGood &= CommandLineParameterEvaluation.isFileReadable(executionPlanURI,
-                    "Correspondence Model File");
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI).isEmpty();
 
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME) != null;
-            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT) != null;
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
