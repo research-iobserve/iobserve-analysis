@@ -23,7 +23,7 @@ package org.iobserve.execution.cli;
  */
 public class ConfigurationKeys {
     /**
-     * Input port for receiving the execution plan
+     * Input port for receiving the execution plan via TCP
      */
     public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 

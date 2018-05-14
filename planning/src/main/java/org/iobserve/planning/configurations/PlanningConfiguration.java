@@ -37,22 +37,22 @@ public class PlanningConfiguration extends Configuration {
     /**
      * Creates a new instance of this class.
      *
-     * @param planningInputPort
-     *            Port where planning service receives new records via TCP
-     * @param modelDirectory
+     * @param runtimeModelInputPort
+     *            Port where planning service receives new models via TCP
+     * @param runtimeModelDirectory
      *            Directory where models are stored
-     * @param perOpteryxHeadless
-     *            PerOpteryx executable
+     * @param perOpteryxHeadlessDir
+     *            PerOpteryx directory
      * @param lqnsDir
-     *            LQN solver executable
+     *            LQN solver directory
      * @param adaptationHostname
      *            Host name of adaptation service
      * @param adaptationInputPort
      *            Input port of adaptation service
      */
-    public PlanningConfiguration(final int planningInputPort, final File modelDirectory, final File perOpteryxHeadless,
-            final File lqnsDir, final String adaptationHostname, final int adaptationRuntimeModelInputPort,
-            final int adaptationRedeploymentModelInputPort) {
+    public PlanningConfiguration(final int runtimeModelInputPort, final File runtimeModelDirectory,
+            final File perOpteryxHeadlessDir, final File lqnsDir, final String adaptationHostname,
+            final int adaptationRuntimeModelInputPort, final int adaptationRedeploymentModelInputPort) {
 
         final SingleConnectionTcpReaderStage tcpReader;
         final ModelFiles2ModelDirCollectorStage modelFilesCollector;
@@ -63,12 +63,12 @@ public class PlanningConfiguration extends Configuration {
         final SingleConnectionTcpWriterStage runtimeTcpWriter;
         final SingleConnectionTcpWriterStage redeploymentTcpWriter;
 
-        tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
+        tcpReader = new SingleConnectionTcpReaderStage(runtimeModelInputPort, runtimeModelDirectory);
         modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
         modelPreProcessor = new ModelProcessing();
 
-        if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-            modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
+        if ((perOpteryxHeadlessDir != null) && (lqnsDir != null)) {
+            modelOptimizer = new ModelOptimization(perOpteryxHeadlessDir, lqnsDir);
         } else {
             throw new IllegalArgumentException(
                     "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");

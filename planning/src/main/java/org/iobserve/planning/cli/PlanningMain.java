@@ -16,64 +16,115 @@
 package org.iobserve.planning.cli;
 
 import java.io.File;
+import java.io.IOException;
 
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
 
 import org.iobserve.planning.configurations.PlanningConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * Main class for iObserve's adaptation service.
+ * Main class for iObserve's planning service.
  *
  * @author Lars Bluemke
  *
  */
-public class PlanningMain {
+public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PlanningMain.class);
+    @Parameter(names = "--help", help = true)
+    private boolean help; // NOPMD access through reflection
 
-    private static final int PLANNING_INPUT_PORT = 12349;
-    private static final String ADAPTATION_HOST_NAME = "localhost";
-    private static final int ADAPTATION_RUNTIME_INPUT_PORT = 12346;
-    private static final int ADAPTATION_REDEPLOYMENT_INPUT_PORT = 12347;
+    @Parameter(names = { "-c",
+            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
+    private File configurationFile;
 
-    private static final File MODEL_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-planning");
-    private static final File PO_HEADLESS_DIR = new File(
-            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/PO");
-    private static final File LQNS_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/LQNS");
-
+    /**
+     * Main function.
+     *
+     * @param args
+     *            command line arguments.
+     */
     public static void main(final String[] args) {
-        new PlanningMain().run();
-
+        new PlanningMain().run("Planning Service", "planning", args);
     }
 
-    private void run() {
-        final Execution<PlanningConfiguration> execution = new Execution<>(
-                new PlanningConfiguration(PlanningMain.PLANNING_INPUT_PORT, PlanningMain.MODEL_DIR,
-                        PlanningMain.PO_HEADLESS_DIR, PlanningMain.LQNS_DIR, PlanningMain.ADAPTATION_HOST_NAME,
-                        PlanningMain.ADAPTATION_RUNTIME_INPUT_PORT, PlanningMain.ADAPTATION_REDEPLOYMENT_INPUT_PORT));
+    @Override
+    protected boolean checkConfiguration(final kieker.common.configuration.Configuration configuration,
+            final JCommander commander) {
+        boolean configurationGood = true;
 
-        this.shutdownHook(execution);
+        try {
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT) != null;
 
-        PlanningMain.LOG.debug("Running Planning");
+            final File runtimeModelDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
+                    "Runtime Model Directory", commander);
 
-        execution.executeBlocking();
+            final File perOpteryxHeadlessDir = new File(
+                    configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(perOpteryxHeadlessDir,
+                    "PerOpteryx RCP Executable Directory", commander);
 
-        PlanningMain.LOG.debug("Done");
-    }
-
-    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (execution) {
-                    execution.abortEventually();
-                }
+            // LQNS directory is not mandatory
+            if (configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY) != null) {
+                final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir,
+                        "PerOpteryx RCP Executable Directory", commander);
             }
-        }));
 
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME) != null;
+            configurationGood &= configuration
+                    .getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT) != null;
+            configurationGood &= configuration
+                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT) != null;
+
+            return configurationGood;
+        } catch (final IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    protected PlanningConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final File runtimeModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+        final File perOpteryxHeadlessDir = new File(
+                configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+        final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
+        final int adaptationRuntimeModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
+        final int adaptationRedeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
+
+        return new PlanningConfiguration(runtimeModelInputPort, runtimeModelDirectory, perOpteryxHeadlessDir, lqnsDir,
+                adaptationHostname, adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
+    }
+
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    @Override
+    protected void shutdownService() {
+
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return this.configurationFile;
     }
 
 }

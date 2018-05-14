@@ -15,12 +15,17 @@
  ***************************************************************************/
 package org.iobserve.adaptation.cli;
 
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
+import java.io.File;
+import java.io.IOException;
 
-import org.iobserve.adaptation.configurations.AdaptationConfigurationDebug;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
+
+import org.iobserve.adaptation.configurations.AdaptationConfiguration;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Main class for iObserve's adaptation service.
@@ -28,41 +33,93 @@ import org.slf4j.LoggerFactory;
  * @author Lars Bluemke
  *
  */
-public class AdaptationMain {
+public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdaptationMain.class);
+    @Parameter(names = "--help", help = true)
+    private boolean help; // NOPMD access through reflection
 
+    @Parameter(names = { "-c",
+            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
+    private File configurationFile;
+
+    /**
+     * Main function.
+     *
+     * @param args
+     *            command line arguments.
+     */
     public static void main(final String[] args) {
-        new AdaptationMain().run();
-
+        new AdaptationMain().run("Adaptation Service", "adaptation", args);
     }
 
-    private void run() {
-        final Execution<AdaptationConfigurationDebug> execution = new Execution<>(new AdaptationConfigurationDebug());
+    @Override
+    protected boolean checkConfiguration(final kieker.common.configuration.Configuration configuration,
+            final JCommander commander) {
+        boolean configurationGood = true;
 
-        this.shutdownHook(execution);
+        try {
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT) != null;
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT) != null;
 
-        AdaptationMain.LOG.debug("Running Adaptation");
+            final File runtimeModelDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
+                    "Runtime Model Directory", commander);
 
-        execution.executeBlocking();
+            final File redeploymentModelDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
+                    "Redeployment Model Directory", commander);
 
-        AdaptationMain.LOG.debug("Done");
+            final File executionPlanURI = new File(
+                    configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+            configurationGood &= CommandLineParameterEvaluation.isFileReadable(executionPlanURI,
+                    "Correspondence Model File");
+
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME) != null;
+            configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT) != null;
+
+            return configurationGood;
+        } catch (final IOException e) {
+            return false;
+        }
     }
 
-    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (execution) {
-                    execution.abortEventually();
-                    AdaptationMain.this.shutdownService();
-                }
-            }
-        }));
+    @Override
+    protected AdaptationConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
+        final File runtimeModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+        final File redeploymentModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
+        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+        final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
+        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_INPUTPORT);
 
+        return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
+                redeploymentModelDirectory, executionPlanURI, executionHostname, executionInputPort);
     }
 
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    @Override
     protected void shutdownService() {
-        // serialize PCM models.
+        // no actions on shutdown
     }
+
+    @Override
+    protected File getConfigurationFile() {
+        return this.configurationFile;
+    }
+
 }

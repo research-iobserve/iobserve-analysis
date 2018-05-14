@@ -45,9 +45,14 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
-
     private File configurationFile;
 
+    /**
+     * Main function.
+     *
+     * @param args
+     *            command line arguments.
+     */
     public static void main(final String[] args) {
         new ExecutionMain().run("Execution Service", "execution", args);
     }
@@ -62,7 +67,7 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
             final File executionPlanDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(executionPlanDirectory,
-                    "Executionplan directory", commander);
+                    "Executionplan Directory", commander);
 
             configurationGood &= configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME) != null;
             configurationGood &= configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP) != null;
@@ -71,7 +76,7 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
             final File correspondenceModelFile = new File(
                     configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI));
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
-                    "Correspondence model file");
+                    "Correspondence Model File");
 
             configurationGood &= configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX) != null;
 
@@ -109,7 +114,7 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
 
     @Override
     protected void shutdownService() {
-
+        // no actions on shutdown
     }
 
     @Override
