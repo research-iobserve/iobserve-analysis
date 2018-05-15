@@ -72,7 +72,7 @@ def runtimeDeps = [
       'org.apache.commons.jxpath',
       'org.apache.commons.lang',
       'org.apache.commons.logging',
-      //'org.apache.commons.logging.fragment',
+      'org.apache.commons.logging.fragment',
       'org.apache.commons.math',
       'org.apache.felix.gogo.command',
       'org.apache.felix.gogo.runtime',
@@ -407,7 +407,6 @@ def runtimeDeps = [
       'org.w3c.dom.events_3.0.0.draft20060413',
       'org.w3c.dom.smil',
       'org.w3c.dom.svg',
-      //'peropteryx.rcp',
       'tools.descartes.dlim.generator'
 ]
 
@@ -444,53 +443,24 @@ dependencies {
 	compile 'extra:org.palladiosimulator.reliability:3.1.0.201511051309'
 	compile 'extra:org.palladiosimulator.solver:3.0.0+'
 	
+	
+	// Note: Removed runtime deps to speed up building
 
-	runtime 'extra:org.antlr.runtime:4.3.0.v201502022030'
-    runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
-    runtime 'extra:org.apache.batik.css:1.6.0.v201011041432'
-    runtime 'extra:org.apache.batik.css:1.8.0.v20170214-1941'
-	runtime 'extra:org.apache.batik.util:1.6.0.v201011041432'
-    runtime 'extra:org.apache.batik.util:1.8.0.v20170214-1941'
-    runtime 'extra:org.apache.batik.util.gui:1.6.0.v201011041432'
-    runtime 'extra:org.apache.batik.util.gui:1.8.0.v20170214-1941'
+	// Different versions required
+	//runtime 'extra:org.antlr.runtime:4.3.0.v201502022030'
+    //runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
+    //runtime 'extra:org.apache.batik.css:1.6.0.v201011041432'
+    //runtime 'extra:org.apache.batik.css:1.8.0.v20170214-1941'
+	//runtime 'extra:org.apache.batik.util:1.6.0.v201011041432'
+    //runtime 'extra:org.apache.batik.util:1.8.0.v20170214-1941'
+    //runtime 'extra:org.apache.batik.util.gui:1.6.0.v201011041432'
+    //runtime 'extra:org.apache.batik.util.gui:1.8.0.v20170214-1941'
 
-	runtimeDeps.each {
-		runtime "extra:${it}:+"
-	}
+	//runtimeDeps.each {
+	//	runtime "extra:${it}:+"
+	//}
 		
 	testCompile "junit:junit:${VER_JUNIT}"
-
-	//runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
-	
-	
-	//runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
-	//runtime 'eclipse-deps:org.eclipse.jdt.core:+'
-	
-
-	// additional runtime deps (not added automatically by "add required")
-	//runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
-	//runtime 'extra:org.eclipse.equinox.ds:1.5.0.v20170307-1429'
-	
-	//runtime 'extra:de.uka.ipd.sdq.codegen.simucontroller:4.1.0.201709290901'
-	//runtime 'extra:org.eclipse.pde.core:3.11.100.v20170517-0724'
-	//runtime 'extra:org.eclipse.wst.server.core:1.10.0.v201705172051'
-	//runtime 'extra:org.palladiosimulator.simulizar:2.1.0.201709282222'
-	//runtime 'extra:org.palladiosimulator.simulizar.action:1.0.0.201709282222'
-	//runtime 'extra:org.palladiosimulator.simulizar.action.edit:1.0.0.201709282222'
-	//runtime 'extra:org.palladiosimulator.simulizar.reconfiguration.storydiagram:1.0.0.201709282222'
-	
-	// runtime dependencies added by "add required" after the previous deps have been added manually
-	//runtime 'extra:org.apache.felix.scr:2.0.10.v20170501-2007'
-	//runtime 'extra:
-	//wrc.dom.svg
-	//w3c.dom.smil
-	//w3c.dom.events
-
-	//additionalRuntimeDeps.each {
-		//runtime "extra:${it}:+"
-	//}	
-				
-
 }
 
 

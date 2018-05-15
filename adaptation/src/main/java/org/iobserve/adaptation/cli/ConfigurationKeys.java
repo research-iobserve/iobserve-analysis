@@ -21,39 +21,47 @@ package org.iobserve.adaptation.cli;
  * @author Lars Bluemke
  *
  */
-public class ConfigurationKeys {
+public final class ConfigurationKeys {
+
     /**
-     * Input port for receiving runtime models via TCP
+     * Input port for receiving runtime models via TCP.
      */
     public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
 
     /**
-     * Input port for receiving redeployment models via TCP
+     * Input port for receiving redeployment models via TCP.
      */
     public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
 
     /**
-     * Directory where received runtime models are stored
+     * Directory where received runtime models are stored.
      */
     public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
 
     /**
-     * Directory where received redeployment models are stored
+     * Directory where received redeployment models are stored.
      */
     public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
 
     /**
-     * File location of the serialized execution plan
+     * File location of the serialized execution plan.
      */
     public static final String EXECUTIONPLAN_URI = "executionPlanURI";
 
     /**
-     * Hostname of the execution service
+     * Hostname of the execution service.
      */
     public static final String EXECUTION_HOSTNAME = "executionHostname";
 
     /**
-     * Port where the execution service receives the serialized execution plan via TCP
+     * Port where the execution service receives the serialized execution plan via TCP.
      */
     public static final String EXECUTION_INPUTPORT = "executionInputPort";
+
+    /**
+     * Factory, do not instantiate.
+     */
+    private ConfigurationKeys() {
+        // empty constructor.
+    }
 }

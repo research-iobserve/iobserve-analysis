@@ -21,39 +21,47 @@ package org.iobserve.execution.cli;
  * @author Lars Bluemke
  *
  */
-public class ConfigurationKeys {
+public final class ConfigurationKeys {
+
     /**
-     * Input port for receiving the execution plan via TCP
+     * Input port for receiving the execution plan via TCP.
      */
     public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
-     * Directory where execution plan is stored
+     * Directory where execution plan is stored.
      */
     public static final String EXECUTIONPLAN_DIRECTORY = "executionPlanDirectory";
 
     /**
-     * Name of execution plan file
+     * Name of execution plan file.
      */
     public static final String EXECUTIONPLAN_FILENAME = "executionPlanFileName";
 
     /**
-     * IP address of kubernetes master
+     * IP address of kubernetes master.
      */
     public static final String KUBERNETES_MASTER_IP = "kubernetesMasterIp";
 
     /**
-     * Port to access kubernetes master
+     * Port to access kubernetes master.
      */
     public static final String KUBERNETES_MASTER_PORT = "kubernetesMasterPort";
 
     /**
-     * Location of correspondence model
+     * Location of correspondence model.
      */
     public static final String CORRESPONDENCE_MODEL_URI = "correspondenceModelUri";
 
     /**
-     * Prefix of application images, e.g. blade1.se.internal:5000
+     * Prefix of application images, e.g. blade1.se.internal:5000.
      */
     public static final String IMAGE_PREFIX = "imagePrefix";
+
+    /**
+     * Factory, do not instantiate.
+     */
+    private ConfigurationKeys() {
+        // empty constructor.
+    }
 }

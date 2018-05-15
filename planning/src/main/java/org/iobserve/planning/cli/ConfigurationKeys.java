@@ -21,45 +21,53 @@ package org.iobserve.planning.cli;
  * @author Lars Bluemke
  *
  */
-public class ConfigurationKeys {
+public final class ConfigurationKeys {
+
     /**
-     * Input port where runtime models are received via TCP
+     * Input port where runtime models are received via TCP.
      */
     public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
 
     /**
-     * Directory where runtime models are stored
+     * Directory where runtime models are stored.
      */
     public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
 
     /**
-     * Directory where redeployment models are stored (only for mockup of planning)
+     * Directory where redeployment models are stored (only for mockup of planning).
      */
     public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
 
     /**
-     * Directory containing the PerOpteryx RCP application's executable
+     * Directory containing the PerOpteryx RCP application's executable.
      */
     public static final String PEROPTERYX_HEADLESS_DIRECTORY = "perOpteryxHeadlessDirectory";
 
     /**
      * Directory containing the LQN solver's executable (not mandatory if LQNS is on your PATH
-     * anyway)
+     * anyway).
      */
     public static final String LQNS_DIRECTORY = "lqnsDirectory";
 
     /**
-     * Hostname of the adaptaion service
+     * Hostname of the adaptaion service.
      */
     public static final String ADAPTATION_HOSTNAME = "adaptationHostname";
 
     /**
-     * Port where the adaptation service receives the runtime models via TCP
+     * Port where the adaptation service receives the runtime models via TCP.
      */
     public static final String ADAPTATION_RUNTIMEMODEL_INPUTPORT = "adaptationRuntimeModelInputPort";
 
     /**
-     * Port where the adaptation service receives the redeployment models via TCP
+     * Port where the adaptation service receives the redeployment models via TCP.
      */
     public static final String ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT = "adaptationRedeploymentModelInputPort";
+
+    /**
+     * Factory, do not instantiate.
+     */
+    private ConfigurationKeys() {
+        // empty constructor.
+    }
 }
