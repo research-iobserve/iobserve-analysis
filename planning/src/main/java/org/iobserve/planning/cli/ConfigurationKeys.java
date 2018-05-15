@@ -28,9 +28,14 @@ public class ConfigurationKeys {
     public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
 
     /**
-     * Directory where models are stored
+     * Directory where runtime models are stored
      */
     public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
+
+    /**
+     * Directory where redeployment models are stored (only for mockup of planning)
+     */
+    public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
 
     /**
      * Directory containing the PerOpteryx RCP application's executable
