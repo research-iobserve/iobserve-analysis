@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.planning.cli;
+package org.iobserve.planning.service;
 
 /**
  * Configuration keys for the planning service's configuration file.

@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.AdaptationMain'
+mainClassName = 'org.iobserve.adaptation.service.AdaptationMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")

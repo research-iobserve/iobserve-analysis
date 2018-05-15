@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.cli;
+package org.iobserve.planning.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,18 +22,18 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import org.iobserve.adaptation.configurations.AdaptationConfiguration;
+import org.iobserve.planning.configurations.PlanningConfiguration;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * Main class for iObserve's adaptation service.
+ * Main class for iObserve's planning service.
  *
  * @author Lars Bluemke
  *
  */
-public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
+public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
@@ -49,7 +49,7 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new AdaptationMain().run("Adaptation Service", "adaptation", args);
+        new PlanningMain().run("Planning Service", "planning", args);
     }
 
     @Override
@@ -59,23 +59,29 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
 
         try {
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
-                    .isEmpty();
 
             final File runtimeModelDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
                     "Runtime Model Directory", commander);
 
-            final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
-                    "Redeployment Model Directory", commander);
+            final File perOpteryxHeadlessDir = new File(
+                    configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(perOpteryxHeadlessDir,
+                    "PerOpteryx RCP Executable Directory", commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI).isEmpty();
+            // LQNS directory is not mandatory
+            if (!configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY).isEmpty()) {
+                final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir, "LQNS Executable Directory",
+                        commander);
+            }
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
+                    .isEmpty();
+            configurationGood &= !configuration
+                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
@@ -84,21 +90,22 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
     }
 
     @Override
-    protected AdaptationConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+    protected PlanningConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
             throws ConfigurationException {
         final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
-        final int redeploymentModelInputPort = configuration
-                .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
-        final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
-        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
-        final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
-        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_INPUTPORT);
+        final File perOpteryxHeadlessDir = new File(
+                configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+        final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
+        final int adaptationRuntimeModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
+        final int adaptationRedeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
-        return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
-                redeploymentModelDirectory, executionPlanURI, executionHostname, executionInputPort);
+        return new PlanningConfiguration(runtimeModelInputPort, runtimeModelDirectory, perOpteryxHeadlessDir, lqnsDir,
+                adaptationHostname, adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
     }
 
     @Override
@@ -112,7 +119,7 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
 
     @Override
     protected void shutdownService() {
-        // no actions on shutdown
+
     }
 
     @Override

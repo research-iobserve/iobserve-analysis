@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.planning.cli;
+package org.iobserve.adaptation.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,18 +22,19 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import org.iobserve.planning.configurations.PlanningConfigurationMockup;
+import org.iobserve.adaptation.configurations.AdaptationConfiguration;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * A main class for mocking iObserve's planning service.
+ * Main class for iObserve's adaptation service.
  *
  * @author Lars Bluemke
  *
  */
-public class PlanningMainMockup extends AbstractServiceMain<PlanningConfigurationMockup> {
+public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -48,7 +49,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMainMockup().run("Planning Service", "planning", args);
+        new AdaptationMain().run("Adaptation Service", "adaptation", args);
     }
 
     @Override
@@ -57,6 +58,10 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
         boolean configurationGood = true;
 
         try {
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
+                    .isEmpty();
+
             final File runtimeModelDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
@@ -67,11 +72,10 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
                     "Redeployment Model Directory", commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
-                    .isEmpty();
-            configurationGood &= !configuration
-                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI).isEmpty();
+
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
@@ -80,20 +84,21 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
     }
 
     @Override
-    protected PlanningConfigurationMockup createConfiguration(
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+    protected AdaptationConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
         final File redeploymentModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
-        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
-        final int adaptationRuntimeModelInputPort = configuration
-                .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
-        final int adaptationRedeploymentModelInputPort = configuration
-                .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
+        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+        final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
+        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_INPUTPORT);
 
-        return new PlanningConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, adaptationHostname,
-                adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
+        return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
+                redeploymentModelDirectory, executionPlanURI, executionHostname, executionInputPort);
     }
 
     @Override
@@ -107,7 +112,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
 
     @Override
     protected void shutdownService() {
-
+        // no actions on shutdown
     }
 
     @Override

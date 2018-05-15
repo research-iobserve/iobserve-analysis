@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.ExecutionMain'
+mainClassName = 'org.iobserve.execution.service.KubernetesExecutionMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")

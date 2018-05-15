@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.cli;
+package org.iobserve.execution.service;
 
 /**
- * Configuration keys for the adaptation service's configuration file.
+ * Configuration keys for the execution service's configuration file.
  *
  * @author Lars Bluemke
  *
@@ -24,39 +24,39 @@ package org.iobserve.adaptation.cli;
 public final class ConfigurationKeys {
 
     /**
-     * Input port for receiving runtime models via TCP.
+     * Input port for receiving the execution plan via TCP.
      */
-    public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
+    public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
-     * Input port for receiving redeployment models via TCP.
+     * Directory where execution plan is stored.
      */
-    public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
+    public static final String EXECUTIONPLAN_DIRECTORY = "executionPlanDirectory";
 
     /**
-     * Directory where received runtime models are stored.
+     * Name of execution plan file.
      */
-    public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
+    public static final String EXECUTIONPLAN_FILENAME = "executionPlanFileName";
 
     /**
-     * Directory where received redeployment models are stored.
+     * IP address of kubernetes master.
      */
-    public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
+    public static final String KUBERNETES_MASTER_IP = "kubernetesMasterIp";
 
     /**
-     * File location of the serialized execution plan.
+     * Port to access kubernetes master.
      */
-    public static final String EXECUTIONPLAN_URI = "executionPlanURI";
+    public static final String KUBERNETES_MASTER_PORT = "kubernetesMasterPort";
 
     /**
-     * Hostname of the execution service.
+     * Location of correspondence model.
      */
-    public static final String EXECUTION_HOSTNAME = "executionHostname";
+    public static final String CORRESPONDENCE_MODEL_URI = "correspondenceModelUri";
 
     /**
-     * Port where the execution service receives the serialized execution plan via TCP.
+     * Prefix of application images, e.g. blade1.se.internal:5000.
      */
-    public static final String EXECUTION_INPUTPORT = "executionInputPort";
+    public static final String IMAGE_PREFIX = "imagePrefix";
 
     /**
      * Factory, do not instantiate.
