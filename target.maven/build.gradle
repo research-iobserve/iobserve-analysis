@@ -49,5 +49,5 @@ dependencies {
 	platformaux 'extra:org.apache.batik.util:1.7.0.v201011041433'
     platformaux 'extra:org.apache.batik.util.gui:1.7.0.v200903091627'
 	// RxJava wants sun.misc
-	platformaux 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
+	// platformaux 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
 }
