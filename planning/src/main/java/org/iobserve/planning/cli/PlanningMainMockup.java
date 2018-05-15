@@ -48,7 +48,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMain().run("Planning Service", "planning", args);
+        new PlanningMainMockup().run("Planning Service", "planning", args);
     }
 
     @Override

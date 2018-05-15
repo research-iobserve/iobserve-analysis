@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.data.stages;
+package org.iobserve.adaptation.stages;
 
 import java.io.File;
 
@@ -35,15 +35,16 @@ public class ModelGraphCreator extends AbstractFilter<AdaptationData> {
 
     @Override
     protected void execute(final AdaptationData adaptationData) throws Exception {
-        final GraphFactory factory = new GraphFactory();
+        final GraphFactory runtimeFactory = new GraphFactory();
+        final GraphFactory redeploymentFactory = new GraphFactory();
 
         final File runtimeModelDir = adaptationData.getRuntimeModelDir();
         final File redeploymentModelDir = adaptationData.getReDeploymentModelDir();
 
-        final ModelGraph runtimeModelGraph = factory.buildGraph(new PCMModelHandler(runtimeModelDir),
+        final ModelGraph runtimeModelGraph = runtimeFactory.buildGraph(new PCMModelHandler(runtimeModelDir),
                 ModelGraphRevision.RUNTIME);
-        final ModelGraph redeploymentModelGraph = factory.buildGraph(new PCMModelHandler(redeploymentModelDir),
-                ModelGraphRevision.REDEPLOYMENT);
+        final ModelGraph redeploymentModelGraph = redeploymentFactory
+                .buildGraph(new PCMModelHandler(redeploymentModelDir), ModelGraphRevision.REDEPLOYMENT);
 
         adaptationData.setRuntimeGraph(runtimeModelGraph);
         adaptationData.setReDeploymentGraph(redeploymentModelGraph);

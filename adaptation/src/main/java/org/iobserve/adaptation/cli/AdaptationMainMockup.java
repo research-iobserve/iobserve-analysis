@@ -48,7 +48,7 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new AdaptationMain().run("Adaptation Service", "adaptation", args);
+        new AdaptationMainMockup().run("Adaptation Service", "adaptation", args);
     }
 
     @Override

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.data.stages;
+package org.iobserve.adaptation.stages;
 
 import java.io.File;
 
@@ -39,8 +39,8 @@ public class AdaptationDataCreator extends CompositeStage {
         this.modelCollector = new ModelCollector();
         this.modelGraphCreator = new ModelGraphCreator();
 
-        this.modelCollector.declareActive();
         this.connectPorts(this.modelCollector.getOutputPort(), this.modelGraphCreator.getInputPort());
+        this.modelCollector.declareActive();
     }
 
     public InputPort<File> getRuntimeModelInputPort() {

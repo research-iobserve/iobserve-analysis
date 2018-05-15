@@ -51,6 +51,8 @@ public class ModelOptimizationMockup extends AbstractStage {
     protected void execute() throws Exception {
         this.runtimeModelOutputPort.send(this.runtimeModelDir);
         this.redeploymentModelOutputPort.send(this.redeploymentModelDir);
+
+        this.workCompleted();
     }
 
     public OutputPort<File> getRuntimeModelOutputPort() {

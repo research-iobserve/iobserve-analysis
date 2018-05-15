@@ -19,7 +19,7 @@ import java.io.File;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
+import org.iobserve.adaptation.stages.AdaptationDataCreator;
 import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;

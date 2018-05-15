@@ -36,14 +36,9 @@ public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
     private static final Logger LOG = LoggerFactory.getLogger(ModelFiles2ModelDirCollectorStage.class);
 
     private boolean receivedAllocationModel;
-    private boolean receivedCloudProfileModel;
-    private boolean receivedCostModel;
-    private boolean receivedDesignDecisionModel;
-    private boolean receivedQmlDeclarationsModel;
     private boolean receivedRepositoryModel;
     private boolean receivedResourceEnvironmentModel;
     private boolean receivedSystemModel;
-    private boolean receivedUsageModel;
 
     @Override
     protected void execute(final File modelFile) throws Exception {
@@ -56,39 +51,23 @@ public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
 
         if ("allocation".equals(modelFileExtension)) {
             this.receivedAllocationModel = true;
-        } else if ("cloudprofile".equals(modelFileExtension)) {
-            this.receivedCloudProfileModel = true;
-        } else if ("cost".equals(modelFileExtension)) {
-            this.receivedCostModel = true;
-        } else if ("designdecision".equals(modelFileExtension)) {
-            this.receivedDesignDecisionModel = true;
-        } else if ("qmldeclarations".equals(modelFileExtension)) {
-            this.receivedQmlDeclarationsModel = true;
         } else if ("repository".equals(modelFileExtension)) {
             this.receivedRepositoryModel = true;
         } else if ("resourceenvironment".equals(modelFileExtension)) {
             this.receivedResourceEnvironmentModel = true;
         } else if ("system".equals(modelFileExtension)) {
             this.receivedSystemModel = true;
-        } else if ("usagemodel".equals(modelFileExtension)) {
-            this.receivedUsageModel = true;
         }
 
         // If all files have been received, send the containing directory
-        if (this.receivedAllocationModel && this.receivedCloudProfileModel && this.receivedCostModel
-                && this.receivedDesignDecisionModel && this.receivedQmlDeclarationsModel && this.receivedRepositoryModel
-                && this.receivedResourceEnvironmentModel && this.receivedSystemModel && this.receivedUsageModel) {
+        if (this.receivedAllocationModel && this.receivedRepositoryModel && this.receivedResourceEnvironmentModel
+                && this.receivedSystemModel) {
             this.outputPort.send(modelFile.getParentFile());
 
             this.receivedAllocationModel = false;
-            this.receivedCloudProfileModel = false;
-            this.receivedCostModel = false;
-            this.receivedDesignDecisionModel = false;
-            this.receivedQmlDeclarationsModel = false;
             this.receivedRepositoryModel = false;
             this.receivedResourceEnvironmentModel = false;
             this.receivedSystemModel = false;
-            this.receivedUsageModel = false;
         }
     }
 

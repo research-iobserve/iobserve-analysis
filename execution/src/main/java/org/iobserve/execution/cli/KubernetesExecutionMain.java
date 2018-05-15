@@ -38,7 +38,7 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfiguration> {
+public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecutionConfiguration> {
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
@@ -54,7 +54,7 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new ExecutionMain().run("Execution Service", "execution", args);
+        new KubernetesExecutionMain().run("Execution Service", "execution", args);
     }
 
     @Override
@@ -69,7 +69,6 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(executionPlanDirectory,
                     "Executionplan Directory", commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME).isEmpty();
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP).isEmpty();
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT).isEmpty();
 
@@ -92,15 +91,14 @@ public class ExecutionMain extends AbstractServiceMain<KubernetesExecutionConfig
         final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
         final File executionPlanDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_DIRECTORY));
-        final String executionPlanName = configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_FILENAME);
         final String kubernetesMasterIp = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_IP);
         final String kubernetesMasterPort = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_MASTER_PORT);
         final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
                 .load(URI.createFileURI(configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI)));
         final String imagePrefix = configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX);
 
-        return new KubernetesExecutionConfiguration(executionPlanInputPort, executionPlanDirectory, executionPlanName,
-                kubernetesMasterIp, kubernetesMasterPort, correspondenceModel, imagePrefix);
+        return new KubernetesExecutionConfiguration(executionPlanInputPort, executionPlanDirectory, kubernetesMasterIp,
+                kubernetesMasterPort, correspondenceModel, imagePrefix);
     }
 
     @Override

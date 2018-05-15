@@ -31,21 +31,8 @@ import org.iobserve.model.provider.file.ExecutionPlanHandler;
  */
 public class ExecutionPlanDeserialization extends AbstractTransformation<File, ExecutionPlan> {
 
-    private final String executionPlanName;
-
-    /**
-     * Creates a new instance of this class.
-     * 
-     * @param executionPlanName
-     *            The name (+ extension) of the execution plan file to be deserialized.
-     */
-    public ExecutionPlanDeserialization(final String executionPlanName) {
-        this.executionPlanName = executionPlanName;
-    }
-
     @Override
-    protected void execute(final File executionPlanDirectory) throws Exception {
-        final File executionPlanFile = new File(executionPlanDirectory, this.executionPlanName);
+    protected void execute(final File executionPlanFile) throws Exception {
         final ExecutionPlan executionPlan = new ExecutionPlanHandler()
                 .load(URI.createFileURI(executionPlanFile.getAbsolutePath()));
 

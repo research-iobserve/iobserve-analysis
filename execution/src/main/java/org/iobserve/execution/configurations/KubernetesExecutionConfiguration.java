@@ -37,13 +37,12 @@ import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 public class KubernetesExecutionConfiguration extends Configuration {
 
     public KubernetesExecutionConfiguration(final int executionPlanInputPort, final File executionPlanDirectory,
-            final String executionPlanName, final String kubernetesMasterIp, final String kubernetesMasterPort,
+            final String kubernetesMasterIp, final String kubernetesMasterPort,
             final CorrespondenceModel correspondenceModel, final String imagePrefix) {
 
         final SingleConnectionTcpReaderStage executionPlanReader = new SingleConnectionTcpReaderStage(
                 executionPlanInputPort, executionPlanDirectory);
-        final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization(
-                executionPlanName);
+        final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
 
         final KubernetesDeploymentExecutor kubernetesDeploymentExecutor = new KubernetesDeploymentExecutor(
