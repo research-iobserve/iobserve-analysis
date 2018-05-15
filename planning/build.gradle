@@ -25,7 +25,7 @@ dependencies {
     compile 'org.json:json:20170516'
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    testCompile 'com.sun.net.httpserver:http:20070405'
+    // testCompile 'com.sun.net.httpserver:http:20070405'
 }
 
 clover {
