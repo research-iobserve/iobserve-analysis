@@ -15,29 +15,34 @@
  ***************************************************************************/
 package org.iobserve.execution.stages.kubernetes;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
+import org.iobserve.adaptation.executionplan.DeallocateNodeAction;
+import org.iobserve.execution.stages.IExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
+ * Deallocates a pod with kubernetes by deleting the pod.
  *
  * @author Lars Bluemke
  *
  */
-public abstract class AbstractKubernetesExecutor {
-    private final String ip;
-    private final String port;
+public class DeallocationExecutor implements IExecutor<DeallocateNodeAction> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeallocationExecutor.class);
 
-    public AbstractKubernetesExecutor(final String ip, final String port) {
-        this.ip = ip;
-        this.port = port;
-    }
+    @Override
+    public void execute(final DeallocateNodeAction action) {
+        final KubernetesClient client = new DefaultKubernetesClient();
 
-    public KubernetesClient getConnection() {
-        final String masterUrl = "http://" + this.ip + ":" + this.port;
-        final Config config = new ConfigBuilder().withMasterUrl(masterUrl).build();
-        return new DefaultKubernetesClient(config);
+        final String podName = action.getTargetResourceContainer().getEntityName();
+
+        client.pods().withName(podName).delete();
+
+        client.close();
+
+        DeallocationExecutor.LOGGER.info("Successfully deleted pod with name " + podName);
     }
 
 }

@@ -15,51 +15,54 @@
  ***************************************************************************/
 package org.iobserve.execution.stages.kubernetes;
 
-import org.iobserve.adaptation.executionplan.DeployComponentAction;
+import java.util.Map;
+
+import org.iobserve.adaptation.executionplan.AllocateNodeAction;
 import org.iobserve.execution.stages.IExecutor;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodBuilder;
-import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
- * Deployment with kubernetes.
+ * Allocates a pod with kubernetes. Note that creating a pod with kubernetes immediately deploys an
+ * instance of that pod. Thus, creating a pod resembles an allocation <i>and</i> a deployment.
+ * Therefore we only create a pods specification here and leave the pod's actual creation to the
+ * {@link DeploymentExecutor}.
  *
  * @author Lars Bluemke
  *
  */
-public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
-        implements IExecutor<DeployComponentAction> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesDeploymentExecutor.class);
+public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
+    private final String imageLocator;
     private final CorrespondenceModel correspondenceModel;
+    private final Map<String, Pod> podsToBuild;
 
-    public KubernetesDeploymentExecutor(final String ip, final String port,
-            final CorrespondenceModel correspondenceModel, final String imagePrefix) {
-        super(ip, port);
+    public AllocationExecutor(final String imageLocator, final CorrespondenceModel correspondenceModel,
+            final Map<String, Pod> podsToBuild) {
+        this.imageLocator = imageLocator;
         this.correspondenceModel = correspondenceModel;
+        this.podsToBuild = podsToBuild;
     }
 
     @Override
-    public void execute(final DeployComponentAction action) {
-        final KubernetesClient client = this.getConnection();
+    public void execute(final AllocateNodeAction action) {
 
-        this.correspondenceModel.getParts();
+        final String podname = action.getTargetResourceContainer().getEntityName();
+        final String imageName = "get this from correspondence model";
 
         final Pod pod = new PodBuilder() //
                 /**/ .withApiVersion("v1") //
                 /**/ .withKind("Pod") //
                 /**/ .withNewMetadata() //
-                /*----*/ .addToLabels("name", "order") //
-                /*----*/ .withName("order") //
+                /*----*/ .addToLabels("name", podname) //
+                /*----*/ .withName(podname) //
                 /**/ .endMetadata() //
                 /**/ .withNewSpec() //
-                /*----*/ .withHostname("order") //
+                /*----*/ .withHostname(podname) //
                 /*----*/ .withSubdomain("jpetstore") //
                 /*----*/ .addNewContainer() //
-                /*--------*/ .withImage("blade1.se.internal:5000/jpetstore-order-service") //
+                /*--------*/ .withImage(this.imageLocator + "/" + imageName) //
                 /*--------*/ .withName("order") //
                 /*--------*/ .withNewResources() //
                 /*--------*/ .endResources() //
@@ -71,11 +74,7 @@ public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
                 /**/ .endSpec() //
                 /**/ .build(); //
 
-        final Pod result = client.pods().create(pod);
-
-        if (KubernetesDeploymentExecutor.LOGGER.isDebugEnabled()) {
-            KubernetesDeploymentExecutor.LOGGER.debug("Created pod " + result.getMetadata().getName());
-        }
+        this.podsToBuild.put(podname, pod); // Can I assume that podnames are unique?
     }
 
 }

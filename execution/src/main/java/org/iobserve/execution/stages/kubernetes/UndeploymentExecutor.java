@@ -20,34 +20,37 @@ import org.iobserve.execution.stages.IExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
- * Undeployment with kubernetes.
+ * Undeployment with kubernetes by decrementing the pod's number of replicas.
  *
  * @author Lars Bluemke
  *
  */
-public class KubernetesUndeploymentExecutor extends AbstractKubernetesExecutor
-        implements IExecutor<UndeployComponentAction> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesUndeploymentExecutor.class);
+public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UndeploymentExecutor.class);
 
-    public KubernetesUndeploymentExecutor(final String ip, final String port) {
-        super(ip, port);
+    public UndeploymentExecutor() {
     }
 
     @Override
     public void execute(final UndeployComponentAction action) {
-        final KubernetesClient client = this.getConnection();
-        final String namespace = client.getNamespace();
-        final String podName = action.getTargetAllocationContext().getAssemblyContext_AllocationContext()
-                .getEntityName(); // entity name = pod name?
+        final KubernetesClient client = new DefaultKubernetesClient();
+        final String podName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
+                .getEntityName();
+        final ReplicationController replicationController = client.replicationControllers().withName(podName).get();
+        final int replicas = replicationController.getSpec().getReplicas();
 
-        client.pods().inNamespace(namespace).withName(podName).delete();
-
-        if (KubernetesUndeploymentExecutor.LOGGER.isDebugEnabled()) {
-            KubernetesUndeploymentExecutor.LOGGER.debug("Successfully deleted pod with name " + podName);
+        if (replicas > 1) {
+            replicationController.getSpec().setReplicas(replicas - 1);
         }
+
+        client.close();
+
+        UndeploymentExecutor.LOGGER.info("Successfully deleted pod with name " + podName);
     }
 
 }

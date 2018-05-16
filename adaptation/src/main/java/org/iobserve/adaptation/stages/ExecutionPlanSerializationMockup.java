@@ -38,6 +38,8 @@ public class ExecutionPlanSerializationMockup extends AbstractProducerStage<File
     @Override
     protected void execute() throws Exception {
         this.outputPort.send(this.executionPlan);
+
+        this.workCompleted();
     }
 
 }

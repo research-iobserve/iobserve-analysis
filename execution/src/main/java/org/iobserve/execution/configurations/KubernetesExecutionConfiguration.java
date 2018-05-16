@@ -16,16 +16,22 @@
 package org.iobserve.execution.configurations;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import teetime.framework.Configuration;
 
 import org.iobserve.execution.stages.AtomicActionExecution;
 import org.iobserve.execution.stages.ExecutionPlan2AtomicActions;
 import org.iobserve.execution.stages.ExecutionPlanDeserialization;
-import org.iobserve.execution.stages.kubernetes.KubernetesDeploymentExecutor;
-import org.iobserve.execution.stages.kubernetes.KubernetesUndeploymentExecutor;
+import org.iobserve.execution.stages.kubernetes.AllocationExecutor;
+import org.iobserve.execution.stages.kubernetes.DeallocationExecutor;
+import org.iobserve.execution.stages.kubernetes.DeploymentExecutor;
+import org.iobserve.execution.stages.kubernetes.UndeploymentExecutor;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
+
+import io.fabric8.kubernetes.api.model.Pod;
 
 /**
  * Configuration for the stages of the execution service. This configuration uses the kubernetes
@@ -45,12 +51,15 @@ public class KubernetesExecutionConfiguration extends Configuration {
         final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
 
-        final KubernetesDeploymentExecutor kubernetesDeploymentExecutor = new KubernetesDeploymentExecutor(
-                kubernetesMasterIp, kubernetesMasterPort, correspondenceModel, imagePrefix);
-        final KubernetesUndeploymentExecutor kubernetesUndeploymentExecutor = new KubernetesUndeploymentExecutor(
-                kubernetesMasterIp, kubernetesMasterPort);
+        final Map<String, Pod> podsToBuild = new HashMap<>();
+        final DeploymentExecutor kubernetesDeploymentExecutor = new DeploymentExecutor(podsToBuild);
+        final UndeploymentExecutor kubernetesUndeploymentExecutor = new UndeploymentExecutor();
+        final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imagePrefix, correspondenceModel,
+                podsToBuild);
+        final DeallocationExecutor kubernetesDeallocationExecutor = new DeallocationExecutor();
         final AtomicActionExecution atomicActionExecution = new AtomicActionExecution(kubernetesDeploymentExecutor,
-                kubernetesUndeploymentExecutor, null, null, null, null, null, null, null, null, null);
+                kubernetesUndeploymentExecutor, null, null, null, null, null, kubernetesAllocationExecutor,
+                kubernetesDeallocationExecutor, null, null);
 
         this.connectPorts(executionPlanReader.getOutputPort(), executionPlanDeserializaton.getInputPort());
         this.connectPorts(executionPlanDeserializaton.getOutputPort(), executionPlan2AtomicActions.getInputPort());
