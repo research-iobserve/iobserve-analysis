@@ -49,20 +49,20 @@ public class MigrateAction2AtomicActions implements IComposed2AtomicAction<Migra
 
         // Block incoming requests
         atomicActions.add(AtomicActionFactory.generateBlockRequestsToComponentAction(
-                migrateAction.getTargetAllocationContext(), migrateAction.getTargetRequiringAllocationContexts()));
+                migrateAction.getSourceAllocationContext(), migrateAction.getSourceRequiringAllocationContexts()));
 
         // Finish running transactions
         atomicActions
-                .add(AtomicActionFactory.generateFinishComponentAction(migrateAction.getTargetAllocationContext()));
+                .add(AtomicActionFactory.generateFinishComponentAction(migrateAction.getSourceAllocationContext()));
 
         // Disconnect component instance
         atomicActions.add(AtomicActionFactory.generateDisconnectComponentAction(
-                migrateAction.getTargetAllocationContext(), migrateAction.getTargetProvidingAllocationContexts(),
-                migrateAction.getTargetRequiringAllocationContexts()));
+                migrateAction.getSourceAllocationContext(), migrateAction.getSourceProvidingAllocationContexts(),
+                migrateAction.getSourceRequiringAllocationContexts()));
 
         // Undeploy component instance
         atomicActions
-                .add(AtomicActionFactory.generateUndeployComponentAction(migrateAction.getTargetAllocationContext()));
+                .add(AtomicActionFactory.generateUndeployComponentAction(migrateAction.getSourceAllocationContext()));
 
         return atomicActions;
     }

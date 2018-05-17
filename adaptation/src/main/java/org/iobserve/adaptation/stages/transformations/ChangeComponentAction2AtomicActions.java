@@ -51,22 +51,22 @@ public class ChangeComponentAction2AtomicActions implements IComposed2AtomicActi
 
         // Block incoming requests
         atomicActions.add(AtomicActionFactory.generateBlockRequestsToComponentAction(
-                changeComponentAction.getTargetAllocationContext(),
+                changeComponentAction.getSourceAllocationContext(),
                 changeComponentAction.getTargetRequiringAllocationContexts()));
 
         // Finish running transactions
         atomicActions.add(
-                AtomicActionFactory.generateFinishComponentAction(changeComponentAction.getTargetAllocationContext()));
+                AtomicActionFactory.generateFinishComponentAction(changeComponentAction.getSourceAllocationContext()));
 
         // Disconnect component instance
         atomicActions.add(AtomicActionFactory.generateDisconnectComponentAction(
-                changeComponentAction.getTargetAllocationContext(),
+                changeComponentAction.getSourceAllocationContext(),
                 changeComponentAction.getTargetProvidingAllocationContexts(),
                 changeComponentAction.getTargetRequiringAllocationContexts()));
 
         // Undeploy component instance
         atomicActions.add(AtomicActionFactory
-                .generateUndeployComponentAction(changeComponentAction.getTargetAllocationContext()));
+                .generateUndeployComponentAction(changeComponentAction.getSourceAllocationContext()));
 
         return atomicActions;
     }
