@@ -23,7 +23,6 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Will load all model and {@link ICorrespondence} model.
+ * Will load all models.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
