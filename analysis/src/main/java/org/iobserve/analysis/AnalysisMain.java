@@ -36,6 +36,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
@@ -125,6 +126,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
         IModelProvider<Allocation> allocationModelProvider = null;
         IModelProvider<AllocationContext> allocationContextModelProvider = null;
         IModelProvider<System> systemModelProvider = null;
+        IModelProvider<AssemblyContext> assemblyContextProvicer = null;
         IModelProvider<UsageModel> usageModelProvider = null;
         IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider = null;
 
@@ -143,8 +145,8 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
             graphLoader.initializeModelGraph(System.class, modelFileHandler.getSystemModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(UsageModel.class, modelFileHandler.getUsageModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            // graphLoader.initializeModelGraph(UsageModel.class, modelFileHandler.getUsageModel(),
+            // ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
             graphLoader.initializeModelGraph(CorrespondenceModel.class, modelFileHandler.getCorrespondenceModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
@@ -168,6 +170,8 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             allocationContextModelProvider = new ModelProvider<>(allocationModelGraph, ModelProvider.PCM_ENTITY_NAME,
                     ModelProvider.PCM_ID);
             systemModelProvider = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                    ModelProvider.PCM_ID);
+            assemblyContextProvicer = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
                     ModelProvider.PCM_ID);
             usageModelProvider = new ModelProvider<>(usageModelGraph, ModelProvider.PCM_ENTITY_NAME,
                     ModelProvider.PCM_ID);
