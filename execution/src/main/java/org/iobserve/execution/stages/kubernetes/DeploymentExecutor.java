@@ -19,11 +19,14 @@ import java.util.Map;
 
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
 import org.iobserve.execution.stages.IExecutor;
+import org.iobserve.model.correspondence.AbstractEntry;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
@@ -39,30 +42,55 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentExecutor.class);
 
-    private final Map<String, Pod> podsToBuild;
+    private final Map<String, Deployment> podsToDeploy;
+    private final CorrespondenceModel correspondenceModel;
 
-    public DeploymentExecutor(final Map<String, Pod> podsToBuild) {
-        this.podsToBuild = podsToBuild;
+    public DeploymentExecutor(final Map<String, Deployment> podsToDeploy,
+            final CorrespondenceModel correspondenceModel) {
+        this.podsToDeploy = podsToDeploy;
+        this.correspondenceModel = correspondenceModel;
     }
 
     @Override
     public void execute(final DeployComponentAction action) {
-        DeploymentExecutor.LOGGER.info("Trying to get connection to kubernetes");
+        DeploymentExecutor.LOGGER.info("Executing deployment");
 
         final KubernetesClient client = new DefaultKubernetesClient();
-        final ReplicationController replicationController = client.replicationControllers().withName("fancypodname")
-                .get();
+        final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
+                .getEntityName().toLowerCase();
+        final Deployment deployment = client.extensions().deployments().withName(rcName).get();
+        final AssemblyContext targetAssemblyContext = action.getTargetAllocationContext()
+                .getAssemblyContext_AllocationContext();
+        String imageName = "";
 
-        if (replicationController != null) {
-            // Increase number of replicas if pod is already running...
-            final int replicas = replicationController.getSpec().getReplicas();
-            replicationController.getSpec().setReplicas(replicas + 1);
+        // Get the image name from the correspondence model
+        for (final AbstractEntry e : this.correspondenceModel.getParts().get(0).getEntries()) {
+            if (e instanceof AssemblyEntry) {
+                final AssemblyEntry assEntry = (AssemblyEntry) e;
+                if (assEntry.getAssembly().equals(targetAssemblyContext)) {
+                    imageName = assEntry.getImplementationId();
+                }
+            }
+        }
+
+        if (deployment != null) {
+            // Increase number of replicas if pod is already deployed...
+            final int replicas = deployment.getSpec().getReplicas();
+            deployment.getSpec().setReplicas(replicas + 1);
+
+            DeploymentExecutor.LOGGER
+                    .info("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas + 1));
         } else {
-            // ... create new pod if this is not the case
-            final Pod pod = this.podsToBuild.get("fancypodname");
-            final Pod result = client.pods().create(pod);
+            // ... deploy new pod if this is not the case
+            final Deployment newDeployment = this.podsToDeploy.get(rcName);
+            final String imageLocator = newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
+                    .getImage();
 
-            DeploymentExecutor.LOGGER.info("Created pod " + result.getMetadata().getName());
+            newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(imageLocator + imageName);
+
+            final Deployment result = client.extensions().deployments().inNamespace("default").create(newDeployment);
+
+            DeploymentExecutor.LOGGER.info("Created new pod deployment " + result.getMetadata().getName());
         }
 
         client.close();

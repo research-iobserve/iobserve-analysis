@@ -20,7 +20,7 @@ import org.iobserve.execution.stages.IExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
@@ -38,19 +38,21 @@ public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> 
 
     @Override
     public void execute(final UndeployComponentAction action) {
-        final KubernetesClient client = new DefaultKubernetesClient();
-        final String podName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
-                .getEntityName();
-        final ReplicationController replicationController = client.replicationControllers().withName(podName).get();
-        final int replicas = replicationController.getSpec().getReplicas();
+        UndeploymentExecutor.LOGGER.info("Executing undeployment");
 
-        if (replicas > 1) {
-            replicationController.getSpec().setReplicas(replicas - 1);
+        final KubernetesClient client = new DefaultKubernetesClient();
+        final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
+                .getEntityName().toLowerCase();
+        final Deployment deployment = client.extensions().deployments().inNamespace("default").withName(rcName).get();
+        final int replicas = deployment.getSpec().getReplicas();
+
+        if (replicas > 0) {
+            deployment.getSpec().setReplicas(replicas - 1);
         }
 
         client.close();
 
-        UndeploymentExecutor.LOGGER.info("Successfully deleted pod with name " + podName);
+        UndeploymentExecutor.LOGGER.info("Scaled pod deployment of " + rcName + " to " + (replicas - 1));
     }
 
 }

@@ -29,9 +29,9 @@ public final class ConfigurationKeys {
     public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
-     * Directory where execution plan is stored.
+     * Working directory where execution plan is stored.
      */
-    public static final String EXECUTIONPLAN_DIRECTORY = "executionPlanDirectory";
+    public static final String WORKING_DIRECTORY = "workingDirectory";
 
     /**
      * Name of execution plan file.
@@ -39,24 +39,19 @@ public final class ConfigurationKeys {
     public static final String EXECUTIONPLAN_FILENAME = "executionPlanFileName";
 
     /**
-     * IP address of kubernetes master.
-     */
-    public static final String KUBERNETES_MASTER_IP = "kubernetesMasterIp";
-
-    /**
-     * Port to access kubernetes master.
-     */
-    public static final String KUBERNETES_MASTER_PORT = "kubernetesMasterPort";
-
-    /**
      * Location of correspondence model.
      */
     public static final String CORRESPONDENCE_MODEL_URI = "correspondenceModelUri";
 
     /**
-     * Prefix of application images, e.g. blade1.se.internal:5000.
+     * Prefix of application images, e.g. "blade1.se.internal:5000" for JPetStore example
      */
     public static final String IMAGE_PREFIX = "imagePrefix";
+
+    /**
+     * A component's subdomain, e.g. "jpetstore" for JPetStore example
+     */
+    public static final String SUBDOMAIN = "subdomain";
 
     /**
      * Factory, do not instantiate.

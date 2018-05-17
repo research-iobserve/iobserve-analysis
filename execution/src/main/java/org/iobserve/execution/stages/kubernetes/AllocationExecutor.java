@@ -19,10 +19,11 @@ import java.util.Map;
 
 import org.iobserve.adaptation.executionplan.AllocateNodeAction;
 import org.iobserve.execution.stages.IExecutor;
-import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodBuilder;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 
 /**
  * Allocates a pod with kubernetes. Note that creating a pod with kubernetes immediately deploys an
@@ -34,47 +35,71 @@ import io.fabric8.kubernetes.api.model.PodBuilder;
  *
  */
 public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
-    private final String imageLocator;
-    private final CorrespondenceModel correspondenceModel;
-    private final Map<String, Pod> podsToBuild;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllocationExecutor.class);
+    private static final String COMPONENT_LABEL_KEY = "component";
 
-    public AllocationExecutor(final String imageLocator, final CorrespondenceModel correspondenceModel,
-            final Map<String, Pod> podsToBuild) {
+    private final String imageLocator;
+    private final String subdomain;
+    private final Map<String, Deployment> podsToDeploy;
+
+    public AllocationExecutor(final String imageLocator, final String subdomain,
+            final Map<String, Deployment> podsToDeploy) {
         this.imageLocator = imageLocator;
-        this.correspondenceModel = correspondenceModel;
-        this.podsToBuild = podsToBuild;
+        this.subdomain = subdomain;
+        this.podsToDeploy = podsToDeploy;
     }
 
     @Override
     public void execute(final AllocateNodeAction action) {
+        AllocationExecutor.LOGGER.info("Executing allocation");
 
-        final String podname = action.getTargetResourceContainer().getEntityName();
-        final String imageName = "get this from correspondence model";
+        final String rcName = action.getTargetResourceContainer().getEntityName().toLowerCase();
 
-        final Pod pod = new PodBuilder() //
-                /**/ .withApiVersion("v1") //
-                /**/ .withKind("Pod") //
+        AllocationExecutor.LOGGER.info("ID " + action.getTargetResourceContainer().getId());
+
+        final Deployment podDeployment = new DeploymentBuilder() //
+                /**/ .withApiVersion("extensions/v1beta1") //
+                /**/ .withKind("Deployment") //
                 /**/ .withNewMetadata() //
-                /*----*/ .addToLabels("name", podname) //
-                /*----*/ .withName(podname) //
+                /*----*/ .addToLabels("processingRate", "99") //
+                /*----*/ .withName(rcName) //
                 /**/ .endMetadata() //
                 /**/ .withNewSpec() //
-                /*----*/ .withHostname(podname) //
-                /*----*/ .withSubdomain("jpetstore") //
-                /*----*/ .addNewContainer() //
-                /*--------*/ .withImage(this.imageLocator + "/" + imageName) //
-                /*--------*/ .withName("order") //
-                /*--------*/ .withNewResources() //
-                /*--------*/ .endResources() //
-                /*--------*/ .addNewEnv() //
-                /*------------*/ .withName("LOGGER") //
-                /*------------*/ .withValue("%LOGGER%") //
-                /*--------*/ .endEnv() //
-                /*----*/ .endContainer() //
+                /*----*/ .withReplicas(1) //
+                /*----*/ .withNewSelector() //
+                /*--------*/ .addToMatchLabels(AllocationExecutor.COMPONENT_LABEL_KEY, rcName) //
+                /*----*/ .endSelector() //
+                /*----*/ .withNewTemplate() //
+                /*--------*/ .withNewMetadata() //
+                /*------------*/ .addToLabels(AllocationExecutor.COMPONENT_LABEL_KEY, rcName) //
+                /*------------*/ .withName(rcName) //
+                /*--------*/ .endMetadata() //
+                /*--------*/ .withNewSpec() //
+                /*------------*/ .withHostname(rcName) //
+                /*------------*/ .withSubdomain(this.subdomain) //
+                /*------------*/ .addNewContainer() //
+                /*----------------   Image name is inserted at deployment */
+                /*----------------*/ .withImage(this.imageLocator + "/") //
+                /*----------------*/ .withName("order") //
+                /*----------------*/ .withNewResources() //
+                /*----------------*/ .endResources() //
+                /*----------------*/ .addNewEnv() //
+                /*--------------------*/ .withName("LOGGER") //
+                /*--------------------*/ .withValue("%LOGGER%") //
+                /*----------------*/ .endEnv() //
+                // /*----------------*/ .addNewEnv() //
+                // /*--------------------*/ .withName("JPETSTORE_DOMAIN") //
+                // /*--------------------*/ .withValue(".jpetstore") //
+                // /*----------------*/ .endEnv() //
+                /*------------*/ .endContainer() //
+                /*--------*/ .endSpec() //
+                /*----*/ .endTemplate() //
                 /**/ .endSpec() //
-                /**/ .build(); //
+                .build();
 
-        this.podsToBuild.put(podname, pod); // Can I assume that podnames are unique?
+        this.podsToDeploy.put(rcName, podDeployment);
+
+        AllocationExecutor.LOGGER.info("Created blueprint for pod deployment " + podDeployment.getMetadata().getName());
     }
 
 }

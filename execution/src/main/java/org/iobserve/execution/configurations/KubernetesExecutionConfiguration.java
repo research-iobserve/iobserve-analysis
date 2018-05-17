@@ -31,7 +31,7 @@ import org.iobserve.execution.stages.kubernetes.UndeploymentExecutor;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
 
 /**
  * Configuration for the stages of the execution service. This configuration uses the kubernetes
@@ -43,19 +43,19 @@ import io.fabric8.kubernetes.api.model.Pod;
 public class KubernetesExecutionConfiguration extends Configuration {
 
     public KubernetesExecutionConfiguration(final int executionPlanInputPort, final File executionPlanDirectory,
-            final String kubernetesMasterIp, final String kubernetesMasterPort,
-            final CorrespondenceModel correspondenceModel, final String imagePrefix) {
+            final CorrespondenceModel correspondenceModel, final String imagePrefix, final String subdomain) {
 
         final SingleConnectionTcpReaderStage executionPlanReader = new SingleConnectionTcpReaderStage(
                 executionPlanInputPort, executionPlanDirectory);
         final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
 
-        final Map<String, Pod> podsToBuild = new HashMap<>();
-        final DeploymentExecutor kubernetesDeploymentExecutor = new DeploymentExecutor(podsToBuild);
+        final Map<String, Deployment> podsToDeploy = new HashMap<>();
+        final DeploymentExecutor kubernetesDeploymentExecutor = new DeploymentExecutor(podsToDeploy,
+                correspondenceModel);
         final UndeploymentExecutor kubernetesUndeploymentExecutor = new UndeploymentExecutor();
-        final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imagePrefix, correspondenceModel,
-                podsToBuild);
+        final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imagePrefix, subdomain,
+                podsToDeploy);
         final DeallocationExecutor kubernetesDeallocationExecutor = new DeallocationExecutor();
         final AtomicActionExecution atomicActionExecution = new AtomicActionExecution(kubernetesDeploymentExecutor,
                 kubernetesUndeploymentExecutor, null, null, null, null, null, kubernetesAllocationExecutor,
