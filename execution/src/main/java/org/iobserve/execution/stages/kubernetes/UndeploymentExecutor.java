@@ -33,9 +33,6 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndeploymentExecutor.class);
 
-    public UndeploymentExecutor() {
-    }
-
     @Override
     public void execute(final UndeployComponentAction action) {
         UndeploymentExecutor.LOGGER.info("Executing undeployment");
@@ -46,13 +43,17 @@ public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> 
         final Deployment deployment = client.extensions().deployments().inNamespace("default").withName(rcName).get();
         final int replicas = deployment.getSpec().getReplicas();
 
+        // Note: Decrementing to 0 deletes all pods but not the deployment in kubernetes. The
+        // deployment is deleted in the DeallocationExecutor.
         if (replicas > 0) {
             deployment.getSpec().setReplicas(replicas - 1);
+            client.extensions().deployments().inNamespace("default").withName(rcName).replace(deployment);
         }
 
         client.close();
 
-        UndeploymentExecutor.LOGGER.info("Scaled pod deployment of " + rcName + " to " + (replicas - 1));
+        UndeploymentExecutor.LOGGER
+                .info("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas - 1));
     }
 
 }

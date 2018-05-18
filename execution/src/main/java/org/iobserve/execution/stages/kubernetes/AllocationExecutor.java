@@ -79,7 +79,7 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
                 /*------------*/ .withSubdomain(this.subdomain) //
                 /*------------*/ .addNewContainer() //
                 /*----------------   Image name is inserted at deployment */
-                /*----------------*/ .withImage(this.imageLocator + "/") //
+                /*----------------*/ .withImage(this.imageLocator) //
                 /*----------------*/ .withName("order") //
                 /*----------------*/ .withNewResources() //
                 /*----------------*/ .endResources() //

@@ -58,7 +58,7 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
                 .getEntityName().toLowerCase();
-        final Deployment deployment = client.extensions().deployments().withName(rcName).get();
+        final Deployment deployment = client.extensions().deployments().inNamespace("default").withName(rcName).get();
         final AssemblyContext targetAssemblyContext = action.getTargetAllocationContext()
                 .getAssemblyContext_AllocationContext();
         String imageName = "";
@@ -67,7 +67,8 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
         for (final AbstractEntry e : this.correspondenceModel.getParts().get(0).getEntries()) {
             if (e instanceof AssemblyEntry) {
                 final AssemblyEntry assEntry = (AssemblyEntry) e;
-                if (assEntry.getAssembly().equals(targetAssemblyContext)) {
+
+                if (assEntry.getAssembly().getId().equals(targetAssemblyContext.getId())) {
                     imageName = assEntry.getImplementationId();
                 }
             }
@@ -77,6 +78,7 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
             // Increase number of replicas if pod is already deployed...
             final int replicas = deployment.getSpec().getReplicas();
             deployment.getSpec().setReplicas(replicas + 1);
+            client.extensions().deployments().inNamespace("default").withName(rcName).replace(deployment);
 
             DeploymentExecutor.LOGGER
                     .info("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas + 1));
@@ -86,11 +88,13 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
             final String imageLocator = newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
                     .getImage();
 
-            newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(imageLocator + imageName);
+            newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
+                    .setImage(imageLocator + "/" + imageName);
 
-            final Deployment result = client.extensions().deployments().inNamespace("default").create(newDeployment);
+            client.extensions().deployments().inNamespace("default").create(newDeployment);
 
-            DeploymentExecutor.LOGGER.info("Created new pod deployment " + result.getMetadata().getName());
+            DeploymentExecutor.LOGGER.info("Image set to " + imageLocator + "/" + imageName);
+            DeploymentExecutor.LOGGER.info("Created new pod deployment " + newDeployment.getMetadata().getName());
         }
 
         client.close();

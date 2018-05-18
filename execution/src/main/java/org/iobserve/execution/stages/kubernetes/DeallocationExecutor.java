@@ -37,11 +37,9 @@ public class DeallocationExecutor implements IExecutor<DeallocateNodeAction> {
         DeallocationExecutor.LOGGER.info("Executing deallocation");
 
         final KubernetesClient client = new DefaultKubernetesClient();
-
         final String rcName = action.getTargetResourceContainer().getEntityName().toLowerCase();
 
-        client.pods().inNamespace("default").withName(rcName).delete();
-
+        client.extensions().deployments().inNamespace("default").withName(rcName).delete();
         client.close();
 
         DeallocationExecutor.LOGGER.info("Successfully deleted pod deployment with name " + rcName);
