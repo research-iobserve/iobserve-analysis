@@ -35,13 +35,23 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
  *
  */
 public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AllocationExecutor.class);
+    private static final String API_VERSION = "extensions/v1beta1";
     private static final String COMPONENT_LABEL_KEY = "component";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllocationExecutor.class);
 
     private final String imageLocator;
     private final String subdomain;
     private final Map<String, Deployment> podsToDeploy;
 
+    /**
+     *
+     * @param imageLocator
+     *            Image location
+     * @param subdomain
+     *            Subdomain value
+     * @param podsToDeploy
+     *            Map containing blueprints for pods to deploy
+     */
     public AllocationExecutor(final String imageLocator, final String subdomain,
             final Map<String, Deployment> podsToDeploy) {
         this.imageLocator = imageLocator;
@@ -51,14 +61,10 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
 
     @Override
     public void execute(final AllocateNodeAction action) {
-        AllocationExecutor.LOGGER.info("Executing allocation");
-
         final String rcName = action.getTargetResourceContainer().getEntityName().toLowerCase();
 
-        AllocationExecutor.LOGGER.info("ID " + action.getTargetResourceContainer().getId());
-
         final Deployment podDeployment = new DeploymentBuilder() //
-                /**/ .withApiVersion("extensions/v1beta1") //
+                /**/ .withApiVersion(AllocationExecutor.API_VERSION) //
                 /**/ .withKind("Deployment") //
                 /**/ .withNewMetadata() //
                 /*----*/ .addToLabels("processingRate", "99") //
@@ -78,7 +84,7 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
                 /*------------*/ .withHostname(rcName) //
                 /*------------*/ .withSubdomain(this.subdomain) //
                 /*------------*/ .addNewContainer() //
-                /*----------------   Image name is inserted at deployment */
+                /*----------------   Image and name are inserted at deployment */
                 /*----------------*/ .withImage(this.imageLocator) //
                 /*----------------*/ .withName("order") //
                 /*----------------*/ .withNewResources() //
@@ -99,7 +105,10 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
 
         this.podsToDeploy.put(rcName, podDeployment);
 
-        AllocationExecutor.LOGGER.info("Created blueprint for pod deployment " + podDeployment.getMetadata().getName());
+        if (AllocationExecutor.LOGGER.isDebugEnabled()) {
+            AllocationExecutor.LOGGER
+                    .debug("Created blueprint for pod deployment " + podDeployment.getMetadata().getName());
+        }
     }
 
 }

@@ -24,11 +24,9 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.correspondence.Part;
 import org.iobserve.model.provider.file.CorrespondenceModelHandler;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -66,16 +64,17 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
         try {
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
 
-            final File executionPlanDirectory = new File(
+            final File workingDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(executionPlanDirectory,
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
                     "Executionplan Directory", commander);
             final File correspondenceModelFile = new File(
                     configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI));
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
                     "Correspondence Model File");
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.IMAGE_LOCATOR).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.NAMESPACE).isEmpty();
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.SUBDOMAIN).isEmpty();
 
             return configurationGood;
@@ -88,17 +87,15 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
     protected KubernetesExecutionConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
         final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
-        final File executionPlanDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
         final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
                 .load(URI.createFileURI(configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI)));
-        final String imagePrefix = configuration.getStringProperty(ConfigurationKeys.IMAGE_PREFIX);
+        final String imageLocator = configuration.getStringProperty(ConfigurationKeys.IMAGE_LOCATOR);
         final String subdomain = configuration.getStringProperty(ConfigurationKeys.SUBDOMAIN);
+        final String namespace = configuration.getStringProperty(ConfigurationKeys.NAMESPACE);
 
-        final EList<Part> parts = correspondenceModel.getParts();
-
-        return new KubernetesExecutionConfiguration(executionPlanInputPort, executionPlanDirectory, correspondenceModel,
-                imagePrefix, subdomain);
+        return new KubernetesExecutionConfiguration(executionPlanInputPort, workingDirectory, correspondenceModel,
+                imageLocator, subdomain, namespace);
     }
 
     @Override

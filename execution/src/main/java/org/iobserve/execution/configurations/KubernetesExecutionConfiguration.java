@@ -42,21 +42,38 @@ import io.fabric8.kubernetes.api.model.extensions.Deployment;
  */
 public class KubernetesExecutionConfiguration extends Configuration {
 
-    public KubernetesExecutionConfiguration(final int executionPlanInputPort, final File executionPlanDirectory,
-            final CorrespondenceModel correspondenceModel, final String imagePrefix, final String subdomain) {
+    /**
+     * Creates a new configuration instance.
+     * 
+     * @param executionPlanInputPort
+     *            Input port for execution plan
+     * @param workingDirectory
+     *            Working directory of execution
+     * @param correspondenceModel
+     *            The correspondence model
+     * @param imageLocator
+     *            Locator prefix for image
+     * @param subdomain
+     *            Subdomain value of pods
+     * @param namespace
+     *            Kubernetes namespace
+     */
+    public KubernetesExecutionConfiguration(final int executionPlanInputPort, final File workingDirectory,
+            final CorrespondenceModel correspondenceModel, final String imageLocator, final String subdomain,
+            final String namespace) {
 
         final SingleConnectionTcpReaderStage executionPlanReader = new SingleConnectionTcpReaderStage(
-                executionPlanInputPort, executionPlanDirectory);
+                executionPlanInputPort, workingDirectory);
         final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
 
         final Map<String, Deployment> podsToDeploy = new HashMap<>();
         final DeploymentExecutor kubernetesDeploymentExecutor = new DeploymentExecutor(podsToDeploy,
-                correspondenceModel);
-        final UndeploymentExecutor kubernetesUndeploymentExecutor = new UndeploymentExecutor();
-        final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imagePrefix, subdomain,
+                correspondenceModel, namespace);
+        final UndeploymentExecutor kubernetesUndeploymentExecutor = new UndeploymentExecutor(namespace);
+        final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imageLocator, subdomain,
                 podsToDeploy);
-        final DeallocationExecutor kubernetesDeallocationExecutor = new DeallocationExecutor();
+        final DeallocationExecutor kubernetesDeallocationExecutor = new DeallocationExecutor(namespace);
         final AtomicActionExecution atomicActionExecution = new AtomicActionExecution(kubernetesDeploymentExecutor,
                 kubernetesUndeploymentExecutor, null, null, null, null, null, kubernetesAllocationExecutor,
                 kubernetesDeallocationExecutor, null, null);

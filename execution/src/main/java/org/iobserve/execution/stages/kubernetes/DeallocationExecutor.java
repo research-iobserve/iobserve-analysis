@@ -32,17 +32,29 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class DeallocationExecutor implements IExecutor<DeallocateNodeAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeallocationExecutor.class);
 
+    private final String namespace;
+
+    /**
+     * Creates a new deallocation executor.
+     *
+     * @param namespace
+     *            Kubernetes namespace
+     */
+    public DeallocationExecutor(final String namespace) {
+        this.namespace = namespace;
+    }
+
     @Override
     public void execute(final DeallocateNodeAction action) {
-        DeallocationExecutor.LOGGER.info("Executing deallocation");
-
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = action.getTargetResourceContainer().getEntityName().toLowerCase();
 
-        client.extensions().deployments().inNamespace("default").withName(rcName).delete();
+        client.extensions().deployments().inNamespace(this.namespace).withName(rcName).delete();
         client.close();
 
-        DeallocationExecutor.LOGGER.info("Successfully deleted pod deployment with name " + rcName);
+        if (DeallocationExecutor.LOGGER.isDebugEnabled()) {
+            DeallocationExecutor.LOGGER.debug("Successfully deleted pod deployment with name " + rcName);
+        }
     }
 
 }

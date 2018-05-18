@@ -33,27 +33,40 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndeploymentExecutor.class);
 
+    private final String namespace;
+
+    /**
+     * Creates a new executor for undeployments
+     *
+     * @param namespace
+     *            Kubernetes namespace
+     */
+    public UndeploymentExecutor(final String namespace) {
+        this.namespace = namespace;
+    }
+
     @Override
     public void execute(final UndeployComponentAction action) {
-        UndeploymentExecutor.LOGGER.info("Executing undeployment");
-
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
                 .getEntityName().toLowerCase();
-        final Deployment deployment = client.extensions().deployments().inNamespace("default").withName(rcName).get();
+        final Deployment deployment = client.extensions().deployments().inNamespace(this.namespace).withName(rcName)
+                .get();
         final int replicas = deployment.getSpec().getReplicas();
 
         // Note: Decrementing to 0 deletes all pods but not the deployment in kubernetes. The
         // deployment is deleted in the DeallocationExecutor.
         if (replicas > 0) {
             deployment.getSpec().setReplicas(replicas - 1);
-            client.extensions().deployments().inNamespace("default").withName(rcName).replace(deployment);
+            client.extensions().deployments().inNamespace(this.namespace).withName(rcName).replace(deployment);
         }
 
         client.close();
 
-        UndeploymentExecutor.LOGGER
-                .info("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas - 1));
+        if (UndeploymentExecutor.LOGGER.isDebugEnabled()) {
+            UndeploymentExecutor.LOGGER
+                    .debug("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas - 1));
+        }
     }
 
 }

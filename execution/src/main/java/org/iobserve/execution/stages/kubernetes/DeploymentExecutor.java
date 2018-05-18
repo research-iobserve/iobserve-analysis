@@ -44,21 +44,32 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
 
     private final Map<String, Deployment> podsToDeploy;
     private final CorrespondenceModel correspondenceModel;
+    private final String namespace;
 
-    public DeploymentExecutor(final Map<String, Deployment> podsToDeploy,
-            final CorrespondenceModel correspondenceModel) {
+    /**
+     * Creates a new deployment executor.
+     *
+     * @param podsToDeploy
+     *            Blueprints of pods to deploy
+     * @param correspondenceModel
+     *            The correspondence model
+     * @param namespace
+     *            Kubernetes namespace
+     */
+    public DeploymentExecutor(final Map<String, Deployment> podsToDeploy, final CorrespondenceModel correspondenceModel,
+            final String namespace) {
         this.podsToDeploy = podsToDeploy;
         this.correspondenceModel = correspondenceModel;
+        this.namespace = namespace;
     }
 
     @Override
     public void execute(final DeployComponentAction action) {
-        DeploymentExecutor.LOGGER.info("Executing deployment");
-
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
                 .getEntityName().toLowerCase();
-        final Deployment deployment = client.extensions().deployments().inNamespace("default").withName(rcName).get();
+        final Deployment deployment = client.extensions().deployments().inNamespace(this.namespace).withName(rcName)
+                .get();
         final AssemblyContext targetAssemblyContext = action.getTargetAllocationContext()
                 .getAssemblyContext_AllocationContext();
         String imageName = "";
@@ -78,10 +89,12 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
             // Increase number of replicas if pod is already deployed...
             final int replicas = deployment.getSpec().getReplicas();
             deployment.getSpec().setReplicas(replicas + 1);
-            client.extensions().deployments().inNamespace("default").withName(rcName).replace(deployment);
+            client.extensions().deployments().inNamespace(this.namespace).withName(rcName).replace(deployment);
 
-            DeploymentExecutor.LOGGER
-                    .info("Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas + 1));
+            if (DeploymentExecutor.LOGGER.isDebugEnabled()) {
+                DeploymentExecutor.LOGGER.debug(
+                        "Scaled pod deployment of " + deployment.getMetadata().getName() + " to " + (replicas + 1));
+            }
         } else {
             // ... deploy new pod if this is not the case
             final Deployment newDeployment = this.podsToDeploy.get(rcName);
@@ -91,10 +104,12 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
                     .setImage(imageLocator + "/" + imageName);
 
-            client.extensions().deployments().inNamespace("default").create(newDeployment);
+            client.extensions().deployments().inNamespace(this.namespace).create(newDeployment);
 
-            DeploymentExecutor.LOGGER.info("Image set to " + imageLocator + "/" + imageName);
-            DeploymentExecutor.LOGGER.info("Created new pod deployment " + newDeployment.getMetadata().getName());
+            if (DeploymentExecutor.LOGGER.isDebugEnabled()) {
+                DeploymentExecutor.LOGGER.debug("Image set to " + imageLocator + "/" + imageName);
+                DeploymentExecutor.LOGGER.debug("Created new pod deployment " + newDeployment.getMetadata().getName());
+            }
         }
 
         client.close();

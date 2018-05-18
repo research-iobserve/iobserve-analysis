@@ -29,7 +29,7 @@ public final class ConfigurationKeys {
     public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
-     * Working directory where execution plan is stored.
+     * Working directory where execution plan and the model directories are stored.
      */
     public static final String WORKING_DIRECTORY = "workingDirectory";
 
@@ -44,9 +44,14 @@ public final class ConfigurationKeys {
     public static final String CORRESPONDENCE_MODEL_URI = "correspondenceModelUri";
 
     /**
-     * Prefix of application images, e.g. "blade1.se.internal:5000" for JPetStore example
+     * Locator for application images, e.g. "blade1.se.internal:5000" for JPetStore example
      */
-    public static final String IMAGE_PREFIX = "imagePrefix";
+    public static final String IMAGE_LOCATOR = "imageLocator";
+
+    /**
+     * The kubernetes namespace to be used. Use "default" if you didn't define a custom namespace.
+     */
+    public static final String NAMESPACE = "namespace";
 
     /**
      * A component's subdomain, e.g. "jpetstore" for JPetStore example
