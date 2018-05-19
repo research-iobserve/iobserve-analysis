@@ -34,8 +34,8 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  */
 public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
-    static String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
-    static String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
+    protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection

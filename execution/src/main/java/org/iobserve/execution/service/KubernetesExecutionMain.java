@@ -39,6 +39,8 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  */
 public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecutionConfiguration> {
+    private static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    private static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
@@ -63,13 +65,16 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
 
         try {
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
+                    .isEmpty();
 
             final File workingDirectory = new File(
                     configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
                     "Executionplan Directory", commander);
-            final File correspondenceModelFile = new File(
-                    configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI));
+            final File correspondenceModelFile = new File(workingDirectory,
+                    configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
                     "Correspondence Model File");
 
@@ -87,15 +92,25 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
     protected KubernetesExecutionConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
         final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        final File runtimeModelDirectory = new File(workingDirectory,
+                KubernetesExecutionMain.RUNTIMEMODEL_DIRECTORY_NAME);
+        final File redeploymentModelDirectory = new File(workingDirectory,
+                KubernetesExecutionMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+        final File correspondenceModelFile = new File(workingDirectory,
+                configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
         final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
-                .load(URI.createFileURI(configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCE_MODEL_URI)));
+                .load(URI.createFileURI(correspondenceModelFile.getAbsolutePath()));
         final String imageLocator = configuration.getStringProperty(ConfigurationKeys.IMAGE_LOCATOR);
         final String subdomain = configuration.getStringProperty(ConfigurationKeys.SUBDOMAIN);
         final String namespace = configuration.getStringProperty(ConfigurationKeys.NAMESPACE);
 
-        return new KubernetesExecutionConfiguration(executionPlanInputPort, workingDirectory, correspondenceModel,
-                imageLocator, subdomain, namespace);
+        return new KubernetesExecutionConfiguration(executionPlanInputPort, runtimeModelInputPort,
+                redeploymentModelInputPort, workingDirectory, runtimeModelDirectory, redeploymentModelDirectory,
+                correspondenceModel, imageLocator, subdomain, namespace);
     }
 
     @Override

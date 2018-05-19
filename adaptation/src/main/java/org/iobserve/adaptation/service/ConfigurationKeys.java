@@ -34,12 +34,12 @@ public final class ConfigurationKeys {
     public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
 
     /**
-     * Working directory where execution plan is stored and model subfolders are located
+     * Working directory where execution plan is stored and model subfolders are located.
      */
     public static final String WORKING_DIRECTORY = "runtimeModelDirectory";
 
     /**
-     * Name for the serialized execution plan
+     * Name for the serialized execution plan e.g. "default.executionplan".
      */
     public static final String EXECUTIONPLAN_NAME = "executionPlanName";
 

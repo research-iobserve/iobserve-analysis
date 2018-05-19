@@ -58,12 +58,14 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
 
         try {
             final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                    PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
                     "Runtime Model Directory", commander);
 
             final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                    PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
                     "Redeployment Model Directory", commander);
 
@@ -83,9 +85,11 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
     protected PlanningConfigurationMockup createConfiguration(
             final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
         final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
         final int adaptationRuntimeModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
@@ -107,7 +111,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
 
     @Override
     protected void shutdownService() {
-
+        // no actions on shutdown
     }
 
     @Override

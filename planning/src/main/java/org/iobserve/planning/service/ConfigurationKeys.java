@@ -29,14 +29,9 @@ public final class ConfigurationKeys {
     public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
 
     /**
-     * Directory where runtime models are stored.
+     * Working directory where runtime and redeployment models are stored.
      */
-    public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
-
-    /**
-     * Directory where redeployment models are stored (only for mockup of planning).
-     */
-    public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
+    public static final String WORKING_DIRECTORY = "workingDirectory";
 
     /**
      * Directory containing the PerOpteryx RCP application's executable.
@@ -44,8 +39,7 @@ public final class ConfigurationKeys {
     public static final String PEROPTERYX_HEADLESS_DIRECTORY = "perOpteryxHeadlessDirectory";
 
     /**
-     * Directory containing the LQN solver's executable (not mandatory if LQNS is on your PATH
-     * anyway).
+     * Directory containing the LQN solver's executable (not mandatory if LQNS is on your PATH).
      */
     public static final String LQNS_DIRECTORY = "lqnsDirectory";
 

@@ -24,6 +24,7 @@ import teetime.framework.Configuration;
 import org.iobserve.execution.stages.AtomicActionExecution;
 import org.iobserve.execution.stages.ExecutionPlan2AtomicActions;
 import org.iobserve.execution.stages.ExecutionPlanDeserialization;
+import org.iobserve.execution.stages.ModelCollector;
 import org.iobserve.execution.stages.kubernetes.AllocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeallocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeploymentExecutor;
@@ -44,7 +45,7 @@ public class KubernetesExecutionConfiguration extends Configuration {
 
     /**
      * Creates a new configuration instance.
-     * 
+     *
      * @param executionPlanInputPort
      *            Input port for execution plan
      * @param workingDirectory
@@ -58,12 +59,19 @@ public class KubernetesExecutionConfiguration extends Configuration {
      * @param namespace
      *            Kubernetes namespace
      */
-    public KubernetesExecutionConfiguration(final int executionPlanInputPort, final File workingDirectory,
-            final CorrespondenceModel correspondenceModel, final String imageLocator, final String subdomain,
-            final String namespace) {
+    public KubernetesExecutionConfiguration(final int executionPlanInputPort, final int runtimeModelInputPort,
+            final int redeploymentModelInputPort, final File workingDirectory, final File runtimeModelDirectory,
+            final File redeploymentModelDirectory, final CorrespondenceModel correspondenceModel,
+            final String imageLocator, final String subdomain, final String namespace) {
 
         final SingleConnectionTcpReaderStage executionPlanReader = new SingleConnectionTcpReaderStage(
                 executionPlanInputPort, workingDirectory);
+        final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
+                runtimeModelInputPort, runtimeModelDirectory);
+        final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
+                redeploymentModelInputPort, redeploymentModelDirectory);
+
+        final ModelCollector modelCollector = new ModelCollector();
         final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
 
@@ -78,8 +86,13 @@ public class KubernetesExecutionConfiguration extends Configuration {
                 kubernetesUndeploymentExecutor, null, null, null, null, null, kubernetesAllocationExecutor,
                 kubernetesDeallocationExecutor, null, null);
 
-        this.connectPorts(executionPlanReader.getOutputPort(), executionPlanDeserializaton.getInputPort());
+        this.connectPorts(executionPlanReader.getOutputPort(), modelCollector.getExecutionPlanInputPort());
+        this.connectPorts(runtimeModelReader.getOutputPort(), modelCollector.getRuntimeModelInputPort());
+        this.connectPorts(redeploymentModelReader.getOutputPort(), modelCollector.getRedeploymentModelInputPort());
+        this.connectPorts(modelCollector.getOutputPort(), executionPlanDeserializaton.getInputPort());
         this.connectPorts(executionPlanDeserializaton.getOutputPort(), executionPlan2AtomicActions.getInputPort());
         this.connectPorts(executionPlan2AtomicActions.getOutputPort(), atomicActionExecution.getInputPort());
+
+        modelCollector.declareActive();
     }
 }

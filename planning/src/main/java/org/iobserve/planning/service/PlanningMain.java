@@ -34,6 +34,8 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  */
 public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
+    protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
@@ -61,7 +63,7 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
 
             final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
                     "Runtime Model Directory", commander);
 
@@ -94,7 +96,8 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
             throws ConfigurationException {
         final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File perOpteryxHeadlessDir = new File(
                 configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
         final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
@@ -119,7 +122,7 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
 
     @Override
     protected void shutdownService() {
-
+        // no actions on shutdown
     }
 
     @Override

@@ -29,19 +29,24 @@ public final class ConfigurationKeys {
     public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
+     * Input port for receiving runtime models via TCP.
+     */
+    public static final String RUNTIMEMODEL_INPUTPORT = "runtimeModelInputPort";
+
+    /**
+     * Input port for receiving redeployment models via TCP.
+     */
+    public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
+
+    /**
      * Working directory where execution plan and the model directories are stored.
      */
     public static final String WORKING_DIRECTORY = "workingDirectory";
 
     /**
-     * Name of execution plan file.
+     * Correspondence model file name (in the working directory) e.g. "default.correspondence".
      */
-    public static final String EXECUTIONPLAN_FILENAME = "executionPlanFileName";
-
-    /**
-     * Location of correspondence model.
-     */
-    public static final String CORRESPONDENCE_MODEL_URI = "correspondenceModelUri";
+    public static final String CORRESPONDENCEMODEL_NAME = "correspondenceModelName";
 
     /**
      * Locator for application images, e.g. "blade1.se.internal:5000" for JPetStore example
