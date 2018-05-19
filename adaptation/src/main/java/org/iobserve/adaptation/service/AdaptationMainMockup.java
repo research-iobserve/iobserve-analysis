@@ -57,11 +57,28 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
         boolean configurationGood = true;
 
         try {
-            final File executionPlan = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+            final File executionPlan = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                    configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(executionPlan, "Execution Plan File");
 
+            final File runtimeModelDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                    AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
+                    "Runtimemodel Directory", commander);
+
+            final File redeploymentModelDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                    AdaptationMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
+                    "Redeploymentmodel Directory", commander);
+
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT)
+                    .isEmpty();
+            configurationGood &= !configuration
+                    .getStringProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
@@ -72,11 +89,24 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
     @Override
     protected AdaptationConfigurationMockup createConfiguration(
             final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
-        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+        final File runtimeModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
+        final File redeploymentModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                AdaptationMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
         final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
-        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_INPUTPORT);
+        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
+        final int executionRuntimeModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT);
+        final int executionRedeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT);
 
-        return new AdaptationConfigurationMockup(executionPlanURI, executionHostname, executionInputPort);
+        return new AdaptationConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, executionPlanURI,
+                executionHostname, executionInputPort, executionRuntimeModelInputPort,
+                executionRedeploymentModelInputPort);
     }
 
     @Override

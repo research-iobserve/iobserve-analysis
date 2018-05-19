@@ -34,19 +34,14 @@ public final class ConfigurationKeys {
     public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
 
     /**
-     * Directory where received runtime models are stored.
+     * Working directory where execution plan is stored and model subfolders are located
      */
-    public static final String RUNTIMEMODEL_DIRECTORY = "runtimeModelDirectory";
+    public static final String WORKING_DIRECTORY = "runtimeModelDirectory";
 
     /**
-     * Directory where received redeployment models are stored.
+     * Name for the serialized execution plan
      */
-    public static final String REDEPLOYMENTMODEL_DIRECTORY = "redeploymentModelDirectory";
-
-    /**
-     * File location of the serialized execution plan.
-     */
-    public static final String EXECUTIONPLAN_URI = "executionPlanURI";
+    public static final String EXECUTIONPLAN_NAME = "executionPlanName";
 
     /**
      * Hostname of the execution service.
@@ -56,7 +51,17 @@ public final class ConfigurationKeys {
     /**
      * Port where the execution service receives the serialized execution plan via TCP.
      */
-    public static final String EXECUTION_INPUTPORT = "executionInputPort";
+    public static final String EXECUTION_PLAN_INPUTPORT = "executionPlanInputPort";
+
+    /**
+     * Port where the execution service receives the serialized runtime model via TCP.
+     */
+    public static final String EXECUTION_RUNTIMEMODEL_INPUTPORT = "executionRuntimeModelInputPort";
+
+    /**
+     * Port where the execution service receives the serialized redeployment model via TCP.
+     */
+    public static final String EXECUTION_REDEPLOYMENTMODEL_INPUTPORT = "executionRedeploymentModelInputPort";
 
     /**
      * Factory, do not instantiate.

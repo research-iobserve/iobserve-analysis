@@ -34,6 +34,8 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  */
 public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
+    static String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    static String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
@@ -62,20 +64,19 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
                     .isEmpty();
 
-            final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
+            final File workingDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
                     "Runtime Model Directory", commander);
 
-            final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
-                    "Redeployment Model Directory", commander);
-
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME).isEmpty();
 
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT)
+                    .isEmpty();
+            configurationGood &= !configuration
+                    .getStringProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
@@ -90,15 +91,23 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
         final int redeploymentModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_DIRECTORY));
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_DIRECTORY));
-        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_URI));
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                AdaptationMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
         final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
-        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_INPUTPORT);
+        final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
+        final int executionRuntimeModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT);
+        final int executionRedeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT);
 
         return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
-                redeploymentModelDirectory, executionPlanURI, executionHostname, executionInputPort);
+                redeploymentModelDirectory, executionPlanURI, executionHostname, executionPlanInputPort,
+                executionRuntimeModelInputPort, executionRedeploymentModelInputPort);
     }
 
     @Override

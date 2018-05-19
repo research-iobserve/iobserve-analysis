@@ -19,7 +19,9 @@ import java.io.File;
 
 import teetime.framework.Configuration;
 
+import org.iobserve.adaptation.stages.AdaptationResultDistributor;
 import org.iobserve.adaptation.stages.ExecutionPlanSerializationMockup;
+import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
 /**
@@ -30,15 +32,31 @@ import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
  */
 public class AdaptationConfigurationMockup extends Configuration {
 
-    public AdaptationConfigurationMockup(final File executionPlanURI, final String executionHostname,
-            final int executionInputPort) {
+    public AdaptationConfigurationMockup(final File runtimeModelDirectory, final File redeploymentModelDirectory,
+            final File executionPlanURI, final String executionHostname, final int executionPlanInputPort,
+            final int executionRuntimeModelInputPort, final int executionRedeploymentModelInputPort) {
         final ExecutionPlanSerializationMockup executionPlanSerializer = new ExecutionPlanSerializationMockup(
                 executionPlanURI);
+        final AdaptationResultDistributor adaptationResultDistributor = new AdaptationResultDistributor(
+                runtimeModelDirectory, redeploymentModelDirectory);
+        final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
         final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionInputPort);
+                executionPlanInputPort);
+        final SingleConnectionTcpWriterStage runtimeModelWriter = new SingleConnectionTcpWriterStage(executionHostname,
+                executionRuntimeModelInputPort);
+        final SingleConnectionTcpWriterStage redeploymentModelWriter = new SingleConnectionTcpWriterStage(
+                executionHostname, executionRedeploymentModelInputPort);
 
-        // Send execution plan to execution service
-        this.connectPorts(executionPlanSerializer.getOutputPort(), executionPlanWriter.getInputPort());
+        // Distribute adaptation results (execution plan and models) and send them to execution
+        this.connectPorts(executionPlanSerializer.getOutputPort(), adaptationResultDistributor.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getExecutionPlanOutputPort(), executionPlanWriter.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRuntimeModelDirectoryOutputPort(),
+                runtimeModelDir2ModelFiles.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRedeploymentModelDirectoryOutputPort(),
+                redeploymentModelDir2ModelFiles.getInputPort());
+        this.connectPorts(runtimeModelDir2ModelFiles.getOutputPort(), runtimeModelWriter.getInputPort());
+        this.connectPorts(redeploymentModelDir2ModelFiles.getOutputPort(), redeploymentModelWriter.getInputPort());
     }
 
 }

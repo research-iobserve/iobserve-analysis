@@ -20,10 +20,12 @@ import java.io.File;
 import teetime.framework.Configuration;
 
 import org.iobserve.adaptation.stages.AdaptationDataCreator;
+import org.iobserve.adaptation.stages.AdaptationResultDistributor;
 import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
 import org.iobserve.adaptation.stages.ExecutionPlanSerialization;
+import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
@@ -38,7 +40,8 @@ public class AdaptationConfiguration extends Configuration {
 
     public AdaptationConfiguration(final int runtimeModelInputPort, final int redeploymentModelInputPort,
             final File runtimeModelDirectory, final File redeploymentModelDirectory, final File executionPlanURI,
-            final String executionHostname, final int executionInputPort) {
+            final String executionHostname, final int executionPlanInputPort, final int executionRuntimeModelInputPort,
+            final int executionRedeploymentModelInputPort) {
 
         final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
                 runtimeModelInputPort, runtimeModelDirectory);
@@ -51,8 +54,16 @@ public class AdaptationConfiguration extends Configuration {
         final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
         final AtomicActionComputation atomicActionComputation = new AtomicActionComputation();
         final ExecutionPlanSerialization executionPlanSerializer = new ExecutionPlanSerialization(executionPlanURI);
+        final AdaptationResultDistributor adaptationResultDistributor = new AdaptationResultDistributor(
+                runtimeModelDirectory, redeploymentModelDirectory);
+        final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
         final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionInputPort);
+                executionPlanInputPort);
+        final SingleConnectionTcpWriterStage runtimeModelWriter = new SingleConnectionTcpWriterStage(executionHostname,
+                executionRuntimeModelInputPort);
+        final SingleConnectionTcpWriterStage redeploymentModelWriter = new SingleConnectionTcpWriterStage(
+                executionHostname, executionRedeploymentModelInputPort);
 
         // TCP readers -> model collectors
         this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());
@@ -75,8 +86,15 @@ public class AdaptationConfiguration extends Configuration {
         // Serialize execution plan in file
         this.connectPorts(atomicActionComputation.getOutputPort(), executionPlanSerializer.getInputPort());
 
-        // Send execution plan to execution service
-        this.connectPorts(executionPlanSerializer.getOutputPort(), executionPlanWriter.getInputPort());
+        // Distribute adaptation results (execution plan and models) and send them to execution
+        this.connectPorts(executionPlanSerializer.getOutputPort(), adaptationResultDistributor.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getExecutionPlanOutputPort(), executionPlanWriter.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRuntimeModelDirectoryOutputPort(),
+                runtimeModelDir2ModelFiles.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRedeploymentModelDirectoryOutputPort(),
+                redeploymentModelDir2ModelFiles.getInputPort());
+        this.connectPorts(runtimeModelDir2ModelFiles.getOutputPort(), runtimeModelWriter.getInputPort());
+        this.connectPorts(redeploymentModelDir2ModelFiles.getOutputPort(), redeploymentModelWriter.getInputPort());
     }
 
 }
