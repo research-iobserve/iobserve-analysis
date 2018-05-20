@@ -105,6 +105,9 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
         final int executionRedeploymentModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT);
 
+        runtimeModelDirectory.mkdir();
+        redeploymentModelDirectory.mkdir();
+
         return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
                 redeploymentModelDirectory, executionPlanURI, executionHostname, executionPlanInputPort,
                 executionRuntimeModelInputPort, executionRedeploymentModelInputPort);

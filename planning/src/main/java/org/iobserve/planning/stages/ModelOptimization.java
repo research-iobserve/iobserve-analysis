@@ -42,6 +42,7 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
 
     private final File perOpteryxDir;
     private final File lqnsDir;
+    private final File redeploymentModelDirectory;
 
     /**
      * Creates a new model Optimization stage. The location of executables of PerOpteryx and the
@@ -51,21 +52,22 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
      *            the location of the headless PerOpteryx executable
      * @param lqnsDir
      *            directory for layered queuing networks
+     * @param redeploymentModelDirectory
+     *            directory for redeployment model
      */
-    public ModelOptimization(final File perOpteryxDir, final File lqnsDir) {
+    public ModelOptimization(final File perOpteryxDir, final File lqnsDir, final File redeploymentModelDirectory) {
         this.perOpteryxDir = perOpteryxDir;
         this.lqnsDir = lqnsDir;
+        this.redeploymentModelDirectory = redeploymentModelDirectory;
     }
 
     @Override
-    protected void execute(final File runtimeModelDirectory) throws RuntimeException, IOException {
-        final File redeploymentModelDirectory = new File(runtimeModelDirectory.getAbsolutePath(),
-                ModelOptimization.REDEPLOYMENT_MODEL_FOLDER);
-        final ExecutionWrapper exec = new ExecutionWrapper(redeploymentModelDirectory, this.perOpteryxDir,
+    protected void execute(final File processedRuntimeModelDirectory) throws RuntimeException, IOException {
+        final ExecutionWrapper exec = new ExecutionWrapper(this.redeploymentModelDirectory, this.perOpteryxDir,
                 this.lqnsDir);
 
         // Create directory for redeployment model
-        FileUtils.copyDirectory(runtimeModelDirectory, redeploymentModelDirectory);
+        FileUtils.copyDirectory(processedRuntimeModelDirectory, this.redeploymentModelDirectory);
 
         // Execute PerOpteryx (On first start there may occur a NullPointerException for unknown
         // reasons - start twice here?)
@@ -74,8 +76,8 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
         if ((result != ModelOptimization.EXEC_SUCCESS) && ModelOptimization.LOGGER.isErrorEnabled()) {
             ModelOptimization.LOGGER.error("PerOpteryx exited with error code " + result);
         } else {
-            this.runtimeModelOutputPort.send(runtimeModelDirectory);
-            this.redeploymentModelOutputPort.send(redeploymentModelDirectory);
+            this.runtimeModelOutputPort.send(processedRuntimeModelDirectory);
+            this.redeploymentModelOutputPort.send(this.redeploymentModelDirectory);
         }
     }
 

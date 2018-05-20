@@ -98,6 +98,9 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
+        final File redeploymentModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
         final File perOpteryxHeadlessDir = new File(
                 configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
         final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
@@ -107,8 +110,12 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
         final int adaptationRedeploymentModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
-        return new PlanningConfiguration(runtimeModelInputPort, runtimeModelDirectory, perOpteryxHeadlessDir, lqnsDir,
-                adaptationHostname, adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
+        runtimeModelDirectory.mkdir();
+        redeploymentModelDirectory.mkdir();
+
+        return new PlanningConfiguration(runtimeModelInputPort, runtimeModelDirectory, redeploymentModelDirectory,
+                perOpteryxHeadlessDir, lqnsDir, adaptationHostname, adaptationRuntimeModelInputPort,
+                adaptationRedeploymentModelInputPort);
     }
 
     @Override

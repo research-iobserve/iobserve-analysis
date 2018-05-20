@@ -36,7 +36,7 @@ public final class ConfigurationKeys {
     /**
      * Working directory where execution plan is stored and model subfolders are located.
      */
-    public static final String WORKING_DIRECTORY = "runtimeModelDirectory";
+    public static final String WORKING_DIRECTORY = "workingDirectory";
 
     /**
      * Name for the serialized execution plan e.g. "default.executionplan".

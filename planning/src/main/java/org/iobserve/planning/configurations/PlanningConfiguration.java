@@ -40,7 +40,9 @@ public class PlanningConfiguration extends Configuration {
      * @param runtimeModelInputPort
      *            Port where planning service receives new models via TCP
      * @param runtimeModelDirectory
-     *            Directory where models are stored
+     *            Directory where runtime model is stored
+     * @param redeploymentModelDirectory
+     *            Directory where redeployment model is stored after generation
      * @param perOpteryxHeadlessDir
      *            PerOpteryx directory
      * @param lqnsDir
@@ -53,8 +55,9 @@ public class PlanningConfiguration extends Configuration {
      *            Input port for redeployment models at adaptation service
      */
     public PlanningConfiguration(final int runtimeModelInputPort, final File runtimeModelDirectory,
-            final File perOpteryxHeadlessDir, final File lqnsDir, final String adaptationHostname,
-            final int adaptationRuntimeModelInputPort, final int adaptationRedeploymentModelInputPort) {
+            final File redeploymentModelDirectory, final File perOpteryxHeadlessDir, final File lqnsDir,
+            final String adaptationHostname, final int adaptationRuntimeModelInputPort,
+            final int adaptationRedeploymentModelInputPort) {
 
         final SingleConnectionTcpReaderStage tcpReader;
         final ModelFiles2ModelDirCollectorStage modelFilesCollector;
@@ -70,7 +73,7 @@ public class PlanningConfiguration extends Configuration {
         modelPreProcessor = new ModelProcessing();
 
         if ((perOpteryxHeadlessDir != null) && (lqnsDir != null)) {
-            modelOptimizer = new ModelOptimization(perOpteryxHeadlessDir, lqnsDir);
+            modelOptimizer = new ModelOptimization(perOpteryxHeadlessDir, lqnsDir, redeploymentModelDirectory);
         } else {
             throw new IllegalArgumentException(
                     "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");

@@ -78,9 +78,9 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
             configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
                     "Correspondence Model File");
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.IMAGE_LOCATOR).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.NAMESPACE).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.SUBDOMAIN).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN).isEmpty();
 
             return configurationGood;
         } catch (final IOException e) {
@@ -104,9 +104,12 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
                 configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
         final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
                 .load(URI.createFileURI(correspondenceModelFile.getAbsolutePath()));
-        final String imageLocator = configuration.getStringProperty(ConfigurationKeys.IMAGE_LOCATOR);
-        final String subdomain = configuration.getStringProperty(ConfigurationKeys.SUBDOMAIN);
-        final String namespace = configuration.getStringProperty(ConfigurationKeys.NAMESPACE);
+        final String imageLocator = configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR);
+        final String subdomain = configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN);
+        final String namespace = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE);
+
+        runtimeModelDirectory.mkdir();
+        redeploymentModelDirectory.mkdir();
 
         return new KubernetesExecutionConfiguration(executionPlanInputPort, runtimeModelInputPort,
                 redeploymentModelInputPort, workingDirectory, runtimeModelDirectory, redeploymentModelDirectory,

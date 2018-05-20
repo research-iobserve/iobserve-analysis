@@ -49,19 +49,19 @@ public final class ConfigurationKeys {
     public static final String CORRESPONDENCEMODEL_NAME = "correspondenceModelName";
 
     /**
-     * Locator for application images, e.g. "blade1.se.internal:5000" for JPetStore example
-     */
-    public static final String IMAGE_LOCATOR = "imageLocator";
-
-    /**
      * The kubernetes namespace to be used. Use "default" if you didn't define a custom namespace.
      */
-    public static final String NAMESPACE = "namespace";
+    public static final String KUBERNETES_NAMESPACE = "kubernetesNamespace";
 
     /**
-     * A component's subdomain, e.g. "jpetstore" for JPetStore example
+     * Locator for the observed application's images, e.g. "blade1.se.internal:5000" for JPetStore.
      */
-    public static final String SUBDOMAIN = "subdomain";
+    public static final String APP_IMAGE_LOCATOR = "applicationImageLocator";
+
+    /**
+     * The observed application's component subdomain, e.g. "jpetstore" for JPetStore.
+     */
+    public static final String APP_SUBDOMAIN = "applicationSubdomain";
 
     /**
      * Factory, do not instantiate.
