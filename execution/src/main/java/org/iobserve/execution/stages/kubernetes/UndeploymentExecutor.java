@@ -36,7 +36,7 @@ public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> 
     private final String namespace;
 
     /**
-     * Creates a new executor for undeployments
+     * Creates a new executor for undeployments.
      *
      * @param namespace
      *            Kubernetes namespace

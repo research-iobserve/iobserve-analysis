@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.service;
+package org.iobserve.execution;
 
 /**
- * Configuration keys for the adaptation service's configuration file.
+ * Configuration keys for the execution service's configuration file.
  *
  * @author Lars Bluemke
  *
  */
 public final class ConfigurationKeys {
+
+    /**
+     * Input port for receiving the execution plan via TCP.
+     */
+    public static final String EXECUTIONPLAN_INPUTPORT = "executionPlanInputPort";
 
     /**
      * Input port for receiving runtime models via TCP.
@@ -34,34 +39,29 @@ public final class ConfigurationKeys {
     public static final String REDEPLOYMENTMODEL_INPUTPORT = "redeploymentModelInputPort";
 
     /**
-     * Working directory where execution plan is stored and model subfolders are located.
+     * Working directory where execution plan and the model directories are stored.
      */
-    public static final String WORKING_DIRECTORY = "runtimeModelDirectory";
+    public static final String WORKING_DIRECTORY = "workingDirectory";
 
     /**
-     * Name for the serialized execution plan e.g. "default.executionplan".
+     * Correspondence model file name (in the working directory) e.g. "default.correspondence".
      */
-    public static final String EXECUTIONPLAN_NAME = "executionPlanName";
+    public static final String CORRESPONDENCEMODEL_NAME = "correspondenceModelName";
 
     /**
-     * Hostname of the execution service.
+     * Locator for application images, e.g. "blade1.se.internal:5000" for JPetStore example
      */
-    public static final String EXECUTION_HOSTNAME = "executionHostname";
+    public static final String IMAGE_LOCATOR = "imageLocator";
 
     /**
-     * Port where the execution service receives the serialized execution plan via TCP.
+     * The kubernetes namespace to be used. Use "default" if you didn't define a custom namespace.
      */
-    public static final String EXECUTION_PLAN_INPUTPORT = "executionPlanInputPort";
+    public static final String NAMESPACE = "namespace";
 
     /**
-     * Port where the execution service receives the serialized runtime model via TCP.
+     * A component's subdomain, e.g. "jpetstore" for JPetStore example
      */
-    public static final String EXECUTION_RUNTIMEMODEL_INPUTPORT = "executionRuntimeModelInputPort";
-
-    /**
-     * Port where the execution service receives the serialized redeployment model via TCP.
-     */
-    public static final String EXECUTION_REDEPLOYMENTMODEL_INPUTPORT = "executionRedeploymentModelInputPort";
+    public static final String SUBDOMAIN = "subdomain";
 
     /**
      * Factory, do not instantiate.

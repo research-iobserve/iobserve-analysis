@@ -27,5 +27,11 @@ import org.iobserve.adaptation.executionplan.AtomicAction;
  */
 public interface IExecutor<T extends AtomicAction> {
 
+    /**
+     * Executes an atomic adaptation action on the observed system.
+     * 
+     * @param action
+     *            The atomic action
+     */
     void execute(T action);
 }

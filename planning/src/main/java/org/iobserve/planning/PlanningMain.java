@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.planning.service;
+package org.iobserve.planning;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,18 +22,21 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import org.iobserve.planning.configurations.PlanningConfigurationMockup;
+import org.iobserve.planning.configurations.PlanningConfiguration;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * A main class for mocking iObserve's planning service.
+ * Main class for iObserve's planning service.
  *
  * @author Lars Bluemke
  *
  */
-public class PlanningMainMockup extends AbstractServiceMain<PlanningConfigurationMockup> {
+public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
+    protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -48,7 +51,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMainMockup().run("Planning Service", "planning", args);
+        new PlanningMain().run("Planning Service", "planning", args);
     }
 
     @Override
@@ -57,17 +60,24 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
         boolean configurationGood = true;
 
         try {
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+
             final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
                     "Runtime Model Directory", commander);
 
-            final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
-                    "Redeployment Model Directory", commander);
+            final File perOpteryxHeadlessDir = new File(
+                    configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(perOpteryxHeadlessDir,
+                    "PerOpteryx RCP Executable Directory", commander);
+
+            // LQNS directory is not mandatory
+            if (!configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY).isEmpty()) {
+                final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir, "LQNS Executable Directory",
+                        commander);
+            }
 
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
@@ -82,22 +92,23 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
     }
 
     @Override
-    protected PlanningConfigurationMockup createConfiguration(
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+    protected PlanningConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
-        final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+        final File perOpteryxHeadlessDir = new File(
+                configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+        final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
         final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
         final int adaptationRuntimeModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
         final int adaptationRedeploymentModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
-        return new PlanningConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, adaptationHostname,
-                adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
+        return new PlanningConfiguration(runtimeModelInputPort, runtimeModelDirectory, perOpteryxHeadlessDir, lqnsDir,
+                adaptationHostname, adaptationRuntimeModelInputPort, adaptationRedeploymentModelInputPort);
     }
 
     @Override

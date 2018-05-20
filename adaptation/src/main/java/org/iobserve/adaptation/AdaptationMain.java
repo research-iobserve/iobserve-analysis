@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.service;
+package org.iobserve.adaptation;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,18 +22,21 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import org.iobserve.adaptation.configurations.AdaptationConfigurationMockup;
+import org.iobserve.adaptation.configurations.AdaptationConfiguration;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * A main class for mocking iObserve's adaptation service.
+ * Main class for iObserve's adaptation service.
  *
  * @author Lars Bluemke
  *
  */
-public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigurationMockup> {
+public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
+    protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
+    protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -48,7 +51,7 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new AdaptationMainMockup().run("Adaptation Service", "adaptation", args);
+        new AdaptationMain().run("Adaptation Service", "adaptation", args);
     }
 
     @Override
@@ -57,21 +60,16 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
         boolean configurationGood = true;
 
         try {
-            final File executionPlan = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
-            configurationGood &= CommandLineParameterEvaluation.isFileReadable(executionPlan, "Execution Plan File");
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
+                    .isEmpty();
 
-            final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
-                    "Runtimemodel Directory", commander);
+            final File workingDirectory = new File(
+                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
+                    "Runtime Model Directory", commander);
 
-            final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    AdaptationMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
-                    "Redeploymentmodel Directory", commander);
+            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME).isEmpty();
 
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
             configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT).isEmpty();
@@ -87,8 +85,11 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
     }
 
     @Override
-    protected AdaptationConfigurationMockup createConfiguration(
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+    protected AdaptationConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = configuration
+                .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
@@ -98,15 +99,15 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
         final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
         final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
-        final int executionInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
+        final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
         final int executionRuntimeModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT);
         final int executionRedeploymentModelInputPort = configuration
                 .getIntProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT);
 
-        return new AdaptationConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, executionPlanURI,
-                executionHostname, executionInputPort, executionRuntimeModelInputPort,
-                executionRedeploymentModelInputPort);
+        return new AdaptationConfiguration(runtimeModelInputPort, redeploymentModelInputPort, runtimeModelDirectory,
+                redeploymentModelDirectory, executionPlanURI, executionHostname, executionPlanInputPort,
+                executionRuntimeModelInputPort, executionRedeploymentModelInputPort);
     }
 
     @Override
@@ -127,4 +128,5 @@ public class AdaptationMainMockup extends AbstractServiceMain<AdaptationConfigur
     protected File getConfigurationFile() {
         return this.configurationFile;
     }
+
 }

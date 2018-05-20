@@ -69,7 +69,7 @@ public class AtomicActionExecution extends AbstractConsumerStage<AtomicAction> {
      *            Executor for finishing running transactions
      * @param nodeAllocationExecutor
      *            Executor for node allocations
-     * @param nodeDeallocationExecutorn
+     * @param nodeDeallocationExecutor
      *            Executor for node deallocations
      * @param nodeConnectionExecutor
      *            Executor for connecting nodes

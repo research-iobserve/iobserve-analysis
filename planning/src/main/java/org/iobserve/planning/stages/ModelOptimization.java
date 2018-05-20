@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.planning;
+package org.iobserve.planning.stages;
 
 import java.io.File;
+import java.io.IOException;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.apache.commons.io.FileUtils;
 import org.iobserve.planning.peropteryx.ExecutionWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates potential migration candidates via PerOpteryx. The class is OS independent.
@@ -29,6 +32,7 @@ import org.iobserve.planning.peropteryx.ExecutionWrapper;
  * @author Philipp Weimann
  */
 public class ModelOptimization extends AbstractConsumerStage<File> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelOptimization.class);
 
     private static final int EXEC_SUCCESS = 0;
     private static final String REDEPLOYMENT_MODEL_FOLDER = "redeploymentModel";
@@ -54,7 +58,7 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
     }
 
     @Override
-    protected void execute(final File runtimeModelDirectory) throws Exception {
+    protected void execute(final File runtimeModelDirectory) throws RuntimeException, IOException {
         final File redeploymentModelDirectory = new File(runtimeModelDirectory.getAbsolutePath(),
                 ModelOptimization.REDEPLOYMENT_MODEL_FOLDER);
         final ExecutionWrapper exec = new ExecutionWrapper(redeploymentModelDirectory, this.perOpteryxDir,
@@ -67,8 +71,8 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
         // reasons - start twice here?)
         final int result = exec.startModelGeneration();
 
-        if (result != ModelOptimization.EXEC_SUCCESS) {
-            throw new RuntimeException("PerOpteryx exited with error code " + result);
+        if ((result != ModelOptimization.EXEC_SUCCESS) && ModelOptimization.LOGGER.isErrorEnabled()) {
+            ModelOptimization.LOGGER.error("PerOpteryx exited with error code " + result);
         } else {
             this.runtimeModelOutputPort.send(runtimeModelDirectory);
             this.redeploymentModelOutputPort.send(redeploymentModelDirectory);

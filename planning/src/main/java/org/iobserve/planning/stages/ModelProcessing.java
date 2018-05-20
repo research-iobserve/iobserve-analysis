@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.planning;
+package org.iobserve.planning.stages;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class ModelProcessing extends AbstractFilter<File> {
      *             if an error occurred during snapshot generation
      */
     @Override
-    protected void execute(final File modelDirectory) throws Exception {
+    protected void execute(final File modelDirectory) throws IOException, InitializationException {
         this.initModelTransformation(modelDirectory);
         this.clearUnneededElements();
         this.rebuildEnvironment();
@@ -106,8 +106,8 @@ public class ModelProcessing extends AbstractFilter<File> {
 
     private void initModelTransformation(final File originalModelDirectory)
             throws IOException, InitializationException {
-        PCMModelHandler originalModelHandler;
-        PCMModelHandler processedModelHandler;
+        final PCMModelHandler originalModelHandler;
+        final PCMModelHandler processedModelHandler;
         DecisionSpace decisionSpace;
 
         originalModelHandler = new PCMModelHandler(originalModelDirectory);

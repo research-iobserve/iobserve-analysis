@@ -19,7 +19,7 @@ import java.io.File;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.planning.ModelOptimizationMockup;
+import org.iobserve.planning.stages.ModelOptimizationMockup;
 import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
@@ -31,6 +31,20 @@ import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
  */
 public class PlanningConfigurationMockup extends Configuration {
 
+    /**
+     * Creates a new instance of this class.
+     *
+     * @param runtimeModelDir
+     *            Directory where runtime models are stored
+     * @param redeploymentModelDir
+     *            Directory where redeployment models are stored
+     * @param adaptationHostname
+     *            Host name of adaptation service
+     * @param adaptationRuntimeModelInputPort
+     *            Input port for runtime models at adaptation service
+     * @param adaptationRedeploymentModelInputPort
+     *            Input port for redeployment models at adaptation service
+     */
     public PlanningConfigurationMockup(final File runtimeModelDir, final File redeploymentModelDir,
             final String adaptationHostname, final int adaptationRuntimeModelInputPort,
             final int adaptationRedeploymentModelInputPort) {

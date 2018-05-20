@@ -19,8 +19,8 @@ import java.io.File;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.planning.ModelOptimization;
-import org.iobserve.planning.ModelProcessing;
+import org.iobserve.planning.stages.ModelOptimization;
+import org.iobserve.planning.stages.ModelProcessing;
 import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
@@ -47,8 +47,10 @@ public class PlanningConfiguration extends Configuration {
      *            LQN solver directory
      * @param adaptationHostname
      *            Host name of adaptation service
-     * @param adaptationInputPort
-     *            Input port of adaptation service
+     * @param adaptationRuntimeModelInputPort
+     *            Input port for runtime models at adaptation service
+     * @param adaptationRedeploymentModelInputPort
+     *            Input port for redeployment models at adaptation service
      */
     public PlanningConfiguration(final int runtimeModelInputPort, final File runtimeModelDirectory,
             final File perOpteryxHeadlessDir, final File lqnsDir, final String adaptationHostname,
