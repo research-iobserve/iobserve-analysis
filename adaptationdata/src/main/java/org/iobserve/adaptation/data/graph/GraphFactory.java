@@ -42,20 +42,24 @@ import org.slf4j.LoggerFactory;
  * host-component-allocation structure from the PCM model.
  *
  * @author Philipp Weimann
- * @author Lars Bluemke (added revision for drools rule matching, added buildGraph with model
- *         instances for testing, enabled use of models other than pcm privacy models)
+ * @author Lars Bluemke<br>
+ *         - added revision for drools rule matching<br>
+ *         - added buildGraph with model instances for testing<br>
+ *         - enabled use of models other than pcm privacy models<br>
+ *         - tried to fix the wrong mapping of an assembly context to a resource containers (an
+ *         allocation contexts must be mapped to a resource container) => removed edges
  */
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
 
     private PCMModelHandler modelProvider;
 
+    private Map<String, AllocationContext> allocationContexts;
     private Map<String, AssemblyContext> assemblyContexts;
     private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
     private Map<String, ResourceContainer> resourceContainers;
-    private Map<String, String> ac2rcMap;
     private Map<String, AssemblyConnector> assemblyConnectors;
-    private Map<String, String> assemblyID2allocID;
+    private Map<String, Set<AllocationContext>> assCtxt2AllocCtxts;
 
     /**
      * Empty Constructor.
@@ -122,12 +126,12 @@ public class GraphFactory {
      * Prepare all data structures.
      */
     private void init() {
+        this.allocationContexts = new HashMap<>();
         this.assemblyContexts = new HashMap<>();
         this.assemblyContextPrivacyLvl = new HashMap<>();
         this.assemblyConnectors = new HashMap<>();
         this.resourceContainers = new HashMap<>();
-        this.ac2rcMap = new HashMap<>();
-        this.assemblyID2allocID = new HashMap<>();
+        this.assCtxt2AllocCtxts = new HashMap<>();
     }
 
     /*
@@ -231,19 +235,14 @@ public class GraphFactory {
         final EList<AllocationContext> allocationContexts = allocationModel.getAllocationContexts_Allocation();
 
         for (final AllocationContext allocationContext : allocationContexts) {
-            final ResourceContainer resContainer = allocationContext.getResourceContainer_AllocationContext();
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
+            final Set<String> acs = new HashSet<>();
 
-            this.assemblyID2allocID.put(assemblyContext.getId(), allocationContext.getId());
+            this.allocationContexts.put(allocationContext.getId(), allocationContext);
+            acs.add(allocationContext.getId());
 
-            boolean correctIDs = true;
-            final String resContainerID = resContainer.getId();
-            if (!this.resourceContainers.containsKey(resContainerID)) {
-                if (GraphFactory.LOGGER.isErrorEnabled()) {
-                    GraphFactory.LOGGER.error("A unknown ResourceContainer (ID: " + resContainer.getId()
-                            + ") was found during allocation context analysis.\n");
-                }
-                correctIDs = false;
+            if (GraphFactory.LOGGER.isInfoEnabled()) {
+                GraphFactory.LOGGER.info("Individual Allocation Contexts found in Allocation Model: " + acs.size());
             }
 
             final String assemblyContextID = assemblyContext.getId();
@@ -252,11 +251,15 @@ public class GraphFactory {
                     GraphFactory.LOGGER.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
                             + ") was found during allocation context analysis.\n");
                 }
-                correctIDs = false;
-            }
-
-            if (correctIDs) {
-                this.ac2rcMap.put(assemblyContext.getId(), resContainer.getId());
+            } else {
+                Set<AllocationContext> allocCtxts;
+                if (this.assCtxt2AllocCtxts.containsKey(assemblyContextID)) {
+                    allocCtxts = this.assCtxt2AllocCtxts.get(assemblyContextID);
+                } else {
+                    allocCtxts = new HashSet<>();
+                }
+                allocCtxts.add(allocationContext);
+                this.assCtxt2AllocCtxts.put(assemblyContextID, allocCtxts);
             }
         }
     }
@@ -282,36 +285,51 @@ public class GraphFactory {
         }
 
         // Build Component Nodes
-        for (final AssemblyContext ac : this.assemblyContexts.values()) {
+        for (final AllocationContext allocationContext : this.allocationContexts.values()) {
 
-            final DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
-            final DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
+            final DeploymentNode hostServer = servers
+                    .get(allocationContext.getResourceContainer_AllocationContext().getId());
+            final String assemblyContextID = allocationContext.getAssemblyContext_AllocationContext().getId();
+            final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContextID);
+            final DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(assemblyContextID);
 
-            final ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer,
-                    ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()),
-                    revision);
+            final ComponentNode component = new ComponentNode(assemblyContextID, assemblyContext.getEntityName(),
+                    acPrivacyLvl, hostServer, assemblyContext.getEncapsulatedComponent__AssemblyContext().getId(),
+                    allocationContext.getId(), revision);
             hostServer.addComponent(component);
 
-            components.put(ac.getId(), component);
+            components.put(allocationContext.getId(), component);
         }
 
         // Set Edges
+        // Note: In the original graph assembly contexts were seen as deployed component instances.
+        // An assembly context was mapped to a resource containers and an allocation context. This
+        // is wrong! Deployed component instances are represented by an allocation context not an
+        // assembly context.
         for (final AssemblyConnector acp : this.assemblyConnectors.values()) {
             final String provACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
             final String reqACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-            final ComponentNode provNode = components.get(provACID);
-            final ComponentNode reqNode = components.get(reqACID);
+            ComponentNode provNode;
+            ComponentNode reqNode;
+            for (final AllocationContext provAlloc : this.assCtxt2AllocCtxts.get(provACID)) {
+                provNode = components.get(provAlloc.getId());
+                for (final AllocationContext reqAlloc : this.assCtxt2AllocCtxts.get(reqACID)) {
+                    reqNode = components.get(reqAlloc.getId());
 
-            final ComponentEdge edge;
-            if (acp instanceof AssemblyConnectorPrivacy) {
-                edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
-                        ((AssemblyConnectorPrivacy) acp).getPrivacyLevel(), revision);
-            } else {
-                edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, null, revision);
+                    final ComponentEdge edge;
+                    if (acp instanceof AssemblyConnectorPrivacy) {
+                        edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
+                                ((AssemblyConnectorPrivacy) acp).getPrivacyLevel(), revision);
+                    } else {
+                        edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, null, revision);
+                    }
+
+                    provNode.addCommunicationEdge(edge);
+                    reqNode.addCommunicationEdge(edge);
+                }
             }
-            provNode.addCommunicationEdge(edge);
-            reqNode.addCommunicationEdge(edge);
+
         }
 
         return new ModelGraph(servers.values(), components.values(), this.modelProvider, revision);

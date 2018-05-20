@@ -80,13 +80,13 @@ public class ComposedActionComputationTest {
         final ReplicateAction expectedAction;
 
         // Perform replication
-        this.redeploymentModel.replicateCompB1ToRc2();
+        this.redeploymentModel.replicateCompBToRc2();
         adaptationData = this.createAdaptationData();
 
         // Create expected output
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 adaptationData.getRuntimeGraph().getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB2().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc2().getId(),
                 adaptationData.getReDeploymentGraph().getComponents());
         expectedAction = AssemblyContextActionFactory.generateReplicateAction(runtimeNode, redeploymentNode);
 
@@ -117,11 +117,11 @@ public class ComposedActionComputationTest {
         final DereplicateAction expectedAction;
 
         // Perform dereplication (simulated by replicating a component in the runtime model)
-        this.runtimeModel.replicateCompB1ToRc2();
+        this.runtimeModel.replicateCompBToRc2();
         adaptationData = this.createAdaptationData();
 
         // Create expected output
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB2().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc2().getId(),
                 adaptationData.getRuntimeGraph().getComponents());
         expectedAction = AssemblyContextActionFactory.generateDereplicateAction(runtimeNode);
 
@@ -151,13 +151,13 @@ public class ComposedActionComputationTest {
         final MigrateAction expectedAction;
 
         // Perform migration
-        this.redeploymentModel.migrateCompB1ToRc2();
+        this.redeploymentModel.migrateCompBToRc2();
         adaptationData = this.createAdaptationData();
 
         // Create expected output
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 adaptationData.getRuntimeGraph().getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB1().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc1().getId(),
                 adaptationData.getReDeploymentGraph().getComponents());
         expectedAction = AssemblyContextActionFactory.generateMigrateAction(runtimeNode, redeploymentNode);
 
@@ -197,9 +197,9 @@ public class ComposedActionComputationTest {
         adaptationData = this.createAdaptationData();
 
         // Create expected output
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 adaptationData.getRuntimeGraph().getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB1().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc1().getId(),
                 adaptationData.getReDeploymentGraph().getComponents());
         expectedAction = AssemblyContextActionFactory.generateChangeRepositoryComponentAction(runtimeNode,
                 redeploymentNode);
@@ -300,11 +300,11 @@ public class ComposedActionComputationTest {
         return adaptationData;
     }
 
-    private ComponentNode findComponentNodeByID(final String assemblyContextID,
+    private ComponentNode findComponentNodeByID(final String allocationContextID,
             final Set<ComponentNode> componentNodes) {
 
         for (final ComponentNode node : componentNodes) {
-            if (node.getAssemblyContextID().equals(assemblyContextID)) {
+            if (node.getAllocationContextID().equals(allocationContextID)) {
                 return node;
             }
         }

@@ -28,10 +28,10 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  */
 public class ComponentNode {
 
+    private final String allocationContextID;
     private final String assemblyContextID;
     private final String assemblyName;
     private final String repositoryComponentID;
-    private final String allocationContextID;
     private DataPrivacyLvl privacyLvl;
     private final DeploymentNode hostServer;
     private final Set<ComponentEdge> edges;

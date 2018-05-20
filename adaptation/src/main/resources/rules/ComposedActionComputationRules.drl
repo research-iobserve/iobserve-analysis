@@ -19,12 +19,13 @@ when
     
     $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT)
     
-    not ComponentNode(revision == ModelGraphRevision.RUNTIME, assemblyContextID == $redplNode.getAssemblyContextID())
+    not ComponentNode(revision == ModelGraphRevision.RUNTIME, allocationContextID == $redplNode.getAllocationContextID())
     
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
-    		repositoryComponentID == $redplNode.getRepositoryComponentID()) 
+    	 repositoryComponentID == $redplNode.getRepositoryComponentID()) 
 then
-	System.out.println("Found a replication!");
+	System.out.println("Found a replication! " + $redplNode.getAllocationContextID()
+		 	 + "@" + $redplNode.getHostServer().getResourceContainerName());
     $systemAdaptationModel.getActions()
     		.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
 end
@@ -38,9 +39,10 @@ when
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
     not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
-    		assemblyContextID == $runtimeNode.getAssemblyContextID())
+    		allocationContextID == $runtimeNode.getAllocationContextID())
 then
-	System.out.println("Found a dereplication!");
+	System.out.println("Found a dereplication! " +  $runtimeNode.getAllocationContextID() + "@"
+		 + $runtimeNode.getHostServer().getResourceContainerName());
     $systemAdaptationModel.getActions()
     		.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
 end
@@ -54,7 +56,7 @@ when
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
     $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
-    		assemblyContextID == $runtimeNode.getAssemblyContextID(),
+    		allocationContextID == $runtimeNode.getAllocationContextID(),
     		hostServer.getResourceContainerID() != $runtimeNode.getHostServer().getResourceContainerID())
 then
 	System.out.println("Found a migration! " +  $runtimeNode.getAssemblyName() + "@"
@@ -72,7 +74,7 @@ when
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
     $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
-    		assemblyContextID == $runtimeNode.getAssemblyContextID(), 
+    		allocationContextID == $runtimeNode.getAllocationContextID(), 
     		repositoryComponentID != $runtimeNode.getRepositoryComponentID())
 then
 	System.out.println("Found a change of repository component!");

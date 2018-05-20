@@ -91,13 +91,13 @@ public class AtomicActionComputationTest {
         final ReplicateAction replicateAction;
 
         // Replication specific setup
-        this.redeploymentModel.replicateCompB1ToRc2();
+        this.redeploymentModel.replicateCompBToRc2();
 
         this.initializeModelGraphs();
 
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 this.runtimeModelGraph.getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB2().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc2().getId(),
                 this.redeploymentModelGraph.getComponents());
 
         replicateAction = AssemblyContextActionFactory.generateReplicateAction(runtimeNode, redeploymentNode);
@@ -122,11 +122,11 @@ public class AtomicActionComputationTest {
         final DereplicateAction dereplicateAction;
 
         // Dereplication specific setup (simulated by replicating a component in the runtime model)
-        this.runtimeModel.replicateCompB1ToRc2();
+        this.runtimeModel.replicateCompBToRc2();
 
         this.initializeModelGraphs();
 
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 this.runtimeModelGraph.getComponents());
 
         dereplicateAction = AssemblyContextActionFactory.generateDereplicateAction(runtimeNode);
@@ -153,13 +153,13 @@ public class AtomicActionComputationTest {
         final MigrateAction migrateAction;
 
         // Migration specific setup
-        this.redeploymentModel.migrateCompB1ToRc2();
+        this.redeploymentModel.migrateCompBToRc2();
 
         this.initializeModelGraphs();
 
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 this.runtimeModelGraph.getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB1().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc1().getId(),
                 this.redeploymentModelGraph.getComponents());
 
         migrateAction = AssemblyContextActionFactory.generateMigrateAction(runtimeNode, redeploymentNode);
@@ -193,9 +193,9 @@ public class AtomicActionComputationTest {
 
         this.initializeModelGraphs();
 
-        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAcxtB1().getId(),
+        runtimeNode = this.findComponentNodeByID(this.runtimeModel.getAlcxtBRc1().getId(),
                 this.runtimeModelGraph.getComponents());
-        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAcxtB1().getId(),
+        redeploymentNode = this.findComponentNodeByID(this.redeploymentModel.getAlcxtBRc1().getId(),
                 this.redeploymentModelGraph.getComponents());
 
         changeComponentAction = AssemblyContextActionFactory.generateChangeRepositoryComponentAction(runtimeNode,
@@ -284,11 +284,11 @@ public class AtomicActionComputationTest {
 
     }
 
-    private ComponentNode findComponentNodeByID(final String assemblyContextID,
+    private ComponentNode findComponentNodeByID(final String allocationContextID,
             final Set<ComponentNode> componentNodes) {
 
         for (final ComponentNode node : componentNodes) {
-            if (node.getAssemblyContextID().equals(assemblyContextID)) {
+            if (node.getAllocationContextID().equals(allocationContextID)) {
                 return node;
             }
         }
