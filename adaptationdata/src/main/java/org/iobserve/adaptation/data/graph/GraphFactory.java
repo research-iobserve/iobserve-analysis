@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  *         - added revision for drools rule matching<br>
  *         - added buildGraph with model instances for testing<br>
  *         - enabled use of models other than pcm privacy models<br>
- *         - tried to fix the wrong mapping of an assembly context to a resource containers (an
- *         allocation contexts must be mapped to a resource container) => removed edges
+ *         - fixed the wrong mapping of an assembly context to a resource container (an allocation
+ *         contexts must be mapped to a resource container)
  */
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
@@ -146,8 +146,8 @@ public class GraphFactory {
             acs.add(assemblyContext.getId());
         }
 
-        if (GraphFactory.LOGGER.isInfoEnabled()) {
-            GraphFactory.LOGGER.info("Individual Assembly Contexts found in System Model: " + acs.size());
+        if (GraphFactory.LOGGER.isDebugEnabled()) {
+            GraphFactory.LOGGER.debug("Individual Assembly Contexts found in System Model: " + acs.size());
         }
     }
 
@@ -189,8 +189,8 @@ public class GraphFactory {
             }
         }
 
-        if (GraphFactory.LOGGER.isInfoEnabled()) {
-            GraphFactory.LOGGER.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+        if (GraphFactory.LOGGER.isDebugEnabled()) {
+            GraphFactory.LOGGER.debug("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
         }
     }
 
@@ -232,17 +232,17 @@ public class GraphFactory {
     }
 
     private void extractAllocations(final Allocation allocationModel) {
-        final EList<AllocationContext> allocationContexts = allocationModel.getAllocationContexts_Allocation();
+        final EList<AllocationContext> allocContexts = allocationModel.getAllocationContexts_Allocation();
 
-        for (final AllocationContext allocationContext : allocationContexts) {
+        for (final AllocationContext allocationContext : allocContexts) {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final Set<String> acs = new HashSet<>();
 
             this.allocationContexts.put(allocationContext.getId(), allocationContext);
             acs.add(allocationContext.getId());
 
-            if (GraphFactory.LOGGER.isInfoEnabled()) {
-                GraphFactory.LOGGER.info("Individual Allocation Contexts found in Allocation Model: " + acs.size());
+            if (GraphFactory.LOGGER.isDebugEnabled()) {
+                GraphFactory.LOGGER.debug("Individual Allocation Contexts found in Allocation Model: " + acs.size());
             }
 
             final String assemblyContextID = assemblyContext.getId();
@@ -252,7 +252,7 @@ public class GraphFactory {
                             + ") was found during allocation context analysis.\n");
                 }
             } else {
-                Set<AllocationContext> allocCtxts;
+                final Set<AllocationContext> allocCtxts;
                 if (this.assCtxt2AllocCtxts.containsKey(assemblyContextID)) {
                     allocCtxts = this.assCtxt2AllocCtxts.get(assemblyContextID);
                 } else {
@@ -302,10 +302,6 @@ public class GraphFactory {
         }
 
         // Set Edges
-        // Note: In the original graph assembly contexts were seen as deployed component instances.
-        // An assembly context was mapped to a resource containers and an allocation context. This
-        // is wrong! Deployed component instances are represented by an allocation context not an
-        // assembly context.
         for (final AssemblyConnector acp : this.assemblyConnectors.values()) {
             final String provACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
             final String reqACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();

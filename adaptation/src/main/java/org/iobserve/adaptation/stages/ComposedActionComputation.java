@@ -30,6 +30,8 @@ import org.kie.api.command.Command;
 import org.kie.api.command.KieCommands;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Receives an AdaptationData record containing the runtime model graph as well as the redeployment
@@ -41,6 +43,9 @@ import org.kie.api.runtime.StatelessKieSession;
  *
  */
 public class ComposedActionComputation extends AbstractTransformation<AdaptationData, SystemAdaptation> {
+    // Logger is invoked from drools rule file
+    public static final Logger LOGGER = LoggerFactory.getLogger(ComposedActionComputation.class);
+
     private final KieServices kieServices = KieServices.Factory.get();
     private final KieContainer kContainer = this.kieServices.getKieClasspathContainer();
     private final StatelessKieSession kSession = this.kContainer.newStatelessKieSession();

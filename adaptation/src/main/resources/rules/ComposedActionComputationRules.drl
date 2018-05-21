@@ -5,6 +5,7 @@ import org.iobserve.adaptation.data.ResourceContainerActionFactory
 import org.iobserve.adaptation.data.graph.ComponentNode
 import org.iobserve.adaptation.data.graph.DeploymentNode
 import org.iobserve.adaptation.data.graph.ModelGraphRevision
+import org.iobserve.adaptation.stages.ComposedActionComputation
 import org.iobserve.planning.systemadaptation.SystemAdaptation
 
 
@@ -24,8 +25,10 @@ when
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
     	 repositoryComponentID == $redplNode.getRepositoryComponentID()) 
 then
-	System.out.println("Found a replication! " + $redplNode.getAllocationContextID()
-		 	 + "@" + $redplNode.getHostServer().getResourceContainerName());
+	ComposedActionComputation.LOGGER.info("Found a replication: " + $redplNode.getAssemblyName() + " ("
+		+ $redplNode.getAllocationContextID() + ") @ " + $redplNode.getHostServer().getResourceContainerName()
+			+ " (" + $redplNode.getHostServer().getResourceContainerID() + ")");
+    
     $systemAdaptationModel.getActions()
     		.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
 end
@@ -41,8 +44,10 @@ when
     not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
     		allocationContextID == $runtimeNode.getAllocationContextID())
 then
-	System.out.println("Found a dereplication! " +  $runtimeNode.getAllocationContextID() + "@"
-		 + $runtimeNode.getHostServer().getResourceContainerName());
+	ComposedActionComputation.LOGGER.info("Found a dereplication: " + $runtimeNode.getAssemblyName() + " ("
+		+ $runtimeNode.getAllocationContextID() + ") @ " + $runtimeNode.getHostServer().getResourceContainerName()
+			+ " (" + $runtimeNode.getHostServer().getResourceContainerID() + ")");
+    
     $systemAdaptationModel.getActions()
     		.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
 end
@@ -59,9 +64,13 @@ when
     		allocationContextID == $runtimeNode.getAllocationContextID(),
     		hostServer.getResourceContainerID() != $runtimeNode.getHostServer().getResourceContainerID())
 then
-	System.out.println("Found a migration! " +  $runtimeNode.getAssemblyName() + "@"
-		 + $runtimeNode.getHostServer().getResourceContainerName() + " - " + $redplNode.getAssemblyName()
-		 	 + "@" + $redplNode.getHostServer().getResourceContainerName());
+	ComposedActionComputation.LOGGER.info("Found a migration: " +  $runtimeNode.getAssemblyName() + " ("
+		+ $runtimeNode.getAllocationContextID() + ") @ " + $runtimeNode.getHostServer().getResourceContainerName() 
+			+ " (" + $runtimeNode.getHostServer().getResourceContainerID() + ") => " + $redplNode.getAssemblyName() 
+				+ " (" + $redplNode.getAllocationContextID() + ") @ " 
+					+ $redplNode.getHostServer().getResourceContainerName() + " (" 
+						+ $redplNode.getHostServer().getResourceContainerID() + ")");
+    
     $systemAdaptationModel.getActions()
     		.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
 end
@@ -77,7 +86,11 @@ when
     		allocationContextID == $runtimeNode.getAllocationContextID(), 
     		repositoryComponentID != $runtimeNode.getRepositoryComponentID())
 then
-	System.out.println("Found a change of repository component!");
+	ComposedActionComputation.LOGGER.info("Found a change of repository component: " 
+		+ $runtimeNode.getRepositoryComponentID() + " @ " + $runtimeNode.getAssemblyName() + " (" 
+			+ $runtimeNode.getAllocationContextID() + ") => " + $redplNode.getRepositoryComponentID() + " @ " 
+				+ $redplNode.getAssemblyName() + " (" + $redplNode.getAllocationContextID() + ")");
+    
     $systemAdaptationModel.getActions().add(AssemblyContextActionFactory
     		.generateChangeRepositoryComponentAction($runtimeNode, $redplNode));
 end
@@ -97,7 +110,9 @@ when
     
     not DeploymentNode(revision == ModelGraphRevision.RUNTIME, resourceContainerID == $redplNode.getResourceContainerID)
 then
-	System.out.println("Found an allocation! " + $redplNode.getResourceContainerName());
+	ComposedActionComputation.LOGGER.info("Found an allocation: " + $redplNode.getResourceContainerName() + " (" 
+		+ $redplNode.getResourceContainerID() + ")");
+    
     $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createAllocateAction($redplNode));
 end
 
@@ -111,6 +126,8 @@ when
     not DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
     	resourceContainerID == $runtimeNode.getResourceContainerID)
 then
-	System.out.println("Found a deallocation! " + $runtimeNode.getResourceContainerName());
+	ComposedActionComputation.LOGGER.info("Found a deallocation: " + $runtimeNode.getResourceContainerName() + " (" 
+		+ $runtimeNode.getResourceContainerID() + ")");
+    
     $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createDeallocateAction($runtimeNode));
 end

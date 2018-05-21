@@ -103,6 +103,8 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
 
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
                     .setImage(imageLocator + "/" + imageName);
+            newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
+                    .setName(targetAssemblyContext.getEntityName());
 
             client.extensions().deployments().inNamespace(this.namespace).create(newDeployment);
 

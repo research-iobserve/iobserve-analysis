@@ -15,10 +15,15 @@
  ***************************************************************************/
 package org.iobserve.execution.stages.kubernetes;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.iobserve.adaptation.executionplan.AllocateNodeAction;
 import org.iobserve.execution.stages.IExecutor;
+import org.palladiosimulator.pcm.resourceenvironment.HDDProcessingResourceSpecification;
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +41,9 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
  */
 public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
     private static final String API_VERSION = "extensions/v1beta1";
+    private static final String PROCESSINGRATE_LABEL_KEY = "processingRate";
+    private static final String HDDREADRATE_LABEL_KEY = "hddReadProcessingRate";
+    private static final String HDDWRITERATE_LABEL_KEY = "hddWriteProcessingRate";
     private static final String COMPONENT_LABEL_KEY = "component";
     private static final Logger LOGGER = LoggerFactory.getLogger(AllocationExecutor.class);
 
@@ -61,13 +69,34 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
 
     @Override
     public void execute(final AllocateNodeAction action) {
-        final String rcName = action.getTargetResourceContainer().getEntityName().toLowerCase();
+        final ResourceContainer resourceContainer = action.getTargetResourceContainer();
+        final String rcName = resourceContainer.getEntityName().toLowerCase();
 
+        // Compute deployment labels
+        final EList<ProcessingResourceSpecification> specs = resourceContainer
+                .getActiveResourceSpecifications_ResourceContainer();
+        final EList<HDDProcessingResourceSpecification> hddSpecs = resourceContainer.getHddResourceSpecifications();
+        final Map<String, String> labels = new HashMap<>();
+
+        // Only first specification object and only processing rates used so far
+        if (!specs.isEmpty()) {
+            labels.put(AllocationExecutor.PROCESSINGRATE_LABEL_KEY,
+                    specs.get(0).getProcessingRate_ProcessingResourceSpecification().getSpecification());
+        }
+
+        if (!hddSpecs.isEmpty()) {
+            labels.put(AllocationExecutor.HDDREADRATE_LABEL_KEY,
+                    hddSpecs.get(0).getReadProcessingRate().getSpecification());
+            labels.put(AllocationExecutor.HDDWRITERATE_LABEL_KEY,
+                    hddSpecs.get(0).getWriteProcessingRate().getSpecification());
+        }
+
+        // Build deployment blueprint
         final Deployment podDeployment = new DeploymentBuilder() //
                 /**/ .withApiVersion(AllocationExecutor.API_VERSION) //
                 /**/ .withKind("Deployment") //
                 /**/ .withNewMetadata() //
-                /*----*/ .addToLabels("processingRate", "99") //
+                /*----*/ .withLabels(labels) //
                 /*----*/ .withName(rcName) //
                 /**/ .endMetadata() //
                 /**/ .withNewSpec() //
@@ -86,7 +115,7 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
                 /*------------*/ .addNewContainer() //
                 /*----------------   Image and name are inserted at deployment */
                 /*----------------*/ .withImage(this.imageLocator) //
-                /*----------------*/ .withName("order") //
+                /*----------------*/ .withName("") //
                 /*----------------*/ .withNewResources() //
                 /*----------------*/ .endResources() //
                 /*----------------*/ .addNewEnv() //
