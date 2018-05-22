@@ -16,7 +16,6 @@
 package org.iobserve.execution.stages.kubernetes;
 
 import org.iobserve.adaptation.executionplan.UndeployComponentAction;
-import org.iobserve.execution.stages.IExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  * @author Lars Bluemke
  *
  */
-public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> {
+public class UndeploymentExecutor extends AbstractExecutor<UndeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UndeploymentExecutor.class);
 
     private final String namespace;
@@ -48,8 +47,8 @@ public class UndeploymentExecutor implements IExecutor<UndeployComponentAction> 
     @Override
     public void execute(final UndeployComponentAction action) {
         final KubernetesClient client = new DefaultKubernetesClient();
-        final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
-                .getEntityName().toLowerCase();
+        final String rcName = this.normalizeComponentName(
+                action.getTargetAllocationContext().getResourceContainer_AllocationContext().getEntityName());
         final Deployment deployment = client.extensions().deployments().inNamespace(this.namespace).withName(rcName)
                 .get();
         final int replicas = deployment.getSpec().getReplicas();

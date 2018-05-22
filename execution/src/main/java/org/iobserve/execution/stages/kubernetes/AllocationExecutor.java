@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.adaptation.executionplan.AllocateNodeAction;
-import org.iobserve.execution.stages.IExecutor;
 import org.palladiosimulator.pcm.resourceenvironment.HDDProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -39,7 +38,7 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
  * @author Lars Bluemke
  *
  */
-public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
+public class AllocationExecutor extends AbstractExecutor<AllocateNodeAction> {
     private static final String API_VERSION = "extensions/v1beta1";
     private static final String PROCESSINGRATE_LABEL_KEY = "processingRate";
     private static final String HDDREADRATE_LABEL_KEY = "hddReadProcessingRate";
@@ -70,26 +69,9 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
     @Override
     public void execute(final AllocateNodeAction action) {
         final ResourceContainer resourceContainer = action.getTargetResourceContainer();
-        final String rcName = resourceContainer.getEntityName().toLowerCase();
+        final String rcName = this.normalizeComponentName(resourceContainer.getEntityName());
 
-        // Compute deployment labels
-        final EList<ProcessingResourceSpecification> specs = resourceContainer
-                .getActiveResourceSpecifications_ResourceContainer();
-        final EList<HDDProcessingResourceSpecification> hddSpecs = resourceContainer.getHddResourceSpecifications();
-        final Map<String, String> labels = new HashMap<>();
-
-        // Only first specification object and only processing rates used so far
-        if (!specs.isEmpty()) {
-            labels.put(AllocationExecutor.PROCESSINGRATE_LABEL_KEY,
-                    specs.get(0).getProcessingRate_ProcessingResourceSpecification().getSpecification());
-        }
-
-        if (!hddSpecs.isEmpty()) {
-            labels.put(AllocationExecutor.HDDREADRATE_LABEL_KEY,
-                    hddSpecs.get(0).getReadProcessingRate().getSpecification());
-            labels.put(AllocationExecutor.HDDWRITERATE_LABEL_KEY,
-                    hddSpecs.get(0).getWriteProcessingRate().getSpecification());
-        }
+        final Map<String, String> labels = this.computeDeploymentLabels(resourceContainer);
 
         // Build deployment blueprint
         final Deployment podDeployment = new DeploymentBuilder() //
@@ -140,4 +122,32 @@ public class AllocationExecutor implements IExecutor<AllocateNodeAction> {
         }
     }
 
+    /**
+     * Computes deployment labels for a resource container.
+     *
+     * @param resourceContainer
+     *            The resource container
+     * @return A map containing the computed labels
+     */
+    private Map<String, String> computeDeploymentLabels(final ResourceContainer resourceContainer) {
+        final EList<ProcessingResourceSpecification> specs = resourceContainer
+                .getActiveResourceSpecifications_ResourceContainer();
+        final EList<HDDProcessingResourceSpecification> hddSpecs = resourceContainer.getHddResourceSpecifications();
+        final Map<String, String> labels = new HashMap<>();
+
+        // Only first specification object and only processing rates used so far
+        if (!specs.isEmpty()) {
+            labels.put(AllocationExecutor.PROCESSINGRATE_LABEL_KEY,
+                    specs.get(0).getProcessingRate_ProcessingResourceSpecification().getSpecification());
+        }
+
+        if (!hddSpecs.isEmpty()) {
+            labels.put(AllocationExecutor.HDDREADRATE_LABEL_KEY,
+                    hddSpecs.get(0).getReadProcessingRate().getSpecification());
+            labels.put(AllocationExecutor.HDDWRITERATE_LABEL_KEY,
+                    hddSpecs.get(0).getWriteProcessingRate().getSpecification());
+        }
+
+        return labels;
+    }
 }

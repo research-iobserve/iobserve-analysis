@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
-import org.iobserve.execution.stages.IExecutor;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
@@ -42,7 +41,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  * @author Lars Bluemke
  *
  */
-public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
+public class DeploymentExecutor extends AbstractExecutor<DeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentExecutor.class);
 
     private final Map<String, Deployment> podsToDeploy;
@@ -71,26 +70,14 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
         // Can't be loaded earlier because it references the other models received via TCP
         final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
                 .load(URI.createFileURI(this.correspondenceModelFile.getAbsolutePath()));
-
         final KubernetesClient client = new DefaultKubernetesClient();
-        final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
-                .getEntityName().toLowerCase();
+        final String rcName = this.normalizeComponentName(
+                action.getTargetAllocationContext().getResourceContainer_AllocationContext().getEntityName());
         final Deployment deployment = client.extensions().deployments().inNamespace(this.namespace).withName(rcName)
                 .get();
         final AssemblyContext targetAssemblyContext = action.getTargetAllocationContext()
                 .getAssemblyContext_AllocationContext();
-        String imageName = "";
-
-        // Get the image name from the correspondence model
-        for (final AbstractEntry e : correspondenceModel.getParts().get(0).getEntries()) {
-            if (e instanceof AssemblyEntry) {
-                final AssemblyEntry assEntry = (AssemblyEntry) e;
-
-                if (assEntry.getAssembly().getId().equals(targetAssemblyContext.getId())) {
-                    imageName = assEntry.getImplementationId();
-                }
-            }
-        }
+        final String imageName = this.getImageName(correspondenceModel, targetAssemblyContext);
 
         if (deployment != null) {
             // Increase number of replicas if pod is already deployed...
@@ -110,9 +97,8 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
 
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
                     .setImage(imageLocator + "/" + imageName);
-            // regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
-                    .setName(targetAssemblyContext.getEntityName().toLowerCase().replace('_', '-'));
+                    .setName(this.normalizeComponentName(targetAssemblyContext.getEntityName()));
 
             client.extensions().deployments().inNamespace(this.namespace).create(newDeployment);
 
@@ -125,4 +111,29 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
         client.close();
     }
 
+    /**
+     * Gets the image name from the correspondence model.
+     *
+     * @param correspondenceModel
+     *            The correspondence model containing the image name
+     * @param targetAssemblyContext
+     *            The assembly context whose image name is required
+     * @return The image name
+     */
+    private String getImageName(final CorrespondenceModel correspondenceModel,
+            final AssemblyContext targetAssemblyContext) {
+        String imageName = "";
+
+        for (final AbstractEntry e : correspondenceModel.getParts().get(0).getEntries()) {
+            if (e instanceof AssemblyEntry) {
+                final AssemblyEntry assEntry = (AssemblyEntry) e;
+
+                if (assEntry.getAssembly().getId().equals(targetAssemblyContext.getId())) {
+                    imageName = assEntry.getImplementationId();
+                }
+            }
+        }
+
+        return imageName;
+    }
 }
