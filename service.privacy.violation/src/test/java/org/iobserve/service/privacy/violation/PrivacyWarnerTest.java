@@ -19,12 +19,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -34,72 +32,77 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.test.StageTester;
 
 /**
  * @author Clemens Brackmann
  *
  */
 public class PrivacyWarnerTest {
-    private final File pcmDirectory = new File(
-            "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore");
+	private final File pcmDirectory = new File("D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore");
 
-    private final File modelDatabaseDirectory = new File(
-            "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db");
+	private final File modelDatabaseDirectory = new File("D:/Experiment/distributed-jpetstore-experiment/db");
 
-    private PrivacyWarner pw;
 
-    /**
-     * Initialize database.
-     */
-    @Before
-    public void initializePW() {
-        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
-        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+	private PrivacyWarner pw;
 
-        /** graphs. */
-        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+	/**
+	 * Initialize database.
+	 */
+	@Before
+	public void initializePW() {
+		final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
+		final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-        /** load neo4j graphs. */
-        final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                .createModelGraph(ResourceEnvironment.class);
-        final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
-        final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
 
-        /** model provider. */
-        final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+		/** graphs. */
+		graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel());
+		graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel());
+		graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel());
+		graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel());
+		
 
-        this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 
-    }
+		/** load neo4j graphs. */	
+		final Graph<Repository> repositoryGraph = graphLoader.createModelGraph(Repository.class);
+		final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
+		final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
+				.createModelGraph(ResourceEnvironment.class);
+		final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+		
+		
+		/** model provider. */
+		final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph);
+		final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph);
+		final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+				resourceEnvironmentGraph);
+		final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+		
+		
+		this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
+				repositoryModelProvider);
 
-    /**
-     * Test run component.
-     */
-    @Test
-    public void testPW() {
-        final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-        assemblyContext.setEntityName("EntityName");
-        final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService", assemblyContext, "http://Test.test",
-                ISOCountryCode.EVIL_EMPIRE);
+	}
 
-        final List<Warnings> results = new ArrayList<>();
-        StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)
-                .from(this.pw.getWarningsOutputPort()).and().start();
-        Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
-    }
+
+	/**
+	 * Test run component.
+	 */
+	@Test
+	public void testPW() {
+		final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService",
+				CorrespondentFactory.newInstance("Testname", "TestID", "Testmethode", "TestmethodenID"),
+				"http://Test.test", (short) 5); // NOPMD short type is used in framework
+
+
+		final List<Warnings> results = new ArrayList<>();
+		StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)
+				.from(this.pw.getWarningsOutputPort()).and().start();
+		Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
+	}
 
 }
