@@ -29,7 +29,6 @@ import org.iobserve.execution.stages.kubernetes.AllocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeallocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeploymentExecutor;
 import org.iobserve.execution.stages.kubernetes.UndeploymentExecutor;
-import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
@@ -61,8 +60,8 @@ public class KubernetesExecutionConfiguration extends Configuration {
      */
     public KubernetesExecutionConfiguration(final int executionPlanInputPort, final int runtimeModelInputPort,
             final int redeploymentModelInputPort, final File workingDirectory, final File runtimeModelDirectory,
-            final File redeploymentModelDirectory, final CorrespondenceModel correspondenceModel,
-            final String imageLocator, final String subdomain, final String namespace) {
+            final File redeploymentModelDirectory, final File correspondenceModelFile, final String imageLocator,
+            final String subdomain, final String namespace) {
 
         final SingleConnectionTcpReaderStage executionPlanReader = new SingleConnectionTcpReaderStage(
                 executionPlanInputPort, workingDirectory);
@@ -77,7 +76,7 @@ public class KubernetesExecutionConfiguration extends Configuration {
 
         final Map<String, Deployment> podsToDeploy = new HashMap<>();
         final DeploymentExecutor kubernetesDeploymentExecutor = new DeploymentExecutor(podsToDeploy,
-                correspondenceModel, namespace);
+                correspondenceModelFile, namespace);
         final UndeploymentExecutor kubernetesUndeploymentExecutor = new UndeploymentExecutor(namespace);
         final AllocationExecutor kubernetesAllocationExecutor = new AllocationExecutor(imageLocator, subdomain,
                 podsToDeploy);

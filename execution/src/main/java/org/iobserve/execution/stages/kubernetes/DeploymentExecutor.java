@@ -15,13 +15,16 @@
  ***************************************************************************/
 package org.iobserve.execution.stages.kubernetes;
 
+import java.io.File;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
 import org.iobserve.execution.stages.IExecutor;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.provider.file.CorrespondenceModelHandler;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +46,7 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentExecutor.class);
 
     private final Map<String, Deployment> podsToDeploy;
-    private final CorrespondenceModel correspondenceModel;
+    private final File correspondenceModelFile;
     private final String namespace;
 
     /**
@@ -56,15 +59,19 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
      * @param namespace
      *            Kubernetes namespace
      */
-    public DeploymentExecutor(final Map<String, Deployment> podsToDeploy, final CorrespondenceModel correspondenceModel,
+    public DeploymentExecutor(final Map<String, Deployment> podsToDeploy, final File correspondenceModelFile,
             final String namespace) {
         this.podsToDeploy = podsToDeploy;
-        this.correspondenceModel = correspondenceModel;
+        this.correspondenceModelFile = correspondenceModelFile;
         this.namespace = namespace;
     }
 
     @Override
     public void execute(final DeployComponentAction action) {
+        // Can't be loaded earlier because it references the other models received via TCP
+        final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
+                .load(URI.createFileURI(this.correspondenceModelFile.getAbsolutePath()));
+
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = action.getTargetAllocationContext().getResourceContainer_AllocationContext()
                 .getEntityName().toLowerCase();
@@ -75,7 +82,7 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
         String imageName = "";
 
         // Get the image name from the correspondence model
-        for (final AbstractEntry e : this.correspondenceModel.getParts().get(0).getEntries()) {
+        for (final AbstractEntry e : correspondenceModel.getParts().get(0).getEntries()) {
             if (e instanceof AssemblyEntry) {
                 final AssemblyEntry assEntry = (AssemblyEntry) e;
 
@@ -103,8 +110,9 @@ public class DeploymentExecutor implements IExecutor<DeployComponentAction> {
 
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
                     .setImage(imageLocator + "/" + imageName);
+            // regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?')
             newDeployment.getSpec().getTemplate().getSpec().getContainers().get(0)
-                    .setName(targetAssemblyContext.getEntityName());
+                    .setName(targetAssemblyContext.getEntityName().toLowerCase().replace('_', '-'));
 
             client.extensions().deployments().inNamespace(this.namespace).create(newDeployment);
 

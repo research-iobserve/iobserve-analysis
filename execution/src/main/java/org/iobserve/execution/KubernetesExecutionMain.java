@@ -24,10 +24,7 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
-import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.provider.file.CorrespondenceModelHandler;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
@@ -102,8 +99,6 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
                 KubernetesExecutionMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
         final File correspondenceModelFile = new File(workingDirectory,
                 configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
-        final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
-                .load(URI.createFileURI(correspondenceModelFile.getAbsolutePath()));
         final String imageLocator = configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR);
         final String subdomain = configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN);
         final String namespace = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE);
@@ -113,7 +108,7 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
 
         return new KubernetesExecutionConfiguration(executionPlanInputPort, runtimeModelInputPort,
                 redeploymentModelInputPort, workingDirectory, runtimeModelDirectory, redeploymentModelDirectory,
-                correspondenceModel, imageLocator, subdomain, namespace);
+                correspondenceModelFile, imageLocator, subdomain, namespace);
     }
 
     @Override
