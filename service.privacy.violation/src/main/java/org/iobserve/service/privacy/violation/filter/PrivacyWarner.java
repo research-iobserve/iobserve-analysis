@@ -20,14 +20,10 @@ import java.util.LinkedHashMap;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-<<<<<<< HEAD
-import org.iobserve.model.provider.neo4j.IModelProvider;
-=======
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.transformation.Edge;
 import org.iobserve.service.privacy.violation.transformation.Graph;
 import org.iobserve.service.privacy.violation.transformation.Vertice;
->>>>>>> Grapherstellung und Model Loading
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -64,6 +60,8 @@ public class PrivacyWarner extends AbstractStage {
 	private final ModelProvider<System, System> systemModelGraphProvider;
 	private final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 	private final ModelProvider<Repository, Repository> repositoryModelGraphProvider;
+	
+	private final ModelProvider<System,AssemblyContext> assemblyContextProvider;
 
 	private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
 	private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -93,6 +91,8 @@ public class PrivacyWarner extends AbstractStage {
 		this.systemModelGraphProvider = systemModelGraphProvider;
 		this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
 		this.repositoryModelGraphProvider = repositoryModelGraphProvider;
+		
+		this.assemblyContextProvider = new ModelProvider<>(systemModelGraphProvider.getGraph(),ModelProvider.PCM_ENTITY_NAME,ModelProvider.PCM_ID);
 	}
 
 	private void print(Object o) {
@@ -105,6 +105,7 @@ public class PrivacyWarner extends AbstractStage {
 
 	@Override
 	protected void execute() throws Exception {
+		
 		java.lang.System.out.print("Execution started");
 		final Warnings warnings = new Warnings();
 		final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
@@ -113,7 +114,7 @@ public class PrivacyWarner extends AbstractStage {
 		if (deployedEvent != null) {
 			// TODO generate warnings after the last deployment
 			java.lang.System.out.print("Received Deployment");
-			java.lang.System.out.print("CountryCode: " + deployedEvent.getCountryCode());
+			java.lang.System.out.print("CountryCode: ");
 			java.lang.System.out.print("Service: " + deployedEvent.getService());
 		}
 		if (undeployedEvent != null) {
@@ -129,9 +130,9 @@ public class PrivacyWarner extends AbstractStage {
 	private void createAnalysisGraph() {
 		Graph g = new Graph();
 		HashMap<String, Vertice> vertices = new LinkedHashMap<String, Vertice>();
-		allocationRootElement = allocationModelGraphProvider.readRootComponent(Allocation.class);
-		systemRootElement = systemModelGraphProvider.readRootComponent(System.class);
-		repositoryRootElement = repositoryModelGraphProvider.readRootComponent(Repository.class);
+		allocationRootElement = allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
+		systemRootElement = systemModelGraphProvider.readOnlyRootComponent(System.class);
+		repositoryRootElement = repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
 		print("******************************************************************************************************************");
 		java.lang.System.out.println("Starting creation of Analysis Graph");
 		// print("Allocation");
@@ -164,15 +165,15 @@ public class PrivacyWarner extends AbstractStage {
 				for (OperationSignature os : oi.getSignatures__OperationInterface()) {
 					print(os.getReturnType__OperationSignature());
 					for (Parameter p : os.getParameters__OperationSignature()) {
-						
+						print(p.getModifier__Parameter());
 						DataType dt = p.getDataType__Parameter();
 						if (dt instanceof CompositeDataType) {
 							CompositeDataType cdt = (CompositeDataType) dt;
-							print("Composite: "+cdt.getEntityName());
+							print("Composite: " + cdt.getEntityName());
 						}
 						if (dt instanceof PrimitiveDataType) {
 							PrimitiveDataType pdt = (PrimitiveDataType) dt;
-							print("Enum: "+pdt.getType());
+							print("Enum: " + pdt.getType());
 							print(pdt.getType().getLiteral());
 							print(pdt.getType().getName());
 						}
@@ -194,7 +195,7 @@ public class PrivacyWarner extends AbstractStage {
 					OperationRequiredRole orr = ac.getRequiredRole_AssemblyConnector();
 					print(opr.getEntityName());
 					if (opr != null) {
-						
+
 						OperationInterface oi = orr.getRequiredInterface__OperationRequiredRole();
 						print(orr.getRequiringEntity_RequiredRole());
 
@@ -246,6 +247,5 @@ public class PrivacyWarner extends AbstractStage {
 	public InputPort<PCMUndeployedEvent> getUndeployedInputPort() {
 		return this.undeployedInputPort;
 	}
-
 
 }

@@ -60,10 +60,10 @@ public class PrivacyWarnerTest {
 
 
 		/** graphs. */
-		graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel());
-		graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel());
-		graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel());
-		graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel());
+		graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel(),ModelProvider.PCM_ENTITY_NAME,ModelProvider.PCM_ID);
+		graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(),ModelProvider.PCM_ENTITY_NAME,ModelProvider.PCM_ID);
+		graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),ModelProvider.PCM_ENTITY_NAME,ModelProvider.PCM_ID);
+		graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),ModelProvider.PCM_ENTITY_NAME,ModelProvider.PCM_ID);
 		
 
 
@@ -76,11 +76,11 @@ public class PrivacyWarnerTest {
 		
 		
 		/** model provider. */
-		final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph);
-		final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph);
+		final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+		final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 		final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-				resourceEnvironmentGraph);
-		final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+				resourceEnvironmentGraph,ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+		final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 		
 		
 		this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
