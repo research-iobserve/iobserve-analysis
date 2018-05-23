@@ -16,6 +16,7 @@
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -58,7 +59,7 @@ public class BehaviorModelSink extends AbstractConsumerStage<BehaviorModel> {
 
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
-        final String filename = this.baseUrl + model.getName() + ".txt";
+        final String filename = this.baseUrl + File.separator + model.getName() + ".txt";
         BehaviorModelSink.LOGGER.info("Write models to {}", filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);

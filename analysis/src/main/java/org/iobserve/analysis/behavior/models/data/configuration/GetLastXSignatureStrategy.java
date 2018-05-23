@@ -17,7 +17,7 @@ package org.iobserve.analysis.behavior.models.data.configuration;
 
 import java.util.regex.Pattern;
 
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
  * strategy using the last x parts of the operation.

@@ -26,6 +26,8 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * auxiliary filter to generate the base of the BehaviorModelTable.
@@ -34,6 +36,7 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  *
  */
 public final class BehaviorModelTableGenerationStage extends AbstractConsumerStage<UserSessionCollectionModel> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelTableGenerationStage.class);
 
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
@@ -50,7 +53,8 @@ public final class BehaviorModelTableGenerationStage extends AbstractConsumerSta
      * @param keepEmptyTransitions
      *            allows to keep empty transitions
      */
-    public BehaviorModelTableGenerationStage(final IRepresentativeStrategy strategy, final boolean keepEmptyTransitions) {
+    public BehaviorModelTableGenerationStage(final IRepresentativeStrategy strategy,
+            final boolean keepEmptyTransitions) {
         super();
 
         this.modelTable = new DynamicBehaviorModelTable(strategy);
@@ -63,7 +67,7 @@ public final class BehaviorModelTableGenerationStage extends AbstractConsumerSta
         final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
         for (final UserSession userSession : userSessions) {
-
+            BehaviorModelTableGenerationStage.LOGGER.debug("entryCalls: {}", userSession.getEvents().size());
             final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
             EntryCallEvent lastCall = null;

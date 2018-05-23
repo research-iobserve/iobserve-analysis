@@ -30,15 +30,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Prepares EntryCallSequenceModels for Clustering.
+ * Prepares {@link UserSessioncollectionModel}s for clustering, but also receives @{link
+ * BehaviorModelTabel}s.
+ *
+ * TODO should be renamed, also what is the purpose of the strange execute method? why use Object
+ * and the process two different types of events?
  *
  * @author Christoph Dornieden
  *
  */
 
-public final class BehaviorModelPreperation extends AbstractConsumerStage<Object> {
+public final class BehaviorModelPreparation extends AbstractConsumerStage<Object> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelPreperation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelPreparation.class);
 
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
@@ -53,7 +57,7 @@ public final class BehaviorModelPreperation extends AbstractConsumerStage<Object
      * @param keepEmptyTransitions
      *            allow to keep empty transitions
      */
-    public BehaviorModelPreperation(final boolean keepEmptyTransitions) {
+    public BehaviorModelPreparation(final boolean keepEmptyTransitions) {
         super();
         this.sequenceModelCache = new HashSet<>();
         this.keepEmptyTransitions = keepEmptyTransitions;
@@ -70,7 +74,7 @@ public final class BehaviorModelPreperation extends AbstractConsumerStage<Object
             this.executeBehaviorModelTable(modelTable);
 
         } else {
-            BehaviorModelPreperation.LOGGER
+            BehaviorModelPreparation.LOGGER
                     .error("input is nether of type EntryCallSequenceModel nor BehaviorModelTable");
         }
     }
@@ -78,26 +82,25 @@ public final class BehaviorModelPreperation extends AbstractConsumerStage<Object
     /**
      * Execute case object instanceof EntryCallSequenceModel.
      *
-     * @param entryCallSequenceModel
+     * @param userSessionCollectionModel
      *            entryCallSequenceModel
      */
-    private void executeEntryCallSequenceModel(final UserSessionCollectionModel entryCallSequenceModel) {
+    private void executeEntryCallSequenceModel(final UserSessionCollectionModel userSessionCollectionModel) {
 
         if (this.behaviorModelTable == null) {
-            this.sequenceModelCache.add(entryCallSequenceModel);
+            this.sequenceModelCache.add(userSessionCollectionModel);
 
         } else {
-            final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-
+            final List<UserSession> userSessions = userSessionCollectionModel.getUserSessions();
+            BehaviorModelPreparation.LOGGER.debug("Executing {}", userSessionCollectionModel.getClass());
+            BehaviorModelPreparation.LOGGER.debug("userSessions: {}", userSessions.size());
             for (final UserSession userSession : userSessions) {
                 final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
                 EntryCallEvent lastCall = null;
                 for (final EntryCallEvent eventCall : entryCalls) {
-
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
-
                     if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
@@ -128,7 +131,7 @@ public final class BehaviorModelPreperation extends AbstractConsumerStage<Object
             this.sequenceModelCache.forEach(this::executeEntryCallSequenceModel);
             this.sequenceModelCache.clear();
         } else {
-            BehaviorModelPreperation.LOGGER.warn("behaviorModelTable already assigned");
+            BehaviorModelPreparation.LOGGER.warn("behaviorModelTable already assigned");
         }
     }
 

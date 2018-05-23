@@ -32,8 +32,9 @@ public class JIRARepresentativeStrategy implements IRepresentativeStrategy {
     }
 
     @Override
-    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
+    public String findRepresentativeValue(final String signature, final List<String> callInformationCodes) {
         // summing up all values
-        return callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
+        return callInformationCodes.stream().reduce("0.0",
+                (a, b) -> String.valueOf(Double.parseDouble(a) + Double.parseDouble(b)));
     }
 }

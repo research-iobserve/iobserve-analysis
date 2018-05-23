@@ -24,6 +24,12 @@ import org.iobserve.stages.data.trace.EventBasedTrace;
  */
 public interface ISendTraceBuffer {
 
-    public void sendTraceBuffer(final EventBasedTrace traceBuffer);
+    /**
+     * Called when an {@link EventBasedTrace} is sent.
+     *
+     * @param traceBuffer
+     *            event trace
+     */
+    void sendTraceBuffer(final EventBasedTrace traceBuffer);
 
 }

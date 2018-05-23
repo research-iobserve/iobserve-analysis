@@ -22,6 +22,8 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
+import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class SimilarityBehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimilarityBehaviorCompositeStage.class);
 
-    private final PreprocessingCompositeStage preprocessingCompositeStage;
+    private final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage;
 
     /**
      * Create an behavior composite stage.
@@ -73,24 +75,24 @@ public class SimilarityBehaviorCompositeStage extends CompositeStage implements 
                 .createWithConfiguration(IClassificationStage.class, classificationStageClassName, configuration);
 
         /** Create remaining stages and connect them */
-        this.preprocessingCompositeStage = new PreprocessingCompositeStage(configuration);
-        final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
+        this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
+        final BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL, null);
 
-        this.connectPorts(this.preprocessingCompositeStage.getSessionOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getSessionOutputPort(),
                 classificationStage.getSessionInputPort());
-        this.connectPorts(this.preprocessingCompositeStage.getTimerOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getTimerOutputPort(),
                 classificationStage.getTimerInputPort());
         this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 
     @Override
-    public InputPort<EventBasedTrace> getEventBasedTracePort() {
-        return this.preprocessingCompositeStage.getTraceInputPort();
+    public InputPort<EventBasedTrace> getEventBasedTraceInputPort() {
+        return this.userSessionGeneratorCompositeStage.getTraceInputPort();
     }
 
     @Override
     public InputPort<ISessionEvent> getSessionEventInputPort() {
-        return this.preprocessingCompositeStage.getSessionEventInputPort();
+        return this.userSessionGeneratorCompositeStage.getSessionEventInputPort();
     }
 
 }

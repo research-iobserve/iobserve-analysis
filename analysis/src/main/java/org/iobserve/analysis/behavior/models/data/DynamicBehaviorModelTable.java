@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.behavior.SingleOrNoneCollector;
-import org.iobserve.analysis.behavior.models.basic.CallInformation;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 import org.slf4j.Logger;
@@ -116,8 +116,9 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
         try {
             for (int i = 0; i < event.getParameters().length; i++) {
-                newCallInformations.add(new CallInformation(event.getParameters()[i],
-                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
+                final String value = String.valueOf(
+                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i]));
+                newCallInformations.add(new CallInformation(event.getParameters()[i], value));
             }
 
             // adding if no transition added yet

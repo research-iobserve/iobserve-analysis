@@ -15,23 +15,17 @@
  ***************************************************************************/
 package org.iobserve.stages.source;
 
-import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.flow.IEventRecord;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 /**
  * @author Reiner Jung
  *
  */
-public class SynthesizedTimeTriggerStage extends AbstractConsumerStage<IMonitoringRecord>
+public class SynthesizedTimeTriggerStage extends AbstractConsumerStage<PayloadAwareEntryCallEvent>
         implements IPeriodicalTriggerStage {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SynthesizedTimeTriggerStage.class);
 
     private final OutputPort<Long> outputPort = this.createOutputPort(Long.class);
 
@@ -56,20 +50,19 @@ public class SynthesizedTimeTriggerStage extends AbstractConsumerStage<IMonitori
     }
 
     @Override
-    protected void execute(final IMonitoringRecord event) throws Exception {
-        if (event instanceof IEventRecord) {
-            final long now = ((IEventRecord) event).getTimestamp();
-            if (this.last - now > this.interval) {
-                this.last = now;
-                this.outputPort.send(this.last);
-            }
-        } else {
-            final long now = event.getLoggingTimestamp();
-            if (this.last - now > this.interval) {
-                this.last = now;
-                this.outputPort.send(this.last);
-            }
+    protected void execute(final PayloadAwareEntryCallEvent event) throws Exception {
+        final long now = event.getEntryTime();
+        if (this.last - now > this.interval) {
+            this.logger.debug("trigger event {} {}", now, now - this.last);
+            this.last = now;
+            this.outputPort.send(this.last);
         }
+    }
+
+    @Override
+    public void onTerminating() {
+        this.outputPort.send(this.last);
+        super.onTerminating();
     }
 
 }

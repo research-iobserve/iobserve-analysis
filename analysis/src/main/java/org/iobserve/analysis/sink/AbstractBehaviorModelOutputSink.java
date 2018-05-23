@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior.clustering.similaritymatching;
+package org.iobserve.analysis.sink;
 
 import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * Stage that accepts an array of behavior models and sends them to its output port individually.
+ * Used to define a common interface for ModelOutputSinks.
  *
- * @author Jannis Kuckei
+ * TODO complete this feature or remove it
+ *
+ * @author Christoph Dornieden
  *
  */
-public class BehaviorModelDecollectorStage extends AbstractConsumerStage<BehaviorModel[]> {
-    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
+public abstract class AbstractBehaviorModelOutputSink extends AbstractConsumerStage<BehaviorModel> { // NOPMD
 
-    @Override
-    protected void execute(final BehaviorModel[] models) throws Exception {
-        for (final BehaviorModel model : models) {
-            this.outputPort.send(model);
-        }
-    }
-
-    public OutputPort<BehaviorModel> getOutputPort() {
-        return this.outputPort;
-    }
 }

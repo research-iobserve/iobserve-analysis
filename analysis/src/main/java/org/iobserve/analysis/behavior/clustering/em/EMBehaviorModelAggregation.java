@@ -20,7 +20,7 @@ import teetime.framework.InputPort;
 
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.sink.AbstractModelOutputSink;
+import org.iobserve.analysis.sink.AbstractBehaviorModelOutputSink;
 import org.iobserve.analysis.sink.BehaviorModelSink;
 
 import weka.core.Instances;
@@ -51,7 +51,7 @@ public class EMBehaviorModelAggregation extends CompositeStage {
         this.connectPorts(this.emClustering.getOutputPort(), behaviorModelCreation.getInputPort());
 
         /** visualization integration. */
-        final AbstractModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
+        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
 
         this.connectPorts(behaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
     }

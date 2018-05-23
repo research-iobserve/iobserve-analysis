@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior.clustering.similaritymatching;
+package org.iobserve.analysis.behavior.filter;
 
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
@@ -26,6 +26,7 @@ import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.UserSessionOperationCleanupStage;
 import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.session.SessionAcceptanceFilter;
@@ -45,38 +46,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Pre-processes monitoring records into user sessions and also provides a timer stage to generate
- * signals at regular intervals.
+ * Processes session events and traces and generates user sessions. In addition it also encapsulates
+ * the timer stage to generate signals at regular intervals.
+ *
+ * Inputs are: @{link ISessionEvent}s and @{link EventBasedTrace}s
+ *
+ * Outputs are: @{link Long}s representing timestamps and @{link UserSession}s
  *
  * @author Jannis Kuckei
  *
  */
 @ReceiveUnfilteredConfiguration
-public class PreprocessingCompositeStage extends CompositeStage {
+public class UserSessionGeneratorCompositeStage extends CompositeStage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreprocessingCompositeStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionGeneratorCompositeStage.class);
 
     private final SynthesizedTimeTriggerStage sessionCollectionTimer;
-    private final UserSessionOperationCleanupStage sessionOperationsFilter;
+    private final UserSessionOperationCleanupStage userSessionOperationCleanupStage;
     private final EntryCallStage entryCallStage;
     private final EntryCallSequence entryCallSequence;
 
     /**
-     * Create the preprocessing stage.
+     * Create the user session generator stage.
      *
      * @param configuration
      *            containing all configuration parameters
      * @throws ConfigurationException
      *             on errors in configuration
      */
-    public PreprocessingCompositeStage(final Configuration configuration) throws ConfigurationException {
+    public UserSessionGeneratorCompositeStage(final Configuration configuration) throws ConfigurationException {
         /**
          * Create Clock. Default value of -1 was selected because the method getLongProperty states
          * it will return "null" if no value was specified, but long is a primitive type ...
          */
         final Long triggerInterval = configuration.getLongProperty(ConfigurationKeys.TRIGGER_INTERVAL, -1);
         if (triggerInterval < 0) {
-            PreprocessingCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
+            UserSessionGeneratorCompositeStage.LOGGER
+                    .error("Initialization incomplete: No time trigger interval specified.");
             throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
         }
 
@@ -112,7 +118,7 @@ public class PreprocessingCompositeStage extends CompositeStage {
         final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
                 cleanupRewriter);
         /** Create UserSessionOperationsFilter */
-        this.sessionOperationsFilter = new UserSessionOperationCleanupStage(filterRulesFactory.createFilter());
+        this.userSessionOperationCleanupStage = new UserSessionOperationCleanupStage(filterRulesFactory.createFilter());
 
         /** Create Clock */
         // TODO the following code snippet uses a synthesized clock
@@ -120,21 +126,23 @@ public class PreprocessingCompositeStage extends CompositeStage {
         // new TimeTriggerStage(triggerInterval, singleEventMode);
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<PayloadAwareEntryCallEvent> distributor = new Distributor<>(strategy);
+
+        /** Connect all ports */
         this.connectPorts(this.entryCallStage.getOutputPort(), distributor.getInputPort());
         this.connectPorts(distributor.getNewOutputPort(), this.sessionCollectionTimer.getInputPort());
 
-        /** Connect all ports */
         this.connectPorts(distributor.getNewOutputPort(), this.entryCallSequence.getEntryCallInputPort());
         this.connectPorts(this.entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
         this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
-        this.connectPorts(traceOperationCleanupFilter.getOutputPort(), this.sessionOperationsFilter.getInputPort());
+        this.connectPorts(traceOperationCleanupFilter.getOutputPort(),
+                this.userSessionOperationCleanupStage.getInputPort());
     }
 
     private <T> T createFromConfiguration(final Class<T> clazz, final Configuration configuration, final String key,
             final String errorMessage) throws ConfigurationException {
         final String className = configuration.getStringProperty(key);
         if (className.isEmpty()) {
-            PreprocessingCompositeStage.LOGGER.error("Initialization incomplete: {}", errorMessage);
+            UserSessionGeneratorCompositeStage.LOGGER.error("Initialization incomplete: {}", errorMessage);
             throw new ConfigurationException(String.format("Initialization incomplete: %s", errorMessage));
         }
         return InstantiationFactory.create(clazz, className, null);
@@ -149,7 +157,7 @@ public class PreprocessingCompositeStage extends CompositeStage {
     }
 
     public OutputPort<UserSession> getSessionOutputPort() {
-        return this.sessionOperationsFilter.getOutputPort();
+        return this.userSessionOperationCleanupStage.getOutputPort();
     }
 
     public OutputPort<Long> getTimerOutputPort() {

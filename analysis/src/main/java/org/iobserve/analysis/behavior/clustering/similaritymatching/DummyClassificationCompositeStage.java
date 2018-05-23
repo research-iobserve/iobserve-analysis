@@ -21,6 +21,7 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.ConfigurationException;
@@ -57,7 +58,7 @@ public class DummyClassificationCompositeStage extends CompositeStage implements
     }
 
     @Override
-    public OutputPort<BehaviorModel[]> getOutputPort() {
+    public OutputPort<BehaviorModel> getOutputPort() {
         return this.dummyClassificationStage.getOutputPort();
     }
 

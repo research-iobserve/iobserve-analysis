@@ -48,7 +48,6 @@ public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord
      * Reconstruct traces filter.
      *
      * @param traceId2traceMap
-     *            trace id to trace map
      */
     public TraceReconstructionFilter(final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceId2traceMap) {
         super();

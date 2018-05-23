@@ -43,7 +43,7 @@ import teetime.stage.basic.AbstractTransformation;
  */
 public class DatFileToRecordStage extends AbstractTransformation<File, IMonitoringRecord> {
 
-    private static final int BUFFER_SIZE = 10240;
+    private static final int BUFFER_SIZE = 10240000;
     private final String charset;
     private final ClassNameRegistryRepository classNameRegistryRepository;
     private final CachedRecordFactoryCatalog recordFactories = CachedRecordFactoryCatalog.getInstance();

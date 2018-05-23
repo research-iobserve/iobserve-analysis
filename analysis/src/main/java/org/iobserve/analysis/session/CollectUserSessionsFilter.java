@@ -24,6 +24,8 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The collect user sessions filter collects incoming user sessions and sends the collection as an
@@ -37,7 +39,7 @@ import org.iobserve.analysis.session.data.UserSession;
  * @since 0.0.2
  */
 public class CollectUserSessionsFilter extends AbstractStage {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectUserSessionsFilter.class);
     private final InputPort<UserSession> userSessionInputPort = this.createInputPort();
     private final InputPort<Long> timeTriggerInputPort = this.createInputPort();
 
@@ -60,6 +62,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
     public CollectUserSessionsFilter(final long keepTime, final int minCollectionSize) {
         this.keepTime = keepTime;
         this.minCollectionSize = minCollectionSize;
+        this.declareActive();
     }
 
     @Override
@@ -67,6 +70,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
         final UserSession userSession = this.userSessionInputPort.receive();
 
         if (userSession != null) {
+            CollectUserSessionsFilter.LOGGER.debug("Received  model...");
             this.userSessions.add(userSession);
         }
 
@@ -82,9 +86,9 @@ public class CollectUserSessionsFilter extends AbstractStage {
                     }
                 }
             }
+            CollectUserSessionsFilter.LOGGER.debug("Sending model...");
             this.outputPort.send(model);
         }
-
     }
 
     public InputPort<UserSession> getUserSessionInputPort() {

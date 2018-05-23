@@ -21,12 +21,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,12 +34,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
-import org.iobserve.analysis.behavior.models.basic.CallInformation;
-import org.iobserve.analysis.behavior.models.basic.EntryCallEdge;
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.sink.AbstractModelOutputSink;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
+import org.iobserve.analysis.sink.AbstractBehaviorModelOutputSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Dornieden
  *
  */
-public class BehaviorModelVisualizationStage extends AbstractModelOutputSink {
+public class BehaviorModelVisualizationStage extends AbstractBehaviorModelOutputSink {
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelVisualizationStage.class);
     private final ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
@@ -190,7 +190,7 @@ public class BehaviorModelVisualizationStage extends AbstractModelOutputSink {
      * @param entryCallNodes
      *            entryCallNodes
      */
-    private void createNodes(final Set<EntryCallNode> entryCallNodes, final long modelId) {
+    private void createNodes(final Collection<EntryCallNode> entryCallNodes, final long modelId) {
         final ArrayNode nodes = this.objectMapper.createArrayNode();
         for (final EntryCallNode entryCallNode : entryCallNodes) {
 
@@ -200,7 +200,7 @@ public class BehaviorModelVisualizationStage extends AbstractModelOutputSink {
 
             final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {
-                extras.put(callInformation.getInformationSignature(), callInformation.getInformationCode());
+                extras.put(callInformation.getInformationSignature(), callInformation.getInformationParameter());
             }
             json.put("extra", extras);
 
@@ -221,7 +221,7 @@ public class BehaviorModelVisualizationStage extends AbstractModelOutputSink {
      * @param modelId
      *            modelId
      */
-    private void createEdges(final Set<EntryCallEdge> entryCallEdges, final long modelId) {
+    private void createEdges(final Collection<EntryCallEdge> entryCallEdges, final long modelId) {
         final ArrayNode edges = this.objectMapper.createArrayNode();
         for (final EntryCallEdge entryCallEdge : entryCallEdges) {
 

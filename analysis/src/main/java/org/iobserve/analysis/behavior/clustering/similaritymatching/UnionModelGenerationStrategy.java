@@ -48,7 +48,7 @@ public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
                             final int newCount = Math.max(info.getCount(), matchingInfo.get().getCount());
                             matchingInfo.get().setCount(newCount);
                         } else {
-                            matchingNode.get().mergeInformation(new CallInformation(info.getInformationSignature(),
+                            matchingNode.get().mergeCallInformation(new CallInformation(info.getInformationSignature(),
                                     info.getInformationParameter(), info.getCount()));
                         }
                     }
@@ -59,7 +59,7 @@ public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
                     for (final CallInformation info : node.getEntryCallInformation()) {
                         final CallInformation newInfo = new CallInformation(info.getInformationSignature(),
                                 info.getInformationParameter(), info.getCount());
-                        newNode.mergeInformation(newInfo);
+                        newNode.mergeCallInformation(newInfo);
                     }
                     newModel.addNode(newNode, false);
                 }

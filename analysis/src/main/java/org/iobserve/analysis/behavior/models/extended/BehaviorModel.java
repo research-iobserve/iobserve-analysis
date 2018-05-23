@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.models.extended;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class BehaviorModel {
         this.edges = new HashMap<>();
     }
 
-    public EntryCallNode[] getNodes() {
-        return this.nodes.values().toArray(new EntryCallNode[this.nodes.size()]);
+    public Collection<EntryCallNode> getNodes() {
+        return this.nodes.values();
     }
 
-    public EntryCallEdge[] getEdges() {
-        return this.edges.values().toArray(new EntryCallEdge[this.edges.size()]);
+    public Collection<EntryCallEdge> getEdges() {
+        return this.edges.values();
     }
 
     public String getName() {

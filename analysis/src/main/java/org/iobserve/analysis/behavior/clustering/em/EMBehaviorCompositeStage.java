@@ -21,8 +21,8 @@ import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
-import org.iobserve.analysis.behavior.clustering.similaritymatching.PreprocessingCompositeStage;
-import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratation;
+import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratationStage;
+import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.behavior.models.data.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
@@ -49,7 +49,7 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
 
     private static final String REPRESENTATIVE_STRATEGY = EMBehaviorCompositeStage.PREFIX + "representativeStrategy";
 
-    private final PreprocessingCompositeStage preprocessingStage;
+    private final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage;
 
     /**
      * Create the EM behavior clustering composite stage.
@@ -69,26 +69,26 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
                 .create(IRepresentativeStrategy.class, representativeStrategyClassName, null);
         final boolean keepEmptyTransitions = true;
 
-        this.preprocessingStage = new PreprocessingCompositeStage(configuration);
+        this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
 
-        final BehaviorModelPrepratation behaviorModelPreparation = new BehaviorModelPrepratation(modelGenerationFilter,
+        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(modelGenerationFilter,
                 representativeStrategy, keepEmptyTransitions);
 
         /** aggregation setup. */
         final String namePrefix = configuration.getStringProperty(EMBehaviorCompositeStage.NAME_PREFIX);
         final ISignatureCreationStrategy signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
         final String visualizationUrl = configuration.getStringProperty(EMBehaviorCompositeStage.OUTPUT_URL);
-        final EMBehaviorModelAggregation tBehaviorModelAggregation = new EMBehaviorModelAggregation(namePrefix,
+        final EMBehaviorModelAggregation emBehaviorModelAggregation = new EMBehaviorModelAggregation(namePrefix,
                 visualizationUrl, signatureCreationStrategy);
 
-        this.connectPorts(this.preprocessingStage.getSessionOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getSessionOutputPort(),
                 userSessionModelAggregator.getUserSessionInputPort());
-        this.connectPorts(this.preprocessingStage.getTimerOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getTimerOutputPort(),
                 userSessionModelAggregator.getTimeTriggerInputPort());
         this.connectPorts(userSessionModelAggregator.getOutputPort(), behaviorModelPreparation.getInputPort());
-        this.connectPorts(behaviorModelPreparation.getOutputPort(), tBehaviorModelAggregation.getInputPort());
+        this.connectPorts(behaviorModelPreparation.getOutputPort(), emBehaviorModelAggregation.getInputPort());
     }
 
     /*
@@ -97,8 +97,8 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
      * @see org.iobserve.analysis.feature.IBehaviorCompositeStage#getEventBasedTracePort()
      */
     @Override
-    public InputPort<EventBasedTrace> getEventBasedTracePort() {
-        return this.preprocessingStage.getTraceInputPort();
+    public InputPort<EventBasedTrace> getEventBasedTraceInputPort() {
+        return this.userSessionGeneratorCompositeStage.getTraceInputPort();
     }
 
     /*
@@ -108,7 +108,7 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
      */
     @Override
     public InputPort<ISessionEvent> getSessionEventInputPort() {
-        return this.preprocessingStage.getSessionEventInputPort();
+        return this.userSessionGeneratorCompositeStage.getSessionEventInputPort();
     }
 
 }

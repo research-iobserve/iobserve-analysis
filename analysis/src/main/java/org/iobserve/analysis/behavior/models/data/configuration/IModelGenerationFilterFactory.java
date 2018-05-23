@@ -16,8 +16,8 @@
 package org.iobserve.analysis.behavior.models.data.configuration;
 
 /**
- * Interface for factories creating {@link EntryCallFilterRules}. Necessary to
- * be instantiable so different versions can be used depending on configuration.
+ * Interface for factories creating {@link EntryCallFilterRules}. Necessary to be instantiable so
+ * different versions can be used depending on configuration.
  *
  * @author Christoph Dornieden
  *

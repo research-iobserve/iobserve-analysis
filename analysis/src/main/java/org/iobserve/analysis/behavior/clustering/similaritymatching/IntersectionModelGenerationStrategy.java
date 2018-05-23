@@ -74,7 +74,7 @@ public class IntersectionModelGenerationStrategy implements IModelGenerationStra
                 final int newCalls = Math.min(infoA.getCount(), matchingInfo.get().getCount());
                 final CallInformation newInfo = new CallInformation(infoA.getInformationSignature(),
                         infoA.getInformationParameter(), newCalls);
-                result.mergeInformation(newInfo);
+                result.mergeCallInformation(newInfo);
             }
         }
 

@@ -85,8 +85,8 @@ public class GeneralStructureMetric implements IStructureMetricStrategy {
                 }
             }
         }
-        final double nodesInA = a.getNodes().length;
-        final double nodesInB = b.getNodes().length;
+        final double nodesInA = a.getNodes().size();
+        final double nodesInB = b.getNodes().size();
 
         return (nodesInA + nodesInB - sharedNodes) / (nodesInA + nodesInB);
     }

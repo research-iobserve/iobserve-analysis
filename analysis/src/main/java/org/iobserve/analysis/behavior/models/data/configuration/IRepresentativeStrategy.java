@@ -30,10 +30,10 @@ public interface IRepresentativeStrategy {
      *
      * @param signature
      *            signature of the aggregated call information
-     * @param callInformationCodes
+     * @param callInformationValues
      *            code list of the aggregated information
-     * @return most representative code
+     * @return most representative value
      */
-    Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
+    String findRepresentativeValue(final String signature, List<String> callInformationValues);
 
 }

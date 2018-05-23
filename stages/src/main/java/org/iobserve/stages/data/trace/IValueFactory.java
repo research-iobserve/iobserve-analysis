@@ -19,6 +19,9 @@ package org.iobserve.stages.data.trace;
  * @author Christian Wulf
  *
  * @since 1.10
+ *
+ * @param <T>
+ *            value type.
  */
 public interface IValueFactory<T> {
 
@@ -26,6 +29,8 @@ public interface IValueFactory<T> {
      * Create a new instance of the type <code>T</code>.
      *
      * @since 1.10
+     *
+     * @return new instance
      */
-    public T create();
+    T create();
 }

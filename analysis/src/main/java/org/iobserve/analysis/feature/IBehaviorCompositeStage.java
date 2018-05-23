@@ -33,7 +33,7 @@ public interface IBehaviorCompositeStage {
      *
      * @return returns the trace port
      */
-    InputPort<EventBasedTrace> getEventBasedTracePort();
+    InputPort<EventBasedTrace> getEventBasedTraceInputPort();
 
     /**
      * get session input port.
