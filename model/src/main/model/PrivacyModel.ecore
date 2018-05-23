@@ -5,8 +5,17 @@
   <eClassifiers xsi:type="ecore:EClass" name="PrivacyModel">
     <eStructuralFeatures xsi:type="ecore:EReference" name="resourceContainerLocations"
         upperBound="-1" eType="#//GeoLocation" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterPrivacyLevels"
-        upperBound="-1" eType="#//ParameterPrivacy" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="privacyLevels" upperBound="-1"
+        eType="#//IPrivacyAnnotation" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReturnTypePrivacy" eSuperTypes="#//IPrivacyAnnotation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operationSignature" lowerBound="1"
+        eType="ecore:EClass platform:/plugin/org.palladiosimulator.pcm/model/pcm.ecore#//repository/OperationSignature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IPrivacyAnnotation" abstract="true"
+      interface="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="level" unique="false" lowerBound="1"
+        eType="#//EDataPrivacyLevel"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GeoLocation">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="isocode" eType="#//EISOCode"/>
@@ -14,9 +23,7 @@
         eType="ecore:EClass platform:/plugin/org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"
         derived="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ParameterPrivacy">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="level" unique="false" lowerBound="1"
-        eType="#//EDataPrivacyLevel"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ParameterPrivacy" eSuperTypes="#//IPrivacyAnnotation">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
         eType="ecore:EClass platform:/plugin/org.palladiosimulator.pcm/model/pcm.ecore#//repository/Parameter"/>
   </eClassifiers>

@@ -72,6 +72,14 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
                 return createPrivacyModelAdapter();
             }
             @Override
+            public Adapter caseReturnTypePrivacy(ReturnTypePrivacy object) {
+                return createReturnTypePrivacyAdapter();
+            }
+            @Override
+            public Adapter caseIPrivacyAnnotation(IPrivacyAnnotation object) {
+                return createIPrivacyAnnotationAdapter();
+            }
+            @Override
             public Adapter caseGeoLocation(GeoLocation object) {
                 return createGeoLocationAdapter();
             }
@@ -110,6 +118,34 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createPrivacyModelAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.ReturnTypePrivacy <em>Return Type Privacy</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.ReturnTypePrivacy
+     * @generated
+     */
+    public Adapter createReturnTypePrivacyAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.IPrivacyAnnotation <em>IPrivacy Annotation</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.IPrivacyAnnotation
+     * @generated
+     */
+    public Adapter createIPrivacyAnnotationAdapter() {
         return null;
     }
 
