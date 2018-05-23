@@ -115,6 +115,7 @@ public final class PrivacyViolationDetectionServiceMain
                 ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
+        final Graph<Repository> repositoryGraph = graphLoader.createModelGraph(Repository.class);
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
                 .createModelGraph(ResourceEnvironment.class);
         final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
@@ -124,6 +125,8 @@ public final class PrivacyViolationDetectionServiceMain
                 .createModelGraph(CorrespondenceModel.class);
 
         /** model provider. */
+        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
@@ -139,9 +142,9 @@ public final class PrivacyViolationDetectionServiceMain
 
         try {
             return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,
-                    assemblyEntryCorrespondenceModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    allocationContextModelProvider, systemModelProvider, privacyModelProvider, this.warningFile,
-                    this.alarmsFile);
+                    assemblyEntryCorrespondenceModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, privacyModelProvider,
+                    this.warningFile, this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

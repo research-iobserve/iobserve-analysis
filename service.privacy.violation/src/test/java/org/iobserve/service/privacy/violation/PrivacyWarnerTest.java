@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -44,11 +45,17 @@ import org.palladiosimulator.pcm.system.System;
  *
  */
 public class PrivacyWarnerTest {
-    private final File pcmDirectory = new File(
-            "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore");
 
-    private final File modelDatabaseDirectory = new File(
-            "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db");
+    // private static final String PCM_DIRECTORY_PATH =
+    // "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
+    // private static final String MODEL_DATABASE_DIRECTORY_PATH =
+    // "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
+
+    private static final String PCM_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    private static final String MODEL_DATABASE_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/db";
+
+    private final File pcmDirectory = new File(PrivacyWarnerTest.PCM_DIRECTORY_PATH);
+    private final File modelDatabaseDirectory = new File(PrivacyWarnerTest.MODEL_DATABASE_DIRECTORY_PATH);
 
     private PrivacyWarner pw;
 
@@ -61,28 +68,34 @@ public class PrivacyWarnerTest {
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         /** graphs. */
-        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),
+        graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(), ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
+        final Graph<Repository> repositoryGraph = graphLoader.createModelGraph(Repository.class);
+        final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
                 .createModelGraph(ResourceEnvironment.class);
         final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
-        final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
 
         /** model provider. */
+        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-        this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+        this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
+                repositoryModelProvider);
 
     }
 

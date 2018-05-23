@@ -26,8 +26,8 @@ import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
-
 import org.iobserve.model.privacy.ReturnTypePrivacy;
+
 import org.palladiosimulator.pcm.PcmPackage;
 
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
