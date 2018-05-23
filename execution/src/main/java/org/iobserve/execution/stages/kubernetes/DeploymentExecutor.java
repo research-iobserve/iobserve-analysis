@@ -53,7 +53,7 @@ public class DeploymentExecutor extends AbstractExecutor<DeployComponentAction> 
      *
      * @param podsToDeploy
      *            Blueprints of pods to deploy
-     * @param correspondenceModel
+     * @param correspondenceModelFile
      *            The correspondence model
      * @param namespace
      *            Kubernetes namespace

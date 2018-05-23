@@ -102,8 +102,12 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
 
             buffer.compact();
 
-            // Create file channel for model file
+            // Clear existing contents
             final File modelFile = new File(this.modelDirectory, filename);
+            modelFile.delete();
+            modelFile.createNewFile();
+
+            // Create file channel for model file
             final RandomAccessFile modelAccessFile = new RandomAccessFile(modelFile, "rw");
             final FileChannel fileChannel = modelAccessFile.getChannel();
 

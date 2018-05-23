@@ -47,9 +47,17 @@ public class KubernetesExecutionConfiguration extends Configuration {
      *
      * @param executionPlanInputPort
      *            Input port for execution plan
+     * @param runtimeModelInputPort
+     *            Input port for runtime model
+     * @param redeploymentModelInputPort
+     *            Input port for redeployment model
      * @param workingDirectory
      *            Working directory of execution
-     * @param correspondenceModel
+     * @param runtimeModelDirectory
+     *            Directory containing runtime models
+     * @param redeploymentModelDirectory
+     *            Directory containing redeployment models
+     * @param correspondenceModelFile
      *            The correspondence model
      * @param imageLocator
      *            Locator prefix for image

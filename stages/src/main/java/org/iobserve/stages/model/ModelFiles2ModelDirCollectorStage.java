@@ -62,12 +62,12 @@ public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
         // If all files have been received, send the containing directory
         if (this.receivedAllocationModel && this.receivedRepositoryModel && this.receivedResourceEnvironmentModel
                 && this.receivedSystemModel) {
-            this.outputPort.send(modelFile.getParentFile());
-
             this.receivedAllocationModel = false;
             this.receivedRepositoryModel = false;
             this.receivedResourceEnvironmentModel = false;
             this.receivedSystemModel = false;
+
+            this.outputPort.send(modelFile.getParentFile());
         }
     }
 
