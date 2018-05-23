@@ -48,6 +48,7 @@ public class TimeTriggerStage extends AbstractProducerStage<Long> implements IPe
      */
     public TimeTriggerStage(final long interval, final boolean singleEventMode) {
         this.interval = interval;
+        this.declareActive();
         this.singleEventMode = singleEventMode;
     }
 

@@ -143,6 +143,14 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
         super.onTerminating();
     }
 
+    /**
+     * Register an {@link IEventMatcher} and add it to the sequence of event matchers
+     *
+     * @param leaveEventMatcher
+     *            new leave event matcher
+     * @throws ConfigurationException
+     *             on error
+     */
     public void registerOutput(final IEventMatcher<? extends Object> leaveEventMatcher) throws ConfigurationException {
         leaveEventMatcher.setOutputPort(this.createOutputPort());
         if (this.rootEventMatcher == this.defaultMatcher) {

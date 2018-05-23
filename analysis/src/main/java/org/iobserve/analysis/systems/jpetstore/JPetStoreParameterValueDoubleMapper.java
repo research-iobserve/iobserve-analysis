@@ -141,7 +141,13 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
 
     @Override
     public double mapValue(final String parameter, final String value) {
-        return this.valueMap.get(parameter).get(value);
+        final Map<String, Double> values = this.valueMap.get(parameter);
+        if (values != null) {
+            return values.get(value);
+        } else {
+            return 100000000000d; // TODO this is a temporary measure to handle parameters which are
+                                  // not in the map
+        }
     }
 
 }

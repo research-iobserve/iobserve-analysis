@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ProbeControlFilterTest {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProbeControlFilterTest.class);
 
     private static final int BUFFER_SIZE = 65535;
@@ -102,7 +103,7 @@ public class ProbeControlFilterTest {
         StageTester.test(this.probeControlFilter).and().send(input).to(this.probeControlFilter.getInputPort()).and()
                 .receive(output).from(this.probeControlFilter.getOutputPort()).start();
 
-        Assert.assertTrue(output.size() == 0);
+        Assert.assertTrue(output.isEmpty());
     }
 
     /**

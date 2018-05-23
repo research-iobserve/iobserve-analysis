@@ -34,7 +34,7 @@ public class DummyClassificationStage extends AbstractStage {
 
     private final InputPort<UserSession> sessionInputPort = this.createInputPort(UserSession.class);
     private final InputPort<Long> timerInputPort = this.createInputPort(Long.class);
-    private final OutputPort<BehaviorModel[]> outputPort = this.createOutputPort();
+    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
     public DummyClassificationStage() {
         this.declareActive();
@@ -62,7 +62,7 @@ public class DummyClassificationStage extends AbstractStage {
         return this.timerInputPort;
     }
 
-    public OutputPort<BehaviorModel[]> getOutputPort() {
+    public OutputPort<BehaviorModel> getOutputPort() {
         return this.outputPort;
     }
 

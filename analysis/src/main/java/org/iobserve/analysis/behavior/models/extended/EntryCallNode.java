@@ -26,7 +26,6 @@ import java.util.Optional;
  * @author Jannis Kuckei
  *
  */
-
 public class EntryCallNode {
     private String signature;
     private final Map<String, CallInformation> entryCallInformation;
@@ -70,7 +69,7 @@ public class EntryCallNode {
      */
     public void mergeInformation(final CallInformation[] callInformations) {
         for (final CallInformation info : callInformations) {
-            this.mergeInformation(info);
+            this.mergeCallInformation(info);
         }
     }
 
@@ -80,7 +79,7 @@ public class EntryCallNode {
      * @param callInformation
      *            callInformation
      */
-    public void mergeInformation(final CallInformation callInformation) {
+    public void mergeCallInformation(final CallInformation callInformation) {
         final String key = callInformation.getInformationSignature() + callInformation.getInformationParameter();
         final CallInformation match = this.entryCallInformation.get(key);
 
@@ -92,7 +91,7 @@ public class EntryCallNode {
     }
 
     /**
-     * Finds call information with a specific signature and parameter and returns an Optional of it
+     * Finds call information with a specific signature and parameter and returns an Optional of it.
      *
      * @param operationSignature
      *            The signature of the call information
@@ -126,4 +125,5 @@ public class EntryCallNode {
     public String toString() {
         return "{" + this.getSignature() + "}";
     }
+
 }

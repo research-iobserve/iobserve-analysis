@@ -45,6 +45,14 @@ public final class ConcurrentHashMapWithCreate<K, V> extends ConcurrentHashMap<K
         this.valueFactory = valueFactory;
     }
 
+    /**
+     * Get the value associated to a key or - in case the key is unknown - create an empty value of
+     * type V and store it in the hashmap.
+     *
+     * @param key
+     *            the key
+     * @return returns the values associated to the key
+     */
     public V getOrCreate(final K key) {
         V value = this.get(key);
         if (value == null) {

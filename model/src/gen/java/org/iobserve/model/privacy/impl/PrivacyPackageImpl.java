@@ -21,10 +21,12 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 
 import org.palladiosimulator.pcm.PcmPackage;
 
@@ -45,6 +47,20 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * @generated
      */
     private EClass privacyModelEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass returnTypePrivacyEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass iPrivacyAnnotationEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -165,8 +181,44 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getPrivacyModel_ParameterPrivacyLevels() {
+    public EReference getPrivacyModel_PrivacyLevels() {
         return (EReference)privacyModelEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getReturnTypePrivacy() {
+        return returnTypePrivacyEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getReturnTypePrivacy_OperationSignature() {
+        return (EReference)returnTypePrivacyEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getIPrivacyAnnotation() {
+        return iPrivacyAnnotationEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getIPrivacyAnnotation_Level() {
+        return (EAttribute)iPrivacyAnnotationEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -210,17 +262,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getParameterPrivacy_Level() {
-        return (EAttribute)parameterPrivacyEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public EReference getParameterPrivacy_Parameter() {
-        return (EReference)parameterPrivacyEClass.getEStructuralFeatures().get(1);
+        return (EReference)parameterPrivacyEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -271,14 +314,19 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         // Create classes and their features
         privacyModelEClass = createEClass(PRIVACY_MODEL);
         createEReference(privacyModelEClass, PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS);
-        createEReference(privacyModelEClass, PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS);
+        createEReference(privacyModelEClass, PRIVACY_MODEL__PRIVACY_LEVELS);
+
+        returnTypePrivacyEClass = createEClass(RETURN_TYPE_PRIVACY);
+        createEReference(returnTypePrivacyEClass, RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE);
+
+        iPrivacyAnnotationEClass = createEClass(IPRIVACY_ANNOTATION);
+        createEAttribute(iPrivacyAnnotationEClass, IPRIVACY_ANNOTATION__LEVEL);
 
         geoLocationEClass = createEClass(GEO_LOCATION);
         createEAttribute(geoLocationEClass, GEO_LOCATION__ISOCODE);
         createEReference(geoLocationEClass, GEO_LOCATION__RESOURCE_CONTAINER);
 
         parameterPrivacyEClass = createEClass(PARAMETER_PRIVACY);
-        createEAttribute(parameterPrivacyEClass, PARAMETER_PRIVACY__LEVEL);
         createEReference(parameterPrivacyEClass, PARAMETER_PRIVACY__PARAMETER);
 
         // Create enums
@@ -310,26 +358,33 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         setNsURI(eNS_URI);
 
         // Obtain other dependent packages
-        ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage)EPackage.Registry.INSTANCE.getEPackage(ResourceenvironmentPackage.eNS_URI);
         RepositoryPackage theRepositoryPackage = (RepositoryPackage)EPackage.Registry.INSTANCE.getEPackage(RepositoryPackage.eNS_URI);
+        ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage)EPackage.Registry.INSTANCE.getEPackage(ResourceenvironmentPackage.eNS_URI);
 
         // Create type parameters
 
         // Set bounds for type parameters
 
         // Add supertypes to classes
+        returnTypePrivacyEClass.getESuperTypes().add(this.getIPrivacyAnnotation());
+        parameterPrivacyEClass.getESuperTypes().add(this.getIPrivacyAnnotation());
 
         // Initialize classes, features, and operations; add parameters
         initEClass(privacyModelEClass, PrivacyModel.class, "PrivacyModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getPrivacyModel_ResourceContainerLocations(), this.getGeoLocation(), null, "resourceContainerLocations", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getPrivacyModel_ParameterPrivacyLevels(), this.getParameterPrivacy(), null, "parameterPrivacyLevels", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getPrivacyModel_PrivacyLevels(), this.getIPrivacyAnnotation(), null, "privacyLevels", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(returnTypePrivacyEClass, ReturnTypePrivacy.class, "ReturnTypePrivacy", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getReturnTypePrivacy_OperationSignature(), theRepositoryPackage.getOperationSignature(), null, "operationSignature", null, 1, 1, ReturnTypePrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(iPrivacyAnnotationEClass, IPrivacyAnnotation.class, "IPrivacyAnnotation", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getIPrivacyAnnotation_Level(), this.getEDataPrivacyLevel(), "level", null, 1, 1, IPrivacyAnnotation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(geoLocationEClass, GeoLocation.class, "GeoLocation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getGeoLocation_Isocode(), this.getEISOCode(), "isocode", null, 0, 1, GeoLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGeoLocation_ResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "resourceContainer", null, 1, 1, GeoLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
         initEClass(parameterPrivacyEClass, ParameterPrivacy.class, "ParameterPrivacy", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getParameterPrivacy_Level(), this.getEDataPrivacyLevel(), "level", null, 1, 1, ParameterPrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getParameterPrivacy_Parameter(), theRepositoryPackage.getParameter(), null, "parameter", null, 1, 1, ParameterPrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals

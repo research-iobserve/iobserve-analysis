@@ -13,39 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior.clustering.similaritymatching;
+package org.iobserve.analysis.behavior.filter;
 
-import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.session.data.UserSession;
 
 /**
- * Composite stage that writes an array of behavior models into files.
+ * Generalizes stages that aggregate user sessions based on a timer and generate behavior models for
+ * them.
  *
  * @author Jannis Kuckei
  *
  */
-public class BehaviorModelCompositeSinkStage extends CompositeStage {
-
-    private final InputPort<BehaviorModel[]> inputPort;
+public interface IClassificationStage {
 
     /**
-     * Constructor.
+     * Input port for user sessions.
      *
-     * @param baseURL
-     *            Location where to write the files
+     * @return returns the proper port
      */
-    public BehaviorModelCompositeSinkStage(final String baseURL) {
-        final BehaviorModelDecollectorStage decolStage = new BehaviorModelDecollectorStage();
-        final BehaviorModelSink writerStage = new BehaviorModelSink(baseURL, null);
+    InputPort<UserSession> getSessionInputPort();
 
-        this.inputPort = decolStage.getInputPort();
+    /**
+     * Timer input port.
+     *
+     * @return returns the timer input port
+     */
+    InputPort<Long> getTimerInputPort();
 
-        this.connectPorts(decolStage.getOutputPort(), writerStage.getInputPort());
-    }
-
-    public InputPort<BehaviorModel[]> getInputPort() {
-        return this.inputPort;
-    }
+    /**
+     * Model output port.
+     *
+     * @return returns model output port
+     */
+    OutputPort<BehaviorModel> getOutputPort();
 }

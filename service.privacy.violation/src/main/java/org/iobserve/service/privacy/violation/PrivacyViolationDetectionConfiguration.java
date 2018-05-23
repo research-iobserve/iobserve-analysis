@@ -56,6 +56,7 @@ import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -78,6 +79,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            host and port for the Kieker adaptive monitoring
      * @param rac
      *            correspondence model
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param resourceEnvironmentModelProvider
      *            resource environment model provider
      * @param allocationModelProvider
@@ -94,7 +97,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final IModelProvider<AssemblyEntry> rac,
+            final IModelProvider<AssemblyEntry> rac, final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
@@ -135,7 +138,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
 
         final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+                resourceEnvironmentModelProvider, repositoryModelProvider);
 
         final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);

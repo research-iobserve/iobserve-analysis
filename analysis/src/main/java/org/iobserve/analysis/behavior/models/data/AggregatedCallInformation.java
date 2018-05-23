@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.behavior.models.basic.CallInformation;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
 
 /**
  * aggregates CallInformation with the same signature.
@@ -32,8 +32,8 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 public class AggregatedCallInformation {
 
     private final String signature;
-    private List<Double> callInformationCodes;
-    private Double representativeCode;
+    private List<String> callInformationValues;
+    private String representativeValue;
     private final IRepresentativeStrategy strategy;
 
     /**
@@ -46,7 +46,7 @@ public class AggregatedCallInformation {
      */
     public AggregatedCallInformation(final IRepresentativeStrategy strategy, final String signature) {
         this.signature = signature;
-        this.callInformationCodes = new ArrayList<>();
+        this.callInformationValues = new ArrayList<>();
         this.strategy = strategy;
     }
 
@@ -60,9 +60,9 @@ public class AggregatedCallInformation {
      */
     public AggregatedCallInformation(final IRepresentativeStrategy strategy, final CallInformation callInformation) {
         this.signature = callInformation.getInformationSignature();
-        this.representativeCode = callInformation.getInformationCode();
-        this.callInformationCodes = new ArrayList<>();
-        this.callInformationCodes.add(callInformation.getInformationCode());
+        this.representativeValue = callInformation.getInformationParameter();
+        this.callInformationValues = new ArrayList<>();
+        this.callInformationValues.add(callInformation.getInformationParameter());
         this.strategy = strategy;
 
     }
@@ -78,9 +78,9 @@ public class AggregatedCallInformation {
      */
     public void addCallInformation(final CallInformation callInformation) throws IllegalArgumentException {
         if (this.belongsTo(callInformation)) {
-            this.callInformationCodes.add(callInformation.getInformationCode());
-            this.representativeCode = this.callInformationCodes.isEmpty() ? callInformation.getInformationCode()
-                    : this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
+            this.callInformationValues.add(callInformation.getInformationParameter());
+            this.representativeValue = this.callInformationValues.isEmpty() ? callInformation.getInformationParameter()
+                    : this.strategy.findRepresentativeValue(this.signature, this.callInformationValues);
         } else {
             throw new IllegalArgumentException(
                     "callInformation signature does not match mit the aggregation signature");
@@ -110,13 +110,13 @@ public class AggregatedCallInformation {
      */
     public void setCallInformations(final List<CallInformation> callInformations) {
 
-        this.callInformationCodes = callInformations.stream()
-                .map(callInformation -> callInformation.getInformationCode()).collect(Collectors.toList());
-        this.representativeCode = this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
+        this.callInformationValues = callInformations.stream()
+                .map(callInformation -> callInformation.getInformationParameter()).collect(Collectors.toList());
+        this.representativeValue = this.strategy.findRepresentativeValue(this.signature, this.callInformationValues);
     }
 
-    public Double getRepresentativeCode() {
-        return this.representativeCode;
+    public String getRepresentativeValue() {
+        return this.representativeValue;
     }
 
     /**
@@ -126,14 +126,14 @@ public class AggregatedCallInformation {
      */
     public CallInformation createCallInformation() {
         // TODO This method is a factory method and should be removed from this class
-        return new CallInformation(this.signature, this.representativeCode);
+        return new CallInformation(this.signature, this.representativeValue);
     }
 
     /**
      * delete all information of the aggregation.
      */
     public void clearInformations() {
-        this.callInformationCodes = new ArrayList<>();
+        this.callInformationValues = new ArrayList<>();
     }
 
     /**
@@ -151,7 +151,7 @@ public class AggregatedCallInformation {
      * @return number of callInformationCodes
      */
     public int size() {
-        return this.callInformationCodes.size();
+        return this.callInformationValues.size();
     }
 
 }

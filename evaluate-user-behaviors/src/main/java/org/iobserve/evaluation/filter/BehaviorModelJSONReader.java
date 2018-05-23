@@ -85,7 +85,7 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
                     final ObjectNode ciNode = (ObjectNode) callInfoIter.next();
                     final CallInformation info = new CallInformation(ciNode.get("informationSignature").textValue(),
                             ciNode.get("informationCode").textValue(), ciNode.get("count").asInt());
-                    newECNode.mergeInformation(info);
+                    newECNode.mergeCallInformation(info);
                 }
 
                 model.addNode(newECNode, false);

@@ -28,9 +28,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
-import org.iobserve.analysis.behavior.models.basic.EntryCallEdge;
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

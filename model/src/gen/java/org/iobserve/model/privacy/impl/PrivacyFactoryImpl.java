@@ -58,6 +58,7 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
             case PrivacyPackage.PRIVACY_MODEL: return createPrivacyModel();
+            case PrivacyPackage.RETURN_TYPE_PRIVACY: return createReturnTypePrivacy();
             case PrivacyPackage.GEO_LOCATION: return createGeoLocation();
             case PrivacyPackage.PARAMETER_PRIVACY: return createParameterPrivacy();
             default:
@@ -107,6 +108,16 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
     public PrivacyModel createPrivacyModel() {
         PrivacyModelImpl privacyModel = new PrivacyModelImpl();
         return privacyModel;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public ReturnTypePrivacy createReturnTypePrivacy() {
+        ReturnTypePrivacyImpl returnTypePrivacy = new ReturnTypePrivacyImpl();
+        return returnTypePrivacy;
     }
 
     /**

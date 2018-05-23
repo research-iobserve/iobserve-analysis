@@ -341,7 +341,7 @@ public class AnalysisConfiguration extends Configuration {
             final IEventMatcher<ISessionEvent> sessionMatcher = new ImplementsEventMatcher<>(ISessionEvent.class, null);
             this.eventDispatcher.registerOutput(sessionMatcher);
 
-            this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
+            this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTraceInputPort());
             this.connectPorts(sessionMatcher.getOutputPort(), behavior.getSessionEventInputPort());
 
             if (configuration.getBooleanProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING_SINK)) {

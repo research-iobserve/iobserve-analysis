@@ -91,6 +91,14 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
         }
     }
 
+    /**
+     * This method is triggered for every deployment event.
+     *
+     * @param event
+     *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
+     * @throws IOException
+     * @throws JsonProcessingException
+     */
     private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData)
             throws JsonProcessingException, IOException {
 
@@ -154,6 +162,11 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
      */
     public OutputPort<PayloadAwareEntryCallEvent> getOutputPort() {
         return this.outputPort;
+    }
+
+    @Override
+    public void onTerminating() {
+        super.onTerminating();
     }
 
 }

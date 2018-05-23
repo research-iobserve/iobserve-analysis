@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 
@@ -30,7 +30,7 @@ import org.iobserve.model.privacy.PrivacyPackage;
  * </p>
  * <ul>
  *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getResourceContainerLocations <em>Resource Container Locations</em>}</li>
- *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getParameterPrivacyLevels <em>Parameter Privacy Levels</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getPrivacyLevels <em>Privacy Levels</em>}</li>
  * </ul>
  *
  * @generated
@@ -47,14 +47,14 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     protected EList<GeoLocation> resourceContainerLocations;
 
     /**
-     * The cached value of the '{@link #getParameterPrivacyLevels() <em>Parameter Privacy Levels</em>}' containment reference list.
+     * The cached value of the '{@link #getPrivacyLevels() <em>Privacy Levels</em>}' containment reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getParameterPrivacyLevels()
+     * @see #getPrivacyLevels()
      * @generated
      * @ordered
      */
-    protected EList<ParameterPrivacy> parameterPrivacyLevels;
+    protected EList<IPrivacyAnnotation> privacyLevels;
 
     /**
      * <!-- begin-user-doc -->
@@ -92,11 +92,11 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      * <!-- end-user-doc -->
      * @generated
      */
-    public EList<ParameterPrivacy> getParameterPrivacyLevels() {
-        if (parameterPrivacyLevels == null) {
-            parameterPrivacyLevels = new EObjectContainmentEList<ParameterPrivacy>(ParameterPrivacy.class, this, PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS);
+    public EList<IPrivacyAnnotation> getPrivacyLevels() {
+        if (privacyLevels == null) {
+            privacyLevels = new EObjectContainmentEList<IPrivacyAnnotation>(IPrivacyAnnotation.class, this, PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS);
         }
-        return parameterPrivacyLevels;
+        return privacyLevels;
     }
 
     /**
@@ -109,8 +109,8 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
         switch (featureID) {
             case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return ((InternalEList<?>)getResourceContainerLocations()).basicRemove(otherEnd, msgs);
-            case PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS:
-                return ((InternalEList<?>)getParameterPrivacyLevels()).basicRemove(otherEnd, msgs);
+            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+                return ((InternalEList<?>)getPrivacyLevels()).basicRemove(otherEnd, msgs);
         }
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
@@ -125,8 +125,8 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
         switch (featureID) {
             case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return getResourceContainerLocations();
-            case PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS:
-                return getParameterPrivacyLevels();
+            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+                return getPrivacyLevels();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -144,9 +144,9 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
                 getResourceContainerLocations().clear();
                 getResourceContainerLocations().addAll((Collection<? extends GeoLocation>)newValue);
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS:
-                getParameterPrivacyLevels().clear();
-                getParameterPrivacyLevels().addAll((Collection<? extends ParameterPrivacy>)newValue);
+            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+                getPrivacyLevels().clear();
+                getPrivacyLevels().addAll((Collection<? extends IPrivacyAnnotation>)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -163,8 +163,8 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
             case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 getResourceContainerLocations().clear();
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS:
-                getParameterPrivacyLevels().clear();
+            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+                getPrivacyLevels().clear();
                 return;
         }
         super.eUnset(featureID);
@@ -180,8 +180,8 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
         switch (featureID) {
             case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return resourceContainerLocations != null && !resourceContainerLocations.isEmpty();
-            case PrivacyPackage.PRIVACY_MODEL__PARAMETER_PRIVACY_LEVELS:
-                return parameterPrivacyLevels != null && !parameterPrivacyLevels.isEmpty();
+            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+                return privacyLevels != null && !privacyLevels.isEmpty();
         }
         return super.eIsSet(featureID);
     }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.sink;
+package org.iobserve.stages.general;
 
 import teetime.framework.AbstractConsumerStage;
-
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
+import teetime.framework.OutputPort;
 
 /**
- * Used to define a common interface for ModelOutputSinks.
+ * Stage that accepts an array of object of type <T> and sends them to its output port individually.
  *
- * TODO complete this feature or remove it
+ * @author Jannis Kuckei
+ * @author Reiner Jung -- generalization
  *
- * @author Christoph Dornieden
- *
+ * @param <T>
+ *            class type which is used in an array
  */
-public abstract class AbstractModelOutputSink extends AbstractConsumerStage<BehaviorModel> { // NOPMD
+public class DecollectorStage<T> extends AbstractConsumerStage<T[]> {
+    private final OutputPort<T> outputPort = this.createOutputPort();
 
+    @Override
+    protected void execute(final T[] models) throws Exception {
+        for (final T model : models) {
+            this.outputPort.send(model);
+        }
+    }
+
+    public OutputPort<T> getOutputPort() {
+        return this.outputPort;
+    }
 }

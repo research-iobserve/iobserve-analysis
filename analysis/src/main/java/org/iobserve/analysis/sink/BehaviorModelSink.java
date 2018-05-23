@@ -16,6 +16,7 @@
 package org.iobserve.analysis.sink;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -23,8 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.iobserve.analysis.behavior.filter.BehaviorModelVisualizationStage;
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author unknown
  *
  */
-public class BehaviorModelSink extends AbstractModelOutputSink {
+public class BehaviorModelSink extends AbstractBehaviorModelOutputSink {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelVisualizationStage.class);
 
@@ -57,7 +58,7 @@ public class BehaviorModelSink extends AbstractModelOutputSink {
 
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
-        final String filename = this.baseUrl + model.getName();
+        final String filename = this.baseUrl + File.separator + model.getName();
         BehaviorModelSink.LOGGER.info("Write models to {}", filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);
