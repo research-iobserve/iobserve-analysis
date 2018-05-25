@@ -141,18 +141,5 @@ $RECYCLE.BIN/
 /bin/
 /gradle.properties
 /reports.html
-#
-
-bin.includes = .,\
-               model/,\
-               icons/,\
-               META-INF/,\
-               plugin.xml,\
-               plugin.properties
-jars.compile.order = .
-source.. = src/gen/java//
-output.. = bin/
-#
-
-pluginName = PrivacyModel Model
-providerName = www.example.org
+model/build.properties
+model/plugin.properties
