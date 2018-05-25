@@ -39,7 +39,7 @@ public interface PrivacyPackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    String eNS_URI = "https://www.iobserve-devops.net/model/privacy";
+    String eNS_URI = "https://www.iobserve-devops.net/model/0.0.3/privacy";
 
     /**
      * The package namespace name.

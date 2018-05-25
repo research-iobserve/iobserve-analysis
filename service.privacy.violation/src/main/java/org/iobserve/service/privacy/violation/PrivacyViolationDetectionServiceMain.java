@@ -43,7 +43,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Collector main class.
@@ -111,7 +110,9 @@ public final class PrivacyViolationDetectionServiceMain
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(), ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(UsageModel.class, modelHandler.getUsageModel(), ModelProvider.PCM_ENTITY_NAME,
+        graphLoader.initializeModelGraph(CorrespondenceModel.class, modelHandler.getCorrespondenceModel(), null,
+                ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(PrivacyModel.class, modelHandler.getPrivacyModel(), null,
                 ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
@@ -120,25 +121,30 @@ public final class PrivacyViolationDetectionServiceMain
                 .createModelGraph(ResourceEnvironment.class);
         final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
         final Graph<System> systemModelGraph = graphLoader.createModelGraph(System.class);
-        final Graph<PrivacyModel> privacyModelGraph = graphLoader.createModelGraph(PrivacyModel.class);
         final Graph<CorrespondenceModel> correspondenceModelGraph = graphLoader
                 .createModelGraph(CorrespondenceModel.class);
+        final Graph<PrivacyModel> privacyModelGraph = graphLoader.createModelGraph(PrivacyModel.class);
 
         /** model provider. */
         final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
         final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
                 allocationModelGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
         final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
         final IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider = new ModelProvider<>(
                 correspondenceModelGraph, ModelProvider.IMPLEMENTATION_ID, null);
+
+        final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         try {
             return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,

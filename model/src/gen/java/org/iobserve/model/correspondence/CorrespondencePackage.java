@@ -38,7 +38,7 @@ public interface CorrespondencePackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    String eNS_URI = "https://www.iobserve-devops.net/model/correspondence";
+    String eNS_URI = "https://www.iobserve-devops.net/model/0.0.3/correspondence";
 
     /**
      * The package namespace name.
