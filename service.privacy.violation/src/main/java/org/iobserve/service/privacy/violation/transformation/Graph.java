@@ -2,19 +2,26 @@ package org.iobserve.service.privacy.violation.transformation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *
+ * @author Clemens
+ *
+ */
 public class Graph {
     private final List<Edge> edges;
-    private final List<Vertice> vertices;
+    private final LinkedHashMap<String, Vertice> vertices;
 
     public Graph() {
         this.edges = new ArrayList<>();
-        this.vertices = new ArrayList<>();
+        this.vertices = new LinkedHashMap<>();
     }
 
     public void addVertice(final Vertice v) {
-        this.vertices.add(v);
+        this.vertices.put(v.getName(), v);
     }
 
     public void addEdge(final Vertice source, final Vertice target) {
@@ -27,7 +34,7 @@ public class Graph {
 
     public boolean removeEdge(final Edge e) {
         if (this.isConsistent() && this.getEdges().contains(e)) {
-            for (final Vertice v : this.getVertices()) {
+            for (final Vertice v : this.getVertices().values()) {
                 if (v.getIncomingEdges().contains(e)) {
                     v.getIncomingEdges().remove(e);
                 }
@@ -42,7 +49,7 @@ public class Graph {
     }
 
     public boolean removeVertice(final Vertice v) {
-        if (this.isConsistent() && this.getVertices().contains(v)) {
+        if (this.isConsistent() && this.getVertices().containsValue(v)) {
             final List<Edge> removals = new ArrayList<>();
             for (final Edge e : this.getEdges()) {
                 if (e.getSource().equals(v)) {
@@ -65,7 +72,7 @@ public class Graph {
         return this.edges;
     }
 
-    public List<Vertice> getVertices() {
+    public LinkedHashMap<String, Vertice> getVertices() {
         return this.vertices;
     }
 
@@ -73,19 +80,22 @@ public class Graph {
         for (final Edge e : this.edges) {
             final Vertice source = e.getSource();
             final Vertice target = e.getTarget();
-            if (!this.vertices.contains(source) || !this.vertices.contains(target)) {
+            if (!this.vertices.containsValue(source) || !this.vertices.containsValue(target)) {
+                System.out.println("Vertices Missing");
                 return false;
             }
 
         }
-        for (final Vertice v : this.vertices) {
+        for (final Vertice v : this.vertices.values()) {
             for (final Edge e : v.getIncomingEdges()) {
                 if (!this.edges.contains(e)) {
+                    System.out.println("Edge Missing");
                     return false;
                 }
             }
             for (final Edge e : v.getOutgoingEdges()) {
                 if (!this.edges.contains(e)) {
+                    System.out.println("Edge Missing_2");
                     return false;
                 }
             }
@@ -96,7 +106,7 @@ public class Graph {
     /**
      * Return the adjacency matrix of the current graph. The elements of the matrix indicate whether
      * pairs of vertices are adjacent or not in the graph.
-     * 
+     *
      */
 
     public int[][] getAdjacencyMatrix() {
@@ -107,18 +117,18 @@ public class Graph {
                 matrix[i][i] = 0;
             }
         }
-
-        for (final Vertice v : this.getVertices()) {
-            final int positionX = this.getVertices().indexOf(v);
+        final List<Vertice> vertices = new LinkedList<>(this.getVertices().values());
+        for (final Vertice v : vertices) {
+            final int positionX = vertices.indexOf(v);
             for (final Edge e : v.getOutgoingEdges()) {
-                final int positionY = this.getVertices().indexOf(e.getTarget());
+                final int positionY = vertices.indexOf(e.getTarget());
                 if (matrix[positionX][positionY] != 0) {
                     continue;
                 }
                 matrix[positionX][positionY] = 1;
             }
             for (final Edge e : v.getIncomingEdges()) {
-                final int positionY = this.getVertices().indexOf(e.getSource());
+                final int positionY = vertices.indexOf(e.getSource());
                 if (matrix[positionX][positionY] != 0) {
                     continue;
                 }
@@ -131,7 +141,7 @@ public class Graph {
     }
 
     public void printGraph() {
-        for (final Vertice v : this.getVertices()) {
+        for (final Vertice v : this.getVertices().values()) {
             // for (Edge e : v.getIncomingEdges()) {
             // System.out.println("\t" + "(" + e.getSource() + "," +
             // e.getTarget() + ")");

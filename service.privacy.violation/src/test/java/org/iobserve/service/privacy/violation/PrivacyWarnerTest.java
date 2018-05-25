@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
@@ -39,6 +37,8 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.test.StageTester;
 
 /**
  * @author Clemens Brackmann
@@ -92,7 +92,6 @@ public class PrivacyWarnerTest {
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
         this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
                 repositoryModelProvider);
 

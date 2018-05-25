@@ -18,10 +18,6 @@ package org.iobserve.service.privacy.violation.filter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -35,19 +31,21 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.repository.CompositeDataType;
-import org.palladiosimulator.pcm.repository.DataType;
+import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Parameter;
-import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -61,8 +59,6 @@ public class PrivacyWarner extends AbstractStage {
     private final IModelProvider<System> systemModelGraphProvider;
     private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
     private final IModelProvider<Repository> repositoryModelGraphProvider;
-
-    private final ModelProvider<System, AssemblyContext> assemblyContextProvider;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -83,6 +79,7 @@ public class PrivacyWarner extends AbstractStage {
      *            system model provider
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
+     * @param assemblyView2
      */
     public PrivacyWarner(final IModelProvider<Allocation> allocationModelGraphProvider,
             final IModelProvider<System> systemModelGraphProvider,
@@ -93,8 +90,6 @@ public class PrivacyWarner extends AbstractStage {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
         this.repositoryModelGraphProvider = repositoryModelGraphProvider;
 
-        this.assemblyContextProvider = new ModelProvider<>(systemModelGraphProvider.getGraph(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
     }
 
     private void print(final Object o) {
@@ -107,6 +102,7 @@ public class PrivacyWarner extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
+
         java.lang.System.out.print("Execution started");
         final Warnings warnings = new Warnings();
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
@@ -130,56 +126,53 @@ public class PrivacyWarner extends AbstractStage {
 
     private void createAnalysisGraph() {
         final Graph g = new Graph();
-        final HashMap<String, Vertice> vertices = new LinkedHashMap<>();
-        this.allocationRootElement = this.allocationModelGraphProvider.readRootComponent(Allocation.class);
-        this.systemRootElement = this.systemModelGraphProvider.readRootComponent(System.class);
-        this.repositoryRootElement = this.repositoryModelGraphProvider.readRootComponent(Repository.class);
+
+        final HashMap<RepositoryComponent, Vertice> vertices = new LinkedHashMap<>();
+        this.allocationRootElement = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
+        this.systemRootElement = this.systemModelGraphProvider.readOnlyRootComponent(System.class);
+        this.repositoryRootElement = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
+        /** AssemblyContext View **/
+        final ModelProvider<System, AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
+                ((ModelProvider) this.systemModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+        /** RepositoryComponent View **/
+        final ModelProvider<Repository, BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
+                ((ModelProvider) this.repositoryModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+        /** OperationInterface View **/
+        final ModelProvider<Repository, OperationInterface> operationInterfaceModelProvider = new ModelProvider<>(
+                ((ModelProvider) this.repositoryModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+
         this.print(
                 "******************************************************************************************************************");
-        java.lang.System.out.println("Starting creation of Analysis Graph");
-        // print("Allocation");
-        // print();
+        this.print("Starting creation of Analysis Graph");
+
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
-            // print("AllocationContext: " + ac.getEntityName());
-            // print("AssemblyContext: " +
-            // ac.getAssemblyContext_AllocationContext().getEntityName());
-            final RepositoryComponent rc = ac.getAssemblyContext_AllocationContext()
-                    .getEncapsulatedComponent__AssemblyContext();
-            // print();
+            final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
+            final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
+                    .readOnlyComponentById(AssemblyContext.class, asc.getId());
+            final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
+
+            final BasicComponent bc = repositoryComponentModelProvider.readOnlyComponentById(BasicComponent.class,
+                    rc.getId());
+
+            /** Creating component vertices **/
+            final Vertice v = new Vertice(bc.getEntityName());
+            g.addVertice(v);
+            vertices.put(bc, v);
         }
-        // print("System");
-        // print();
-        for (final AssemblyContext ac : this.systemRootElement.getAssemblyContexts__ComposedStructure()) {
-            // print("AssemblyContext: " + ac.getEntityName());
-            final RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
-            if (rc != null) {
-                // print(rc.getEntityName());
-                final Vertice v = new Vertice(rc.getEntityName());
-                g.addVertice(v);
-                vertices.put(rc.getEntityName(), v);
-            } else {
-                this.print("Null");
-                // print();
-            }
-        }
+
         for (final Interface inf : this.repositoryRootElement.getInterfaces__Repository()) {
             if (inf instanceof OperationInterface) {
+
                 final OperationInterface oi = (OperationInterface) inf;
+
                 for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
-                    this.print(os.getReturnType__OperationSignature());
+
                     for (final Parameter p : os.getParameters__OperationSignature()) {
-                        this.print(p.getModifier__Parameter());
-                        final DataType dt = p.getDataType__Parameter();
-                        if (dt instanceof CompositeDataType) {
-                            final CompositeDataType cdt = (CompositeDataType) dt;
-                            this.print("Composite: " + cdt.getEntityName());
-                        }
-                        if (dt instanceof PrimitiveDataType) {
-                            final PrimitiveDataType pdt = (PrimitiveDataType) dt;
-                            this.print("Enum: " + pdt.getType());
-                            this.print(pdt.getType().getLiteral());
-                            this.print(pdt.getType().getName());
-                        }
+                        this.print("Parameter: " + p.getModifier__Parameter());
+
                     }
                 }
             }
@@ -193,7 +186,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent rcProvider = provider.getEncapsulatedComponent__AssemblyContext();
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
-                if (rcProvider != null && rcRequiring != null) {
+                if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     final OperationRequiredRole orr = ac.getRequiredRole_AssemblyConnector();
                     this.print(opr.getEntityName());

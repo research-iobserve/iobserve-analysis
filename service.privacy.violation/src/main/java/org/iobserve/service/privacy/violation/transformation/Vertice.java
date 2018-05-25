@@ -3,6 +3,11 @@ package org.iobserve.service.privacy.violation.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author Clemens
+ *
+ */
 public class Vertice {
     private final String name;
     private final List<Edge> incoming = new ArrayList<>(), outgoing = new ArrayList<>();
