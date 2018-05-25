@@ -244,7 +244,7 @@ public final class PCMModelHandler {
      * @return file extension
      */
     private String getFileExtension(final String path) {
-        return path.substring(path.lastIndexOf(".") + 1, path.length());
+        return path.substring(path.lastIndexOf('.') + 1, path.length());
     }
 
     /**

@@ -31,7 +31,7 @@ public class WorkloadIntensity {
      * Default constructor.
      */
     public WorkloadIntensity() {
-
+        // empty constructor
     }
 
     public long getInterarrivalTimeOfUserSessions() {

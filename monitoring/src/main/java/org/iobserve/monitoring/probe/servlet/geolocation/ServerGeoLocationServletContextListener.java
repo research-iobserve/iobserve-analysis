@@ -36,7 +36,7 @@ public class ServerGeoLocationServletContextListener extends AbstractRegularSamp
      * Empty Constructor.
      */
     public ServerGeoLocationServletContextListener() {
-
+        // empty constructor
     }
 
     @Override

@@ -102,9 +102,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
         final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
                 .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
-
-        return dataArray;
+        return Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
     }
 
 }

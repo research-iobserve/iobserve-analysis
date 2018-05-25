@@ -24,7 +24,7 @@ import org.iobserve.analysis.behavior.models.extended.CallInformation;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
- * Parameter distance function for JPetStore application
+ * Parameter distance function for JPetStore application.
  *
  * @author Jannis Kuckei
  *
@@ -34,6 +34,9 @@ public class JPetStoreParameterMetric implements IParameterMetric {
     private final Map<String, String> productTable;
     private final Map<String, String> categoryTable;
 
+    /**
+     * Create JPetStoreParameterMetric.
+     */
     public JPetStoreParameterMetric() {
         // Fill product associations
         this.productTable = new HashMap<>();

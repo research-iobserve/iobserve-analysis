@@ -31,6 +31,7 @@ public class LoopBranchElement implements ISequenceElement {
      * Entity constructor.
      */
     public LoopBranchElement() {
+        // empty constructor
     }
 
     /**
@@ -58,6 +59,8 @@ public class LoopBranchElement implements ISequenceElement {
 
     @Override
     public void setAbsoluteCount(final int absoluteCount) {
+        // loop has no count
+        // TODO if is does not have one why does the interface require one?
     }
 
     @Override

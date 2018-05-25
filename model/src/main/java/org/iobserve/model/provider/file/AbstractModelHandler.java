@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for pcm model handler. Implements common methods for loading/saving pcm model.
+ * The model handler allows to load and store in memory models in XMI files.
  *
  * @author Philipp Weimann
  * @author Tobias Poeppke
@@ -48,35 +48,35 @@ public abstract class AbstractModelHandler<T extends EObject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractModelHandler.class);
 
+    private final Resource.Factory.Registry resourceRegistry;
+
     /**
      * Create an abstract model handler.
      */
     public AbstractModelHandler() {
-        // empty
+        this.resourceRegistry = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = this.resourceRegistry.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
     }
 
     /**
      * Save the internal model. This will override the existing.
      *
      * @param writeModelURI
-     *            URI refering where to store the model
+     *            URI referring where to store the model
      * @param model
      *            is the model to be stored
      */
     public final void save(final URI writeModelURI, final T model) {
-        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
         final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
+        resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
         final Resource resource = resourceSet.createResource(writeModelURI);
         resource.getContents().add(model);
         try {
             resource.save(null);
         } catch (final IOException e) {
-            e.printStackTrace();
+            AbstractModelHandler.LOGGER.error("Cannot save model at {}", writeModelURI.toString());
         }
     }
 
@@ -106,18 +106,14 @@ public abstract class AbstractModelHandler<T extends EObject> {
     public T load(final URI readModelURI) {
         this.getPackage().eClass();
 
-        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
         final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
+        resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
         final Resource resource = resourceSet.getResource(readModelURI, true);
         try {
             resource.load(null);
         } catch (final IOException e) {
-            e.printStackTrace();
+            AbstractModelHandler.LOGGER.error("Cannot load model from {}", readModelURI.toString());
         }
         EcoreUtil.resolveAll(resourceSet);
         T model = null;

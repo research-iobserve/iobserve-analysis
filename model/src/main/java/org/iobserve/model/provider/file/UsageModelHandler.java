@@ -33,6 +33,7 @@ public final class UsageModelHandler extends AbstractModelHandler<UsageModel> {
      * Create usage model provider.
      */
     public UsageModelHandler() {
+        super();
     }
 
     @Override

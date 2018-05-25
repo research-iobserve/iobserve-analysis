@@ -46,8 +46,7 @@ public class InitializeUserBehaviorVisualization {
      * @param usageModelGraphProvider
      *            usage model provier
      */
-    public InitializeUserBehaviorVisualization(
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+    public InitializeUserBehaviorVisualization(final IModelProvider<System> systemModelGraphProvider,
             final IModelProvider<UsageModel> usageModelGraphProvider) {
         this.systemModelProvider = systemModelGraphProvider;
         this.usageModelProvider = usageModelGraphProvider;

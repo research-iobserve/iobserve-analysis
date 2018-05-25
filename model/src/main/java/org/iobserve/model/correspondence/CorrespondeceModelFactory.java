@@ -16,6 +16,7 @@
 package org.iobserve.model.correspondence;
 
 import java.io.FileInputStream;
+import java.util.Locale;
 
 import javax.xml.bind.JAXB;
 
@@ -54,8 +55,8 @@ public final class CorrespondeceModelFactory {
     public static final IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
             operationSignature) -> CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method,
                     operationSignature)
-                    || method.getParent().getUnitName().toLowerCase()
-                            .contains(operationSignature.getName().toLowerCase());
+                    || method.getParent().getUnitName().toLowerCase(Locale.getDefault())
+                            .contains(operationSignature.getName().toLowerCase(Locale.getDefault()));
 
     /**
      * Simple constructor does nothing.

@@ -44,7 +44,7 @@ public class ServiceInstanceService {
      * empty default constructor.
      */
     public ServiceInstanceService() {
-
+        // empty constructor
     }
 
     /**
@@ -65,11 +65,9 @@ public class ServiceInstanceService {
         this.serviceInstanceName = assemblyContext.getEntityName();
         this.serviceInstanceId = "si" + assemblyContext.getId();
 
-        final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
-                .add("id", this.serviceInstanceId).add("systemId", systemId).add("name", this.serviceInstanceName)
-                .add("serviceId", serviceId).add("nodeId", nodeId).build();
-
-        return serviceInstance;
+        return Json.createObjectBuilder().add("type", "serviceInstance").add("id", this.serviceInstanceId)
+                .add("systemId", systemId).add("name", this.serviceInstanceName).add("serviceId", serviceId)
+                .add("nodeId", nodeId).build();
     }
 
     /**
@@ -103,12 +101,8 @@ public class ServiceInstanceService {
             }
         }
 
-        final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
-                .add("id", this.serviceInstanceId).add("systemId", systemId).add("serviceId", assemblyContext.getId())
-                .add("nodeId", nodeId).build();
-
-        return serviceInstance;
-
+        return Json.createObjectBuilder().add("type", "serviceInstance").add("id", this.serviceInstanceId)
+                .add("systemId", systemId).add("serviceId", assemblyContext.getId()).add("nodeId", nodeId).build();
     }
 
     public String getServiceInstanceId() {

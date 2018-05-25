@@ -91,7 +91,7 @@ public class ModelGraph {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return super.hashCode() + 1;
     }
 
     @Override

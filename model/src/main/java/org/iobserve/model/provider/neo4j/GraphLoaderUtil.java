@@ -66,9 +66,6 @@ public final class GraphLoaderUtil {
             return 0;
         }
 
-        final int versionNumber = Integer
-                .valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
-
-        return versionNumber;
+        return Integer.valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
     }
 }

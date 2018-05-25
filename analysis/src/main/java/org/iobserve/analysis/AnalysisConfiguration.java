@@ -182,8 +182,8 @@ public class AnalysisConfiguration extends Configuration {
             final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
                     IUndeployedEvent.class, null);
             this.eventDispatcher.registerOutput(undeployedEventMatcher);
-            this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, assemblyEntryCorrespondenceModelProvider);
+            this.undeploymentStage = new UndeploymentCompositeStage(allocationContextModelProvider,
+                    assemblyEntryCorrespondenceModelProvider);
             /** connect ports. */
             this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 

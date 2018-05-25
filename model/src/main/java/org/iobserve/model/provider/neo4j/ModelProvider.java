@@ -87,6 +87,12 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
      *
      * @param graph
      *            The neo4j graph database
+     * @param nameLabel
+     *            label used for the name property, e.g., entityName in PCM (can be null if no names
+     *            are present)
+     * @param idLabel
+     *            label used for tne id property, e.g., id in PCM (can be null if no ids are
+     *            present)
      */
     public ModelProvider(final Graph<R> graph, final String nameLabel, final String idLabel) {
         this.graph = graph;

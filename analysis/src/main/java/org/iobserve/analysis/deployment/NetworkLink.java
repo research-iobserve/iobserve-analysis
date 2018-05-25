@@ -230,8 +230,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      *            asm
      * @return list of connected asm context
      */
-    private static List<AssemblyContext> getConnectedAsmCtx(final org.palladiosimulator.pcm.system.System system,
-            final AssemblyContext queryAsm) {
+    private static List<AssemblyContext> getConnectedAsmCtx(final System system, final AssemblyContext queryAsm) {
         return system.getConnectors__ComposedStructure().stream().map(connector -> NetworkLink.tryCast(connector))
                 .filter(option -> option.isPresent()).map(option -> option.get())
                 .filter(connector -> NetworkLink.isEqualByName(queryAsm,

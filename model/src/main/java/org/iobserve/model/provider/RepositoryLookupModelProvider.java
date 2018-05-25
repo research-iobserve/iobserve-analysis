@@ -28,9 +28,14 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
 /**
+ * Supporting class used to help find interfaces and signatures.
+ *
  * @author Reiner Jung
  *
+ * @deprecated 0.0.3 This class should provide a utility model, but does not comply with the
+ *             structure.
  */
+@Deprecated
 public class RepositoryLookupModelProvider {
 
     /** map of operation interfaces mapped by id. */
@@ -45,7 +50,7 @@ public class RepositoryLookupModelProvider {
 
     /**
      * Create a repository lookup model provider for the given repository model.
-     * 
+     *
      * @param repositoryModel
      *            the repository model
      */

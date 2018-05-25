@@ -144,7 +144,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
     }
 
     /**
-     * Register an {@link IEventMatcher} and add it to the sequence of event matchers
+     * Register an {@link IEventMatcher} and add it to the sequence of event matchers.
      *
      * @param leaveEventMatcher
      *            new leave event matcher

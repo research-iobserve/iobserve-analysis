@@ -28,7 +28,7 @@ public class ExitElement implements ISequenceElement {
      * default constructor.
      */
     public ExitElement() {
-
+        // empty constructor
     }
 
     @Override

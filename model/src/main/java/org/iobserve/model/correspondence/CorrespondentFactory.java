@@ -21,7 +21,9 @@ package org.iobserve.model.correspondence;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
+ * @deprecated 0.0.3 replaced by EMF correspondence model
  */
+@Deprecated
 public final class CorrespondentFactory {
 
     /**

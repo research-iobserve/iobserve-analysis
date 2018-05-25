@@ -31,6 +31,7 @@ public class CloudProfileModelHandler extends AbstractModelHandler<CloudProfile>
      * Create a new provider with the given model file.
      */
     public CloudProfileModelHandler() {
+        super();
     }
 
     @Override

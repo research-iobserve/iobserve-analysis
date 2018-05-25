@@ -22,7 +22,6 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
@@ -37,8 +36,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  */
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
-    /** reference to allocation model provider. */
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
     private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
 
@@ -48,14 +45,10 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param allocationModelGraphProvider
-     *            allocation model access
      * @param allocationContextModelGraphProvider
      *            system model access
      */
-    public UndeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
+    public UndeploymentModelUpdater(final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
         this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
     }
 

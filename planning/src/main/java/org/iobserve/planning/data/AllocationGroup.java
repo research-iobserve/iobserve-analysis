@@ -116,8 +116,7 @@ public class AllocationGroup {
      * @return the representative allocation context
      */
     public AllocationContext getRepresentingContext() {
-        final AllocationContext representingContext = this.allocationContexts.iterator().next();
-        return representingContext;
+        return this.allocationContexts.iterator().next();
     }
 
     /**
@@ -127,10 +126,8 @@ public class AllocationGroup {
      * @return the representative resource container
      */
     public ResourceContainerCloud getRepresentingResourceContainer() {
-        final ResourceContainerCloud representingContainer = this.resourceContainers.stream()
-                .filter(container -> (container instanceof ResourceContainerCloud))
+        return this.resourceContainers.stream().filter(container -> (container instanceof ResourceContainerCloud))
                 .map(container -> ((ResourceContainerCloud) container)).findFirst().orElse(null);
-        return representingContainer;
     }
 
     public String getComponentName() {

@@ -23,14 +23,10 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- * Undeployment stage. TODO we need a separate silo to collect synthetic allocations which can then
- * be used by the undeployment stage to automatically deallocate host which have been automatically
- * allocated.
+ * Undeployment stage.
  *
  * @author Reiner Jung
  *
@@ -43,24 +39,17 @@ public class UndeploymentCompositeStage extends CompositeStage {
     /**
      * Create a composite stage handling undeployment.
      *
-     * @param resourceEnvironmentModelGraphProvider
-     *            resource environment provider
-     * @param allocationModelGraphProvider
-     *            allocation model provider
      * @param allocationContextModelGraphProvider
      *            allocation context model provider
      * @param correspondenceModelProvider
      *            correspondence model handler
      */
-    public UndeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<AllocationContext> allocationContextModelGraphProvider,
+    public UndeploymentCompositeStage(final IModelProvider<AllocationContext> allocationContextModelGraphProvider,
             final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
 
         this.undeployPCMMapper = new UndeployPCMMapper(correspondenceModelProvider);
 
-        this.undeployment = new UndeploymentModelUpdater(allocationModelGraphProvider,
-                allocationContextModelGraphProvider);
+        this.undeployment = new UndeploymentModelUpdater(allocationContextModelGraphProvider);
 
         /** connect internal ports. */
         this.connectPorts(this.undeployPCMMapper.getOutputPort(), this.undeployment.getInputPort());

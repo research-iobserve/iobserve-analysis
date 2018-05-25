@@ -58,6 +58,8 @@ public final class InstantiationFactory { // NOPMD
      *
      * @param <C>
      *            The type of the returned class.
+     * @throws ConfigurationException
+     *             on configuration errors
      */
     public static <C> C create(final Class<C> implementedInterface, final String className,
             final Class<?>[] parameterTypes, final Object... parameters) throws ConfigurationException {
@@ -96,6 +98,9 @@ public final class InstantiationFactory { // NOPMD
      *
      * @param <C>
      *            The type of the returned class.
+     * 
+     * @throws ConfigurationException
+     *             on configuration errors during instantiation
      */
     public static <C> C createWithConfiguration(final Class<C> implementedInterface, final String className,
             final kieker.common.configuration.Configuration configuration) throws ConfigurationException {

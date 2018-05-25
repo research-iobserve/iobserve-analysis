@@ -31,7 +31,7 @@ public class CorrespondenceModelHandler extends AbstractModelHandler<Corresponde
      * Create usage model provider.
      */
     public CorrespondenceModelHandler() {
-        // empty default constructor
+        super();
     }
 
     @Override

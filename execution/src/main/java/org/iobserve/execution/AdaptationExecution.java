@@ -81,7 +81,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
             }
         }
 
-        if (notAutoSupported.size() > 0) {
+        if (!notAutoSupported.isEmpty()) {
             if (this.listener == null) {
                 final String unsupportedActionsDesc = notAutoSupported.stream().map(script -> script.getDescription())
                         .collect(Collectors.joining("\n"));
@@ -99,10 +99,10 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
             actionScripts.forEach(script -> {
                 try {
                     script.execute();
-                } catch (final Exception e) {
+                } catch (final Exception e) { // NOCS, NOPMD
                     if (this.listener == null) {
                         throw new IllegalStateException("Could not execute action script '" + script.getDescription()
-                                + "' automatically and no listener was present. Aborting!");
+                                + "' automatically and no listener was present. Aborting!", e);
                     }
 
                     this.listener.notifyExecutionError(script, e);

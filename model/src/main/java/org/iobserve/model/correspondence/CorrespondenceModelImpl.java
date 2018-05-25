@@ -229,8 +229,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @return null if not available
      */
     private PcmEntityCorrespondent getPcmEntityCorrespondent(final String classSig) {
-        final PcmEntityCorrespondent pcmEntityCorrespondent = this.mapping.get(classSig.trim().replaceAll(" ", ""));
-        return pcmEntityCorrespondent;
+        return this.mapping.get(classSig.trim().replaceAll(" ", ""));
     }
 
     /**

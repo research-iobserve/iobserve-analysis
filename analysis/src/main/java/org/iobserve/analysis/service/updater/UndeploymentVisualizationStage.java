@@ -100,9 +100,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
-
-        return dataArray;
+        return Json.createArrayBuilder().add(serviceInstanceObject).build();
     }
 
 }

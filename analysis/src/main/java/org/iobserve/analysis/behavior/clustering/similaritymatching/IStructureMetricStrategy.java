@@ -34,5 +34,5 @@ public interface IStructureMetricStrategy {
      *            second model
      * @return returns the distance between both models
      */
-    public double getDistance(BehaviorModel a, BehaviorModel b);
+    double getDistance(BehaviorModel a, BehaviorModel b);
 }

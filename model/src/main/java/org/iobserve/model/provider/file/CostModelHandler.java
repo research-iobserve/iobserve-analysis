@@ -32,6 +32,7 @@ public class CostModelHandler extends AbstractModelHandler<CostRepository> {
      * Create a new provider with the given model file.
      */
     public CostModelHandler() {
+        super();
     }
 
     @Override

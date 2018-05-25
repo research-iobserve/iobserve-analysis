@@ -141,7 +141,7 @@ public class ComponentNode {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return super.hashCode() + 1;
     }
 
     /**

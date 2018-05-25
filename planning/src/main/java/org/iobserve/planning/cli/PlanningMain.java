@@ -66,6 +66,18 @@ public final class PlanningMain {
         // Do nothing.
     }
 
+    /**
+     * Main function of the planning tool.
+     *
+     * @param args
+     *            command line parameters
+     * @throws IOException
+     *             on io error
+     * @throws InitializationException
+     *             on initialization errors
+     * @throws ModelHandlingErrorException
+     *             on model handlign errors
+     */
     public static void main(final String[] args)
             throws IOException, InitializationException, ModelHandlingErrorException {
         final CommandLineParser parser = new DefaultParser();
@@ -149,8 +161,7 @@ public final class PlanningMain {
                 PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
             }
             final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
-            ModelHelper.fillResourceEnvironmentFromCloudProfile(
-                    org.eclipse.emf.common.util.URI.createFileURI(workingDir), modelHandler);
+            ModelHelper.fillResourceEnvironmentFromCloudProfile(URI.createFileURI(workingDir), modelHandler);
             if (PlanningMain.LOGGER.isInfoEnabled()) {
                 PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");
             }

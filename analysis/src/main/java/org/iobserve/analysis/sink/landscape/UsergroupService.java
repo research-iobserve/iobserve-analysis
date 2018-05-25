@@ -38,7 +38,7 @@ public class UsergroupService {
      * empty default constructor.
      */
     public UsergroupService() {
-
+        // empty constructor
     }
 
     /**
@@ -66,11 +66,8 @@ public class UsergroupService {
         }
         final JsonArray invokedServicesArray = builder.build();
 
-        final JsonObject usergroup = Json.createObjectBuilder().add("type", "userGroup").add("id", this.usergroupId)
-                .add("systemId", systemId).add("name", "test-usergroup" + Math.random())
-                .add("services", invokedServicesArray).build();
-
-        return usergroup;
+        return Json.createObjectBuilder().add("type", "userGroup").add("id", this.usergroupId).add("systemId", systemId)
+                .add("name", "test-usergroup" + Math.random()).add("services", invokedServicesArray).build();
     }
 
 }

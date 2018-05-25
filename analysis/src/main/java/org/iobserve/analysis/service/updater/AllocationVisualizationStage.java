@@ -80,9 +80,7 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<Resource
         final JsonObject nodegroupObject = Changelog.create(this.nodegroupService.createNodegroup(this.systemId));
         final JsonObject nodeObject = Changelog.create(
                 this.nodeService.createNode(resourceContainer, this.systemId, this.nodegroupService.getNodegroupId()));
-        final JsonArray dataArray = Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
-
-        return dataArray;
+        return Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
     }
 
 }

@@ -46,16 +46,17 @@ public final class CreateCorrespondenceMain {
 
     /**
      * @param args
+     *            arguments
      */
     public static void main(final String[] args) {
 
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_FrontendService", "JPetStore-Frontend");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_AccountService", "JPetStore-Account");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_CatalogService", "JPetStore-Catalog");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OdrderService", "JPetStore-Order");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_AccountDatabase", "Database-Account");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_CatalogDatabase", "Database-Catalog");
-        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OrderDatabase", "Database-Order");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_FrontendService", "jpetstore-frontend-service");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_AccountService", "jpetstore-account-service");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_CatalogService", "jpetstore-catalog-service");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OdrderService", "jpetstore-order-service");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_AccountDatabase", "jpetstore-account-database");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_CatalogDatabase", "jpetstore-catalog-database");
+        CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OrderDatabase", "jpetstore-order-database");
 
         final String pcmDirectory = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
         final PCMModelHandler modelHandler = new PCMModelHandler(new File(pcmDirectory));

@@ -65,7 +65,7 @@ public class BranchModelCreator {
      * empty default constructor.
      */
     public BranchModelCreator() {
-
+        // empty constructor
     }
 
     /**
@@ -715,11 +715,11 @@ public class BranchModelCreator {
         for (final Branch branch : branches) {
             branchesToCheck.addAll(branch.getChildBranches());
         }
-        if (branchesToCheck.size() == 0) {
+        if (branchesToCheck.isEmpty()) {
             return true;
+        } else {
+            return !this.checkForEqualSubsequentBranches(branchesToCheck);
         }
-
-        return !this.checkForEqualSubsequentBranches(branchesToCheck);
     }
 
     /**

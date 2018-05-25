@@ -33,7 +33,7 @@ public class NodegroupService {
      * empty default constructor.
      */
     public NodegroupService() {
-
+        // nothing to do
     }
 
     /**
@@ -48,11 +48,8 @@ public class NodegroupService {
         // random id
         this.nodegroupId = "nodeGroup-" + Math.random();
 
-        final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup").add("id", this.nodegroupId)
-                .add("systemId", systemId).add("name", "nodeGroupName").build();
-
-        return nodeGroup;
-
+        return Json.createObjectBuilder().add("type", "nodeGroup").add("id", this.nodegroupId).add("systemId", systemId)
+                .add("name", "nodeGroupName").build();
     }
 
     public String getNodegroupId() {

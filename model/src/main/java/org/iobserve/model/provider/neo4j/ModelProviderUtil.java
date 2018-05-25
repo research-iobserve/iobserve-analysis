@@ -208,7 +208,7 @@ public final class ModelProviderUtil {
      */
     public static String getTypeName(final EClass c) {
         final String name = c.getInstanceTypeName();
-        final int i = name.lastIndexOf(".");
+        final int i = name.lastIndexOf('.');
         return name.substring(i + 1);
     }
 
