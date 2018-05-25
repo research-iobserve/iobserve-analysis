@@ -29,6 +29,7 @@ import org.iobserve.execution.stages.kubernetes.AllocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeallocationExecutor;
 import org.iobserve.execution.stages.kubernetes.DeploymentExecutor;
 import org.iobserve.execution.stages.kubernetes.UndeploymentExecutor;
+import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
@@ -77,7 +78,8 @@ public class KubernetesExecutionConfiguration extends Configuration {
                 runtimeModelInputPort, runtimeModelDirectory);
         final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
                 redeploymentModelInputPort, redeploymentModelDirectory);
-
+        final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
+        final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
         final ModelCollector modelCollector = new ModelCollector();
         final ExecutionPlanDeserialization executionPlanDeserializaton = new ExecutionPlanDeserialization();
         final ExecutionPlan2AtomicActions executionPlan2AtomicActions = new ExecutionPlan2AtomicActions();
@@ -93,9 +95,11 @@ public class KubernetesExecutionConfiguration extends Configuration {
                 kubernetesUndeploymentExecutor, null, null, null, null, null, kubernetesAllocationExecutor,
                 kubernetesDeallocationExecutor, null, null);
 
+        this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());
+        this.connectPorts(redeploymentModelReader.getOutputPort(), redeploymentModelCollector.getInputPort());
         this.connectPorts(executionPlanReader.getOutputPort(), modelCollector.getExecutionPlanInputPort());
-        this.connectPorts(runtimeModelReader.getOutputPort(), modelCollector.getRuntimeModelInputPort());
-        this.connectPorts(redeploymentModelReader.getOutputPort(), modelCollector.getRedeploymentModelInputPort());
+        this.connectPorts(runtimeModelCollector.getOutputPort(), modelCollector.getRuntimeModelInputPort());
+        this.connectPorts(redeploymentModelCollector.getOutputPort(), modelCollector.getRedeploymentModelInputPort());
         this.connectPorts(modelCollector.getOutputPort(), executionPlanDeserializaton.getInputPort());
         this.connectPorts(executionPlanDeserializaton.getOutputPort(), executionPlan2AtomicActions.getInputPort());
         this.connectPorts(executionPlan2AtomicActions.getOutputPort(), atomicActionExecution.getInputPort());
