@@ -26,6 +26,8 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.privacy.violation.transformation.Edge;
+import org.iobserve.service.privacy.violation.transformation.Graph;
 import org.iobserve.service.privacy.violation.transformation.Vertice;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -128,7 +130,7 @@ public class PrivacyWarner extends AbstractStage {
 
     private void createAnalysisGraph() {
         final Graph g = new Graph();
-        final HashMap<String, Vertice> vertices = new LinkedHashMap<String, Vertice>();
+        final HashMap<String, Vertice> vertices = new LinkedHashMap<>();
         this.allocationRootElement = this.allocationModelGraphProvider.readRootComponent(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readRootComponent(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readRootComponent(Repository.class);
