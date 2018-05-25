@@ -77,7 +77,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            port to listen for Kieker records
      * @param outputs
      *            host and port for the Kieker adaptive monitoring
-     * @param rac
+     * @param correspondenceProvider
      *            correspondence model
      * @param repositoryModelProvider
      *            repository model provider
@@ -97,7 +97,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final IModelProvider<AssemblyEntry> rac, final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<AssemblyEntry> correspondenceProvider, final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
@@ -130,9 +130,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
         /** deployment. */
         final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                allocationModelProvider, allocationContextModelProvider, rac);
+                allocationModelProvider, allocationContextModelProvider, correspondenceProvider);
         final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
-                resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider, rac);
+                allocationContextModelProvider, correspondenceProvider);
 
         /** geolocation. */
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
@@ -145,14 +145,14 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 
         final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
-        final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(rac);
+        final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceProvider);
         final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
         final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
         final ModelProbeController modelProbeController = new ModelProbeController(allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        final ProbeMapper probeMapper = new ProbeMapper(rac);
+        final ProbeMapper probeMapper = new ProbeMapper(correspondenceProvider);
         final ProbeController probeController = new ProbeController(outputs);
 
         try {
