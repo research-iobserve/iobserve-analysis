@@ -24,7 +24,14 @@ import org.iobserve.common.record.ServletUndeployedEvent;
 
 /**
  * Collects information on deployment and send deployment and geolocation data. On undeployment only
- * the undeployment request is send.
+ * the undeployment request is send. The probe checks for two parameters:
+ *
+ * <ul>
+ * <li>deploymentId which should be an unique identifier for each deployment</li>
+ * <li>countryCode which is an ISO 3166 country code</li>
+ * </ul>
+ *
+ * In case the country code is missing a random country code is assigned.
  *
  * @author Reiner Jung
  *
@@ -48,10 +55,20 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
-        final String countryCode = servletContext.getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
+        final String countryCodeNumber = servletContext
+                .getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
+
+        final ISOCountryCode countryCode;
+
+        if (countryCodeNumber == null) {
+            final ISOCountryCode[] values = ISOCountryCode.values();
+            countryCode = values[(int) (Math.random() * values.length)];
+        } else {
+            countryCode = ISOCountryCode.getEnum(Short.valueOf(countryCodeNumber));
+        }
 
         this.monitoringCtrl.newMonitoringRecord(new Privacy_ServletDeployedEvent(this.timeSource.getTime(), service,
-                context, deploymentId, ISOCountryCode.getEnum(Short.valueOf(countryCode))));
+                context, deploymentId, countryCode));
     }
 
     @Override

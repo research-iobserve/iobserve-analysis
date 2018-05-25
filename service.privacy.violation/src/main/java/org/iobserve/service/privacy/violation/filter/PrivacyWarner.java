@@ -89,7 +89,6 @@ public class PrivacyWarner extends AbstractStage {
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
         this.repositoryModelGraphProvider = repositoryModelGraphProvider;
-
     }
 
     private void print(final Object o) {
