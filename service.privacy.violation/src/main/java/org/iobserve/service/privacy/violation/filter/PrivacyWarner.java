@@ -34,9 +34,9 @@ import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Parameter;
+import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -50,6 +50,7 @@ import teetime.framework.OutputPort;
  * Privacy warner.
  *
  * @author Reiner Jung -- initial contribution
+ * @author Clemens Brackmann -- analysis algorithm
  *
  */
 public class PrivacyWarner extends AbstractStage {
@@ -125,7 +126,7 @@ public class PrivacyWarner extends AbstractStage {
     private void createAnalysisGraph() {
         final Graph g = new Graph();
 
-        final HashMap<RepositoryComponent, Vertice> vertices = new LinkedHashMap<>();
+        final HashMap<String, Vertice> vertices = new LinkedHashMap<>();
         this.allocationRootElement = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readOnlyRootComponent(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
@@ -158,51 +159,53 @@ public class PrivacyWarner extends AbstractStage {
             /** Creating component vertices **/
             final Vertice v = new Vertice(bc.getEntityName());
             g.addVertice(v);
-            vertices.put(bc, v);
+            vertices.put(bc.getId(), v);
         }
 
-        for (final Interface inf : this.repositoryRootElement.getInterfaces__Repository()) {
-            if (inf instanceof OperationInterface) {
-
-                final OperationInterface oi = (OperationInterface) inf;
-
-                for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
-
-                    for (final Parameter p : os.getParameters__OperationSignature()) {
-                        this.print("Parameter: " + p.getModifier__Parameter());
-                    }
-                }
-            }
-            this.print(inf.getEntityName());
-
-        }
+        /** Adding connections between components to the graph **/
         for (final Connector c : this.systemRootElement.getConnectors__ComposedStructure()) {
             if (c instanceof AssemblyConnector) {
                 final AssemblyConnector ac = (AssemblyConnector) c;
+                // Providing Component
                 final AssemblyContext provider = ac.getProvidingAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcProvider = provider.getEncapsulatedComponent__AssemblyContext();
+                // Requiring Component
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
+
                 if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
-                    final OperationRequiredRole orr = ac.getRequiredRole_AssemblyConnector();
-
                     this.print(opr.getEntityName());
-                    if (opr != null) {
+                    final String interfaceName = this.shortName(opr.getEntityName());
+                    // Check Interface Name in Repository and add Edge
+                    for (final Interface inf : this.repositoryRootElement.getInterfaces__Repository()) {
 
-                        final OperationInterface oi = orr.getRequiredInterface__OperationRequiredRole();
-                        this.print(orr.getRequiringEntity_RequiredRole());
+                        if (inf instanceof OperationInterface) {
+                            if (!inf.getEntityName().equals(interfaceName)) {
+                                continue;
+                            }
 
-                        if (oi != null) {
-                            this.print("NOT NULLLLLL!!!!!");
+                            final OperationInterface oi = (OperationInterface) inf;
+
                             for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
-                                for (final Parameter params : os.getParameters__OperationSignature()) {
-                                    this.print(params.getParameterName());
+
+                                for (final Parameter p : os.getParameters__OperationSignature()) {
+                                    if (p.getModifier__Parameter() == ParameterModifier.IN) {
+                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
+                                    }
+                                    if (p.getModifier__Parameter() == ParameterModifier.OUT) {
+                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
+                                    }
+                                    if (p.getModifier__Parameter() == ParameterModifier.INOUT) {
+                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
+                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
+                                    }
                                 }
                             }
-                        }
-                    }
 
+                        }
+
+                    }
                 }
             }
 

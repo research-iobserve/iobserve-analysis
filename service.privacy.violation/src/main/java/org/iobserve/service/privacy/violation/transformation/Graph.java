@@ -25,7 +25,8 @@ public class Graph {
     }
 
     public void addEdge(final Vertice source, final Vertice target) {
-        this.edges.add(new Edge(source, target));
+        final Edge e = new Edge(source, target);
+        this.edges.add(e);
     }
 
     public void addEdge(final Edge e) {
