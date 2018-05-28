@@ -22,7 +22,6 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.service.privacy.violation.transformation.Edge;
 import org.iobserve.service.privacy.violation.transformation.Graph;
 import org.iobserve.service.privacy.violation.transformation.Vertice;
 import org.iobserve.stages.data.Warnings;
@@ -171,7 +170,6 @@ public class PrivacyWarner extends AbstractStage {
 
                     for (final Parameter p : os.getParameters__OperationSignature()) {
                         this.print("Parameter: " + p.getModifier__Parameter());
-
                     }
                 }
             }
@@ -188,6 +186,7 @@ public class PrivacyWarner extends AbstractStage {
                 if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     final OperationRequiredRole orr = ac.getRequiredRole_AssemblyConnector();
+
                     this.print(opr.getEntityName());
                     if (opr != null) {
 
@@ -203,9 +202,7 @@ public class PrivacyWarner extends AbstractStage {
                             }
                         }
                     }
-                    final Edge e = new Edge(vertices.get(rcRequiring.getEntityName()),
-                            vertices.get(rcProvider.getEntityName()));
-                    g.addEdge(e);
+
                 }
             }
 
