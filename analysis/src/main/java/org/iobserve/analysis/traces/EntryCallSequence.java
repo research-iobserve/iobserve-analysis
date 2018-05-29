@@ -41,7 +41,6 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @version 1.0
  */
 public final class EntryCallSequence extends AbstractStage {
-
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
@@ -94,7 +93,7 @@ public final class EntryCallSequence extends AbstractStage {
             userSession.add(event, true);
         }
 
-        this.removeExpiredSessions();
+        // this.removeExpiredSessions();
     }
 
     /**

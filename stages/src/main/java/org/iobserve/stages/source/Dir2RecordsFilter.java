@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryCreationFilter;
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.filesystem.BinaryCompressionMethod;
 import kieker.common.util.filesystem.FSUtil;
@@ -29,11 +31,7 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.FileExtensionSwitch;
 import teetime.stage.basic.merger.Merger;
-import teetime.stage.className.ClassNameRegistryCreationFilter;
-import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.Directory2FilesFilter;
-import teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter;
-import teetime.stage.io.filesystem.format.text.file.DatFile2RecordFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +67,6 @@ public final class Dir2RecordsFilter extends CompositeStage {
     public Dir2RecordsFilter(final ClassNameRegistryRepository classNameRegistryRepository) {
         this.classNameRegistryRepository = classNameRegistryRepository;
 
-        // TODO does not yet work with more than one thread due to classNameRegistryRepository:
-        // classNameRegistryRepository is set after the ctor
         // create stages
         final ClassNameRegistryCreationFilter localClassNameRegistryCreationFilter = new ClassNameRegistryCreationFilter(
                 this.classNameRegistryRepository);
@@ -90,8 +86,13 @@ public final class Dir2RecordsFilter extends CompositeStage {
 
         final FileExtensionSwitch fileExtensionSwitch = new FileExtensionSwitch();
 
-        final DatFile2RecordFilter datFile2RecordFilter = new DatFile2RecordFilter(this.classNameRegistryRepository);
+        final DatFileToRecordStage datFile2RecordFilter = new DatFileToRecordStage(this.classNameRegistryRepository,
+                "UTF-8");
         final BinaryFile2RecordFilter binaryFile2RecordFilter = new BinaryFile2RecordFilter(
+                this.classNameRegistryRepository);
+        // TODO this is a hack, as the fileExtensionSwitch does not work properly with composed
+        // extensions
+        final BinaryFile2RecordFilter decompBinaryStream2RecordFilter = new BinaryFile2RecordFilter(
                 this.classNameRegistryRepository);
 
         this.recordMerger = new Merger<>();
@@ -100,6 +101,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
         final OutputPort<File> binFileOutputPort = fileExtensionSwitch
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
+        final OutputPort<File> xzFileOutputPort = fileExtensionSwitch.addFileExtension(".xz");
 
         // connect ports by pipes
         this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
@@ -108,8 +110,11 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.connectPorts(normalFileOutputPort, datFile2RecordFilter.getInputPort());
         this.connectPorts(binFileOutputPort, binaryFile2RecordFilter.getInputPort());
 
+        this.connectPorts(xzFileOutputPort, decompBinaryStream2RecordFilter.getInputPort());
+
         this.connectPorts(datFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
         this.connectPorts(binaryFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
+        this.connectPorts(decompBinaryStream2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
 
         // prepare pipeline
         this.classNameRegistryCreationFilter = localClassNameRegistryCreationFilter;

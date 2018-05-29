@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.builder;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -52,7 +52,7 @@ public final class CallSequenceScalabilityReference {
 
         final ReferenceElements testElements = new ReferenceElements();
         final int numberOfUserSessions = 50;
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfUserSessions));
 
         boolean branchDecisionerUserGroup1 = true;

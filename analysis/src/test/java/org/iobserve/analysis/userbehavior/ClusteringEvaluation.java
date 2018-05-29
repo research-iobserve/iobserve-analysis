@@ -22,7 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.behavior.karlsruhe.UserGroupExtraction;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
@@ -46,7 +47,7 @@ public class ClusteringEvaluation {
     private static final int VARIANCE_VALUE = 10;
     private static final int NUMBER_OF_EVALUATION_ITERATIONS = 1;
 
-    private EntryCallSequenceModel entryCallSequenceModel;
+    private UserSessionCollectionModel entryCallSequenceModel;
     private List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter = new ArrayList<>();
 
     /**
@@ -213,7 +214,7 @@ public class ClusteringEvaluation {
         final long seed = 5;
         Collections.shuffle(userSessions, new Random(seed));
 
-        this.entryCallSequenceModel = new EntryCallSequenceModel(userSessions);
+        this.entryCallSequenceModel = new UserSessionCollectionModel(userSessions);
     }
 
     /**
@@ -229,7 +230,7 @@ public class ClusteringEvaluation {
         final UserGroupExtraction userGroupExtraction = new UserGroupExtraction(this.entryCallSequenceModel, 3,
                 ClusteringEvaluation.VARIANCE_VALUE, true);
         userGroupExtraction.extractUserGroups();
-        final List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = userGroupExtraction
+        final List<UserSessionCollectionModel> entryCallSequenceModelsOfUserGroups = userGroupExtraction
                 .getEntryCallSequenceModelsOfUserGroups();
         this.listOfClusterAssignmentsCounter = new ArrayList<>();
 
@@ -239,7 +240,7 @@ public class ClusteringEvaluation {
         }
 
         int index = 0;
-        for (final EntryCallSequenceModel entryCallSequence : entryCallSequenceModelsOfUserGroups) {
+        for (final UserSessionCollectionModel entryCallSequence : entryCallSequenceModelsOfUserGroups) {
             for (final UserSession userSession : entryCallSequence.getUserSessions()) {
                 if (userSession.getSessionId().equals(ClusteringEvaluation.CUSTOMER_TAG)) {
                     this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupCustomer();

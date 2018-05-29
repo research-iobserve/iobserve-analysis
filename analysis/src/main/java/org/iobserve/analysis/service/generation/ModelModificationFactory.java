@@ -47,6 +47,16 @@ public final class ModelModificationFactory {
         // empty constructor for factory
     }
 
+    /**
+     * Create a new model.
+     *
+     * @param commandLine
+     *            command line parameters
+     * @throws InitializationException
+     *             when handler do not initialize
+     * @throws IOException
+     *             on io errors
+     */
     public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
         ModelModificationFactory.LOGGER.info("Modifying model!");
 
@@ -130,9 +140,10 @@ public final class ModelModificationFactory {
             snapshotBuilder = new SnapshotBuilder("", modelProviders);
             snapshotURI = snapshotBuilder.createSnapshot();
         } catch (final IOException e) {
-            e.printStackTrace();
+            ModelModificationFactory.LOGGER.error("Cannot copy repo to output, IO error: {}", e.getLocalizedMessage());
         } catch (final InitializationException e1) {
-            e1.printStackTrace();
+            ModelModificationFactory.LOGGER.error("Cannot copy repo to output, initialization error: {}",
+                    e1.getLocalizedMessage());
         }
         return snapshotURI;
     }

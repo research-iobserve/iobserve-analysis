@@ -19,13 +19,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.source.Dir2RecordsFilter;
@@ -61,7 +61,7 @@ public class FileSourceCompositeStage extends CompositeStage implements ISourceC
 
         final Collection<File> directories = this.collectDirectories(directoryNames);
 
-        if (directories.size() == 0) {
+        if (directories.isEmpty()) {
             FileSourceCompositeStage.LOGGER.error("No valid directory found.");
             throw new ConfigurationException("No valid directory found.");
         }

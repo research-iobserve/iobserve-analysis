@@ -3,10 +3,12 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
+        // maven { url "https://plugins.gradle.org/m2/" } // shadow
     }
 
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
     }
 }
 
@@ -26,6 +28,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
+
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+    }
+}
 
 def confDir = "${project.rootDir}/qa-configurations"
 
@@ -143,6 +153,7 @@ subprojects {
 
     repositories {
 		mavenLocal()
+		maven {url project.properties['api.baseline']}
 		mavenCentral()
 		jcenter()
 		maven {url "https://repo.eclipse.org/content/groups/releases/" }
@@ -158,7 +169,6 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
 		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
-		maven {url project.properties['api.baseline']}
     }
 
     ext {

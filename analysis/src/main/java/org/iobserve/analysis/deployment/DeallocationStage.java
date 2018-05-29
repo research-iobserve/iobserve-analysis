@@ -16,11 +16,13 @@
 package org.iobserve.analysis.deployment;
 
 import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
 import java.util.Optional;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -54,7 +56,12 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
 
     @Override
     protected void execute(final IDeallocationEvent event) throws Exception {
-        final URL url = new URL(event.toArray()[0].toString());
+        final URL url;
+        if (event instanceof ContainerAllocationEvent) {
+            url = new URL(((ContainerAllocationEvent) event).getUrl());
+        } else {
+            throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
+        }
         final String hostName = url.getHost();
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory

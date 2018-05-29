@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,24 @@ import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.ServletDescriptor;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IDeployedEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
 public class ServletDeployedEvent extends ServletDescriptor implements IDeployedEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
 			 + TYPE_SIZE_STRING; // ServletDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // ServletDescriptor.service
 		String.class, // ServletDescriptor.context
 		String.class, // ServletDescriptor.deploymentId
@@ -127,16 +126,6 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 			this.getDeploymentId(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getService());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */

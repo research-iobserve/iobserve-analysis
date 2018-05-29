@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,28 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
+import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class SessionStartEvent extends AbstractEvent implements ISessionEvent {			
+public class SessionStartEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
 			 + TYPE_SIZE_STRING; // ISessionEvent.sessionId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // ISessionEvent.hostname
 		String.class, // ISessionEvent.sessionId
 	};
@@ -46,7 +47,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
-	private static final long serialVersionUID = 3453809390268343438L;
+	private static final long serialVersionUID = 8630937685639626967L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -56,6 +57,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	};
 	
 	/** property declarations. */
+	private final long timestamp;
 	private final String hostname;
 	private final String sessionId;
 	
@@ -70,7 +72,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 *            sessionId
 	 */
 	public SessionStartEvent(final long timestamp, final String hostname, final String sessionId) {
-		super(timestamp);
+		this.timestamp = timestamp;
 		this.hostname = hostname == null?"":hostname;
 		this.sessionId = sessionId == null?"":sessionId;
 	}
@@ -86,7 +88,8 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 */
 	@Deprecated
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
 		this.hostname = (String) values[1];
 		this.sessionId = (String) values[2];
 	}
@@ -103,7 +106,8 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 */
 	@Deprecated
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
 		this.hostname = (String) values[1];
 		this.sessionId = (String) values[2];
 	}
@@ -116,7 +120,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 *            when the record could not be deserialized
 	 */
 	public SessionStartEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
 		this.hostname = deserializer.getString();
 		this.sessionId = deserializer.getString();
 	}
@@ -135,15 +139,6 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 			this.getSessionId(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getHostname());
-		stringRegistry.get(this.getSessionId());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -221,6 +216,11 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final String getHostname() {
 		return this.hostname;

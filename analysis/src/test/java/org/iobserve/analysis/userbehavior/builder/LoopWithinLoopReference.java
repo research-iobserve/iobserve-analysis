@@ -18,7 +18,7 @@ package org.iobserve.analysis.userbehavior.builder;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -159,7 +159,7 @@ public final class LoopWithinLoopReference {
 
         final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 1);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
 
         // According to the reference usage model user sessions are created that exactly represent
