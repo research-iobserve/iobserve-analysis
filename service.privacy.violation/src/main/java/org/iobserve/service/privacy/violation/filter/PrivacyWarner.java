@@ -15,8 +15,12 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
@@ -43,10 +47,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -131,7 +131,7 @@ public class PrivacyWarner extends AbstractStage {
     private void createAnalysisGraph() {
         final Graph g = new Graph();
 
-        final HashMap<String, Vertice> vertices = new LinkedHashMap<>();
+        final Map<String, Vertice> vertices = new LinkedHashMap<>();
         this.allocationRootElement = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readOnlyRootComponent(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
@@ -186,7 +186,7 @@ public class PrivacyWarner extends AbstractStage {
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
 
-                if ((rcProvider != null) && (rcRequiring != null)) {
+                if (rcProvider != null && rcRequiring != null) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     this.print(opr.getEntityName());
                     final String interfaceName = this.shortName(opr.getEntityName());
@@ -235,7 +235,7 @@ public class PrivacyWarner extends AbstractStage {
         if (!s.contains("_")) {
             return s;
         } else {
-            final String tmp[] = s.split("_");
+            final String[] tmp = s.split("_");
             return tmp[tmp.length - 1];
         }
 

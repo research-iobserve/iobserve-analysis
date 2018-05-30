@@ -17,7 +17,6 @@ package org.iobserve.analysis.test.service.suites;
 
 import java.io.IOException;
 
-import org.iobserve.analysis.test.service.updater.AllocationVisualizationStageTest;
 import org.iobserve.analysis.test.service.updater.DeploymentVisualizationStageTest;
 import org.iobserve.analysis.test.service.updater.UndeploymentVisualizationStageTest;
 import org.junit.AfterClass;
@@ -35,8 +34,8 @@ import fi.iki.elonen.NanoHTTPD;
  *
  */
 @RunWith(Suite.class) // NOCS test
-@SuiteClasses({ AllocationVisualizationStageTest.class, DeploymentVisualizationStageTest.class,
-        UndeploymentVisualizationStageTest.class })
+@SuiteClasses({ // AllocationVisualizationStageTest.class,
+        DeploymentVisualizationStageTest.class, UndeploymentVisualizationStageTest.class })
 public class AllTestsUpdater { // NOPMD all static, but test
     /** handler for http requests. */
     private static NanoHTTPD server; // NOCS initialized in setUpClass

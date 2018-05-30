@@ -23,17 +23,11 @@ dependencies {
 //   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
 //}
 
-clover {
-	report {
-		html=true
-	}	
-}
-
 test {
   println 'Starting unit tests.'
-  scanForTestClasses= false
-  include '**/evaluation/suites/*'
-  exclude '**/evaluation/filter/*'
+  scanForTestClasses = false
+  include '**/evaluation/test/suites/Test*.java'
+  exclude '**/evaluation/test/filter/*'
 }
 
 install {
