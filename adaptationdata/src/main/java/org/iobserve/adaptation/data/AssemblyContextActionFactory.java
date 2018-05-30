@@ -141,12 +141,12 @@ public final class AssemblyContextActionFactory {
 
         // source providing allocation contexts
         ActionFactory.getProvidingAssemblyContexts(runtimeNode.getAssemblyContextID(), runtimeSystem)
-                .forEach(ac -> action.getTargetProvidingAllocationContexts().add(
+                .forEach(ac -> action.getSourceProvidingAllocationContexts().add(
                         ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), runtimeAllocation)));
 
         // source requiring allocation contexts
         ActionFactory.getRequiringAssemblyContexts(runtimeNode.getAssemblyContextID(), runtimeSystem)
-                .forEach(ac -> action.getTargetRequiringAllocationContexts().add(
+                .forEach(ac -> action.getSourceRequiringAllocationContexts().add(
                         ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), runtimeAllocation)));
 
         return action;
