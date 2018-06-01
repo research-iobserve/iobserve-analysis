@@ -108,6 +108,13 @@ public class DeploymentExecutor extends AbstractExecutor<DeployComponentAction> 
             }
         }
 
+        // Wait until deployed instance is ready
+        while (!client.extensions().deployments().inNamespace(this.namespace).withName(rcName).isReady()) {
+            if (DeploymentExecutor.LOGGER.isDebugEnabled()) {
+                DeploymentExecutor.LOGGER.debug(rcName + " is not ready yet.");
+            }
+        }
+
         client.close();
     }
 
