@@ -23,6 +23,7 @@ import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -75,6 +76,8 @@ public class PrivacyWarnerTest {
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(PrivacyModel.class, modelHandler.getPrivacyModel(),
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
         final Graph<Repository> repositoryGraph = graphLoader.createModelGraph(Repository.class);
@@ -82,6 +85,7 @@ public class PrivacyWarnerTest {
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
                 .createModelGraph(ResourceEnvironment.class);
         final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+        final Graph<PrivacyModel> privacyModelGraph = graphLoader.createModelGraph(PrivacyModel.class);
 
         /** model provider. */
         final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
@@ -92,8 +96,10 @@ public class PrivacyWarnerTest {
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
-                repositoryModelProvider);
+                repositoryModelProvider, privacyModelProvider);
 
     }
 

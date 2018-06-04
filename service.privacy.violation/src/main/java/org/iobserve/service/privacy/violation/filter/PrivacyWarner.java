@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.transformation.Graph;
@@ -37,6 +38,7 @@ import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
+import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -59,6 +61,7 @@ public class PrivacyWarner extends AbstractStage {
     private final IModelProvider<System> systemModelGraphProvider;
     private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
     private final IModelProvider<Repository> repositoryModelGraphProvider;
+    private final IModelProvider<PrivacyModel> privacyModelGraphProvider;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -84,11 +87,13 @@ public class PrivacyWarner extends AbstractStage {
     public PrivacyWarner(final IModelProvider<Allocation> allocationModelGraphProvider,
             final IModelProvider<System> systemModelGraphProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<Repository> repositoryModelGraphProvider) {
+            final IModelProvider<Repository> repositoryModelGraphProvider,
+            final IModelProvider<PrivacyModel> privacyModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
         this.repositoryModelGraphProvider = repositoryModelGraphProvider;
+        this.privacyModelGraphProvider = privacyModelGraphProvider;
     }
 
     private void print(final Object o) {
@@ -155,7 +160,15 @@ public class PrivacyWarner extends AbstractStage {
 
             final BasicComponent bc = repositoryComponentModelProvider.readOnlyComponentById(BasicComponent.class,
                     rc.getId());
+            //
+            for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
 
+                if (or instanceof OperationProvidedRole) {
+                    final OperationProvidedRole opr = (OperationProvidedRole) or;
+                    this.print(opr.getProvidedInterface__OperationProvidedRole().getEntityName());
+                }
+            }
+            //
             /** Creating component vertices **/
             final Vertice v = new Vertice(bc.getEntityName());
             g.addVertice(v);
@@ -191,10 +204,10 @@ public class PrivacyWarner extends AbstractStage {
 
                                 for (final Parameter p : os.getParameters__OperationSignature()) {
                                     if (p.getModifier__Parameter() == ParameterModifier.IN) {
-                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
+                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.OUT) {
-                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
+                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.INOUT) {
                                         g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
