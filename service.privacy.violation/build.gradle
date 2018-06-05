@@ -109,6 +109,11 @@ sourceSets {
 	}
 }
 
+test {
+    scanForTestClasses = false
+    exclude '**/*PrivacyWarnerTest.java'
+}
+
 clover {
 	report {
 		html=true

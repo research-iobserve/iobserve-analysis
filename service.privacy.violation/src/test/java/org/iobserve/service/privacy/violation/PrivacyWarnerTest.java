@@ -46,13 +46,13 @@ import org.palladiosimulator.pcm.system.System;
  *
  */
 public class PrivacyWarnerTest {
-    private static final String PCM_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-    private static final String MODEL_DATABASE_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
-
     // private static final String PCM_DIRECTORY_PATH =
-    // "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    // "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
     // private static final String MODEL_DATABASE_DIRECTORY_PATH =
-    // "D:/Experiment/distributed-jpetstore-experiment/db";
+    // "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
+
+    private static final String PCM_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    private static final String MODEL_DATABASE_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/db";
 
     private final File pcmDirectory = new File(PrivacyWarnerTest.PCM_DIRECTORY_PATH);
     private final File modelDatabaseDirectory = new File(PrivacyWarnerTest.MODEL_DATABASE_DIRECTORY_PATH);
