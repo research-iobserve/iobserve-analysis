@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -77,6 +78,9 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
     private static final String ACCESSIBLE = "accessible";
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
+
+    private static final Class<?>[] ROOT_CLASSES = { Allocation.class, Repository.class, ResourceEnvironment.class,
+            System.class, UsageModel.class, PrivacyModel.class };
 
     private final Graph<R> graph;
     private final String nameLabel;
@@ -576,9 +580,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
     public T readOnlyRootComponent(final Class<T> clazz) {
         EObject component = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            if (clazz.equals(Allocation.class) || clazz.equals(Repository.class)
-                    || clazz.equals(ResourceEnvironment.class) || clazz.equals(System.class)
-                    || clazz.equals(UsageModel.class)) {
+            if (this.isRootClass(clazz)) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
@@ -596,6 +598,15 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         }
 
         return (T) component;
+    }
+
+    private boolean isRootClass(final Class<T> clazz) {
+        for (final Class<?> rootClass : ModelProvider.ROOT_CLASSES) {
+            if (rootClass.equals(clazz)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
