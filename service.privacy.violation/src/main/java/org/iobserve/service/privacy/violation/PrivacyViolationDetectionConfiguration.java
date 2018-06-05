@@ -97,7 +97,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final IModelProvider<AssemblyEntry> correspondenceProvider, final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<AssemblyEntry> correspondenceProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
@@ -138,7 +139,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
 
         final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider, repositoryModelProvider);
+                resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
 
         final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);
