@@ -88,6 +88,10 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
                 return createParameterPrivacyAdapter();
             }
             @Override
+            public Adapter caseEncapsulatedDataSource(EncapsulatedDataSource object) {
+                return createEncapsulatedDataSourceAdapter();
+            }
+            @Override
             public Adapter defaultCase(EObject object) {
                 return createEObjectAdapter();
             }
@@ -174,6 +178,20 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createParameterPrivacyAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.EncapsulatedDataSource <em>Encapsulated Data Source</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.EncapsulatedDataSource
+     * @generated
+     */
+    public Adapter createEncapsulatedDataSourceAdapter() {
         return null;
     }
 

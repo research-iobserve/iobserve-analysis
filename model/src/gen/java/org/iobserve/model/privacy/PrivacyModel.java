@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.iobserve.model.privacy.PrivacyModel#getResourceContainerLocations <em>Resource Container Locations</em>}</li>
  *   <li>{@link org.iobserve.model.privacy.PrivacyModel#getPrivacyLevels <em>Privacy Levels</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}</li>
  * </ul>
  *
  * @see org.iobserve.model.privacy.PrivacyPackage#getPrivacyModel()
@@ -55,5 +56,21 @@ public interface PrivacyModel extends EObject {
      * @generated
      */
     EList<IPrivacyAnnotation> getPrivacyLevels();
+
+    /**
+     * Returns the value of the '<em><b>Encapsulated Data Sources</b></em>' reference list.
+     * The list contents are of type {@link org.iobserve.model.privacy.EncapsulatedDataSource}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Encapsulated Data Sources</em>' reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Encapsulated Data Sources</em>' reference list.
+     * @see org.iobserve.model.privacy.PrivacyPackage#getPrivacyModel_EncapsulatedDataSources()
+     * @model
+     * @generated
+     */
+    EList<EncapsulatedDataSource> getEncapsulatedDataSources();
 
 } // PrivacyModel

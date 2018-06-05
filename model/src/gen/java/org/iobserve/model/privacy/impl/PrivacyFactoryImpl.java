@@ -61,6 +61,7 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
             case PrivacyPackage.RETURN_TYPE_PRIVACY: return createReturnTypePrivacy();
             case PrivacyPackage.GEO_LOCATION: return createGeoLocation();
             case PrivacyPackage.PARAMETER_PRIVACY: return createParameterPrivacy();
+            case PrivacyPackage.ENCAPSULATED_DATA_SOURCE: return createEncapsulatedDataSource();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -138,6 +139,16 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
     public ParameterPrivacy createParameterPrivacy() {
         ParameterPrivacyImpl parameterPrivacy = new ParameterPrivacyImpl();
         return parameterPrivacy;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EncapsulatedDataSource createEncapsulatedDataSource() {
+        EncapsulatedDataSourceImpl encapsulatedDataSource = new EncapsulatedDataSourceImpl();
+        return encapsulatedDataSource;
     }
 
     /**

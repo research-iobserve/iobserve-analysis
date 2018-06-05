@@ -58,6 +58,15 @@ public interface PrivacyFactory extends EFactory {
     ParameterPrivacy createParameterPrivacy();
 
     /**
+     * Returns a new object of class '<em>Encapsulated Data Source</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Encapsulated Data Source</em>'.
+     * @generated
+     */
+    EncapsulatedDataSource createEncapsulatedDataSource();
+
+    /**
      * Returns the package supported by this factory.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
