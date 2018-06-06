@@ -180,7 +180,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
                     }
 
                 } else {
-                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
+                    if ((refObject != null) && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -217,7 +217,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
+        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -580,7 +580,9 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
     public T readOnlyRootComponent(final Class<T> clazz) {
         EObject component = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+
             if (this.isRootClass(clazz)) {
+
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
@@ -722,7 +724,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
+        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));

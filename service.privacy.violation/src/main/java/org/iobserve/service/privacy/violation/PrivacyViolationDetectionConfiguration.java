@@ -19,10 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import kieker.common.record.flow.IFlowRecord;
-
-import teetime.framework.Configuration;
-
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
@@ -59,6 +55,9 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import kieker.common.record.flow.IFlowRecord;
+import teetime.framework.Configuration;
 
 /**
  * Configuration for the log replayer.

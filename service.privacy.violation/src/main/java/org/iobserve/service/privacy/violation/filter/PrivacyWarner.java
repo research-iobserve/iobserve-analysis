@@ -24,9 +24,12 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.privacy.violation.transformation.Edge;
 import org.iobserve.service.privacy.violation.transformation.Graph;
 import org.iobserve.service.privacy.violation.transformation.Vertice;
 import org.iobserve.stages.data.Warnings;
@@ -45,6 +48,7 @@ import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -72,6 +76,8 @@ public class PrivacyWarner extends AbstractStage {
     private Allocation allocationRootElement;
     private System systemRootElement;
     private Repository repositoryRootElement;
+    private ResourceEnvironment resEnvRootElement;
+    private PrivacyModel privacyRootElement;
 
     /**
      * Create and initialize privacy warner.
@@ -135,6 +141,9 @@ public class PrivacyWarner extends AbstractStage {
         this.allocationRootElement = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readOnlyRootComponent(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
+        this.resEnvRootElement = this.resourceEnvironmentModelGraphProvider
+                .readOnlyRootComponent(ResourceEnvironment.class);
+        this.privacyRootElement = this.privacyModelGraphProvider.readOnlyRootComponent(PrivacyModel.class);
         /** AssemblyContext View **/
         final ModelProvider<System, AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
                 ((ModelProvider) this.systemModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
@@ -147,12 +156,17 @@ public class PrivacyWarner extends AbstractStage {
         final ModelProvider<Repository, OperationInterface> operationInterfaceModelProvider = new ModelProvider<>(
                 ((ModelProvider) this.repositoryModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
+        /** ResourceContainer View **/
+        final ModelProvider<ResourceEnvironment, ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
+                ((ModelProvider) this.resourceEnvironmentModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
 
         this.print(
                 "******************************************************************************************************************");
         this.print("Starting creation of Analysis Graph");
 
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
+
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
                     .readOnlyComponentById(AssemblyContext.class, asc.getId());
@@ -173,6 +187,21 @@ public class PrivacyWarner extends AbstractStage {
             final Vertice v = new Vertice(bc.getEntityName());
             g.addVertice(v);
             vertices.put(bc.getId(), v);
+            // TODO Effizienter machen falls möglich
+            final ResourceContainer queryResource = resourceContainerModelProvider.readOnlyComponentById(
+                    ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
+            if (this.privacyRootElement != null) {
+                for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
+                    if (geo.getResourceContainer().getId() == queryResource.getId()) {
+                        final Vertice vGeo = new Vertice(geo.getIsocode().getName());
+                        g.addVertice(vGeo);
+                        g.addEdge(vGeo, v);
+                    }
+
+                }
+            } else {
+                this.print("PRIVACY ROOT IS NULL");
+            }
         }
 
         /** Adding connections between components to the graph **/
@@ -203,15 +232,29 @@ public class PrivacyWarner extends AbstractStage {
                             for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
 
                                 for (final Parameter p : os.getParameters__OperationSignature()) {
+                                    for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
+
+                                    }
                                     if (p.getModifier__Parameter() == ParameterModifier.IN) {
-                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
+                                        final Edge e = new Edge(vertices.get(rcRequiring.getId()),
+                                                vertices.get(rcProvider.getId()));
+                                        // e.setDPC(s);//TODO
+                                        g.addEdge(e);
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.OUT) {
-                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
+                                        final Edge e = new Edge(vertices.get(rcProvider.getId()),
+                                                vertices.get(rcRequiring.getId()));
+
+                                        g.addEdge(e);
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.INOUT) {
-                                        g.addEdge(vertices.get(rcProvider.getId()), vertices.get(rcRequiring.getId()));
-                                        g.addEdge(vertices.get(rcRequiring.getId()), vertices.get(rcProvider.getId()));
+
+                                        final Edge e1 = new Edge(vertices.get(rcProvider.getId()),
+                                                vertices.get(rcRequiring.getId()));
+                                        final Edge e2 = new Edge(vertices.get(rcRequiring.getId()),
+                                                vertices.get(rcProvider.getId()));
+                                        g.addEdge(e1);
+                                        g.addEdge(e2);
                                     }
                                 }
                             }
