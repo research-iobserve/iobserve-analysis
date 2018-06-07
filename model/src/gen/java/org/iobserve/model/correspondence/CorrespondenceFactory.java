@@ -40,6 +40,15 @@ public interface CorrespondenceFactory extends EFactory {
     Part createPart();
 
     /**
+     * Returns a new object of class '<em>Component Entry</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Component Entry</em>'.
+     * @generated
+     */
+    ComponentEntry createComponentEntry();
+
+    /**
      * Returns a new object of class '<em>Allocation Entry</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

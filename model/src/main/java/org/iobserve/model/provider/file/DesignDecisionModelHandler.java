@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EPackage;
  */
 public class DesignDecisionModelHandler extends AbstractModelHandler<DecisionSpace> {
 
+    public static final String SUFFIX = "designdecision";
+
     /**
      * Create a new provider with the given model file.
      */
@@ -40,4 +42,8 @@ public class DesignDecisionModelHandler extends AbstractModelHandler<DecisionSpa
         return designdecisionPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return DesignDecisionModelHandler.SUFFIX;
+    }
 }

@@ -177,6 +177,52 @@ public interface CorrespondencePackage extends EPackage {
     int ABSTRACT_ENTRY_OPERATION_COUNT = 0;
 
     /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.ComponentEntryImpl <em>Component Entry</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.impl.ComponentEntryImpl
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getComponentEntry()
+     * @generated
+     */
+    int COMPONENT_ENTRY = 3;
+
+    /**
+     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPONENT_ENTRY__IMPLEMENTATION_ID = ABSTRACT_ENTRY__IMPLEMENTATION_ID;
+
+    /**
+     * The feature id for the '<em><b>Component</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPONENT_ENTRY__COMPONENT = ABSTRACT_ENTRY_FEATURE_COUNT + 0;
+
+    /**
+     * The number of structural features of the '<em>Component Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPONENT_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+
+    /**
+     * The number of operations of the '<em>Component Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPONENT_ENTRY_OPERATION_COUNT = ABSTRACT_ENTRY_OPERATION_COUNT + 0;
+
+    /**
      * The meta object id for the '{@link org.iobserve.model.correspondence.impl.AllocationEntryImpl <em>Allocation Entry</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -184,7 +230,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAllocationEntry()
      * @generated
      */
-    int ALLOCATION_ENTRY = 3;
+    int ALLOCATION_ENTRY = 4;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -230,7 +276,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAssemblyEntry()
      * @generated
      */
-    int ASSEMBLY_ENTRY = 4;
+    int ASSEMBLY_ENTRY = 5;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -276,7 +322,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getOperationEntry()
      * @generated
      */
-    int OPERATION_ENTRY = 5;
+    int OPERATION_ENTRY = 6;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -388,6 +434,27 @@ public interface CorrespondencePackage extends EPackage {
      * @generated
      */
     EAttribute getAbstractEntry_ImplementationId();
+
+    /**
+     * Returns the meta object for class '{@link org.iobserve.model.correspondence.ComponentEntry <em>Component Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Component Entry</em>'.
+     * @see org.iobserve.model.correspondence.ComponentEntry
+     * @generated
+     */
+    EClass getComponentEntry();
+
+    /**
+     * Returns the meta object for the reference '{@link org.iobserve.model.correspondence.ComponentEntry#getComponent <em>Component</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the reference '<em>Component</em>'.
+     * @see org.iobserve.model.correspondence.ComponentEntry#getComponent()
+     * @see #getComponentEntry()
+     * @generated
+     */
+    EReference getComponentEntry_Component();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.AllocationEntry <em>Allocation Entry</em>}'.
@@ -536,6 +603,24 @@ public interface CorrespondencePackage extends EPackage {
          * @generated
          */
         EAttribute ABSTRACT_ENTRY__IMPLEMENTATION_ID = eINSTANCE.getAbstractEntry_ImplementationId();
+
+        /**
+         * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.ComponentEntryImpl <em>Component Entry</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.model.correspondence.impl.ComponentEntryImpl
+         * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getComponentEntry()
+         * @generated
+         */
+        EClass COMPONENT_ENTRY = eINSTANCE.getComponentEntry();
+
+        /**
+         * The meta object literal for the '<em><b>Component</b></em>' reference feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference COMPONENT_ENTRY__COMPONENT = eINSTANCE.getComponentEntry_Component();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.AllocationEntryImpl <em>Allocation Entry</em>}' class.

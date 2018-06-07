@@ -24,7 +24,7 @@ import teetime.framework.OutputPort;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class SnapshotBuilder extends AbstractStage {
     private static boolean evaluationMode;
 
     private final URI snapshotURI;
-    private final PCMModelHandler modelHandler;
+    private final ModelImporter modelHandler;
 
     private final OutputPort<URI> outputPort = super.createOutputPort();
     private final OutputPort<URI> evaluationOutputPort = super.createOutputPort();
@@ -62,7 +62,7 @@ public class SnapshotBuilder extends AbstractStage {
      * @throws InitializationException
      *             when no snapshot location was specified
      */
-    public SnapshotBuilder(final String subURI, final PCMModelHandler modelHandler) throws InitializationException {
+    public SnapshotBuilder(final String subURI, final ModelImporter modelHandler) throws InitializationException {
         super();
 
         if (SnapshotBuilder.baseSnapshotLocation == null) {

@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class ModelGraph {
 
     private final Set<DeploymentNode> servers;
     private final Set<ComponentNode> components;
-    private final PCMModelHandler pcmModels;
+    private final ModelImporter pcmModels;
 
     /**
      * Create a model graph.
@@ -47,7 +47,7 @@ public class ModelGraph {
      *            all PCM models TODO only use those models which are really necessary
      */
     public ModelGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
-            final PCMModelHandler pcmModels) {
+            final ModelImporter pcmModels) {
         this.servers = new HashSet<>(servers);
         this.components = new HashSet<>(components);
         this.pcmModels = pcmModels;
@@ -80,7 +80,7 @@ public class ModelGraph {
     /**
      * @return the pcmModels
      */
-    public PCMModelHandler getPcmModels() {
+    public ModelImporter getPcmModels() {
         return this.pcmModels;
     }
 

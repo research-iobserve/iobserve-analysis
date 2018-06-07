@@ -29,6 +29,8 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
  */
 public final class AllocationModelHandler extends AbstractModelHandler<Allocation> {
 
+    public static final String SUFFIX = "allocation";
+
     /**
      * Create an uninitialized empty provider.
      */
@@ -37,7 +39,13 @@ public final class AllocationModelHandler extends AbstractModelHandler<Allocatio
     }
 
     @Override
-    public EPackage getPackage() {
+    protected EPackage getPackage() {
         return AllocationPackage.eINSTANCE;
     }
+
+    @Override
+    protected String getSuffix() {
+        return AllocationModelHandler.SUFFIX;
+    }
+
 }

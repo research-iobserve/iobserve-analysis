@@ -28,6 +28,14 @@ public class OperationSignaturePrivacy {
     private final EDataPrivacyLevel returnTypePrivacy;
     private final Map<String, EDataPrivacyLevel> parameterPrivacy;
 
+    /**
+     * Create a new operation signature privacy object.
+     *
+     * @param returnTypePrivacy
+     *            privacy value for the return type
+     * @param parameterPrivacy
+     *            privacy values for parameter types
+     */
     public OperationSignaturePrivacy(final EDataPrivacyLevel returnTypePrivacy,
             final Map<String, EDataPrivacyLevel> parameterPrivacy) {
         this.returnTypePrivacy = returnTypePrivacy;

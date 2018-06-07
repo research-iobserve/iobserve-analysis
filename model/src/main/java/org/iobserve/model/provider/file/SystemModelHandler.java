@@ -28,6 +28,8 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public final class SystemModelHandler extends AbstractModelHandler<System> {
 
+    public static final String SUFFIX = "system";
+
     /**
      * Create an empty model provider.
      */
@@ -40,4 +42,8 @@ public final class SystemModelHandler extends AbstractModelHandler<System> {
         return SystemPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return SystemModelHandler.SUFFIX;
+    }
 }

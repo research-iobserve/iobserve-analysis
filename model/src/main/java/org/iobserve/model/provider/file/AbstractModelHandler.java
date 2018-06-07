@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Reiner Jung
  *
  * @param <T>
+ *            root class of metamodel
  *
  */
 public abstract class AbstractModelHandler<T extends EObject> {
@@ -71,7 +72,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
         final ResourceSet resourceSet = new ResourceSetImpl();
         resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
-        final Resource resource = resourceSet.createResource(writeModelURI);
+        final Resource resource = resourceSet.createResource(writeModelURI.appendFileExtension(this.getSuffix()));
         resource.getContents().add(model);
         try {
             resource.save(null);
@@ -79,6 +80,13 @@ public abstract class AbstractModelHandler<T extends EObject> {
             AbstractModelHandler.LOGGER.error("Cannot save model at {}", writeModelURI.toString());
         }
     }
+
+    /**
+     * Return the suffix associated with a specific type of model.
+     *
+     * @return the suffix
+     */
+    protected abstract String getSuffix();
 
     /**
      * Get an instance of the package where this model belongs to. <br>

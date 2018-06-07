@@ -26,7 +26,7 @@ import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDe
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.ModelHandlingErrorException;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentCloudFactory;
 import org.iobserve.model.provider.file.CostModelHandler;
@@ -247,7 +247,7 @@ public final class ModelHelper {
      *             model handling issue
      */
     public static void fillResourceEnvironmentFromCloudProfile(final org.eclipse.emf.common.util.URI writeURI,
-            final PCMModelHandler modelHandler) throws ModelHandlingErrorException {
+            final ModelImporter modelHandler) throws ModelHandlingErrorException {
         final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
         final CloudProfile cloudProfileModel = modelHandler.getCloudProfileModel();
         final CostRepository costRepositoryModel = modelHandler.getCostModel();
@@ -261,9 +261,9 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler()
-                .save(writeURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX), environment);
-        new CostModelHandler().save(writeURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), costRepositoryModel);
+        new ResourceEnvironmentModelHandler().save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX),
+                environment);
+        new CostModelHandler().save(writeURI.appendFileExtension(CostModelHandler.SUFFIX), costRepositoryModel);
     }
 
     /**
@@ -310,7 +310,7 @@ public final class ModelHelper {
      * @throws ModelHandlingErrorException
      *             modeling handlign issue
      */
-    public static ResourceContainerCloud getResourceContainerFromHostname(final PCMModelHandler modelProviders,
+    public static ResourceContainerCloud getResourceContainerFromHostname(final ModelImporter modelProviders,
             final String hostname) throws ModelHandlingErrorException {
         final String[] nameParts = hostname.split("_");
 

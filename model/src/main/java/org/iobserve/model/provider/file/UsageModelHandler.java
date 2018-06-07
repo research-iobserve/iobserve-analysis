@@ -29,6 +29,8 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  */
 public final class UsageModelHandler extends AbstractModelHandler<UsageModel> {
 
+    public static final String SUFFIX = "usagemodel";
+
     /**
      * Create usage model provider.
      */
@@ -41,4 +43,8 @@ public final class UsageModelHandler extends AbstractModelHandler<UsageModel> {
         return UsagemodelPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return UsageModelHandler.SUFFIX;
+    }
 }

@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
@@ -61,6 +62,13 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      * @generated
      */
     private EClass abstractEntryEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass componentEntryEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -219,6 +227,24 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      * <!-- end-user-doc -->
      * @generated
      */
+    public EClass getComponentEntry() {
+        return componentEntryEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getComponentEntry_Component() {
+        return (EReference)componentEntryEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getAllocationEntry() {
         return allocationEntryEClass;
     }
@@ -306,6 +332,9 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         abstractEntryEClass = createEClass(ABSTRACT_ENTRY);
         createEAttribute(abstractEntryEClass, ABSTRACT_ENTRY__IMPLEMENTATION_ID);
 
+        componentEntryEClass = createEClass(COMPONENT_ENTRY);
+        createEReference(componentEntryEClass, COMPONENT_ENTRY__COMPONENT);
+
         allocationEntryEClass = createEClass(ALLOCATION_ENTRY);
         createEReference(allocationEntryEClass, ALLOCATION_ENTRY__ALLOCATION);
 
@@ -340,15 +369,16 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         setNsURI(eNS_URI);
 
         // Obtain other dependent packages
+        RepositoryPackage theRepositoryPackage = (RepositoryPackage)EPackage.Registry.INSTANCE.getEPackage(RepositoryPackage.eNS_URI);
         AllocationPackage theAllocationPackage = (AllocationPackage)EPackage.Registry.INSTANCE.getEPackage(AllocationPackage.eNS_URI);
         CompositionPackage theCompositionPackage = (CompositionPackage)EPackage.Registry.INSTANCE.getEPackage(CompositionPackage.eNS_URI);
-        RepositoryPackage theRepositoryPackage = (RepositoryPackage)EPackage.Registry.INSTANCE.getEPackage(RepositoryPackage.eNS_URI);
 
         // Create type parameters
 
         // Set bounds for type parameters
 
         // Add supertypes to classes
+        componentEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         allocationEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         assemblyEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         operationEntryEClass.getESuperTypes().add(this.getAbstractEntry());
@@ -363,6 +393,9 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
 
         initEClass(abstractEntryEClass, AbstractEntry.class, "AbstractEntry", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getAbstractEntry_ImplementationId(), ecorePackage.getEString(), "implementationId", null, 0, 1, AbstractEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(componentEntryEClass, ComponentEntry.class, "ComponentEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getComponentEntry_Component(), theRepositoryPackage.getRepositoryComponent(), null, "component", null, 1, 1, ComponentEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(allocationEntryEClass, AllocationEntry.class, "AllocationEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAllocationEntry_Allocation(), theAllocationPackage.getAllocationContext(), null, "allocation", null, 1, 1, AllocationEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

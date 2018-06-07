@@ -27,6 +27,8 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage
  */
 public class CloudProfileModelHandler extends AbstractModelHandler<CloudProfile> {
 
+    public static final String SUFFIX = "cloudprofile";
+
     /**
      * Create a new provider with the given model file.
      */
@@ -37,6 +39,11 @@ public class CloudProfileModelHandler extends AbstractModelHandler<CloudProfile>
     @Override
     protected EPackage getPackage() {
         return CloudprofilePackage.eINSTANCE;
+    }
+
+    @Override
+    protected String getSuffix() {
+        return CloudProfileModelHandler.SUFFIX;
     }
 
 }

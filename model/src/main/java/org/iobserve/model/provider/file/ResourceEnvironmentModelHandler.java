@@ -29,6 +29,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class ResourceEnvironmentModelHandler extends AbstractModelHandler<ResourceEnvironment> {
 
+    public static final String SUFFIX = "resourceenvironment";
+
     /**
      * Create an empty resource environment model provider.
      */
@@ -41,4 +43,8 @@ public class ResourceEnvironmentModelHandler extends AbstractModelHandler<Resour
         return ResourceenvironmentcloudPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return ResourceEnvironmentModelHandler.SUFFIX;
+    }
 }

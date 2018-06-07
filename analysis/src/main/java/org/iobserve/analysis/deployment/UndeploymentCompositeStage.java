@@ -22,7 +22,9 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
@@ -41,12 +43,14 @@ public class UndeploymentCompositeStage extends CompositeStage {
      *
      * @param allocationContextModelGraphProvider
      *            allocation context model provider
-     * @param correspondenceModelProvider
-     *            correspondence model handler
+     * @param correspondenceModelGraph
+     *            correspondence model graph
      */
     public UndeploymentCompositeStage(final IModelProvider<AllocationContext> allocationContextModelGraphProvider,
-            final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+            final Graph correspondenceModelGraph) {
 
+        final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
+                ModelProvider.IMPLEMENTATION_ID, null);
         this.undeployPCMMapper = new UndeployPCMMapper(correspondenceModelProvider);
 
         this.undeployment = new UndeploymentModelUpdater(allocationContextModelGraphProvider);

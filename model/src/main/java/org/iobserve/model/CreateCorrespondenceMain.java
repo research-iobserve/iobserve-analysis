@@ -59,7 +59,7 @@ public final class CreateCorrespondenceMain {
         CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OrderDatabase", "jpetstore-order-database");
 
         final String pcmDirectory = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-        final PCMModelHandler modelHandler = new PCMModelHandler(new File(pcmDirectory));
+        final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
 
         // final Repository repository = modelHandler.getRepositoryModel();
         // final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();

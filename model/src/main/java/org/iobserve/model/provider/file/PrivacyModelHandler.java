@@ -29,6 +29,8 @@ import org.palladiosimulator.pcm.system.System;
  */
 public final class PrivacyModelHandler extends AbstractModelHandler<PrivacyModel> {
 
+    public static final String SUFFIX = "privacy";
+
     /**
      * Create an empty model provider.
      */
@@ -41,4 +43,8 @@ public final class PrivacyModelHandler extends AbstractModelHandler<PrivacyModel
         return PrivacyPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return PrivacyModelHandler.SUFFIX;
+    }
 }

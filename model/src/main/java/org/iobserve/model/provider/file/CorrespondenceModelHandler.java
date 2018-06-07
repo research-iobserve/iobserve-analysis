@@ -27,6 +27,8 @@ import org.iobserve.model.correspondence.CorrespondencePackage;
  */
 public class CorrespondenceModelHandler extends AbstractModelHandler<CorrespondenceModel> {
 
+    public static final String SUFFIX = "rac";
+
     /**
      * Create usage model provider.
      */
@@ -37,5 +39,10 @@ public class CorrespondenceModelHandler extends AbstractModelHandler<Corresponde
     @Override
     protected EPackage getPackage() {
         return CorrespondencePackage.eINSTANCE;
+    }
+
+    @Override
+    protected String getSuffix() {
+        return CorrespondenceModelHandler.SUFFIX;
     }
 }

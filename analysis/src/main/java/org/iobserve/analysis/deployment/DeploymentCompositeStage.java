@@ -23,7 +23,9 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -52,13 +54,16 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      *            model provider for the allocation model (deployment model)
      * @param allocationContextModelProvider
      *            model provider for the system model
-     * @param correspondenceModelProvider
-     *            the correspondence model handler
+     * @param correspondenceModelGraph
+     *            the correspondence model graph
      */
     public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+            final Graph correspondenceModelGraph) {
+
+        final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
+                ModelProvider.IMPLEMENTATION_ID, null);
         this.deployPCMMapper = new DeployPCMMapper(correspondenceModelProvider);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
                 resourceEnvironmentModelProvider);

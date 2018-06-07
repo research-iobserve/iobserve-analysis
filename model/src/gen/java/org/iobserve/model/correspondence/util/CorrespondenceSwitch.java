@@ -84,6 +84,13 @@ public class CorrespondenceSwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
+            case CorrespondencePackage.COMPONENT_ENTRY: {
+                ComponentEntry componentEntry = (ComponentEntry)theEObject;
+                T result = caseComponentEntry(componentEntry);
+                if (result == null) result = caseAbstractEntry(componentEntry);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
             case CorrespondencePackage.ALLOCATION_ENTRY: {
                 AllocationEntry allocationEntry = (AllocationEntry)theEObject;
                 T result = caseAllocationEntry(allocationEntry);
@@ -151,6 +158,21 @@ public class CorrespondenceSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseAbstractEntry(AbstractEntry object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Component Entry</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Component Entry</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseComponentEntry(ComponentEntry object) {
         return null;
     }
 

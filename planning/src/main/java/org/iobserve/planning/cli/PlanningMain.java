@@ -29,7 +29,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.model.ModelHandlingErrorException;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
@@ -160,7 +160,7 @@ public final class PlanningMain {
             if (PlanningMain.LOGGER.isInfoEnabled()) {
                 PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
             }
-            final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
+            final ModelImporter modelHandler = new ModelImporter(new File(workingDir));
             ModelHelper.fillResourceEnvironmentFromCloudProfile(URI.createFileURI(workingDir), modelHandler);
             if (PlanningMain.LOGGER.isInfoEnabled()) {
                 PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");

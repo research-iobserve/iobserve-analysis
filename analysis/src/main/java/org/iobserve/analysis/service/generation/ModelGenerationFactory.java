@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.apache.commons.cli.CommandLine;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.RepositoryModelHandler;
 import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
@@ -68,7 +68,7 @@ public final class ModelGenerationFactory {
     }
 
     private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {
-        final PCMModelHandler modelProviders = new PCMModelHandler(new File(outputLocation.toFileString()));
+        final ModelImporter modelProviders = new ModelImporter(new File(outputLocation.toFileString()));
         final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModel());
         final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 

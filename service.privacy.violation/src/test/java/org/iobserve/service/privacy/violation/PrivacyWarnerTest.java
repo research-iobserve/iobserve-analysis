@@ -22,7 +22,7 @@ import java.util.List;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.Graph;
@@ -71,7 +71,7 @@ public class PrivacyWarnerTest {
     @Before
     public void initializePW() {
         this.clearDirectory(this.modelDatabaseDirectory);
-        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
+        final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         /** graphs. */

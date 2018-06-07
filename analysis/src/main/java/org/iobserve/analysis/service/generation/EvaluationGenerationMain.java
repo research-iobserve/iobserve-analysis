@@ -24,7 +24,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.iobserve.analysis.data.graph.GraphFactory;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public final class EvaluationGenerationMain {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
                     ModelGenerationFactory.createNewModel(commandLine);
 
-                    final PCMModelHandler modelProviders = new PCMModelHandler(model);
+                    final ModelImporter modelProviders = new ModelImporter(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviders);
                 }
@@ -74,7 +74,7 @@ public final class EvaluationGenerationMain {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
                     ModelModificationFactory.createNewModel(commandLine);
 
-                    final PCMModelHandler modelProviers = new PCMModelHandler(model);
+                    final ModelImporter modelProviers = new ModelImporter(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }

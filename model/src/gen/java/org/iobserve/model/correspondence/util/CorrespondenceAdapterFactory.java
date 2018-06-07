@@ -80,6 +80,10 @@ public class CorrespondenceAdapterFactory extends AdapterFactoryImpl {
                 return createAbstractEntryAdapter();
             }
             @Override
+            public Adapter caseComponentEntry(ComponentEntry object) {
+                return createComponentEntryAdapter();
+            }
+            @Override
             public Adapter caseAllocationEntry(AllocationEntry object) {
                 return createAllocationEntryAdapter();
             }
@@ -150,6 +154,20 @@ public class CorrespondenceAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createAbstractEntryAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.correspondence.ComponentEntry <em>Component Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.correspondence.ComponentEntry
+     * @generated
+     */
+    public Adapter createComponentEntryAdapter() {
         return null;
     }
 

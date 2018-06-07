@@ -27,8 +27,7 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.model.PCMModelHandler;
-import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
@@ -103,7 +102,7 @@ public final class PrivacyViolationDetectionServiceMain
             throws ConfigurationException {
 
         /** load models. */
-        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
+        final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         /** initialize database. */
@@ -116,7 +115,7 @@ public final class PrivacyViolationDetectionServiceMain
         graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelHandler.getCorrespondenceModel(), null,
-                ModelProvider.PCM_ID);
+                ModelProvider.IMPLEMENTATION_ID);
         graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(), null,
                 ModelProvider.PCM_ID);
 
@@ -143,17 +142,14 @@ public final class PrivacyViolationDetectionServiceMain
         final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-        final IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider = new ModelProvider<>(
-                correspondenceModelGraph, ModelProvider.IMPLEMENTATION_ID, null);
-
         final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         try {
-            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,
-                    assemblyEntryCorrespondenceModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, privacyModelProvider,
-                    this.warningFile, this.alarmsFile);
+            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, correspondenceModelGraph,
+                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
+                    allocationContextModelProvider, systemModelProvider, privacyModelProvider, this.warningFile,
+                    this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

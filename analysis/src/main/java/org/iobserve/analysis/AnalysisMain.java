@@ -24,7 +24,7 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.provider.neo4j.Graph;
@@ -137,7 +137,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
         /** Configure model handling. */
         if (this.pcmFeature) {
-            final PCMModelHandler modelFileHandler = new PCMModelHandler(this.modelInitDirectory);
+            final ModelImporter modelFileHandler = new ModelImporter(this.modelInitDirectory);
 
             /** initialize neo4j graphs. */
             final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);

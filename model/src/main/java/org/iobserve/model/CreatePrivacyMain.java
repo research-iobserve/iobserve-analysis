@@ -63,7 +63,7 @@ public final class CreatePrivacyMain {
         CreatePrivacyMain.createPrivacyAnnotations();
 
         final String pcmDirectory = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-        final PCMModelHandler modelHandler = new PCMModelHandler(new File(pcmDirectory));
+        final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
 
         final Repository repository = modelHandler.getRepositoryModel();
         final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();

@@ -51,31 +51,9 @@ import org.slf4j.LoggerFactory;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class PCMModelHandler {
+public final class ModelImporter {
 
-    public static final String ALLOCATION_SUFFIX = "allocation";
-
-    public static final String CLOUD_PROFILE_SUFFIX = "cloudprofile";
-
-    public static final String COST_SUFFIX = "cost";
-
-    public static final String DESIGN_DECISION_SUFFIX = "designdecision";
-
-    public static final String REPOSITORY_SUFFIX = "repository";
-
-    public static final String RESOURCE_ENVIRONMENT_SUFFIX = "resourceenvironment";
-
-    public static final String SYSTEM_SUFFIX = "system";
-
-    public static final String USAGE_MODEL_SUFFIX = "usagemodel";
-
-    private static final String CORRESPONDENCE_SUFFIX = "rac";
-
-    private static final String QML_DECLARATIONS_MODEL = "qmldeclarations";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
-
-    private static final String PRIVACY_MODEL = "privacy";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelImporter.class);
 
     private Repository repositoryModel;
     private Allocation allocationModel;
@@ -96,34 +74,34 @@ public final class PCMModelHandler {
      * @param pcmModelsDirectory
      *            directory of pcm models.
      */
-    public PCMModelHandler(final File pcmModelsDirectory) {
+    public ModelImporter(final File pcmModelsDirectory) {
 
         final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
-            PCMModelHandler.LOGGER.debug("Reading model {}", nextFile.toString());
+            ModelImporter.LOGGER.debug("Reading model {}", nextFile.toString());
             final String extension = this.getFileExtension(nextFile.getName());
             final URI uri = this.getUri(nextFile);
-            if ("repository".equalsIgnoreCase(extension)) {
+            if (RepositoryModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.repositoryModel = new RepositoryModelHandler().load(uri);
-            } else if (PCMModelHandler.ALLOCATION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (AllocationModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.allocationModel = new AllocationModelHandler().load(uri);
-            } else if (PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (ResourceEnvironmentModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.resourceEnvironmentModel = new ResourceEnvironmentModelHandler().load(uri);
-            } else if (PCMModelHandler.SYSTEM_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (SystemModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.systemModel = new SystemModelHandler().load(uri);
-            } else if (PCMModelHandler.USAGE_MODEL_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (UsageModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.usageModel = new UsageModelHandler().load(uri);
-            } else if (PCMModelHandler.CORRESPONDENCE_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (CorrespondenceModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.correspondenceModel = new CorrespondenceModelHandler().load(uri);
-            } else if (PCMModelHandler.CLOUD_PROFILE_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (CloudProfileModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.cloudProfileModel = new CloudProfileModelHandler().load(uri);
-            } else if (PCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (CostModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.costModel = new CostModelHandler().load(uri);
-            } else if (PCMModelHandler.DESIGN_DECISION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (DesignDecisionModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.designDecisionModel = new DesignDecisionModelHandler().load(uri);
-            } else if (PCMModelHandler.QML_DECLARATIONS_MODEL.equalsIgnoreCase(extension)) {
+            } else if (QMLDeclarationsModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.qmlDeclarationsModel = new QMLDeclarationsModelHandler().load(uri);
-            } else if (PCMModelHandler.PRIVACY_MODEL.equalsIgnoreCase(extension)) {
+            } else if (PrivacyModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.privacyModel = new PrivacyModelHandler().load(uri);
             }
 
@@ -214,26 +192,16 @@ public final class PCMModelHandler {
      *            the location directory for the snapshot
      */
     public void save(final URI fileLocationURI) {
-        new AllocationModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
-                this.allocationModel);
-        new CloudProfileModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.CLOUD_PROFILE_SUFFIX),
-                this.cloudProfileModel);
-        new CostModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), this.costModel);
-        new DesignDecisionModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.DESIGN_DECISION_SUFFIX), this.designDecisionModel);
-        new RepositoryModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.REPOSITORY_SUFFIX),
-                this.repositoryModel);
-        new ResourceEnvironmentModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
-                this.resourceEnvironmentModel);
-        new SystemModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.SYSTEM_SUFFIX),
-                this.systemModel);
-        new UsageModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.USAGE_MODEL_SUFFIX),
-                this.usageModel);
-        new QMLDeclarationsModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.QML_DECLARATIONS_MODEL), this.qmlDeclarationsModel);
-        new PrivacyModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.PRIVACY_MODEL),
-                this.privacyModel);
+        new AllocationModelHandler().save(fileLocationURI, this.allocationModel);
+        new CloudProfileModelHandler().save(fileLocationURI, this.cloudProfileModel);
+        new CostModelHandler().save(fileLocationURI, this.costModel);
+        new DesignDecisionModelHandler().save(fileLocationURI, this.designDecisionModel);
+        new RepositoryModelHandler().save(fileLocationURI, this.repositoryModel);
+        new ResourceEnvironmentModelHandler().save(fileLocationURI, this.resourceEnvironmentModel);
+        new SystemModelHandler().save(fileLocationURI, this.systemModel);
+        new UsageModelHandler().save(fileLocationURI, this.usageModel);
+        new QMLDeclarationsModelHandler().save(fileLocationURI, this.qmlDeclarationsModel);
+        new PrivacyModelHandler().save(fileLocationURI, this.privacyModel);
     }
 
     /**

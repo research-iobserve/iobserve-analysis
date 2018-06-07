@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EPackage;
  */
 public class QMLDeclarationsModelHandler extends AbstractModelHandler<QMLDeclarations> {
 
+    public static final String SUFFIX = "qmldeclarations";
+
     /**
      * Create a QML declaration model provider.
      */
@@ -38,6 +40,11 @@ public class QMLDeclarationsModelHandler extends AbstractModelHandler<QMLDeclara
     @Override
     protected EPackage getPackage() {
         return QMLDeclarationsPackage.eINSTANCE;
+    }
+
+    @Override
+    protected String getSuffix() {
+        return QMLDeclarationsModelHandler.SUFFIX;
     }
 
 }

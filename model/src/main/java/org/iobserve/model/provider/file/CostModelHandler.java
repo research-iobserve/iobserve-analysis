@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EPackage;
  */
 public class CostModelHandler extends AbstractModelHandler<CostRepository> {
 
+    public static final String SUFFIX = "cost";
+
     /**
      * Create a new provider with the given model file.
      */
@@ -40,4 +42,8 @@ public class CostModelHandler extends AbstractModelHandler<CostRepository> {
         return costPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return CostModelHandler.SUFFIX;
+    }
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -65,10 +65,10 @@ public final class ModelModificationFactory {
 
         ModelModificationFactory.LOGGER.info("Copying models to new location.");
 
-        PCMModelHandler modelProviders = new PCMModelHandler(new File(inputModels.toFileString()));
+        ModelImporter modelProviders = new ModelImporter(new File(inputModels.toFileString()));
 
         final URI copyURI = ModelModificationFactory.copyRepoToOutput(outputLocation, modelProviders);
-        modelProviders = new PCMModelHandler(new File(copyURI.toFileString()));
+        modelProviders = new ModelImporter(new File(copyURI.toFileString()));
 
         final Allocation allocationModel = modelProviders.getAllocationModel();
         final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModel();
@@ -131,7 +131,7 @@ public final class ModelModificationFactory {
     /**
      * Copies all files to the given output location.
      */
-    private static URI copyRepoToOutput(final URI outputLocation, final PCMModelHandler modelProviders) {
+    private static URI copyRepoToOutput(final URI outputLocation, final ModelImporter modelProviders) {
         SnapshotBuilder.setBaseSnapshotURI(outputLocation);
         final SnapshotBuilder snapshotBuilder;
         URI snapshotURI = null;

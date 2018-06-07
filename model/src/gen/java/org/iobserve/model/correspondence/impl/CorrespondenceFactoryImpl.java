@@ -58,6 +58,7 @@ public class CorrespondenceFactoryImpl extends EFactoryImpl implements Correspon
         switch (eClass.getClassifierID()) {
             case CorrespondencePackage.CORRESPONDENCE_MODEL: return createCorrespondenceModel();
             case CorrespondencePackage.PART: return createPart();
+            case CorrespondencePackage.COMPONENT_ENTRY: return createComponentEntry();
             case CorrespondencePackage.ALLOCATION_ENTRY: return createAllocationEntry();
             case CorrespondencePackage.ASSEMBLY_ENTRY: return createAssemblyEntry();
             case CorrespondencePackage.OPERATION_ENTRY: return createOperationEntry();
@@ -84,6 +85,16 @@ public class CorrespondenceFactoryImpl extends EFactoryImpl implements Correspon
     public Part createPart() {
         PartImpl part = new PartImpl();
         return part;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public ComponentEntry createComponentEntry() {
+        ComponentEntryImpl componentEntry = new ComponentEntryImpl();
+        return componentEntry;
     }
 
     /**
