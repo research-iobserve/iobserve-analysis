@@ -18,10 +18,6 @@ package org.iobserve.service.privacy.violation.filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.privacy.GeoLocation;
@@ -51,6 +47,10 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -188,6 +188,8 @@ public class PrivacyWarner extends AbstractStage {
                     ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
             if (this.privacyRootElement != null) {
                 for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
+                    this.print("GEO ID: " + geo.getResourceContainer().getId());
+                    this.print("RESOURCE ID: " + queryResource.getId());
                     if (geo.getResourceContainer().getId() == queryResource.getId()) {
                         final Vertice vGeo = new Vertice(geo.getIsocode().getName());
                         g.addVertice(vGeo);
@@ -198,6 +200,13 @@ public class PrivacyWarner extends AbstractStage {
             } else {
                 this.print("PRIVACY ROOT IS NULL");
             }
+        }
+        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
+            this.print(geo.getIsocode().getName());
+            final ResourceContainer tmp = geo.getResourceContainer();
+            final String s = tmp.getId();
+            final ResourceContainer rc = resourceContainerModelProvider.readOnlyComponentById(ResourceContainer.class,
+                    s);
         }
 
         /** Adding connections between components to the graph **/
@@ -211,7 +220,7 @@ public class PrivacyWarner extends AbstractStage {
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
 
-                if (rcProvider != null && rcRequiring != null) {
+                if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     this.print(opr.getEntityName());
                     final String interfaceName = this.shortName(opr.getEntityName());
