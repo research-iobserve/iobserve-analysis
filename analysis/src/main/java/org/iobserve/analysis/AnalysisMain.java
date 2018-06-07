@@ -26,7 +26,7 @@ import kieker.common.configuration.Configuration;
 
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -36,11 +36,16 @@ import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
 /**
  * Main class for starting the iObserve application.
@@ -137,28 +142,27 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             /** initialize neo4j graphs. */
             final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-            graphLoader.initializeModelGraph(Repository.class, modelFileHandler.getRepositoryModel(),
+            graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelFileHandler.getRepositoryModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(ResourceEnvironment.class, modelFileHandler.getResourceEnvironmentModel(),
+            graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
+                    modelFileHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME,
+                    ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelFileHandler.getAllocationModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(Allocation.class, modelFileHandler.getAllocationModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(System.class, modelFileHandler.getSystemModel(),
+            graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelFileHandler.getSystemModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
             // graphLoader.initializeModelGraph(UsageModel.class, modelFileHandler.getUsageModel(),
             // ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(CorrespondenceModel.class, modelFileHandler.getCorrespondenceModel(),
+            graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelFileHandler.getCorrespondenceModel(),
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
             /** load neo4j graphs. */
-            final Graph<Repository> repositoryModelGraph = graphLoader.createModelGraph(Repository.class);
-            final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                    .createModelGraph(ResourceEnvironment.class);
-            final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
-            final Graph<System> systemModelGraph = graphLoader.createModelGraph(System.class);
-            final Graph<UsageModel> usageModelGraph = graphLoader.createModelGraph(UsageModel.class);
-            final Graph<CorrespondenceModel> correspondenceModelGraph = graphLoader
-                    .createModelGraph(CorrespondenceModel.class);
+            final Graph repositoryModelGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+            final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+            final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+            final Graph usageModelGraph = graphLoader.createModelGraph(UsagemodelFactory.eINSTANCE);
+            final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
 
             /** new graphModelProvider. */
             repositoryModelProvider = new ModelProvider<>(repositoryModelGraph, ModelProvider.PCM_ENTITY_NAME,

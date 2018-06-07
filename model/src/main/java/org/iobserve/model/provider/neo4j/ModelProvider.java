@@ -28,6 +28,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
@@ -54,13 +55,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lars Bluemke
  *
- * @param <R>
- *            Type of the model graph root element
  * @param <T>
  *            Type of the model's or submodel's root component
  * @since 0.0.2
  */
-public class ModelProvider<R extends EObject, T extends EObject> implements IModelProvider<T> {
+public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     /** TODO these should be moved elsewhere. */
     public static final String PCM_ENTITY_NAME = "entityName";
@@ -82,7 +81,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
     private static final Class<?>[] ROOT_CLASSES = { Allocation.class, Repository.class, ResourceEnvironment.class,
             System.class, UsageModel.class, PrivacyModel.class };
 
-    private final Graph<R> graph;
+    private final Graph graph;
     private final String nameLabel;
     private final String idLabel;
 
@@ -98,7 +97,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
      *            label used for tne id property, e.g., id in PCM (can be null if no ids are
      *            present)
      */
-    public ModelProvider(final Graph<R> graph, final String nameLabel, final String idLabel) {
+    public ModelProvider(final Graph graph, final String nameLabel, final String idLabel) {
         this.graph = graph;
         this.nameLabel = nameLabel;
         this.idLabel = idLabel;
@@ -122,17 +121,16 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
      * Clones and returns a new version from the current newest version of the model graph. If there
      * is none yet an empty graph is returned.
      *
-     * @param clazz
-     *            The model type (only {@link Allocation}, {@link Repository},
-     *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
+     * @param factory
+     *            metamodel factory class
      *
      * @return The cloned graph
      */
-    public Graph<T> cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph cloneNewGraphVersion(final EFactory factory) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
-        return graphLoader.cloneNewModelGraphVersion(clazz);
+        return graphLoader.cloneNewModelGraphVersion(factory);
     }
 
     /*
@@ -180,7 +178,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
                     }
 
                 } else {
-                    if ((refObject != null) && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
+                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -217,7 +215,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
+        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -421,7 +419,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         if (!nodesToCreatedObjects.containsKey(node)) {
             // Get node's data type label and instantiate a new empty object of this data type
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
-            component = ModelProviderUtil.instantiateEObject(label.name());
+            component = ModelProviderUtil.instantiateEObject(this.graph.getEFactories(), label.name());
 
             this.loadAttributes(component, node.getAllProperties());
 
@@ -473,7 +471,8 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
             } else {
                 // Create proxy EObject here...
                 final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
-                final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
+                final EObject endComponent = ModelProviderUtil.instantiateEObject(this.graph.getEFactories(),
+                        endLabel.name());
 
                 if (endComponent != null) {
                     final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
@@ -500,7 +499,9 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
                     if (refReprensation instanceof EList<?>) {
                         ((EList<EObject>) refReprensation).add(endComponent);
                     } else {
-                        component.eSet(ref, endComponent);
+                        if (ref.isChangeable()) { // TODO what to do with unchangeable elements
+                            component.eSet(ref, endComponent);
+                        }
                     }
                 }
             }
@@ -724,7 +725,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
+        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
@@ -1066,7 +1067,8 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
      *
      * @return The graph
      */
-    public Graph<R> getGraph() {
+    @Override
+    public Graph getGraph() {
         return this.graph;
     }
 }

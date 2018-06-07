@@ -48,8 +48,8 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 public class UsageModelProviderTest implements IModelProviderTest { // NOCS no constructor in test
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private static Graph<UsageModel> graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR)
-            .createModelGraph(UsageModel.class);
+    private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR)
+            .createModelGraph(UsagemodelFactory.eINSTANCE);
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
@@ -63,16 +63,16 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider1 = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider1 = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<UsageModel, UsageModel> modelProvider2;
+        final ModelProvider<UsageModel> modelProvider2;
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageModel readModel;
-        final Graph<UsageModel> graph2;
+        final Graph graph2;
 
         modelProvider1.createComponent(writtenModel);
 
-        graph2 = modelProvider1.cloneNewGraphVersion(UsageModel.class);
+        graph2 = modelProvider1.cloneNewGraphVersion(UsagemodelFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         readModel = modelProvider2.readOnlyRootComponent(UsageModel.class);
@@ -84,7 +84,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
 
@@ -100,10 +100,10 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<UsageModel, UsageScenario> modelProvider2 = new ModelProvider<>(
-                UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final UsageScenario readScenario;
@@ -118,10 +118,10 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<UsageModel, UsageScenario> modelProvider2 = new ModelProvider<>(
-                UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final List<UsageScenario> readScenarios;
@@ -140,10 +140,10 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<UsageModel, UsageScenario> modelProvider2 = new ModelProvider<>(
-                UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final List<String> readIds;
@@ -161,7 +161,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageModel readModel;
@@ -175,7 +175,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
@@ -191,7 +191,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final UsageModel writtenModel = testModelBuilder.getUsageModel();
@@ -215,7 +215,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final UsageModel writtenModel = testModelBuilder.getUsageModel();
@@ -260,7 +260,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
@@ -269,7 +269,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        new ModelProvider<UsageModel, UsageScenario>(UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
+        new ModelProvider<UsageScenario>(UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID).deleteComponent(UsageScenario.class, writtenScenario.getId());
 
         // Manually delete the root node (as it has no id), the double literal node (as it is not
@@ -286,7 +286,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<UsageModel, UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
@@ -295,7 +295,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        new ModelProvider<UsageModel, UsageScenario>(UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
+        new ModelProvider<UsageScenario>(UsageModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID).deleteComponentAndDatatypes(UsageScenario.class, writtenScenario.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));

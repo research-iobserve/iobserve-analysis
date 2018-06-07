@@ -49,7 +49,7 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment, ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     /** stage under test. */
     private AllocationStage allocationStage;

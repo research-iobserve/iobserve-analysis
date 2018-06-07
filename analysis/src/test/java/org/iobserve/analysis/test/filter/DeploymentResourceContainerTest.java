@@ -62,13 +62,13 @@ public class DeploymentResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelProvider<AllocationContext, AllocationContext> allocationContextModelGraphProvider;
+    private static ModelProvider<AllocationContext> allocationContextModelGraphProvider;
     @Mock
-    private static ModelProvider<ResourceEnvironment, ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelProvider<Allocation, Allocation> mockedAllocationModelGraphProvider;
+    private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
     @Mock
-    private static ModelProvider<CorrespondenceModel, CorrespondenceModel> mockedCorrespondence;
+    private static ModelProvider<CorrespondenceModel> mockedCorrespondence;
 
     /** stage under test. */
     private DeploymentModelUpdater deploymentModelUpdater;

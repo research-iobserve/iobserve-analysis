@@ -49,7 +49,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System, org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 

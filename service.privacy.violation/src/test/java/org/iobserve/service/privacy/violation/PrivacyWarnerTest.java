@@ -25,9 +25,11 @@ import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.stages.data.Warnings;
@@ -35,24 +37,28 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
  * @author Clemens Brackmann
  *
  */
 public class PrivacyWarnerTest {
-    // private static final String PCM_DIRECTORY_PATH =
-    // "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-    // private static final String MODEL_DATABASE_DIRECTORY_PATH =
-    // "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
+    private static final String PCM_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
+    private static final String MODEL_DATABASE_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
 
-    private static final String PCM_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
-    private static final String MODEL_DATABASE_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/db";
+    // private static final String PCM_DIRECTORY_PATH =
+    // "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    // private static final String MODEL_DATABASE_DIRECTORY_PATH =
+    // "D:/Experiment/distributed-jpetstore-experiment/db";
 
     private final File pcmDirectory = new File(PrivacyWarnerTest.PCM_DIRECTORY_PATH);
     private final File modelDatabaseDirectory = new File(PrivacyWarnerTest.MODEL_DATABASE_DIRECTORY_PATH);
@@ -64,43 +70,56 @@ public class PrivacyWarnerTest {
      */
     @Before
     public void initializePW() {
+        this.clearDirectory(this.modelDatabaseDirectory);
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         /** graphs. */
-        graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel(),
+        graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),
+        graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
+        graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
+                modelHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelHandler.getAllocationModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(PrivacyModel.class, modelHandler.getPrivacyModel(),
+        graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(),
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
-        final Graph<Repository> repositoryGraph = graphLoader.createModelGraph(Repository.class);
-        final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
-        final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                .createModelGraph(ResourceEnvironment.class);
-        final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
-        final Graph<PrivacyModel> privacyModelGraph = graphLoader.createModelGraph(PrivacyModel.class);
+        final Graph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+        final Graph systemGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+        final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+        final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+        final Graph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
 
         /** model provider. */
-        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
+        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,
+        final IModelProvider<System> systemModelProvider = new ModelProvider<>(systemGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
+        final IModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+        final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
+        final IModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
         this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
                 repositoryModelProvider, privacyModelProvider);
 
+    }
+
+    private void clearDirectory(final File directory) {
+        if (directory.isDirectory()) {
+            for (final File content : directory.listFiles()) {
+                if (content.isFile()) {
+                    content.delete();
+                } else if (content.isDirectory()) {
+                    this.clearDirectory(content);
+                }
+            }
+        }
     }
 
     /**

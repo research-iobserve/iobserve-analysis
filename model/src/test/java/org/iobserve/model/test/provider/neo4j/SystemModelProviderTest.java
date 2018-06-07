@@ -34,6 +34,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
  * Test cases for the model provider using a System model.
@@ -47,8 +48,8 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
 
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private static final Graph<System> GRAPH = new GraphLoader(SystemModelProviderTest.GRAPH_DIR)
-            .createModelGraph(System.class);
+    private static final Graph GRAPH = new GraphLoader(SystemModelProviderTest.GRAPH_DIR)
+            .createModelGraph(SystemFactory.eINSTANCE);
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
@@ -62,16 +63,16 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<System, System> modelProvider1 = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider1 = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<System, System> modelProvider2;
+        final ModelProvider<System> modelProvider2;
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
-        final Graph<System> graph2;
+        final Graph graph2;
 
         modelProvider1.createComponent(writtenModel);
 
-        graph2 = modelProvider1.cloneNewGraphVersion(System.class);
+        graph2 = modelProvider1.cloneNewGraphVersion(SystemFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         readModel = modelProvider2.readOnlyRootComponent(System.class);
@@ -83,7 +84,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
@@ -99,7 +100,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
@@ -113,7 +114,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<System> readModels;
@@ -129,7 +130,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<String> readIds;
@@ -146,7 +147,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
@@ -160,7 +161,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
@@ -175,7 +176,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final System writtenModel = testModelBuilder.getSystem();
@@ -201,7 +202,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final System writtenModel = testModelBuilder.getSystem();
@@ -251,7 +252,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
@@ -274,7 +275,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<System, System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 

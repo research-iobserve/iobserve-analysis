@@ -169,4 +169,11 @@ public interface IModelProvider<T extends EObject> {
      */
     List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName);
 
+    /**
+     * Get underlying graph.
+     *
+     * @return return the corresponding graph
+     */
+    Graph getGraph();
+
 }

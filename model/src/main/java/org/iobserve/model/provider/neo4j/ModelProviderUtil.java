@@ -21,56 +21,20 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
-import org.palladiosimulator.pcm.allocation.AllocationPackage;
-import org.palladiosimulator.pcm.core.CoreFactory;
-import org.palladiosimulator.pcm.core.CorePackage;
-import org.palladiosimulator.pcm.core.composition.CompositionFactory;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
-import org.palladiosimulator.pcm.core.entity.EntityFactory;
-import org.palladiosimulator.pcm.core.entity.EntityPackage;
-import org.palladiosimulator.pcm.parameter.ParameterFactory;
-import org.palladiosimulator.pcm.parameter.ParameterPackage;
 import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
-import org.palladiosimulator.pcm.protocol.ProtocolFactory;
-import org.palladiosimulator.pcm.protocol.ProtocolPackage;
-import org.palladiosimulator.pcm.qosannotations.QosannotationsFactory;
-import org.palladiosimulator.pcm.qosannotations.QosannotationsPackage;
-import org.palladiosimulator.pcm.qosannotations.qos_performance.QosPerformanceFactory;
-import org.palladiosimulator.pcm.qosannotations.qos_performance.QosPerformancePackage;
-import org.palladiosimulator.pcm.qosannotations.qos_reliability.QosReliabilityFactory;
-import org.palladiosimulator.pcm.qosannotations.qos_reliability.QosReliabilityPackage;
-import org.palladiosimulator.pcm.reliability.ReliabilityFactory;
-import org.palladiosimulator.pcm.reliability.ReliabilityPackage;
 import org.palladiosimulator.pcm.repository.ComponentType;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
-import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
-import org.palladiosimulator.pcm.resourcetype.ResourcetypePackage;
-import org.palladiosimulator.pcm.seff.SeffFactory;
-import org.palladiosimulator.pcm.seff.SeffPackage;
-import org.palladiosimulator.pcm.seff.seff_performance.SeffPerformanceFactory;
-import org.palladiosimulator.pcm.seff.seff_performance.SeffPerformancePackage;
-import org.palladiosimulator.pcm.seff.seff_reliability.SeffReliabilityFactory;
-import org.palladiosimulator.pcm.seff.seff_reliability.SeffReliabilityPackage;
-import org.palladiosimulator.pcm.subsystem.SubsystemFactory;
-import org.palladiosimulator.pcm.subsystem.SubsystemPackage;
-import org.palladiosimulator.pcm.system.SystemFactory;
-import org.palladiosimulator.pcm.system.SystemPackage;
-import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
-import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,72 +271,23 @@ public final class ModelProviderUtil {
     /**
      * Instantiates a pcm model component from a given type name.
      *
+     * @param factories
+     *            factories for this particular metamodel
      * @param name
      *            The component's data type name
      * @return New object of the given data type
      */
-    public static EObject instantiateEObject(final String name) {
+    public static EObject instantiateEObject(final List<EFactory> factories, final String name) {
 
-        if (CorePackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) CorePackage.eINSTANCE.getEClassifier(name);
-            return CoreFactory.eINSTANCE.create(eClass);
-        } else if (EntityPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) EntityPackage.eINSTANCE.getEClassifier(name);
-            return EntityFactory.eINSTANCE.create(eClass);
-        } else if (CompositionPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) CompositionPackage.eINSTANCE.getEClassifier(name);
-            return CompositionFactory.eINSTANCE.create(eClass);
-        } else if (UsagemodelPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) UsagemodelPackage.eINSTANCE.getEClassifier(name);
-            return UsagemodelFactory.eINSTANCE.create(eClass);
-        } else if (RepositoryPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) RepositoryPackage.eINSTANCE.getEClassifier(name);
-            return RepositoryFactory.eINSTANCE.create(eClass);
-        } else if (ResourcetypePackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) ResourcetypePackage.eINSTANCE.getEClassifier(name);
-            return ResourcetypeFactory.eINSTANCE.create(eClass);
-        } else if (ProtocolPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) ProtocolPackage.eINSTANCE.getEClassifier(name);
-            return ProtocolFactory.eINSTANCE.create(eClass);
-        } else if (ParameterPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) ParameterPackage.eINSTANCE.getEClassifier(name);
-            return ParameterFactory.eINSTANCE.create(eClass);
-        } else if (ReliabilityPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) ReliabilityPackage.eINSTANCE.getEClassifier(name);
-            return ReliabilityFactory.eINSTANCE.create(eClass);
-        } else if (SeffPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) SeffPackage.eINSTANCE.getEClassifier(name);
-            return SeffFactory.eINSTANCE.create(eClass);
-        } else if (SeffPerformancePackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) SeffPerformancePackage.eINSTANCE.getEClassifier(name);
-            return SeffPerformanceFactory.eINSTANCE.create(eClass);
-        } else if (SeffReliabilityPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) SeffReliabilityPackage.eINSTANCE.getEClassifier(name);
-            return SeffReliabilityFactory.eINSTANCE.create(eClass);
-        } else if (QosannotationsPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) QosannotationsPackage.eINSTANCE.getEClassifier(name);
-            return QosannotationsFactory.eINSTANCE.create(eClass);
-        } else if (QosPerformancePackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) QosPerformancePackage.eINSTANCE.getEClassifier(name);
-            return QosPerformanceFactory.eINSTANCE.create(eClass);
-        } else if (QosReliabilityPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) QosReliabilityPackage.eINSTANCE.getEClassifier(name);
-            return QosReliabilityFactory.eINSTANCE.create(eClass);
-        } else if (SystemPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) SystemPackage.eINSTANCE.getEClassifier(name);
-            return SystemFactory.eINSTANCE.create(eClass);
-        } else if (ResourceenvironmentPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) ResourceenvironmentPackage.eINSTANCE.getEClassifier(name);
-            return ResourceenvironmentFactory.eINSTANCE.create(eClass);
-        } else if (AllocationPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) AllocationPackage.eINSTANCE.getEClassifier(name);
-            return AllocationFactory.eINSTANCE.create(eClass);
-        } else if (SubsystemPackage.eINSTANCE.getEClassifier(name) != null) {
-            final EClass eClass = (EClass) SubsystemPackage.eINSTANCE.getEClassifier(name);
-            return SubsystemFactory.eINSTANCE.create(eClass);
+        for (final EFactory factory : factories) {
+            final EPackage ePackage = factory.getEPackage();
+            final EClass eClass = (EClass) ePackage.getEClassifier(name);
+            if (eClass != null) {
+                return factory.create(eClass);
+            }
         }
-
         return null;
+
     }
 
     /**

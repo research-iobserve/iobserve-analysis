@@ -51,7 +51,7 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationNoResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment, ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;

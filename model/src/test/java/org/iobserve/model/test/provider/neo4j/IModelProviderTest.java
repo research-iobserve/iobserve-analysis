@@ -128,7 +128,7 @@ public interface IModelProviderTest {
      *            A model provider, containing a graph
      * @return True if the graph is empty, false otherwise
      */
-    static boolean isGraphEmpty(final ModelProvider<?, ?> modelProvider) {
+    static boolean isGraphEmpty(final ModelProvider<?> modelProvider) {
         boolean isEmpty = false;
 
         try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {

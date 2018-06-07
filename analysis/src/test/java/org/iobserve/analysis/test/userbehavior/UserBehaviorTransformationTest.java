@@ -27,6 +27,7 @@ import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +74,8 @@ public final class UserBehaviorTransformationTest {
 
         final ICorrespondence correspondenceModel = null; // TODO load that model
         final GraphLoader graphLoader = new GraphLoader(null); // TODO fix location
-        final Graph<Repository> graph = graphLoader.createModelGraph(Repository.class);
-        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(graph,
+        final Graph graph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.readRootComponent(Repository.class));

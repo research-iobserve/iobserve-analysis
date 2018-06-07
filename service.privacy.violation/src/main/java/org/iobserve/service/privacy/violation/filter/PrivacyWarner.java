@@ -145,20 +145,17 @@ public class PrivacyWarner extends AbstractStage {
                 .readOnlyRootComponent(ResourceEnvironment.class);
         this.privacyRootElement = this.privacyModelGraphProvider.readOnlyRootComponent(PrivacyModel.class);
         /** AssemblyContext View **/
-        final ModelProvider<System, AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                ((ModelProvider) this.systemModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
+                this.systemModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** RepositoryComponent View **/
-        final ModelProvider<Repository, BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
-                ((ModelProvider) this.repositoryModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final IModelProvider<BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
+                this.repositoryModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** OperationInterface View **/
-        final ModelProvider<Repository, OperationInterface> operationInterfaceModelProvider = new ModelProvider<>(
-                ((ModelProvider) this.repositoryModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final IModelProvider<OperationInterface> operationInterfaceModelProvider = new ModelProvider<>(
+                this.repositoryModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** ResourceContainer View **/
-        final ModelProvider<ResourceEnvironment, ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                ((ModelProvider) this.resourceEnvironmentModelGraphProvider).getGraph(), ModelProvider.PCM_ENTITY_NAME,
+        final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
+                this.resourceEnvironmentModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
         this.print(
@@ -166,7 +163,6 @@ public class PrivacyWarner extends AbstractStage {
         this.print("Starting creation of Analysis Graph");
 
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
-
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
                     .readOnlyComponentById(AssemblyContext.class, asc.getId());
