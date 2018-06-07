@@ -18,6 +18,10 @@ package org.iobserve.service.privacy.violation.filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.privacy.GeoLocation;
@@ -47,10 +51,6 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -186,9 +186,13 @@ public class PrivacyWarner extends AbstractStage {
             // TODO Effizienter machen falls möglich
             final ResourceContainer queryResource = resourceContainerModelProvider.readOnlyComponentById(
                     ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
+
             if (this.privacyRootElement != null) {
                 for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
-                    this.print("GEO ID: " + geo.getResourceContainer().getId());
+                    this.print("GEO ID: " + geo.getResourceContainer().getId() + " "
+                            + geo.getResourceContainer().getEntityName() + " is proxy "
+                            + geo.getResourceContainer().eIsProxy());
+
                     this.print("RESOURCE ID: " + queryResource.getId());
                     if (geo.getResourceContainer().getId() == queryResource.getId()) {
                         final Vertice vGeo = new Vertice(geo.getIsocode().getName());
@@ -220,7 +224,7 @@ public class PrivacyWarner extends AbstractStage {
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
 
-                if ((rcProvider != null) && (rcRequiring != null)) {
+                if (rcProvider != null && rcRequiring != null) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     this.print(opr.getEntityName());
                     final String interfaceName = this.shortName(opr.getEntityName());

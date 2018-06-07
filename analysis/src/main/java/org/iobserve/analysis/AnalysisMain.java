@@ -25,7 +25,6 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 
 import org.iobserve.model.ModelImporter;
-import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
@@ -133,7 +132,6 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
         IModelProvider<System> systemModelProvider = null;
         IModelProvider<AssemblyContext> assemblyContextProvicer = null;
         IModelProvider<UsageModel> usageModelProvider = null;
-        IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider = null;
 
         /** Configure model handling. */
         if (this.pcmFeature) {
@@ -179,18 +177,20 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                     ModelProvider.PCM_ID);
             usageModelProvider = new ModelProvider<>(usageModelGraph, ModelProvider.PCM_ENTITY_NAME,
                     ModelProvider.PCM_ID);
-            assemblyEntryCorrespondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
-                    ModelProvider.IMPLEMENTATION_ID, null);
 
             // get systemId
             final System systemModel = systemModelProvider.readOnlyRootComponent(System.class);
 
             configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
-        }
 
-        return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,
-                assemblyEntryCorrespondenceModelProvider);
+            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,
+                    correspondenceModelGraph);
+        } else {
+            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,
+                    null);
+        }
     }
 
     @Override

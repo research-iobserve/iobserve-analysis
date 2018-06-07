@@ -37,7 +37,7 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
@@ -97,8 +97,8 @@ public class AnalysisConfiguration extends Configuration {
      *            provider for the system model
      * @param usageModelProvider
      *            usage model provider
-     * @param assemblyEntryCorrespondenceModelProvider
-     *            provider for the correspondence model
+     * @param correspondenceModelGraph
+     *            graph for the correspondence model
      * @throws ConfigurationException
      *             if the configuration fails
      */
@@ -108,8 +108,7 @@ public class AnalysisConfiguration extends Configuration {
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
             final IModelProvider<System> systemModelProvider, final IModelProvider<UsageModel> usageModelProvider,
-            final IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider)
-            throws ConfigurationException {
+            final Graph correspondenceModelGraph) throws ConfigurationException {
         this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
@@ -121,7 +120,7 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(sourceCompositeStage.getOutputPort(), this.eventDispatcher.getInputPort());
 
             this.containerManagement(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
-                    allocationContextModelProvider, systemModelProvider, assemblyEntryCorrespondenceModelProvider);
+                    allocationContextModelProvider, systemModelProvider, correspondenceModelGraph);
             this.traceProcessing(configuration);
             this.geoLocation(configuration);
         } else {
@@ -148,8 +147,7 @@ public class AnalysisConfiguration extends Configuration {
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<System> systemModelProvider,
-            final IModelProvider<AssemblyEntry> assemblyEntryCorrespondenceModelProvider)
+            final IModelProvider<System> systemModelProvider, final Graph correspondenceModelGraph)
             throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
@@ -174,7 +172,7 @@ public class AnalysisConfiguration extends Configuration {
                     IDeployedEvent.class, null);
             this.eventDispatcher.registerOutput(deployedEventMatcher);
             this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, assemblyEntryCorrespondenceModelProvider);
+                    allocationModelProvider, allocationContextModelProvider, correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(deployedEventMatcher.getOutputPort(), this.deploymentStage.getDeployedInputPort());
 
@@ -183,7 +181,7 @@ public class AnalysisConfiguration extends Configuration {
                     IUndeployedEvent.class, null);
             this.eventDispatcher.registerOutput(undeployedEventMatcher);
             this.undeploymentStage = new UndeploymentCompositeStage(allocationContextModelProvider,
-                    assemblyEntryCorrespondenceModelProvider);
+                    correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 

@@ -318,6 +318,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
+            java.lang.System.err.println(
+                    "readOnlyComponentById " + node + " label=" + label + " idLabel=" + this.idLabel + " id=" + id);
             final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
@@ -362,6 +364,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
+                java.lang.System.err.println("readOnlyComponentByName " + node);
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -385,12 +388,19 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
     private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
+        if (node == null) {
+            java.lang.System.err.println("node is NULL");
+            return null;
+        }
 
         if (!containmentsAndDatatypes.contains(node)) {
             containmentsAndDatatypes.add(node);
 
+            java.lang.System.err.println("node " + node);
+
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                     PcmRelationshipType.IS_TYPE)) {
+                java.lang.System.err.println("rel " + rel);
                 this.getAllContainmentsAndDatatypes(rel.getEndNode(), containmentsAndDatatypes);
             }
         }
@@ -477,6 +487,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 if (endComponent != null) {
                     final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
                     ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
+                    // TODO here to set the unique identifier
 
                     // Load attribute values from the node
                     final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
@@ -588,6 +599,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
                     final Node node = nodes.next();
+                    java.lang.System.err.println("readOnlyRootComponent " + node);
+
                     final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
                     component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -647,6 +660,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
+                java.lang.System.err.println("readOnlyContainingComponentById " + endNode);
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
                 component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -691,6 +705,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
+                java.lang.System.err.println("readOnlyReferencingComponentsById " + startNode);
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
