@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.BasicComponent;
 
 /**
  * <!-- begin-user-doc -->
@@ -58,7 +58,7 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
      * @generated
      * @ordered
      */
-    protected RepositoryComponent component;
+    protected BasicComponent component;
 
     /**
      * <!-- begin-user-doc -->
@@ -105,10 +105,10 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
      * <!-- end-user-doc -->
      * @generated
      */
-    public RepositoryComponent getComponent() {
+    public BasicComponent getComponent() {
         if (component != null && ((EObject)component).eIsProxy()) {
             InternalEObject oldComponent = (InternalEObject)component;
-            component = (RepositoryComponent)eResolveProxy(oldComponent);
+            component = (BasicComponent)eResolveProxy(oldComponent);
             if (component != oldComponent) {
                 if (eNotificationRequired())
                     eNotify(new ENotificationImpl(this, Notification.RESOLVE, PrivacyPackage.ENCAPSULATED_DATA_SOURCE__COMPONENT, oldComponent, component));
@@ -122,7 +122,7 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
      * <!-- end-user-doc -->
      * @generated
      */
-    public RepositoryComponent basicGetComponent() {
+    public BasicComponent basicGetComponent() {
         return component;
     }
 
@@ -131,8 +131,8 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setComponent(RepositoryComponent newComponent) {
-        RepositoryComponent oldComponent = component;
+    public void setComponent(BasicComponent newComponent) {
+        BasicComponent oldComponent = component;
         component = newComponent;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, PrivacyPackage.ENCAPSULATED_DATA_SOURCE__COMPONENT, oldComponent, component));
@@ -167,7 +167,7 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
                 setDataSource((Boolean)newValue);
                 return;
             case PrivacyPackage.ENCAPSULATED_DATA_SOURCE__COMPONENT:
-                setComponent((RepositoryComponent)newValue);
+                setComponent((BasicComponent)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -185,7 +185,7 @@ public class EncapsulatedDataSourceImpl extends MinimalEObjectImpl.Container imp
                 setDataSource(DATA_SOURCE_EDEFAULT);
                 return;
             case PrivacyPackage.ENCAPSULATED_DATA_SOURCE__COMPONENT:
-                setComponent((RepositoryComponent)null);
+                setComponent((BasicComponent)null);
                 return;
         }
         super.eUnset(featureID);

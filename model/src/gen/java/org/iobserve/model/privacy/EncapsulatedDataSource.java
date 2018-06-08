@@ -3,7 +3,7 @@
 package org.iobserve.model.privacy;
 
 import org.eclipse.emf.ecore.EObject;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.BasicComponent;
 
 /**
  * <!-- begin-user-doc -->
@@ -58,12 +58,12 @@ public interface EncapsulatedDataSource extends EObject {
      * </p>
      * <!-- end-user-doc -->
      * @return the value of the '<em>Component</em>' reference.
-     * @see #setComponent(RepositoryComponent)
+     * @see #setComponent(BasicComponent)
      * @see org.iobserve.model.privacy.PrivacyPackage#getEncapsulatedDataSource_Component()
      * @model required="true"
      * @generated
      */
-    RepositoryComponent getComponent();
+    BasicComponent getComponent();
 
     /**
      * Sets the value of the '{@link org.iobserve.model.privacy.EncapsulatedDataSource#getComponent <em>Component</em>}' reference.
@@ -73,6 +73,6 @@ public interface EncapsulatedDataSource extends EObject {
      * @see #getComponent()
      * @generated
      */
-    void setComponent(RepositoryComponent value);
+    void setComponent(BasicComponent value);
 
 } // EncapsulatedDataSource

@@ -439,7 +439,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
 
         initEClass(encapsulatedDataSourceEClass, EncapsulatedDataSource.class, "EncapsulatedDataSource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getEncapsulatedDataSource_DataSource(), ecorePackage.getEBoolean(), "dataSource", null, 0, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getEncapsulatedDataSource_Component(), theRepositoryPackage.getRepositoryComponent(), null, "component", null, 1, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getEncapsulatedDataSource_Component(), theRepositoryPackage.getBasicComponent(), null, "component", null, 1, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         initEEnum(eDataPrivacyLevelEEnum, EDataPrivacyLevel.class, "EDataPrivacyLevel");
