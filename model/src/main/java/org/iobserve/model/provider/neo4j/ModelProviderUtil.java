@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -193,13 +194,15 @@ public final class ModelProviderUtil {
     /**
      * Instantiates attributes of pcm model components.
      *
-     * @param clazz
+     * @param type
      *            The attribute's data type
      * @param value
      *            The attribute's string value from the property of the neo4j graph
      * @return The attribute's value in the proper data type
      */
-    public static Object instantiateAttribute(final Class<?> clazz, final String value) {
+    public static Object instantiateAttribute(final EDataType type, final String value) {
+
+        final Class<?> clazz = type.getInstanceClass();
 
         if (clazz == String.class) {
             return value;

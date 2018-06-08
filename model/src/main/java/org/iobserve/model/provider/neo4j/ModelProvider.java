@@ -28,6 +28,7 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -388,11 +389,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
     private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
-        if (node == null) {
-            java.lang.System.err.println("node is NULL");
-            return null;
-        }
-
         if (!containmentsAndDatatypes.contains(node)) {
             containmentsAndDatatypes.add(node);
 
@@ -498,8 +494,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                         // attr == null for the emfUri property stored in the graph
                         if (attr != null) {
-                            final Object value = ModelProviderUtil.instantiateAttribute(
-                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+                            final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType(),
+                                    property.getValue().toString());
 
                             if (value != null) {
                                 endComponent.eSet(attr, value);
@@ -535,13 +531,51 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             // attr == null for the emfUri property stored in the graph
             if (attr != null) {
-                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                        property.getValue().toString());
+                java.lang.System.err.println("attribute " + attr.getName() + " " + attr.getEAttributeType());
+                java.lang.System.err.println("type " + attr.getEAttributeType().getInstanceClassName());
 
+                if (attr.isMany()) {
+                    this.createManyValuesAttribute(component, attr, property);
+                } else {
+                    this.createSingleValueAttribute(component, attr, property);
+                }
+
+            }
+        }
+    }
+
+    private void createManyValuesAttribute(final EObject component, final EAttribute attr,
+            final Entry<String, Object> property) {
+        final EList<?> attribute = (EList<?>) component.eGet(attr);
+
+        final Object v = this.convertValue(attr.getEAttributeType(), property.getValue().toString());
+
+        java.lang.System.err.println("type " + attribute);
+
+        attribute.add(v);
+    }
+
+    private void createSingleValueAttribute(final EObject component, final EAttribute attr,
+            final Entry<String, Object> property) {
+        component.eSet(attr, this.convertValue(attr.getEAttributeType(), property.getValue().toString()));
+    }
+
+    private Object convertValue(final EDataType type, final String input) {
+        Object value = ModelProviderUtil.instantiateAttribute(type, input);
+
+        if (value == null) {
+            for (final EFactory factory : this.graph.getEFactories()) {
+                value = factory.createFromString(type, input);
+
+                java.lang.System.err.println("value " + value);
                 if (value != null) {
-                    component.eSet(attr, value);
+                    return value;
                 }
             }
+
+            throw new InternalError("Type " + type.getInstanceClassName() + " is not supported.");
+        } else {
+            return value;
         }
     }
 
