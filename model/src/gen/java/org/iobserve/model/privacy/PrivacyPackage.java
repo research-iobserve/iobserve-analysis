@@ -86,7 +86,7 @@ public interface PrivacyPackage extends EPackage {
     int PRIVACY_MODEL__PRIVACY_LEVELS = 1;
 
     /**
-     * The feature id for the '<em><b>Encapsulated Data Sources</b></em>' reference list.
+     * The feature id for the '<em><b>Encapsulated Data Sources</b></em>' containment reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -307,13 +307,22 @@ public interface PrivacyPackage extends EPackage {
     int ENCAPSULATED_DATA_SOURCE__DATA_SOURCE = 0;
 
     /**
+     * The feature id for the '<em><b>Component</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ENCAPSULATED_DATA_SOURCE__COMPONENT = 1;
+
+    /**
      * The number of structural features of the '<em>Encapsulated Data Source</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ENCAPSULATED_DATA_SOURCE_FEATURE_COUNT = 1;
+    int ENCAPSULATED_DATA_SOURCE_FEATURE_COUNT = 2;
 
     /**
      * The number of operations of the '<em>Encapsulated Data Source</em>' class.
@@ -378,10 +387,10 @@ public interface PrivacyPackage extends EPackage {
     EReference getPrivacyModel_PrivacyLevels();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}'.
+     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Encapsulated Data Sources</em>'.
+     * @return the meta object for the containment reference list '<em>Encapsulated Data Sources</em>'.
      * @see org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources()
      * @see #getPrivacyModel()
      * @generated
@@ -505,6 +514,17 @@ public interface PrivacyPackage extends EPackage {
     EAttribute getEncapsulatedDataSource_DataSource();
 
     /**
+     * Returns the meta object for the reference '{@link org.iobserve.model.privacy.EncapsulatedDataSource#getComponent <em>Component</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the reference '<em>Component</em>'.
+     * @see org.iobserve.model.privacy.EncapsulatedDataSource#getComponent()
+     * @see #getEncapsulatedDataSource()
+     * @generated
+     */
+    EReference getEncapsulatedDataSource_Component();
+
+    /**
      * Returns the meta object for enum '{@link org.iobserve.model.privacy.EDataPrivacyLevel <em>EData Privacy Level</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -574,7 +594,7 @@ public interface PrivacyPackage extends EPackage {
         EReference PRIVACY_MODEL__PRIVACY_LEVELS = eINSTANCE.getPrivacyModel_PrivacyLevels();
 
         /**
-         * The meta object literal for the '<em><b>Encapsulated Data Sources</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Encapsulated Data Sources</b></em>' containment reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
@@ -678,6 +698,14 @@ public interface PrivacyPackage extends EPackage {
          * @generated
          */
         EAttribute ENCAPSULATED_DATA_SOURCE__DATA_SOURCE = eINSTANCE.getEncapsulatedDataSource_DataSource();
+
+        /**
+         * The meta object literal for the '<em><b>Component</b></em>' reference feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference ENCAPSULATED_DATA_SOURCE__COMPONENT = eINSTANCE.getEncapsulatedDataSource_Component();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.privacy.EDataPrivacyLevel <em>EData Privacy Level</em>}' enum.

@@ -8,7 +8,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="privacyLevels" upperBound="-1"
         eType="#//IPrivacyAnnotation" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="encapsulatedDataSources"
-        upperBound="-1" eType="#//EncapsulatedDataSource"/>
+        upperBound="-1" eType="#//EncapsulatedDataSource" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ReturnTypePrivacy" eSuperTypes="#//IPrivacyAnnotation">
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationSignature" lowerBound="1"
@@ -40,5 +40,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="EncapsulatedDataSource">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dataSource" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="component" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/RepositoryComponent"/>
   </eClassifiers>
 </ecore:EPackage>

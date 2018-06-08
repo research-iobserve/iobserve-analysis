@@ -58,7 +58,7 @@ public interface PrivacyModel extends EObject {
     EList<IPrivacyAnnotation> getPrivacyLevels();
 
     /**
-     * Returns the value of the '<em><b>Encapsulated Data Sources</b></em>' reference list.
+     * Returns the value of the '<em><b>Encapsulated Data Sources</b></em>' containment reference list.
      * The list contents are of type {@link org.iobserve.model.privacy.EncapsulatedDataSource}.
      * <!-- begin-user-doc -->
      * <p>
@@ -66,9 +66,9 @@ public interface PrivacyModel extends EObject {
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Encapsulated Data Sources</em>' reference list.
+     * @return the value of the '<em>Encapsulated Data Sources</em>' containment reference list.
      * @see org.iobserve.model.privacy.PrivacyPackage#getPrivacyModel_EncapsulatedDataSources()
-     * @model
+     * @model containment="true"
      * @generated
      */
     EList<EncapsulatedDataSource> getEncapsulatedDataSources();

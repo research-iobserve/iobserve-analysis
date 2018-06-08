@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.iobserve.model.privacy.EncapsulatedDataSource;
@@ -60,7 +59,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     protected EList<IPrivacyAnnotation> privacyLevels;
 
     /**
-     * The cached value of the '{@link #getEncapsulatedDataSources() <em>Encapsulated Data Sources</em>}' reference list.
+     * The cached value of the '{@link #getEncapsulatedDataSources() <em>Encapsulated Data Sources</em>}' containment reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @see #getEncapsulatedDataSources()
@@ -119,7 +118,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      */
     public EList<EncapsulatedDataSource> getEncapsulatedDataSources() {
         if (encapsulatedDataSources == null) {
-            encapsulatedDataSources = new EObjectResolvingEList<EncapsulatedDataSource>(EncapsulatedDataSource.class, this, PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES);
+            encapsulatedDataSources = new EObjectContainmentEList<EncapsulatedDataSource>(EncapsulatedDataSource.class, this, PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES);
         }
         return encapsulatedDataSources;
     }
@@ -136,6 +135,8 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
                 return ((InternalEList<?>)getResourceContainerLocations()).basicRemove(otherEnd, msgs);
             case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
                 return ((InternalEList<?>)getPrivacyLevels()).basicRemove(otherEnd, msgs);
+            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+                return ((InternalEList<?>)getEncapsulatedDataSources()).basicRemove(otherEnd, msgs);
         }
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }

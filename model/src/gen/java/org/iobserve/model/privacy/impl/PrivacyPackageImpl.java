@@ -306,6 +306,15 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
+    public EReference getEncapsulatedDataSource_Component() {
+        return (EReference)encapsulatedDataSourceEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EEnum getEDataPrivacyLevel() {
         return eDataPrivacyLevelEEnum;
     }
@@ -367,6 +376,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
 
         encapsulatedDataSourceEClass = createEClass(ENCAPSULATED_DATA_SOURCE);
         createEAttribute(encapsulatedDataSourceEClass, ENCAPSULATED_DATA_SOURCE__DATA_SOURCE);
+        createEReference(encapsulatedDataSourceEClass, ENCAPSULATED_DATA_SOURCE__COMPONENT);
 
         // Create enums
         eDataPrivacyLevelEEnum = createEEnum(EDATA_PRIVACY_LEVEL);
@@ -412,7 +422,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         initEClass(privacyModelEClass, PrivacyModel.class, "PrivacyModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getPrivacyModel_ResourceContainerLocations(), this.getGeoLocation(), null, "resourceContainerLocations", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getPrivacyModel_PrivacyLevels(), this.getIPrivacyAnnotation(), null, "privacyLevels", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getPrivacyModel_EncapsulatedDataSources(), this.getEncapsulatedDataSource(), null, "encapsulatedDataSources", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getPrivacyModel_EncapsulatedDataSources(), this.getEncapsulatedDataSource(), null, "encapsulatedDataSources", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(returnTypePrivacyEClass, ReturnTypePrivacy.class, "ReturnTypePrivacy", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getReturnTypePrivacy_OperationSignature(), theRepositoryPackage.getOperationSignature(), null, "operationSignature", null, 1, 1, ReturnTypePrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -429,6 +439,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
 
         initEClass(encapsulatedDataSourceEClass, EncapsulatedDataSource.class, "EncapsulatedDataSource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getEncapsulatedDataSource_DataSource(), ecorePackage.getEBoolean(), "dataSource", null, 0, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getEncapsulatedDataSource_Component(), theRepositoryPackage.getRepositoryComponent(), null, "component", null, 1, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         initEEnum(eDataPrivacyLevelEEnum, EDataPrivacyLevel.class, "EDataPrivacyLevel");

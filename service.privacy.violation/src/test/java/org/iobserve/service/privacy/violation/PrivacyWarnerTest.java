@@ -71,6 +71,7 @@ public class PrivacyWarnerTest {
     @Before
     public void initializePW() {
         this.clearDirectory(this.modelDatabaseDirectory);
+        this.modelDatabaseDirectory.mkdirs();
         final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
@@ -105,6 +106,10 @@ public class PrivacyWarnerTest {
         final IModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
+        final PrivacyModel model = privacyModelProvider.readOnlyRootComponent(PrivacyModel.class);
+
+        java.lang.System.err.println(model.toString());
+
         this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
                 repositoryModelProvider, privacyModelProvider);
 
@@ -119,6 +124,7 @@ public class PrivacyWarnerTest {
                     this.clearDirectory(content);
                 }
             }
+            directory.delete();
         }
     }
 
