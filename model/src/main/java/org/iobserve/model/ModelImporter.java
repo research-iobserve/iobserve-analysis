@@ -46,10 +46,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Will load all models.
+ * Load all models located in a file
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author Reiner Jung
  */
 public final class ModelImporter {
 
@@ -71,12 +72,12 @@ public final class ModelImporter {
     /**
      * Create model provider.
      *
-     * @param pcmModelsDirectory
+     * @param modelsDirectory
      *            directory of pcm models.
      */
-    public ModelImporter(final File pcmModelsDirectory) {
+    public ModelImporter(final File modelsDirectory) {
 
-        final File[] files = pcmModelsDirectory.listFiles();
+        final File[] files = modelsDirectory.listFiles();
         for (final File nextFile : files) {
             ModelImporter.LOGGER.debug("Reading model {}", nextFile.toString());
             final String extension = this.getFileExtension(nextFile.getName());
@@ -104,7 +105,6 @@ public final class ModelImporter {
             } else if (PrivacyModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.privacyModel = new PrivacyModelHandler().load(uri);
             }
-
         }
     }
 
