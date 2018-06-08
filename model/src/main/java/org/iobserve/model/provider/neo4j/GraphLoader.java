@@ -125,7 +125,9 @@ public class GraphLoader {
     }
 
     private String fullyQualifiedPackageName(final EPackage ePackage) {
-        if (ePackage.getESuperPackage() != null) {
+        if (ePackage == null) {
+            return "default";
+        } else if (ePackage.getESuperPackage() != null) {
             return this.fullyQualifiedPackageName(ePackage.getESuperPackage()) + "." + ePackage.getName();
         } else {
             return ePackage.getName();

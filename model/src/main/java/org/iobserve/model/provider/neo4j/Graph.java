@@ -53,9 +53,11 @@ public class Graph {
         this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(this.graphDirectory);
         this.registerShutdownHook(this.graphDatabaseService);
         this.eFactories.add(factory);
-        for (final EClassifier classifier : factory.getEPackage().getEClassifiers()) {
-            if (classifier instanceof EClass) {
-                this.checkClassForContainmentReferences((EClass) classifier);
+        if (factory.getEPackage() != null) {
+            for (final EClassifier classifier : factory.getEPackage().getEClassifiers()) {
+                if (classifier instanceof EClass) {
+                    this.checkClassForContainmentReferences((EClass) classifier);
+                }
             }
         }
     }
