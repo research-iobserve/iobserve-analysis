@@ -84,7 +84,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -102,7 +102,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -128,7 +128,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated to be removed in 1.15
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
 	@Deprecated
@@ -177,7 +177,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated to be rmeoved in 1.15
+	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated

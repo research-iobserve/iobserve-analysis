@@ -105,7 +105,7 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	public EntryLevelBeforeOperationEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -123,7 +123,7 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	protected EntryLevelBeforeOperationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -160,7 +160,7 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated to be removed in 1.15
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
 	@Deprecated
@@ -229,7 +229,7 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated to be rmeoved in 1.15
+	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated
