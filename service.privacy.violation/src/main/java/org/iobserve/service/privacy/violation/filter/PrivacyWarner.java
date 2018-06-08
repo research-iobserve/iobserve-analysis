@@ -18,12 +18,9 @@ package org.iobserve.service.privacy.violation.filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.PrivacyModel;
@@ -51,6 +48,10 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -205,6 +206,10 @@ public class PrivacyWarner extends AbstractStage {
                 this.print("PRIVACY ROOT IS NULL");
             }
         }
+
+        for (final EncapsulatedDataSource eds : this.privacyRootElement.getEncapsulatedDataSources()) {
+            this.print(eds.isDataSource());
+        }
         for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
             this.print(geo.getIsocode().getName());
             final ResourceContainer tmp = geo.getResourceContainer();
@@ -224,7 +229,7 @@ public class PrivacyWarner extends AbstractStage {
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
 
-                if (rcProvider != null && rcRequiring != null) {
+                if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
                     this.print(opr.getEntityName());
                     final String interfaceName = this.shortName(opr.getEntityName());
