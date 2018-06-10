@@ -174,7 +174,9 @@ public final class ModelProviderUtil {
     public static String getTypeName(final EClass c) {
         final String name = c.getInstanceTypeName();
         final int i = name.lastIndexOf('.');
-        return name.substring(i + 1);
+        final String result = name.substring(i + 1);
+        System.err.println("simple name " + result);
+        return result;
     }
 
     /**
@@ -187,7 +189,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference ref, final Object refObj) {
-        return refObj instanceof DataType && !(ref.getName().equals("parentType_CompositeDataType")
+        return (refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
                 || ref.getName().equals("compositeDataType_InnerDeclaration"));
     }
 

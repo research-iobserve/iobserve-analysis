@@ -70,7 +70,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System readModel;
         final Graph graph2;
 
-        modelProvider1.createComponent(writtenModel);
+        modelProvider1.storeModelPartition(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(SystemFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -88,7 +88,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -105,7 +105,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyComponentById(System.class, writtenModel.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -119,7 +119,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<System> readModels;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModels = modelProvider.readOnlyComponentByName(System.class, writtenModel.getEntityName());
 
         for (final System readModel : readModels) {
@@ -135,7 +135,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<String> readIds;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readIds = modelProvider.readComponentByType(System.class);
 
         for (final String readId : readIds) {
@@ -152,7 +152,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyRootComponent(System.class);
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -167,7 +167,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System readModel;
         final AssemblyContext ac = writtenModel.getAssemblyContexts__ComposedStructure().get(0);
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = (System) modelProvider.readOnlyContainingComponentById(AssemblyContext.class, ac.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -186,7 +186,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         expectedReferencingComponents.add(testModelBuilder.getBusinessQueryInputConnector());
         expectedReferencingComponents.add(testModelBuilder.getBusinessPayConnector());
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
                 testModelBuilder.getBusinessOrderAssemblyContext().getId());
@@ -208,7 +208,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         final System writtenModel = testModelBuilder.getSystem();
         final System readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         // Update the model by renaming and removing the business context
         writtenModel.setEntityName("MyVideoOnDemandService");
@@ -256,7 +256,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -279,7 +279,7 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 

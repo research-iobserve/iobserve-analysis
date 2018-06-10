@@ -63,18 +63,21 @@ public class GraphLoader {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
+
         final File newGraphDir = new File(graphTypeDir,
                 graphTypeDirName + GraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
 
         // Copy old graph files
-        if (maxVersionNumber != 0) {
-            final File currentGraphDir = new File(graphTypeDir,
-                    graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber);
+        if (maxVersionNumber > 0) {
+            final File currentGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
+
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
             } catch (final IOException e) {
                 GraphLoader.LOGGER.error("Could not copy old graph version.");
             }
+        } else {
+            throw new InternalError("No such model available for cloning.");
         }
 
         return new Graph(factory, newGraphDir);
@@ -90,14 +93,15 @@ public class GraphLoader {
     public Graph createModelGraph(final EFactory factory) {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
-        int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
+        final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
 
-        if (maxVersionNumber == 0) {
-            maxVersionNumber = 1; // no version at all so far
-        }
+        final File newGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
 
-        return new Graph(factory,
-                new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
+        return new Graph(factory, newGraphDir);
+    }
+
+    private File createGraphFile(final File graphTypeDir, final String graphTypeDirName, final int versionNumber) {
+        return new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + versionNumber);
     }
 
     /**
@@ -115,12 +119,14 @@ public class GraphLoader {
      * @param <V>
      *            the type of the root element
      */
+    // TODO this method does not really belong the the GraphLoader, as it creates a model provider
+    // and populates a graph
     public <V extends EObject> void initializeModelGraph(final EFactory factory, final V model, final String nameLabel,
             final String idLabel) {
         final Graph graph = this.createModelGraph(factory);
         final ModelProvider<V> provider = new ModelProvider<>(graph, nameLabel, idLabel);
         provider.clearGraph();
-        provider.createComponent(model);
+        provider.storeModelPartition(model);
         graph.getGraphDatabaseService().shutdown();
     }
 

@@ -70,7 +70,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation readModel;
         final Graph graph2;
 
-        modelProvider1.createComponent(writtenModel);
+        modelProvider1.storeModelPartition(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(AllocationFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -88,7 +88,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -105,7 +105,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyComponentById(Allocation.class, writtenModel.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -119,7 +119,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<Allocation> readModels;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModels = modelProvider.readOnlyComponentByName(Allocation.class, writtenModel.getEntityName());
 
         for (final Allocation readModel : readModels) {
@@ -135,7 +135,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<String> readIds;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readIds = modelProvider.readComponentByType(Allocation.class);
 
         for (final String readId : readIds) {
@@ -152,7 +152,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyRootComponent(Allocation.class);
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -167,7 +167,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation readModel;
         final AllocationContext writtenContext = writtenModel.getAllocationContexts_Allocation().get(0);
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = (Allocation) modelProvider.readOnlyContainingComponentById(AllocationContext.class,
                 writtenContext.getId());
 
@@ -183,7 +183,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
         final Allocation writtenModel = testModelBuilder.getAllocation();
         final List<EObject> readReferencingComponents;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
                 testModelBuilder.getPaymentAssemblyContext().getId());
@@ -210,7 +210,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
 
         final Allocation readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         // Update the model by allocating new separate servers for business and private orders
         final ResourceEnvironment resourceEnvironment = testModelBuilder.getResourceEnvironment();
@@ -246,7 +246,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -269,7 +269,7 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 

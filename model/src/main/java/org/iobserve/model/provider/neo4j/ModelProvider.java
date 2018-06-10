@@ -140,13 +140,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#createComponent(T)
      */
     @Override
-    public void createComponent(final T component) {
+    public void storeModelPartition(final T rootElement) {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
+            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(rootElement,
                     new HashSet<>());
-            this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
+
+            this.createNodes(rootElement, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
 
@@ -179,7 +180,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     }
 
                 } else {
-                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
+                    if ((refObject != null) && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -193,7 +194,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Helper method for writing: Writes the given component into the provider's {@link #graph}
      * recursively. Calls to this method have to be performed from inside a {@link Transaction}.
      *
-     * @param component
+     * @param storeableObject
      *            Component to save
      * @param containmentsAndDatatypes
      *            Set of EObjects contained in the root preferably created by
@@ -203,48 +204,62 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            sure nodes are written just once
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component, final Set<EObject> containmentsAndDatatypes,
+    private Node createNodes(final EObject storeableObject, final Set<EObject> containmentsAndDatatypes,
             final Map<EObject, Node> objectsToCreatedNodes) {
+        java.lang.System.err.println("createNodes " + storeableObject + " " + containmentsAndDatatypes.size());
+
         // Create a label representing the type of the component
-        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
+        final Label label = Label.label(ModelProviderUtil.getTypeName(storeableObject.eClass()));
         Node node = null;
 
+        // TODO unnecessary complicated
         // Check if node has already been created
-        final EAttribute idAttr = component.eClass().getEIDAttribute();
+        final EAttribute idAttr = storeableObject.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
-        } else if (component instanceof PrimitiveDataType) {
+            java.lang.System.err.println("has id attribute " + idAttr);
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, storeableObject.eGet(idAttr));
+        } else if (storeableObject instanceof PrimitiveDataType) {
+            java.lang.System.err.println("has no id attribute: can be class PrimitiveDataType check for " + label
+                    + " with " + ModelProvider.TYPE + " = " + ((PrimitiveDataType) storeableObject).getType().name());
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
-                    ((PrimitiveDataType) component).getType().name());
-        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
+                    ((PrimitiveDataType) storeableObject).getType().name());
+        } else if ((storeableObject instanceof UsageModel) || (storeableObject instanceof ResourceEnvironment)) {
+            java.lang.System.err
+                    .println("has no id attribute: can be class UsageModel or ResourceEnvironment check for "
+                            + storeableObject.eClass().getName());
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                    .findNodes(Label.label(component.eClass().getName()));
+                    .findNodes(Label.label(storeableObject.eClass().getName()));
             if (nodes.hasNext()) {
                 node = nodes.next();
             }
         } else {
+            java.lang.System.err.println("has no id attribute and is not handled by a special rule.");
             // For components that cannot be found in the graph (e.g. due to missing id) but have
             // been created in this recursion
-            node = objectsToCreatedNodes.get(component);
+            node = objectsToCreatedNodes.get(storeableObject);
         }
+
+        java.lang.System.err.println("node is " + node);
 
         // If there is no node yet, create one
         if (node == null) {
 
+            java.lang.System.err.println("node not found, create one");
+
             node = this.graph.getGraphDatabaseService().createNode(label);
-            objectsToCreatedNodes.put(component, node);
+            objectsToCreatedNodes.put(storeableObject, node);
 
             // Create a URI to enable proxy resolving
-            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
+            final URI uri = ((BasicEObjectImpl) storeableObject).eProxyURI();
             if (uri == null) {
-                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
+                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(storeableObject));
             } else {
                 node.setProperty(ModelProvider.EMF_URI, uri.toString());
             }
 
             // Save attributes as node properties
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                final Object value = component.eGet(attr);
+            for (final EAttribute attr : storeableObject.eClass().getEAllAttributes()) {
+                final Object value = storeableObject.eGet(attr);
                 if (value != null) {
                     node.setProperty(attr.getName(), value.toString());
                 }
@@ -252,15 +267,15 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             // Outgoing references are only stored for containments and data types of the root,
             // otherwise we just store the blank node as a proxy
-            if (containmentsAndDatatypes.contains(component)) {
+            if (containmentsAndDatatypes.contains(storeableObject)) {
 
-                for (final EReference ref : component.eClass().getEAllReferences()) {
-                    final Object refReprensation = component.eGet(ref);
+                for (final EReference ref : storeableObject.eClass().getEAllReferences()) {
+                    final Object refReprensation = storeableObject.eGet(ref);
 
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        final EList<?> refs = (EList<?>) storeableObject.eGet(ref);
                         for (int i = 0; i < refs.size(); i++) {
                             final Object o = refs.get(i);
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
@@ -546,13 +561,20 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     private void createManyValuesAttribute(final EObject component, final EAttribute attr,
             final Entry<String, Object> property) {
-        final EList<?> attribute = (EList<?>) component.eGet(attr);
+        final List attribute = (List) component.eGet(attr);
 
-        final Object v = this.convertValue(attr.getEAttributeType(), property.getValue().toString());
+        final String valueString = property.getValue().toString();
 
-        java.lang.System.err.println("type " + attribute);
+        final String[] values = valueString.substring(1, valueString.length() - 1).split(", ");
+        for (final String value : values) {
+            final Object convertedValue = this.convertValue(attr.getEAttributeType(), value);
 
-        attribute.add(v);
+            java.lang.System.err.println("attribute " + attribute);
+
+            attribute.add(convertedValue);
+
+            java.lang.System.err.println("after add " + attribute);
+        }
     }
 
     private void createSingleValueAttribute(final EObject component, final EAttribute attr,
@@ -774,7 +796,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
+        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));

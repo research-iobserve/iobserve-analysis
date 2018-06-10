@@ -17,8 +17,15 @@ package org.iobserve.model.test.provider.neo4j;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -81,6 +88,16 @@ public class ECoreNeo4JTest {
         this.model.getIfaceOthers().add(this.createSpecialA(factory, firstOther));
         this.model.getIfaceOthers().add(this.createSpecialB(factory));
 
+        final Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
+
+        final ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.setResourceFactoryRegistry(resourceRegistry);
+        final Resource resource = resourceSet.createResource(URI.createFileURI("storage-example.storage"));
+        resource.getContents().add(this.model);
+        resource.save(null);
+
         this.clearGraph();
     }
 
@@ -119,7 +136,7 @@ public class ECoreNeo4JTest {
     public void testStoreGraphCreate() {
         final ModelProvider<Root> modelProvider = new ModelProvider<>(ECoreNeo4JTest.graph, "name", null);
 
-        modelProvider.createComponent(this.model);
+        modelProvider.storeModelPartition(this.model);
 
         Assert.assertFalse(ECoreNeo4JTest.isGraphEmpty(modelProvider));
 
@@ -136,7 +153,7 @@ public class ECoreNeo4JTest {
     public void testStoreGraphAndRead() {
         final ModelProvider<Root> modelProvider = new ModelProvider<>(ECoreNeo4JTest.graph, "name", null);
 
-        modelProvider.createComponent(this.model);
+        modelProvider.storeModelPartition(this.model);
 
         final GraphDatabaseService service = modelProvider.getGraph().getGraphDatabaseService();
 

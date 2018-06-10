@@ -124,7 +124,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 
         // Sets the new usage model within iObserve
         this.usageModelProvider.clearGraph();
-        this.usageModelProvider.createComponent(model);
+        this.usageModelProvider.storeModelPartition(model);
 
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         this.outputPortSnapshot.send(false);

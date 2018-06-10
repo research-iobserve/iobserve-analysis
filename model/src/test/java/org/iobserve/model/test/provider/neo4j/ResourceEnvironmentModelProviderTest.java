@@ -68,11 +68,11 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ModelProvider<ResourceEnvironment> modelProvider1 = new ModelProvider<>(
                 ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment> modelProvider2;
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
+        final ResourceEnvironment inMemoryModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
         final Graph graph2;
 
-        modelProvider1.createComponent(writtenModel);
+        modelProvider1.storeModelPartition(inMemoryModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(ResourceenvironmentFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -80,7 +80,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         readModel = modelProvider2.readOnlyRootComponent(ResourceEnvironment.class);
         graph2.getGraphDatabaseService().shutdown();
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(inMemoryModel, readModel));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -112,7 +112,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
         // Create complete model but only read a ResourceContainer, because ResourceEnvironment
         // itself has no id
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readContainer = modelProvider2.readOnlyComponentById(ResourceContainer.class, writtenContainer.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenContainer, readContainer));
@@ -126,7 +126,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final List<ResourceEnvironment> readModels;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModels = modelProvider.readOnlyComponentByName(ResourceEnvironment.class, writtenModel.getEntityName());
 
         Assert.assertTrue(readModels.size() == 1);
@@ -149,7 +149,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
         // Create complete model but only read ResourceContainers because ResourceEnvironment itself
         // has no id
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readIds = modelProvider2.readComponentByType(ResourceContainer.class);
 
         Assert.assertTrue(readIds.size() == writtenContainers.size());
@@ -175,7 +175,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -190,7 +190,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceEnvironment readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = (ResourceEnvironment) modelProvider.readOnlyContainingComponentById(ResourceContainer.class,
                 writtenContainer.getId());
 
@@ -206,7 +206,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         final List<EObject> readReferencingComponents;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(CommunicationLinkResourceType.class,
                 testModelBuilder.getLan1Type().getId());
@@ -231,7 +231,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final LinkingResource writtenLan1 = testModelBuilder.getLan1();
         final ResourceEnvironment readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         // Update the model by replacing the orderServer by two separated servers
         writtenModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
@@ -280,7 +280,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -314,7 +314,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 

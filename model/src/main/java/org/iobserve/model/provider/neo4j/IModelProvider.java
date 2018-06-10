@@ -36,7 +36,7 @@ public interface IModelProvider<T extends EObject> {
      * @param component
      *            Component to save
      */
-    void createComponent(T component);
+    void storeModelPartition(T component);
 
     /**
      * Reads a specified component from the provider's model serialization.

@@ -70,7 +70,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageModel readModel;
         final Graph graph2;
 
-        modelProvider1.createComponent(writtenModel);
+        modelProvider1.storeModelPartition(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(UsagemodelFactory.eINSTANCE);
         modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -88,7 +88,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -109,7 +109,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageScenario readScenario;
 
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readScenario = modelProvider2.readOnlyComponentById(UsageScenario.class, writtenScenario.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenScenario, readScenario));
@@ -127,7 +127,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final List<UsageScenario> readScenarios;
 
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readScenarios = modelProvider2.readOnlyComponentByName(UsageScenario.class, writtenScenario.getEntityName());
 
         Assert.assertTrue(readScenarios.size() == 1);
@@ -149,7 +149,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final List<String> readIds;
 
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readIds = modelProvider2.readComponentByType(UsageScenario.class);
 
         // There is only one usage scenario in the test model
@@ -166,7 +166,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageModel readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = modelProvider.readOnlyRootComponent(UsageModel.class);
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
@@ -181,7 +181,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final UsageModel readModel;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
         readModel = (UsageModel) modelProvider.readOnlyContainingComponentById(UsageScenario.class,
                 writtenScenario.getId());
 
@@ -198,7 +198,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final List<EObject> readReferencingComponents;
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         // Using usage scenario because usage model does not have an id
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(UsageScenario.class,
@@ -225,7 +225,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final EntryLevelSystemCall writtenGetQueryCall = testModelBuilder.getGetQueryCall();
         final EntryLevelSystemCall writtenGetPriceCall = testModelBuilder.getGetPriceCall();
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         // Update the model by adding a loop for choosing several books
         final Loop shoppingLoop = UsagemodelFactory.eINSTANCE.createLoop();
@@ -265,7 +265,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -291,7 +291,7 @@ public class UsageModelProviderTest implements IModelProviderTest { // NOCS no c
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.createComponent(writtenModel);
+        modelProvider.storeModelPartition(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 

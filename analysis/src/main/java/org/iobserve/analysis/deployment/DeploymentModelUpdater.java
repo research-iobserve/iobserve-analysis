@@ -82,7 +82,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
             newAllocationContext.setEntityName(allocationContextName);
             newAllocationContext.setAssemblyContext_AllocationContext(event.getAssemblyContext());
             newAllocationContext.setResourceContainer_AllocationContext(event.getResourceContainer());
-            this.allocationContextModelGraphProvider.createComponent(newAllocationContext);
+            this.allocationContextModelGraphProvider.storeModelPartition(newAllocationContext);
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
             this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
