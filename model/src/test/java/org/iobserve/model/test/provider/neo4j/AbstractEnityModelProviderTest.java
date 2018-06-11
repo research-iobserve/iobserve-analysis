@@ -50,27 +50,8 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
         final T readModel = modelProvider.readObjectById(this.clazz, this.testModel.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
-    }
 
-    /**
-     * Writes a model to the graph, deletes it using
-     * {@link ModelProvider#deleteObjectById(Class, String)} and asserts that the graph is empty
-     * afterwards.
-     */
-    @Test
-    public final void createThenDeleteComponent() {
-        final Graph graph = this.prepareGraph("createThenDeleteComponent");
-
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
-
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
-
-        modelProvider.deleteObjectById(this.clazz, this.testModel.getId());
-
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -92,6 +73,8 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
         modelProvider.deleteObjectByIdAndDatatypes(this.clazz, this.testModel.getId(), true);
 
         Assert.assertTrue(this.isGraphEmpty(modelProvider));
+
+        graph.getGraphDatabaseService().shutdown();
     }
 
 }

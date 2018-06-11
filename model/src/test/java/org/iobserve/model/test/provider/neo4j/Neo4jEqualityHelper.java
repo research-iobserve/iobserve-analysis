@@ -99,7 +99,6 @@ public class Neo4jEqualityHelper extends EqualityHelper {
      */
     @Override
     public boolean equals(final EObject eObject1, final EObject eObject2) {
-        System.err.println("equal " + eObject1 + " = " + eObject2);
         // If the first object is null, the second object must be null.
         //
         if (eObject1 == null) {
@@ -119,8 +118,6 @@ public class Neo4jEqualityHelper extends EqualityHelper {
         if (eObject1MappedValue != null) {
             // Then eObject2 must be that previous match.
 
-            System.err.println("mapped1 " + eObject1MappedValue + " = " + eObject2);
-
             return eObject1MappedValue == eObject2;
         }
 
@@ -130,8 +127,6 @@ public class Neo4jEqualityHelper extends EqualityHelper {
         if (eObject2MappedValue != null) {
             // Then eObject1 must be that match.
 
-            System.err.println("mapped2 " + eObject2MappedValue + " = " + eObject1);
-
             return eObject2MappedValue == eObject1;
         }
 
@@ -140,7 +135,6 @@ public class Neo4jEqualityHelper extends EqualityHelper {
         // If eObject1 and eObject2 are the same instance...
         //
         if (eObject1 == eObject2) {
-            System.err.println("identical " + eObject1 + " = " + eObject2);
             // Match them and return true.
             //
             this.put(eObject1, eObject2);
@@ -152,23 +146,17 @@ public class Neo4jEqualityHelper extends EqualityHelper {
         //
         final EClass eClass = eObject1.eClass();
         if (eClass != eObject2.eClass()) {
-            System.err.println("wrong class " + eClass + " = " + eObject2.eClass());
             return false;
         }
 
         // Modified proxy check: Only attributes have to be equal
         if (eObject1.eIsProxy() || eObject2.eIsProxy()) {
-            System.err.println("proxy is " + eObject1.eIsProxy() + " -- " + eObject2.eIsProxy());
             for (final EAttribute attr : eClass.getEAllAttributes()) {
-                System.err.println("attribute " + attr.getName());
                 if (!this.haveEqualAttribute(eObject1, eObject2, attr)) {
-                    System.err.println("attribute does not match.");
                     return false;
                 }
             }
         } else {
-            System.err.println("normal");
-
             // Assume from now on that they match.
             //
             this.put(eObject1, eObject2);
@@ -180,9 +168,7 @@ public class Neo4jEqualityHelper extends EqualityHelper {
                 // Ignore derived features.
                 //
                 final EStructuralFeature feature = eClass.getEStructuralFeature(i);
-                System.err.println("feature " + i + " " + feature.getName());
                 if (!feature.isDerived() && !this.haveEqualFeature(eObject1, eObject2, feature)) {
-                    System.err.println("feature does not match");
                     this.remove(eObject1);
                     this.remove(eObject2);
                     return false;

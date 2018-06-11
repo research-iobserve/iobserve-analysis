@@ -28,6 +28,8 @@ import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemFactory;
 
@@ -46,7 +48,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Before
     public void setUp() {
-        this.testModel = new TestModelBuilder().getSystem();
+        this.prefix = this.getClass().getCanonicalName();
+        this.testModel = this.testModelBuilder.getSystem();
         this.factory = SystemFactory.eINSTANCE;
         this.clazz = System.class;
     }
@@ -89,23 +92,21 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final Graph graph = this.prepareGraph("createThenReadReferencing");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final TestModelBuilder testModelBuilder = new TestModelBuilder();
-
         final List<EObject> expectedReferencingComponents = new LinkedList<>();
         final List<EObject> readReferencingComponents;
 
-        expectedReferencingComponents.add(testModelBuilder.getBusinessQueryInputConnector());
-        expectedReferencingComponents.add(testModelBuilder.getBusinessPayConnector());
+        expectedReferencingComponents.add(this.testModelBuilder.getBusinessQueryInputConnector());
+        expectedReferencingComponents.add(this.testModelBuilder.getBusinessPayConnector());
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
-                testModelBuilder.getBusinessOrderAssemblyContext().getId());
+                this.testModelBuilder.getBusinessOrderAssemblyContext().getId());
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
         // businessOrderContext
@@ -126,14 +127,13 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         modelProvider.storeModelPartition(this.testModel);
 
         // Update the model by renaming and removing the business context
-        final TestModelBuilder testModelBuilder = new TestModelBuilder();
-
         this.testModel.setEntityName("MyVideoOnDemandService");
 
         this.testModel.getAssemblyContexts__ComposedStructure()
-                .remove(testModelBuilder.getBusinessOrderAssemblyContext());
-        this.testModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
-        this.testModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
+                .remove(this.testModelBuilder.getBusinessOrderAssemblyContext());
+        this.testModel.getConnectors__ComposedStructure()
+                .remove(this.testModelBuilder.getBusinessQueryInputConnector());
+        this.testModel.getConnectors__ComposedStructure().remove(this.testModelBuilder.getBusinessPayConnector());
 
         // Replace the business context by a context for groups of people placing an order
         final AssemblyContext sharedOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
@@ -143,16 +143,17 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         sharedOrderContext.setEntityName("sharedOrderContext_org.myvideoondemandservice.orderComponent");
 
         sharedQueryInputConnector.setEntityName("sharedQueryInput");
-        sharedQueryInputConnector.setProvidedRole_AssemblyConnector(testModelBuilder.getProvidedInputOperation());
-        sharedQueryInputConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredInputOperation());
+        sharedQueryInputConnector.setProvidedRole_AssemblyConnector(this.testModelBuilder.getProvidedInputOperation());
+        sharedQueryInputConnector.setRequiredRole_AssemblyConnector(this.testModelBuilder.getRequiredInputOperation());
         sharedQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(sharedOrderContext);
         sharedQueryInputConnector
-                .setRequiringAssemblyContext_AssemblyConnector(testModelBuilder.getQueryInputAssemblyContext());
+                .setRequiringAssemblyContext_AssemblyConnector(this.testModelBuilder.getQueryInputAssemblyContext());
 
         sharedPayConnector.setEntityName("sharedPayment");
-        sharedPayConnector.setProvidedRole_AssemblyConnector(testModelBuilder.getProvidedPayOperation());
-        sharedPayConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredPayOperation());
-        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(testModelBuilder.getPaymentAssemblyContext());
+        sharedPayConnector.setProvidedRole_AssemblyConnector(this.testModelBuilder.getProvidedPayOperation());
+        sharedPayConnector.setRequiredRole_AssemblyConnector(this.testModelBuilder.getRequiredPayOperation());
+        sharedPayConnector
+                .setProvidingAssemblyContext_AssemblyConnector(this.testModelBuilder.getPaymentAssemblyContext());
         sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
 
         this.testModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
@@ -173,7 +174,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
+        final System writtenModel = this.testModelBuilder.getSystem();
 
         modelProvider.storeModelPartition(writtenModel);
 
@@ -183,8 +184,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         // Manually delete the proxy nodes from the repository model
         try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService()
-                    .execute("MATCH (n:OperationProvidedRole), (m:OperationRequiredRole) DELETE n, m");
+            graph.getGraphDatabaseService().execute("MATCH (n:`" + OperationProvidedRole.class.getCanonicalName()
+                    + "`), (m:`" + OperationRequiredRole.class.getCanonicalName() + "`) DELETE n, m");
             tx.success();
         }
 
@@ -206,6 +207,29 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         modelProvider.deleteObjectByIdAndDatatypes(System.class, this.testModel.getId(), true);
 
         Assert.assertTrue(this.isGraphEmpty(modelProvider));
+    }
+
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
+     * one written to the graph.
+     */
+    @Test
+    public final void createThenReadByName() {
+        final Graph graph = this.prepareGraph("createThenReadByName");
+
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
+        final List<System> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
+
+        for (final System readModel : readModels) {
+            Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        }
+
+        graph.getGraphDatabaseService().shutdown();
     }
 
 }

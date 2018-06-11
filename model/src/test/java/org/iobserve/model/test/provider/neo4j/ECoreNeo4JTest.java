@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.model.test.storage.EnumValueExample;
 import org.iobserve.model.test.storage.Other;
@@ -55,8 +53,6 @@ import org.neo4j.graphdb.Transaction;
  */
 public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
 
-    private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
-
     /**
      * Setup test.
      *
@@ -66,8 +62,11 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
     @Override
     @Before
     public void setUp() {
+        this.prefix = this.getClass().getCanonicalName();
+
         final StorageFactory storageFactory = StorageFactory.eINSTANCE;
         this.factory = storageFactory;
+        this.clazz = Root.class;
 
         this.testModel = storageFactory.createRoot();
         this.testModel.setEnumerate(EnumValueExample.B);
@@ -129,11 +128,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      */
     @Test
     public void testStoreGraphCreate() {
-        final File graphDir = new File("./testdb/testStoreGraphCreate");
-
-        this.removeDirectory(graphDir);
-
-        final Graph graph = new GraphLoader(graphDir).createModelGraph(StorageFactory.eINSTANCE);
+        final Graph graph = this.prepareGraph("testStoreGraphCreate");
 
         final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
 
@@ -145,6 +140,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
 
         Assert.assertTrue(this.isGraphEmpty(modelProvider));
 
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -152,11 +148,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      */
     @Test
     public void testStoreGraphAndRead() {
-        final File graphDir = new File("./testdb/testStoreGraphAndRead");
-
-        this.removeDirectory(graphDir);
-
-        final Graph graph = new GraphLoader(graphDir).createModelGraph(StorageFactory.eINSTANCE);
+        final Graph graph = this.prepareGraph("testStoreGraphAndRead");
 
         final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
 
@@ -187,6 +179,8 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
         final List<Root> readModel = modelProvider.readObjectsByName(Root.class, this.testModel.getName());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel.get(0)));
+
+        graph.getGraphDatabaseService().shutdown();
     }
 
     @Test
@@ -206,36 +200,6 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
         cloneGraph.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
-    }
-
-    @Override
-    void createThenReadByType() {
-        Assert.assertTrue(true);
-    }
-
-    @Override
-    void createThenReadContaining() {
-        Assert.assertTrue(true);
-    }
-
-    @Override
-    void createThenReadReferencing() {
-        Assert.assertTrue(true);
-    }
-
-    @Override
-    void createThenUpdateThenReadUpdated() {
-        Assert.assertTrue(true);
-    }
-
-    @Override
-    void createThenDeleteObject() {
-        Assert.assertTrue(true);
-    }
-
-    @Override
-    void createThenDeleteObjectAndDatatypes() {
-        Assert.assertTrue(true);
     }
 
 }

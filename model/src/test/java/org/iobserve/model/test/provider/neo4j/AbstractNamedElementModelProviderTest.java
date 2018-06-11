@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.util.List;
-
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
@@ -31,6 +29,50 @@ import org.palladiosimulator.pcm.core.entity.NamedElement;
  */
 public abstract class AbstractNamedElementModelProviderTest<T extends NamedElement>
         extends AbstractModelProviderTest<T> {
+
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
+     * one written to the graph.
+     */
+    @Test
+    abstract void createThenReadByType();
+
+    /**
+     * Writes a model to the graph, reads the container of a certain model component from the graph
+     * using {@link ModelProvider#readOnlyContainingComponentById(Class, String)} and asserts that
+     * it is equal to the container from the original model.
+     */
+    @Test
+    abstract void createThenReadContaining();
+
+    /**
+     * Writes a model to the graph, reads the components referencing to a certain component using
+     * {@link ModelProvider#readOnlyReferencingComponentsById(Class, String)} and asserts that it is
+     * equal to the referencing components from the original model.
+     */
+    @Test
+    abstract void createThenReadReferencing();
+
+    /**
+     * Writes a model to the graph, modifies the original model, updates it in the graph using
+     * {@link ModelProvider#updateObject(Class, org.eclipse.emf.ecore.EObject)}, reads the updated
+     * model from the graph and asserts that it is equal to the modified original model.
+     */
+    @Test
+    abstract void createThenUpdateThenReadUpdated();
+
+    /**
+     * Create, store and delete objects.
+     */
+    @Test
+    abstract void createThenDeleteObject();
+
+    /**
+     * Create, store and delete objects and data types.
+     */
+    @Test
+    abstract void createThenDeleteObjectAndDatatypes();
 
     /**
      * Writes a model to the graph, clones the graph using
@@ -55,6 +97,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
         cloneGraph.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
+
+        storeGraph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -75,27 +119,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
         modelProvider.clearGraph();
 
         Assert.assertTrue(this.isGraphEmpty(modelProvider));
-    }
 
-    /**
-     * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
-     * one written to the graph.
-     */
-    @Test
-    public final void createThenReadByName() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<T> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
-
-        for (final T readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
-        }
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -105,7 +130,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
+        final Graph graph = this.prepareGraph("createThenReadRoot");
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -115,6 +140,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
         final T readModel = modelProvider.readRootNode(this.clazz);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+
+        graph.getGraphDatabaseService().shutdown();
     }
 
 }

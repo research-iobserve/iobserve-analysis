@@ -23,7 +23,8 @@ import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Before;
-import org.junit.Test;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 
 /**
@@ -36,6 +37,10 @@ import org.neo4j.graphdb.Transaction;
 public abstract class AbstractModelProviderTest<T extends EObject> {
 
     protected final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+
+    protected final TestModelBuilder testModelBuilder = new TestModelBuilder();
+
+    protected String prefix;
     protected T testModel;
     protected EFactory factory;
     protected Class<T> clazz;
@@ -45,50 +50,6 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
      */
     @Before
     abstract void setUp();
-
-    /**
-     * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
-     * one written to the graph.
-     */
-    @Test
-    abstract void createThenReadByType();
-
-    /**
-     * Writes a model to the graph, reads the container of a certain model component from the graph
-     * using {@link ModelProvider#readOnlyContainingComponentById(Class, String)} and asserts that
-     * it is equal to the container from the original model.
-     */
-    @Test
-    abstract void createThenReadContaining();
-
-    /**
-     * Writes a model to the graph, reads the components referencing to a certain component using
-     * {@link ModelProvider#readOnlyReferencingComponentsById(Class, String)} and asserts that it is
-     * equal to the referencing components from the original model.
-     */
-    @Test
-    abstract void createThenReadReferencing();
-
-    /**
-     * Writes a model to the graph, modifies the original model, updates it in the graph using
-     * {@link ModelProvider#updateObject(Class, org.eclipse.emf.ecore.EObject)}, reads the updated
-     * model from the graph and asserts that it is equal to the modified original model.
-     */
-    @Test
-    abstract void createThenUpdateThenReadUpdated();
-
-    /**
-     * Create, store and delete objects.
-     */
-    @Test
-    abstract void createThenDeleteObject();
-
-    /**
-     * Create, store and delete objects and data types.
-     */
-    @Test
-    abstract void createThenDeleteObjectAndDatatypes();
 
     /**
      * Checks whether the graph of a given {@link ModelProvider} is empty.
@@ -101,7 +62,10 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
         boolean isEmpty = false;
 
         try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
-            isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();
+            final ResourceIterator<Node> iterator = modelProvider.getGraph().getGraphDatabaseService().getAllNodes()
+                    .iterator();
+
+            isEmpty = !iterator.hasNext();
             tx.success();
         }
 
@@ -117,7 +81,8 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
      * @return the prepared graph
      */
     protected Graph prepareGraph(final String name) {
-        final File graphBaseDir = new File("./testdb/" + this.factory.eClass().getName() + name);
+        final File graphBaseDir = new File(
+                "./testdb/" + this.prefix + "." + this.factory.eClass().getName() + "." + name);
 
         this.removeDirectory(graphBaseDir);
 

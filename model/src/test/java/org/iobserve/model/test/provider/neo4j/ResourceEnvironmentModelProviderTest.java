@@ -46,7 +46,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Before
     public void setUp() {
-        this.testModel = new TestModelBuilder().getResourceEnvironment();
+        this.prefix = this.getClass().getCanonicalName();
+        this.testModel = this.testModelBuilder.getResourceEnvironment();
         this.factory = ResourceenvironmentFactory.eINSTANCE;
         this.clazz = ResourceEnvironment.class;
     }
@@ -121,17 +122,15 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final TestModelBuilder testModelBuilder = new TestModelBuilder();
-
         final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
-                CommunicationLinkResourceType.class, testModelBuilder.getLan1Type().getId());
+                CommunicationLinkResourceType.class, this.testModelBuilder.getLan1Type().getId());
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(
-                this.equalityHelper.equals(testModelBuilder.getLan1Specification(), readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModelBuilder.getLan1Specification(),
+                readReferencingComponents.get(0)));
 
     }
 
@@ -148,10 +147,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final TestModelBuilder testModelBuilder = new TestModelBuilder();
-
-        final ResourceContainer orderServer = testModelBuilder.getOrderServer();
-        final LinkingResource writtenLan1 = testModelBuilder.getLan1();
+        final ResourceContainer orderServer = this.testModelBuilder.getOrderServer();
+        final LinkingResource writtenLan1 = this.testModelBuilder.getLan1();
 
         // Update the model by replacing the orderServer by two separated servers
         this.testModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
@@ -196,9 +193,10 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     /**
      * Test whether deletions work correctly.
      */
+    @Override
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+        final Graph graph = this.prepareGraph("createThenDeleteObject");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -220,8 +218,10 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
         // no containments anywhere)
         try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService().execute(
-                    "MATCH (m:ResourceEnvironment), (n:ProcessingResourceType), (o:CommunicationLinkResourceType) DELETE n, m, o");
+            graph.getGraphDatabaseService()
+                    .execute("MATCH (m:`" + ResourceEnvironment.class.getCanonicalName() + "`), (n:`"
+                            + ProcessingResourceType.class.getCanonicalName() + "`), (o:`"
+                            + CommunicationLinkResourceType.class.getCanonicalName() + "`) DELETE n, m, o");
             tx.success();
         }
 
@@ -231,6 +231,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     /**
      * Check whether object and data type deletions work.
      */
+    @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
         final Graph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");

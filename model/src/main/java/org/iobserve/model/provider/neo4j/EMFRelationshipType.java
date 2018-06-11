@@ -24,6 +24,6 @@ import org.neo4j.graphdb.RelationshipType;
  * @author Lars Bluemke
  *
  */
-public enum PcmRelationshipType implements RelationshipType {
+public enum EMFRelationshipType implements RelationshipType {
     CONTAINS, IS_TYPE, REFERENCES
 }

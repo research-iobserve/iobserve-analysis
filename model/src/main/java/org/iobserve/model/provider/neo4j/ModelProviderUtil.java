@@ -105,7 +105,8 @@ public final class ModelProviderUtil {
 
         do {
             container = comp.eContainer();
-            label = ModelProviderUtil.getTypeName(comp.eClass());
+            label = comp.eClass().getInstanceTypeName();
+
             idAttr = comp.eClass().getEIDAttribute();
 
             if (uri.isEmpty()) {
@@ -156,27 +157,12 @@ public final class ModelProviderUtil {
     public static RelationshipType getRelationshipType(final EReference ref, final Object refObj) {
 
         if (ref.isContainment()) {
-            return PcmRelationshipType.CONTAINS;
+            return EMFRelationshipType.CONTAINS;
         } else if (ModelProviderUtil.isDatatype(ref, refObj)) {
-            return PcmRelationshipType.IS_TYPE;
+            return EMFRelationshipType.IS_TYPE;
         } else {
-            return PcmRelationshipType.REFERENCES;
+            return EMFRelationshipType.REFERENCES;
         }
-    }
-
-    /**
-     * Returns only an EClasses simple name, not the fully qualified name.
-     *
-     * @param c
-     *            The EClass
-     * @return The EClasses simple name
-     */
-    public static String getTypeName(final EClass c) {
-        final String name = c.getInstanceTypeName();
-        final int i = name.lastIndexOf('.');
-        final String result = name.substring(i + 1);
-        System.err.println("simple name " + result);
-        return result;
     }
 
     /**
@@ -189,7 +175,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference ref, final Object refObj) {
-        return (refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
+        return refObj instanceof DataType && !(ref.getName().equals("parentType_CompositeDataType")
                 || ref.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
@@ -284,15 +270,30 @@ public final class ModelProviderUtil {
      */
     public static EObject instantiateEObject(final List<EFactory> factories, final String name) {
 
+        final int separationPoint = name.lastIndexOf('.');
+        final String packageName = name.substring(0, separationPoint);
+        final String className = name.substring(separationPoint + 1);
+
         for (final EFactory factory : factories) {
             final EPackage ePackage = factory.getEPackage();
-            final EClass eClass = (EClass) ePackage.getEClassifier(name);
+            // final String factoryPackageName = ModelProviderUtil.fullyQualifiedName(ePackage);
+            // if (factoryPackageName.equals(packageName)) {
+            final EClass eClass = (EClass) ePackage.getEClassifier(className);
             if (eClass != null) {
                 return factory.create(eClass);
             }
+            // }
         }
         return null;
 
+    }
+
+    private static String fullyQualifiedName(final EPackage ePackage) {
+        if (ePackage.getESuperPackage() != null) {
+            return ModelProviderUtil.fullyQualifiedName(ePackage.getESuperPackage()) + "." + ePackage.getName();
+        } else {
+            return ePackage.getName();
+        }
     }
 
     /**
