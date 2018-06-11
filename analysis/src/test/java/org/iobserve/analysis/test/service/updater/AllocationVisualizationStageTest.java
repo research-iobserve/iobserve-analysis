@@ -92,7 +92,7 @@ public class AllocationVisualizationStageTest {
         this.inputEvents.add(testResourceContainer);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.readObjectsByName(ResourceContainer.class,
                 AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
 
     }

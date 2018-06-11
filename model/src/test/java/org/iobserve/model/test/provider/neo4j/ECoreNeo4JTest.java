@@ -16,6 +16,7 @@
 package org.iobserve.model.test.provider.neo4j;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +29,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.model.test.storage.EnumValueExample;
 import org.iobserve.model.test.storage.Other;
@@ -53,15 +53,9 @@ import org.neo4j.graphdb.Transaction;
  *
  * @since 0.0.3
  */
-public class ECoreNeo4JTest {
-
-    private static final File GRAPH_DIR = new File("./testdb");
-
-    private static Graph graph = new GraphLoader(ECoreNeo4JTest.GRAPH_DIR).createModelGraph(StorageFactory.eINSTANCE);
+public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
-
-    private Root model = null;
 
     /**
      * Setup test.
@@ -69,40 +63,41 @@ public class ECoreNeo4JTest {
      * @throws Exception
      *             on error
      */
+    @Override
     @Before
-    public void setUp() throws Exception {
-        final StorageFactory factory = StorageFactory.eINSTANCE;
-        this.model = factory.createRoot();
-        this.model.setEnumerate(EnumValueExample.B);
-        this.model.setFixed("fixed value");
-        this.model.setName("root name");
+    public void setUp() {
+        final StorageFactory storageFactory = StorageFactory.eINSTANCE;
+        this.factory = storageFactory;
 
-        this.model.getLabels().add("label 1");
-        this.model.getLabels().add("label 2");
-        this.model.getLabels().add("label 3");
+        this.testModel = storageFactory.createRoot();
+        this.testModel.setEnumerate(EnumValueExample.B);
+        this.testModel.setFixed("fixed value");
+        this.testModel.setName("root name");
 
-        final Other firstOther = this.createOther(factory, "first other");
-        this.model.getOthers().add(firstOther);
-        this.model.getOthers().add(this.createOther(factory, "second other"));
+        this.testModel.getLabels().add("label 1");
+        this.testModel.getLabels().add("label 2");
+        this.testModel.getLabels().add("label 3");
 
-        this.model.getIfaceOthers().add(this.createSpecialA(factory, firstOther));
-        this.model.getIfaceOthers().add(this.createSpecialB(factory));
+        final Other firstOther = this.createOther(storageFactory, "first other");
+        this.testModel.getOthers().add(firstOther);
+        this.testModel.getOthers().add(this.createOther(storageFactory, "second other"));
+
+        this.testModel.getIfaceOthers().add(this.createSpecialA(storageFactory, firstOther));
+        this.testModel.getIfaceOthers().add(this.createSpecialB(storageFactory));
 
         final Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
         map.put("*", new XMIResourceFactoryImpl());
 
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
-        final Resource resource = resourceSet.createResource(URI.createFileURI("storage-example.storage"));
-        resource.getContents().add(this.model);
-        resource.save(null);
-
-        this.clearGraph();
-    }
-
-    private void clearGraph() {
-        new ModelProvider<>(ECoreNeo4JTest.graph, "name", null).clearGraph();
+        try {
+            final ResourceSet resourceSet = new ResourceSetImpl();
+            resourceSet.setResourceFactoryRegistry(resourceRegistry);
+            final Resource resource = resourceSet.createResource(URI.createFileURI("storage-example.storage"));
+            resource.getContents().add(this.testModel);
+            resource.save(null);
+        } catch (final IOException e) {
+            Assert.fail(e.getLocalizedMessage());
+        }
     }
 
     private OtherInterface createSpecialB(final StorageFactory factory) {
@@ -134,15 +129,21 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreGraphCreate() {
-        final ModelProvider<Root> modelProvider = new ModelProvider<>(ECoreNeo4JTest.graph, "name", null);
+        final File graphDir = new File("./testdb/testStoreGraphCreate");
 
-        modelProvider.storeModelPartition(this.model);
+        this.removeDirectory(graphDir);
 
-        Assert.assertFalse(ECoreNeo4JTest.isGraphEmpty(modelProvider));
+        final Graph graph = new GraphLoader(graphDir).createModelGraph(StorageFactory.eINSTANCE);
+
+        final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
+
+        modelProvider.storeModelPartition(this.testModel);
+
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
         modelProvider.clearGraph();
 
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
 
     }
 
@@ -151,13 +152,19 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreGraphAndRead() {
-        final ModelProvider<Root> modelProvider = new ModelProvider<>(ECoreNeo4JTest.graph, "name", null);
+        final File graphDir = new File("./testdb/testStoreGraphAndRead");
 
-        modelProvider.storeModelPartition(this.model);
+        this.removeDirectory(graphDir);
+
+        final Graph graph = new GraphLoader(graphDir).createModelGraph(StorageFactory.eINSTANCE);
+
+        final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
+
+        modelProvider.storeModelPartition(this.testModel);
 
         final GraphDatabaseService service = modelProvider.getGraph().getGraphDatabaseService();
 
-        try (Transaction tx = ECoreNeo4JTest.graph.getGraphDatabaseService().beginTx()) {
+        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterable<Node> nodes = service.getAllNodes();
 
             for (final Node node : nodes) {
@@ -177,27 +184,58 @@ public class ECoreNeo4JTest {
             tx.success();
         }
 
-        final List<Root> readModel = modelProvider.readOnlyComponentByName(Root.class, this.model.getName());
+        final List<Root> readModel = modelProvider.readObjectsByName(Root.class, this.testModel.getName());
 
-        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel.get(0)));
     }
 
-    /**
-     * Checks whether the graph of a given {@link ModelProvider} is empty.
-     *
-     * @param modelProvider
-     *            A model provider, containing a graph
-     * @return True if the graph is empty, false otherwise
-     */
-    static boolean isGraphEmpty(final IModelProvider<Root> modelProvider) {
-        boolean isEmpty = false;
+    @Test
+    public void createThenCloneThenRead() {
+        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
 
-        try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
-            isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();
-            tx.success();
-        }
+        final ModelProvider<Root> storeModelProvider = new ModelProvider<>(storeGraph, "name", null);
 
-        return isEmpty;
+        storeModelProvider.storeModelPartition(this.testModel);
+        storeGraph.getGraphDatabaseService().shutdown();
+
+        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(StorageFactory.eINSTANCE);
+
+        final ModelProvider<Root> cloneModelProvider = new ModelProvider<>(cloneGraph, "name", null);
+
+        final Root clonedModel = cloneModelProvider.readRootNode(Root.class);
+        cloneGraph.getGraphDatabaseService().shutdown();
+
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
+    }
+
+    @Override
+    void createThenReadByType() {
+        Assert.assertTrue(true);
+    }
+
+    @Override
+    void createThenReadContaining() {
+        Assert.assertTrue(true);
+    }
+
+    @Override
+    void createThenReadReferencing() {
+        Assert.assertTrue(true);
+    }
+
+    @Override
+    void createThenUpdateThenReadUpdated() {
+        Assert.assertTrue(true);
+    }
+
+    @Override
+    void createThenDeleteObject() {
+        Assert.assertTrue(true);
+    }
+
+    @Override
+    void createThenDeleteObjectAndDatatypes() {
+        Assert.assertTrue(true);
     }
 
 }

@@ -88,10 +88,10 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     @Override
     protected void execute(final TraceMetadata event) {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
-                .readRootComponent(ResourceEnvironment.class);
+                .readRootNodeAndLock(ResourceEnvironment.class);
 
-        final System system = this.systemModelProvider.readOnlyRootComponent(System.class);
-        final Allocation allocation = this.allocationModelProvider.readOnlyRootComponent(Allocation.class);
+        final System system = this.systemModelProvider.readRootNode(System.class);
+        final Allocation allocation = this.allocationModelProvider.readRootNode(Allocation.class);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
@@ -102,7 +102,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class, resourceEnvironment);
+        this.resourceEnvironmentModelProvider.updateObject(ResourceEnvironment.class, resourceEnvironment);
     }
 
     /**

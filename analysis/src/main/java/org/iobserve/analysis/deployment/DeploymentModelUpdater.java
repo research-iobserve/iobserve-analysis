@@ -75,9 +75,9 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
-                .readOnlyComponentByName(AllocationContext.class, allocationContextName);
+                .readObjectsByName(AllocationContext.class, allocationContextName);
         if (allocationContext.isEmpty()) {
-            final Allocation allocationModel = this.allocationModelGraphProvider.readRootComponent(Allocation.class);
+            final Allocation allocationModel = this.allocationModelGraphProvider.readRootNodeAndLock(Allocation.class);
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
             newAllocationContext.setAssemblyContext_AllocationContext(event.getAssemblyContext());
@@ -85,7 +85,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
             this.allocationContextModelGraphProvider.storeModelPartition(newAllocationContext);
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
-            this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
+            this.allocationModelGraphProvider.updateObject(Allocation.class, allocationModel);
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);

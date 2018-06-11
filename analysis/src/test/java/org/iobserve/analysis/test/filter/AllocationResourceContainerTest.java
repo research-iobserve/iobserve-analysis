@@ -81,13 +81,13 @@ public class AllocationResourceContainerTest {
                 AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class))
+                .readRootNode(ResourceEnvironment.class))
                 .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         Mockito.when(
                 ResourceEnvironmentModelFactory.getResourceContainerByName(
                         AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                                .readOnlyRootComponent(ResourceEnvironment.class),
+                                .readRootNode(ResourceEnvironment.class),
                         ImplementationLevelDataFactory.SERVICE))
                 .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
     }

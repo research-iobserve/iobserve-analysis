@@ -47,7 +47,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    T readComponentById(Class<T> clazz, String id);
+    T readObjectByIdAndLock(Class<T> clazz, String id);
 
     /**
      * Reads components from the provider's model serialization by their entityName. Note that not
@@ -64,38 +64,37 @@ public interface IModelProvider<T extends EObject> {
     List<T> readComponentByName(Class<T> clazz, String entityName);
 
     /**
-     * Reads the ids of all components of a specified data type.
+     * Reads the ids of all objects of a specified data type.
      *
      * @param clazz
      *            The data type
      * @return List of ids of the specified data type
      */
-    List<String> readComponentByType(Class<T> clazz);
+    List<String> collectAllObjectIdsByType(Class<T> clazz);
 
     /**
-     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
-     * UsageModel.
+     * Reads the model partition root objects.
      *
      * @param clazz
      *            Data type of the root component
      * @return The read component
      */
-    T readRootComponent(Class<T> clazz);
+    T readRootNodeAndLock(Class<T> clazz);
 
     /**
-     * Updates a specified component in the the provider's model serialization.
+     * Update a the specified object in the the provider's model serialization.
      *
      * @param clazz
      *            Data type of component to be updated
-     * @param component
-     *            The new component
+     * @param object
+     *            The changed object
      */
-    void updateComponent(Class<T> clazz, T component);
+    void updateObject(Class<T> clazz, T object);
 
     /**
-     * Deletes a specified component from the provider's model serialization. This method only
-     * deletes a component and its containments but not the referenced data types which can result
-     * in unreferenced data type nodes in the graph when they were not contained by the deleted
+     * Deletes a specified object from the provider's model serialization. This method only deletes
+     * an object and its containments but not the referenced data types which can result in
+     * unreferenced data type nodes in the graph when they were not contained by the deleted
      * component. If data types shall not remain in the graph, use
      * {@link #deleteComponentAndDatatypes(Class, String)} instead.
      *
@@ -104,13 +103,13 @@ public interface IModelProvider<T extends EObject> {
      * @param id
      *            Id of component to be deleted
      */
-    void deleteComponent(Class<T> clazz, String id);
+    void deleteObjectById(Class<T> clazz, String id);
 
     /**
-     * Deletes a specified component from the provider's model serialization. This method also
-     * deletes data types which are referenced by the deleted component and not referenced by any
-     * other component. If data types shall possibly remain in the graph, use
-     * {@link #deleteComponent(Class, String)} instead.
+     * Deletes a specified object from the provider's model serialization. This method also deletes
+     * data types which are referenced by the deleted object and not referenced by any other object.
+     * If data types shall possibly remain in the graph, use
+     * {@link #deleteObjectById(Class, String)} instead.
      *
      * @param clazz
      *            Data type of component to be deleted
@@ -120,20 +119,19 @@ public interface IModelProvider<T extends EObject> {
      *            Force method to delete the specified component even if it is referenced as a data
      *            type or as a contained object
      */
-    void deleteComponentAndDatatypes(Class<T> clazz, String id, boolean forceDelete);
+    void deleteObjectByIdAndDatatypes(Class<T> clazz, String id, boolean forceDelete);
 
     /**
-     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
-     * UsageModel without locking the graph for other providers.
+     * Reads the models root objects without locking the graph for other providers.
      *
      * @param clazz
      *            Data type of the root component
      * @return The read component
      */
-    T readOnlyRootComponent(final Class<T> clazz);
+    T readRootNode(final Class<T> clazz);
 
     /**
-     * Reads a specified component from the provider's graph without locking it for other providers.
+     * Reads a specified object from the provider's graph without locking it for other providers.
      *
      * @param clazz
      *            Data type of component to be read
@@ -141,33 +139,33 @@ public interface IModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    T readOnlyComponentById(final Class<T> clazz, final String id);
+    T readObjectById(final Class<T> clazz, final String id);
 
     /**
-     * Reads components referencing to the specified component from the provider's graph without
-     * locking it for other providers.
+     * Reads object referencing the specified object from the provider's graph without locking it
+     * for other providers.
      *
      * @param clazz
-     *            Data type of the referenced component
+     *            Data type of the referenced object
      * @param id
-     *            Id of the referenced component
-     * @return The referencing components
+     *            Id of the referenced object
+     * @return The referencing objects
      */
     List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id);
 
     /**
-     * Reads components from the provider's graph by their entityName without locking it for other
+     * Reads objects from the provider's graph by their entityName without locking it for other
      * providers. Note that not all components in the PCM models have an entityName and that an
      * entityName doesn't need to be unique. If multiple components of the specified type have the
      * specified name, the returned list contains all of them.
      *
      * @param clazz
-     *            Data type of component(s) to be read
+     *            Data type of object(s) to be read
      * @param entityName
-     *            EntityName of the component(s) to be read
-     * @return List of the read component(s)
+     *            EntityName of the object(s) to be read
+     * @return List of the read object(s)
      */
-    List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName);
+    List<T> readObjectsByName(final Class<T> clazz, final String entityName);
 
     /**
      * Get underlying graph.

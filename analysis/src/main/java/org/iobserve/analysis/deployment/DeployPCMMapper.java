@@ -79,7 +79,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
         final String url = "http://" + service + '/' + urlContext;
 
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readOnlyComponentByName(AssemblyEntry.class, context);
+                .readObjectsByName(AssemblyEntry.class, context);
 
         if (assemblyEntry.size() == 1) {
             if (event instanceof Privacy_EJBDeployedEvent) {
@@ -106,7 +106,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
         final String url = "http://" + service + '/' + urlContext;
 
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readOnlyComponentByName(AssemblyEntry.class, context);
+                .readObjectsByName(AssemblyEntry.class, context);
 
         if (assemblyEntry.size() == 1) {
             if (event instanceof Privacy_ServletDeployedEvent) {

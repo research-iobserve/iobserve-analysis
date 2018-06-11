@@ -52,7 +52,7 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
     protected void execute(final PCMDeployedEvent element) throws Exception {
         // TODO this might be better implemented using query functions addressing RescourceContainer
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
-                .readRootComponent(ResourceEnvironment.class);
+                .readRootNodeAndLock(ResourceEnvironment.class);
         final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
 
         for (final ResourceContainer resContainer : resContainers) {

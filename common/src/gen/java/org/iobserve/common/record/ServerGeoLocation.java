@@ -91,7 +91,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
@@ -110,7 +110,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -138,7 +138,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -189,7 +189,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

@@ -15,20 +15,15 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -45,120 +40,45 @@ import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
  *
  * @since 0.0.2
  */
-public class ResourceEnvironmentModelProviderTest implements IModelProviderTest { // NOCS no
-                                                                                  // constructor in
-                                                                                  // test
-    private static final File GRAPH_DIR = new File("./testdb");
-
-    private static Graph graph = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
-            .createModelGraph(ResourceenvironmentFactory.eINSTANCE);
-
-    private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementModelProviderTest<ResourceEnvironment> { // NOCS
+    // no constructor in test
 
     @Override
     @Before
-    public void clearGraph() {
-        new ModelProvider<>(ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID).clearGraph();
+    public void setUp() {
+        this.testModel = new TestModelBuilder().getResourceEnvironment();
+        this.factory = ResourceenvironmentFactory.eINSTANCE;
+        this.clazz = ResourceEnvironment.class;
     }
 
-    @Override
-    @Test
-    public void createThenCloneThenRead() {
-        final ModelProvider<ResourceEnvironment> modelProvider1 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceEnvironment> modelProvider2;
-        final ResourceEnvironment inMemoryModel = new TestModelBuilder().getResourceEnvironment();
-        final ResourceEnvironment readModel;
-        final Graph graph2;
-
-        modelProvider1.storeModelPartition(inMemoryModel);
-
-        graph2 = modelProvider1.cloneNewGraphVersion(ResourceenvironmentFactory.eINSTANCE);
-        modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        readModel = modelProvider2.readOnlyRootComponent(ResourceEnvironment.class);
-        graph2.getGraphDatabaseService().shutdown();
-
-        Assert.assertTrue(this.equalityHelper.equals(inMemoryModel, readModel));
-    }
-
-    @Override
-    @Test
-    public void createThenClearGraph() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        modelProvider.clearGraph();
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @Override
-    @Test
-    public void createThenReadById() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
-        final ResourceContainer readContainer;
-
-        // Create complete model but only read a ResourceContainer, because ResourceEnvironment
-        // itself has no id
-        modelProvider.storeModelPartition(writtenModel);
-        readContainer = modelProvider2.readOnlyComponentById(ResourceContainer.class, writtenContainer.getId());
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenContainer, readContainer));
-    }
-
-    @Override
-    @Test
-    public void createThenReadByName() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        final List<ResourceEnvironment> readModels;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModels = modelProvider.readOnlyComponentByName(ResourceEnvironment.class, writtenModel.getEntityName());
-
-        Assert.assertTrue(readModels.size() == 1);
-
-        for (final ResourceEnvironment readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-        }
-    }
-
+    /**
+     * Create model, store then read by type.
+     */
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        final List<ResourceContainer> writtenContainers = writtenModel.getResourceContainer_ResourceEnvironment();
-        final List<String> readIds;
+        final Graph graph = this.prepareGraph("createThenReadByType");
+
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<ResourceContainer> modelProviderContainer = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+        final List<ResourceContainer> writtenContainers = this.testModel.getResourceContainer_ResourceEnvironment();
 
         // Create complete model but only read ResourceContainers because ResourceEnvironment itself
         // has no id
-        modelProvider.storeModelPartition(writtenModel);
-        readIds = modelProvider2.readComponentByType(ResourceContainer.class);
+        modelProvider.storeModelPartition(this.testModel);
 
-        Assert.assertTrue(readIds.size() == writtenContainers.size());
+        final List<String> collectedIds = modelProviderContainer.collectAllObjectIdsByType(ResourceContainer.class);
 
-        for (int i = 0; i < readIds.size(); i++) {
+        Assert.assertTrue(collectedIds.size() == writtenContainers.size());
+
+        for (int i = 0; i < collectedIds.size(); i++) {
             boolean foundEqualElem = false;
 
-            for (int j = 0; j < readIds.size(); j++) {
-                if (writtenContainers.get(i).getId().equals(readIds.get(j))) {
+            for (int j = 0; j < collectedIds.size(); j++) {
+                if (writtenContainers.get(i).getId().equals(collectedIds.get(j))) {
                     foundEqualElem = true;
                 }
             }
@@ -167,49 +87,44 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         }
     }
 
-    @Override
-    @Test
-    public void createThenReadRoot() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        final ResourceEnvironment readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-    }
-
+    /**
+     * Check whether containing references are handled correctly.
+     */
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
+        final Graph graph = this.prepareGraph("createThenReadContaining");
+
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+        final ResourceContainer writtenContainer = this.testModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceEnvironment readModel;
 
-        modelProvider.storeModelPartition(writtenModel);
+        modelProvider.storeModelPartition(this.testModel);
         readModel = (ResourceEnvironment) modelProvider.readOnlyContainingComponentById(ResourceContainer.class,
                 writtenContainer.getId());
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
 
+    /**
+     * Check is references are resolved correctly.
+     */
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final Graph graph = this.prepareGraph("createThenReadReferencing");
+
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
-        final List<EObject> readReferencingComponents;
 
-        modelProvider.storeModelPartition(writtenModel);
-
-        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(CommunicationLinkResourceType.class,
-                testModelBuilder.getLan1Type().getId());
+        final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
+                CommunicationLinkResourceType.class, testModelBuilder.getLan1Type().getId());
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
@@ -220,21 +135,26 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
     }
 
+    /**
+     * Test whether update works correctly.
+     */
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
+
         final ResourceContainer orderServer = testModelBuilder.getOrderServer();
         final LinkingResource writtenLan1 = testModelBuilder.getLan1();
-        final ResourceEnvironment readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
 
         // Update the model by replacing the orderServer by two separated servers
-        writtenModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
+        this.testModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
         writtenLan1.getConnectedResourceContainers_LinkingResource().remove(orderServer);
 
         final ResourceContainer businessOrderServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
@@ -244,7 +164,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 .createProcessingResourceType();
 
         businessOrderServer.setEntityName("businessOrderServer");
-        businessOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+        businessOrderServer.setResourceEnvironment_ResourceContainer(this.testModel);
         businessOrderServer.getActiveResourceSpecifications_ResourceContainer().add(businessOrderServerSpecification);
         businessOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(businessOrderServerType);
         businessOrderServerType.setEntityName("Cisco Business Server PRO");
@@ -256,93 +176,83 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 .createProcessingResourceType();
 
         privateOrderServer.setEntityName("privateOrderServer");
-        privateOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+        privateOrderServer.setResourceEnvironment_ResourceContainer(this.testModel);
         privateOrderServer.getActiveResourceSpecifications_ResourceContainer().add(privateOrderServerSpecification);
         privateOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(privateOrderServerType);
         privateOrderServerType.setEntityName("Lenovo High Load Server PRO");
 
-        writtenModel.getResourceContainer_ResourceEnvironment().add(businessOrderServer);
-        writtenModel.getResourceContainer_ResourceEnvironment().add(privateOrderServer);
+        this.testModel.getResourceContainer_ResourceEnvironment().add(businessOrderServer);
+        this.testModel.getResourceContainer_ResourceEnvironment().add(privateOrderServer);
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
 
-        modelProvider.updateComponent(ResourceEnvironment.class, writtenModel);
+        modelProvider.updateObject(ResourceEnvironment.class, this.testModel);
 
-        readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
+        final ResourceEnvironment readModel = modelProvider.readRootNode(ResourceEnvironment.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
 
-    @Override
+    /**
+     * Test whether deletions work correctly.
+     */
     @Test
-    public void createThenDeleteComponent() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
+    public void createThenDeleteObject() {
+        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
 
-        modelProvider.storeModelPartition(writtenModel);
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
+        modelProvider.storeModelPartition(this.testModel);
 
-        for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.graph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID).deleteComponent(LinkingResource.class,
-                            lr.getId());
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+
+        for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
+            new ModelProvider<LinkingResource>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                    .deleteObjectById(LinkingResource.class, lr.getId());
         }
 
-        for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.graph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID).deleteComponent(ResourceContainer.class,
-                            rc.getId());
+        for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
+            new ModelProvider<ResourceContainer>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                    .deleteObjectById(ResourceContainer.class, rc.getId());
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
         // no containments anywhere)
-        try (Transaction tx = ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().execute(
+        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
+            graph.getGraphDatabaseService().execute(
                     "MATCH (m:ResourceEnvironment), (n:ProcessingResourceType), (o:CommunicationLinkResourceType) DELETE n, m, o");
             tx.success();
         }
 
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @Override
-    @Test
-    public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.graph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                            .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
-        }
-
-        for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.graph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                            .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
-        }
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
     }
 
     /**
-     * Remove database directory.
-     *
-     * @throws IOException
-     *             When an error occurs while deleting
+     * Check whether object and data type deletions work.
      */
-    @AfterClass
-    public static void cleanUp() throws IOException {
-        ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().shutdown();
-        FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
+    @Test
+    public void createThenDeleteObjectAndDatatypes() {
+        final Graph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
+
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+
+        for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
+            new ModelProvider<LinkingResource>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                    .deleteObjectByIdAndDatatypes(LinkingResource.class, lr.getId(), true);
+        }
+
+        for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
+            new ModelProvider<ResourceContainer>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                    .deleteObjectByIdAndDatatypes(ResourceContainer.class, rc.getId(), true);
+        }
+
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
     }
 
 }

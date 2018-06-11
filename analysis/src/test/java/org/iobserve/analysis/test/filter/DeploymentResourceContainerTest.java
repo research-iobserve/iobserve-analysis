@@ -112,10 +112,10 @@ public class DeploymentResourceContainerTest {
         // .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
         Mockito.when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider
-                .readOnlyRootComponent(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
+                .readRootNode(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
 
         Mockito.when(DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class))
+                .readRootNode(ResourceEnvironment.class))
                 .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         // TODO fix this
@@ -140,7 +140,7 @@ public class DeploymentResourceContainerTest {
                 AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
 
         Mockito.doNothing().when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updateComponent(Allocation.class, AllocationDataFactory.ALLOCATION);
+                .updateObject(Allocation.class, AllocationDataFactory.ALLOCATION);
     }
 
     /**

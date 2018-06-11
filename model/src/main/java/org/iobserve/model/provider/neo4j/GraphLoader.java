@@ -62,14 +62,14 @@ public class GraphLoader {
     public <T extends EObject> Graph cloneNewModelGraphVersion(final EFactory factory) {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
-        final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
+        final int maxVersionNumber = GraphLoaderUtil.getNextVersionNumber(graphTypeDir.listFiles());
 
         final File newGraphDir = new File(graphTypeDir,
-                graphTypeDirName + GraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
+                graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber);
 
         // Copy old graph files
         if (maxVersionNumber > 0) {
-            final File currentGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
+            final File currentGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber - 1);
 
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
@@ -93,7 +93,7 @@ public class GraphLoader {
     public Graph createModelGraph(final EFactory factory) {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
-        final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
+        final int maxVersionNumber = GraphLoaderUtil.getNextVersionNumber(graphTypeDir.listFiles());
 
         final File newGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
 

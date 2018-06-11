@@ -63,7 +63,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerDeallocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ContainerDeallocationEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -78,7 +78,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerDeallocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ContainerDeallocationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -99,7 +99,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -144,7 +144,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

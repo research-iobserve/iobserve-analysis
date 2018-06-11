@@ -138,12 +138,12 @@ public class PrivacyWarner extends AbstractStage {
         final Graph g = new Graph();
 
         final Map<String, Vertice> vertices = new LinkedHashMap<>();
-        this.allocationRootElement = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
-        this.systemRootElement = this.systemModelGraphProvider.readOnlyRootComponent(System.class);
-        this.repositoryRootElement = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
+        this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
+        this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
+        this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
         this.resEnvRootElement = this.resourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class);
-        this.privacyRootElement = this.privacyModelGraphProvider.readOnlyRootComponent(PrivacyModel.class);
+                .readRootNode(ResourceEnvironment.class);
+        this.privacyRootElement = this.privacyModelGraphProvider.readRootNode(PrivacyModel.class);
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
                 this.systemModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -165,10 +165,10 @@ public class PrivacyWarner extends AbstractStage {
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
-                    .readOnlyComponentById(AssemblyContext.class, asc.getId());
+                    .readObjectById(AssemblyContext.class, asc.getId());
             final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
 
-            final BasicComponent bc = repositoryComponentModelProvider.readOnlyComponentById(BasicComponent.class,
+            final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class,
                     rc.getId());
             //
             for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
@@ -184,7 +184,7 @@ public class PrivacyWarner extends AbstractStage {
             g.addVertice(v);
             vertices.put(bc.getId(), v);
             // TODO Effizienter machen falls möglich
-            final ResourceContainer queryResource = resourceContainerModelProvider.readOnlyComponentById(
+            final ResourceContainer queryResource = resourceContainerModelProvider.readObjectById(
                     ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
 
             if (this.privacyRootElement != null) {
@@ -209,7 +209,7 @@ public class PrivacyWarner extends AbstractStage {
             this.print(geo.getIsocode().getName());
             final ResourceContainer tmp = geo.getResourceContainer();
             final String s = tmp.getId();
-            final ResourceContainer rc = resourceContainerModelProvider.readOnlyComponentById(ResourceContainer.class,
+            final ResourceContainer rc = resourceContainerModelProvider.readObjectById(ResourceContainer.class,
                     s);
         }
 

@@ -179,7 +179,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                     ModelProvider.PCM_ID);
 
             // get systemId
-            final System systemModel = systemModelProvider.readOnlyRootComponent(System.class);
+            final System systemModel = systemModelProvider.readRootNode(System.class);
 
             configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
 

@@ -87,7 +87,7 @@ public class AllocationNoResourceContainerTest {
                 AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class))
+                .readRootNode(ResourceEnvironment.class))
                 .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
@@ -99,7 +99,7 @@ public class AllocationNoResourceContainerTest {
                 .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER);
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateComponent(ResourceEnvironment.class, ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .updateObject(ResourceEnvironment.class, ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
     }
 
     /**

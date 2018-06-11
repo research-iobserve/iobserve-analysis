@@ -92,11 +92,11 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
         final String serverName = undeployment.getService();
 
         final String nodeId = this.resourceContainerModelGraphProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+                .readObjectsByName(ResourceContainer.class, serverName).get(0).getId();
 
         final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
+                .readObjectsByName(AssemblyContext.class, asmContextName).get(0);
 
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));

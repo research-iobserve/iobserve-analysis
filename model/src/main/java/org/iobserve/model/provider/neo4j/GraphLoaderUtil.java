@@ -36,7 +36,7 @@ public final class GraphLoaderUtil {
      *            The graph database directories
      * @return The highest version number
      */
-    public static int getMaxVersionNumber(final File[] files) {
+    public static int getNextVersionNumber(final File[] files) {
         int max = 0;
 
         if (files != null) {
@@ -47,6 +47,7 @@ public final class GraphLoaderUtil {
                     max = v;
                 }
             }
+            max++; // after detecting highest existing version add one
         }
 
         return max;
@@ -63,9 +64,10 @@ public final class GraphLoaderUtil {
         final int versionNumberIndex = file.getName().lastIndexOf(GraphLoader.VERSION_PREFIX);
 
         if (versionNumberIndex == -1) {
-            return 0;
+            throw new InternalError(
+                    "Missing version number in " + file + "  Every database path must have a version number.");
+        } else {
+            return Integer.valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
         }
-
-        return Integer.valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
     }
 }

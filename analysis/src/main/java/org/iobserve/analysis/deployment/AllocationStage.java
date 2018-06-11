@@ -96,17 +96,17 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
-                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
                         service);
 
         if (!resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
-                    .readOnlyRootComponent(ResourceEnvironment.class);
+                    .readRootNode(ResourceEnvironment.class);
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironmentModelGraph, service);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
-            this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
+            this.resourceEnvironmentModelGraphProvider.updateObject(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             /** signal allocation update. */

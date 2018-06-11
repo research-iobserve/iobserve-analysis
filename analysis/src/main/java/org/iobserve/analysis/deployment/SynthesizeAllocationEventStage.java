@@ -65,7 +65,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     @Override
     protected void execute(final PCMDeployedEvent event) throws Exception {
         final ResourceContainer resourceContainer = ResourceEnvironmentModelFactory.getResourceContainerByName(
-                this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
                 event.getService()).get();
 
         if (resourceContainer != null) {

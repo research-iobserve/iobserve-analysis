@@ -89,12 +89,12 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
     private JsonArray createData(final PCMDeployedEvent deployment) {
         final String serverName = deployment.getService();
         final String nodeId = this.resourceContainerModelProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+                .readObjectsByName(ResourceContainer.class, serverName).get(0).getId();
 
         final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
         final List<AssemblyContext> contexts = this.allocationModelProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName);
+                .readObjectsByName(AssemblyContext.class, asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
         final JsonObject serviceObject = Changelog

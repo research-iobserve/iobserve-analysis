@@ -33,7 +33,6 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
-import org.iobserve.model.privacy.PrivacyModel;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -41,11 +40,8 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
-import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,9 +74,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String ACCESSIBLE = "accessible";
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
-
-    private static final Class<?>[] ROOT_CLASSES = { Allocation.class, Repository.class, ResourceEnvironment.class,
-            System.class, UsageModel.class, PrivacyModel.class };
 
     private final Graph graph;
     private final String nameLabel;
@@ -180,7 +173,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     }
 
                 } else {
-                    if ((refObject != null) && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
+                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -206,7 +199,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     private Node createNodes(final EObject storeableObject, final Set<EObject> containmentsAndDatatypes,
             final Map<EObject, Node> objectsToCreatedNodes) {
-        java.lang.System.err.println("createNodes " + storeableObject + " " + containmentsAndDatatypes.size());
 
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(storeableObject.eClass()));
@@ -216,36 +208,24 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         // Check if node has already been created
         final EAttribute idAttr = storeableObject.eClass().getEIDAttribute();
         if (idAttr != null) {
-            java.lang.System.err.println("has id attribute " + idAttr);
             node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, storeableObject.eGet(idAttr));
         } else if (storeableObject instanceof PrimitiveDataType) {
-            java.lang.System.err.println("has no id attribute: can be class PrimitiveDataType check for " + label
-                    + " with " + ModelProvider.TYPE + " = " + ((PrimitiveDataType) storeableObject).getType().name());
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) storeableObject).getType().name());
-        } else if ((storeableObject instanceof UsageModel) || (storeableObject instanceof ResourceEnvironment)) {
-            java.lang.System.err
-                    .println("has no id attribute: can be class UsageModel or ResourceEnvironment check for "
-                            + storeableObject.eClass().getName());
+        } else if (storeableObject instanceof UsageModel || storeableObject instanceof ResourceEnvironment) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(storeableObject.eClass().getName()));
             if (nodes.hasNext()) {
                 node = nodes.next();
             }
         } else {
-            java.lang.System.err.println("has no id attribute and is not handled by a special rule.");
             // For components that cannot be found in the graph (e.g. due to missing id) but have
             // been created in this recursion
             node = objectsToCreatedNodes.get(storeableObject);
         }
 
-        java.lang.System.err.println("node is " + node);
-
         // If there is no node yet, create one
         if (node == null) {
-
-            java.lang.System.err.println("node not found, create one");
-
             node = this.graph.getGraphDatabaseService().createNode(label);
             objectsToCreatedNodes.put(storeableObject, node);
 
@@ -311,9 +291,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    public T readComponentById(final Class<T> clazz, final String id) {
+    public T readObjectByIdAndLock(final Class<T> clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyComponentById(clazz, id);
+        return this.readObjectById(clazz, id);
     }
 
     /**
@@ -327,7 +307,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T readOnlyComponentById(final Class<T> clazz, final String id) {
+    public T readObjectById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
 
         EObject component = null;
@@ -353,7 +333,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @Override
     public List<T> readComponentByName(final Class<T> clazz, final String entityName) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyComponentByName(clazz, entityName);
+        return this.readObjectsByName(clazz, entityName);
     }
 
     /**
@@ -370,7 +350,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName) {
+    public List<T> readObjectsByName(final Class<T> clazz, final String entityName) {
         final Label label = Label.label(clazz.getSimpleName());
         final List<T> nodes = new LinkedList<>();
 
@@ -561,7 +541,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     private void createManyValuesAttribute(final EObject component, final EAttribute attr,
             final Entry<String, Object> property) {
-        final List attribute = (List) component.eGet(attr);
+        @SuppressWarnings("unchecked")
+        final List<Object> attribute = (List<Object>) component.eGet(attr);
 
         final String valueString = property.getValue().toString();
 
@@ -607,8 +588,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByType(java.lang.Class)
      */
     @Override
-    public List<String> readComponentByType(final Class<T> clazz) {
-        java.lang.System.err.println(this.graph.getGraphDatabaseService());
+    public List<String> collectAllObjectIdsByType(final Class<T> clazz) {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(clazz.getSimpleName()));
@@ -630,55 +610,39 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readRootComponent(java.lang.Class)
      */
     @Override
-    public T readRootComponent(final Class<T> clazz) {
+    public T readRootNodeAndLock(final Class<T> clazz) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyRootComponent(clazz);
+        return this.readRootNode(clazz);
     }
 
     /**
-     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
-     * UsageModel without locking the graph for other providers.
+     * Reads the models (partition) root node and all contained classes without locking the graph
+     * for other providers.
      *
      * @param clazz
-     *            Data type of the root component
-     * @return The read component
+     *            Data type of the root object
+     * @return The read object
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T readOnlyRootComponent(final Class<T> clazz) {
-        EObject component = null;
+    public T readRootNode(final Class<T> clazz) {
+        EObject object = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
 
-            if (this.isRootClass(clazz)) {
+            final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
+                    .findNodes(Label.label(clazz.getSimpleName()));
+            if (nodes.hasNext()) {
+                final Node node = nodes.next();
 
-                final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                        .findNodes(Label.label(clazz.getSimpleName()));
-                if (nodes.hasNext()) {
-                    final Node node = nodes.next();
-                    java.lang.System.err.println("readOnlyRootComponent " + node);
-
-                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
-                            new HashSet<Node>());
-                    component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
-                }
-            } else {
-                ModelProvider.LOGGER.warn(
-                        "Passed type of readRootComponent(final Class<T> clazz) has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                        new HashSet<Node>());
+                object = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
 
             tx.success();
         }
 
-        return (T) component;
-    }
-
-    private boolean isRootClass(final Class<T> clazz) {
-        for (final Class<?> rootClass : ModelProvider.ROOT_CLASSES) {
-            if (rootClass.equals(clazz)) {
-                return true;
-            }
-        }
-        return false;
+        return (T) object;
     }
 
     /**
@@ -716,7 +680,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
-                java.lang.System.err.println("readOnlyContainingComponentById " + endNode);
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
                 component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -761,7 +724,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
-                java.lang.System.err.println("readOnlyReferencingComponentsById " + startNode);
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
@@ -781,7 +743,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
     @Override
-    public void updateComponent(final Class<T> clazz, final T component) {
+    public void updateObject(final Class<T> clazz, final T component) {
         ModelProviderSynchronizer.getLock(this);
 
         final EAttribute idAttr = component.eClass().getEIDAttribute();
@@ -796,7 +758,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
+        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
@@ -928,7 +890,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    public void deleteComponent(final Class<T> clazz, final String id) {
+    public void deleteObjectById(final Class<T> clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
 
         final Label label = Label.label(clazz.getSimpleName());
@@ -972,7 +934,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * String, boolean)
      */
     @Override
-    public void deleteComponentAndDatatypes(final Class<T> clazz, final String id, final boolean forceDelete) {
+    public void deleteObjectByIdAndDatatypes(final Class<T> clazz, final String id, final boolean forceDelete) {
         ModelProviderSynchronizer.getLock(this);
 
         final Label label = Label.label(clazz.getSimpleName());

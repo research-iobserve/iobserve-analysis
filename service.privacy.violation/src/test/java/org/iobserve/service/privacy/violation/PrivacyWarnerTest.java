@@ -106,7 +106,7 @@ public class PrivacyWarnerTest {
         final IModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-        final PrivacyModel model = privacyModelProvider.readOnlyRootComponent(PrivacyModel.class);
+        final PrivacyModel model = privacyModelProvider.readRootNode(PrivacyModel.class);
 
         java.lang.System.err.println(model.toString());
 

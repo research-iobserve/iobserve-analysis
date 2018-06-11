@@ -63,15 +63,15 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
         }
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
-                        this.resourceEnvironmentModelProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        this.resourceEnvironmentModelProvider.readRootNode(ResourceEnvironment.class),
                         service);
 
         if (resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelProvider
-                    .readOnlyRootComponent(ResourceEnvironment.class);
+                    .readRootNode(ResourceEnvironment.class);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().remove(resourceContainer.get());
-            this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class,
+            this.resourceEnvironmentModelProvider.updateObject(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             /** signal allocation update. */

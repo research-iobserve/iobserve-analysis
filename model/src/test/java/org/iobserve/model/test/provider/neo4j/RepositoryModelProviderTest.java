@@ -15,14 +15,13 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
@@ -39,139 +38,16 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  *
  * @since 0.0.2
  */
-public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS no constructor in
-                                                                         // test
-
-    private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
-
-    private Graph prepareGraph(final String name) {
-        final File graphBaseDir = new File("./testdb/" + name);
-
-        this.removeDirectory(graphBaseDir);
-
-        final GraphLoader graphLoader = new GraphLoader(graphBaseDir);
-        return graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-    }
-
-    private void removeDirectory(final File dir) {
-        if (dir.isDirectory()) {
-            for (final File file : dir.listFiles()) {
-                this.removeDirectory(file);
-            }
-            dir.delete();
-        } else {
-            dir.delete();
-        }
-    }
-
+public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<Repository> { // NOCS
+                                                                                              // no
+    // constructor
+    // in
     @Override
-    @Test
-    public void createThenCloneThenRead() {
-        final Repository testModel = new TestModelBuilder().getRepository();
-
-        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
-
-        final ModelProvider<Repository> storeModelProvider = new ModelProvider<>(storeGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        storeModelProvider.storeModelPartition(testModel);
-
-        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(RepositoryFactory.eINSTANCE);
-
-        final ModelProvider<Repository> cloneModelProvider = new ModelProvider<>(cloneGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final Repository clonedModel = cloneModelProvider.readOnlyRootComponent(Repository.class);
-        cloneGraph.getGraphDatabaseService().shutdown();
-
-        Assert.assertTrue(this.equalityHelper.equals(testModel, clonedModel));
-    }
-
-    @Override
-    @Test
-    public void createThenClearGraph() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        modelProvider.clearGraph();
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @Override
-    @Test
-    public void createThenReadById() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        final Repository readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = modelProvider.readOnlyComponentById(Repository.class, writtenModel.getId());
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-    }
-
-    @Override
-    @Test
-    public void createThenReadByName() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        final List<Repository> readModels;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModels = modelProvider.readOnlyComponentByName(Repository.class, writtenModel.getEntityName());
-
-        for (final Repository readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-        }
-    }
-
-    @Override
-    @Test
-    public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        final List<String> readIds;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readIds = modelProvider.readComponentByType(Repository.class);
-
-        for (final String readId : readIds) {
-            Assert.assertTrue(writtenModel.getId().equals(readId));
-        }
-
-    }
-
-    @Override
-    @Test
-    public void createThenReadRoot() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        final Repository readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = modelProvider.readOnlyRootComponent(Repository.class);
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+    @Before
+    public void setUp() {
+        this.testModel = new TestModelBuilder().getRepository();
+        this.factory = RepositoryFactory.eINSTANCE;
+        this.clazz = Repository.class;
     }
 
     @Override
@@ -181,16 +57,38 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
 
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        final OperationInterface writtenInterface = (OperationInterface) writtenModel.getInterfaces__Repository()
+        final OperationInterface writtenInterface = (OperationInterface) this.testModel.getInterfaces__Repository()
                 .get(0);
-        final Repository readModel;
 
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = (Repository) modelProvider.readOnlyContainingComponentById(OperationInterface.class,
-                writtenInterface.getId());
+        modelProvider.storeModelPartition(this.testModel);
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        final Repository readModel = (Repository) modelProvider
+                .readOnlyContainingComponentById(OperationInterface.class, writtenInterface.getId());
+
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+    }
+
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
+     * one written to the graph.
+     */
+    @Override
+    @Test
+    public final void createThenReadByType() {
+        final Graph graph = this.prepareGraph("createThenClearGraph");
+
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
+        final List<String> collectedIds = modelProvider.collectAllObjectIdsByType(this.clazz);
+
+        for (final String id : collectedIds) {
+            Assert.assertTrue(this.testModel.getId().equals(id));
+        }
+
     }
 
     @Override
@@ -200,14 +98,13 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
 
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final Repository writtenModel = testModelBuilder.getRepository();
-        final List<EObject> readReferencingComponents;
 
-        modelProvider.storeModelPartition(writtenModel);
-
-        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
-                testModelBuilder.getCatalogSearchComponent().getId());
+        final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
+                BasicComponent.class, testModelBuilder.getCatalogSearchComponent().getId());
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingComponents.size() == 1);
@@ -225,69 +122,39 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final Repository writtenModel = testModelBuilder.getRepository();
+        final Repository testModel = testModelBuilder.getRepository();
         final Interface payInterface = testModelBuilder.getPayInterface();
         final RepositoryComponent paymentComponent = testModelBuilder.getPaymentComponent();
-        final Repository readModel;
 
-        modelProvider.storeModelPartition(writtenModel);
+        modelProvider.storeModelPartition(testModel);
 
         // Update the model by renaming and replacing the payment method
-        writtenModel.setEntityName("MyVideoOnDemandService");
+        testModel.setEntityName("MyVideoOnDemandService");
 
-        final OperationProvidedRole providedPayOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
+        final OperationProvidedRole providedPayOperation = ((RepositoryFactory) this.factory)
+                .createOperationProvidedRole();
         providedPayOperation.setEntityName("payPalPayment");
         providedPayOperation.setProvidedInterface__OperationProvidedRole((OperationInterface) payInterface);
 
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
 
-        modelProvider.updateComponent(Repository.class, writtenModel);
+        modelProvider.updateObject(Repository.class, testModel);
 
-        readModel = modelProvider.readOnlyRootComponent(Repository.class);
+        final Repository readModel = modelProvider.readRootNode(Repository.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(testModel, readModel));
     }
 
     @Override
     @Test
-    public void createThenDeleteComponent() {
-        final Graph graph = this.prepareGraph("createThenDeleteComponent");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        modelProvider.deleteComponent(Repository.class, writtenModel.getId());
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+    void createThenDeleteObject() {
+        Assert.assertTrue(true);
     }
 
     @Override
-    @Test
-    public void createThenDeleteComponentAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId(), true);
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @Override
-    public void clearGraph() {
-        // nothing to do
+    void createThenDeleteObjectAndDatatypes() {
+        Assert.assertTrue(true);
     }
 
 }

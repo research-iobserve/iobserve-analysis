@@ -67,7 +67,7 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         final String context = event.getContext();
 
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readOnlyComponentByName(AssemblyEntry.class, context);
+                .readObjectsByName(AssemblyEntry.class, context);
 
         if (assemblyEntry.size() == 1) {
             this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));
@@ -85,7 +85,7 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         final String context = event.getContext();
 
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readOnlyComponentByName(AssemblyEntry.class, context);
+                .readObjectsByName(AssemblyEntry.class, context);
 
         if (assemblyEntry.size() == 1) {
             this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));

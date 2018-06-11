@@ -114,20 +114,20 @@ public final class InitializeDeploymentVisualization {
     public void initialize() throws IOException {
         // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+                .readRootNode(org.palladiosimulator.pcm.system.System.class);
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
 
         // set up the allocation model and take parts from it
-        final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
+        final List<String> allocationIds = this.allocationModelGraphProvider.collectAllObjectIdsByType(Allocation.class);
         // an allocation model contains exactly one allocation, therefore .get(0)
         final String allocationId = allocationIds.get(0);
-        final Allocation allocation = this.allocationModelGraphProvider.readOnlyComponentById(Allocation.class,
+        final Allocation allocation = this.allocationModelGraphProvider.readObjectById(Allocation.class,
                 allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
         // set up the resource environment model and take parts from it
         final ResourceEnvironment resourceEnvironmentModel = this.resourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class);
+                .readRootNode(ResourceEnvironment.class);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel

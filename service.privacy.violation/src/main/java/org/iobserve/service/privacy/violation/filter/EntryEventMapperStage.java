@@ -89,22 +89,22 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        final ComponentEntry componentEntry = this.componentEntryProvider.readOnlyComponentById(ComponentEntry.class,
+        final ComponentEntry componentEntry = this.componentEntryProvider.readObjectById(ComponentEntry.class,
                 event.getClassSignature());
         final OperationEntry operationEntry = this.operationSignatureEntryProvider
-                .readOnlyComponentById(OperationEntry.class, event.getOperationSignature());
+                .readObjectById(OperationEntry.class, event.getOperationSignature());
         final AllocationEntry allocationEntry = this.allocationEntryProvider
-                .readOnlyComponentById(AllocationEntry.class, event.getHostname());
+                .readObjectById(AllocationEntry.class, event.getHostname());
 
         /** retrieve PCM model elements from mapping. */
         final AllocationContext allocationContext = this.allocationContextProvider
-                .readOnlyComponentById(AllocationContext.class, allocationEntry.getAllocation().getId());
+                .readObjectById(AllocationContext.class, allocationEntry.getAllocation().getId());
         final OperationSignature operationSignature = this.operationSignatureProvider
-                .readComponentById(OperationSignature.class, operationEntry.getOperation().getId());
-        final RepositoryComponent component = this.componentProvider.readOnlyComponentById(RepositoryComponent.class,
+                .readObjectByIdAndLock(OperationSignature.class, operationEntry.getOperation().getId());
+        final RepositoryComponent component = this.componentProvider.readObjectById(RepositoryComponent.class,
                 componentEntry.getComponent().getId());
         /** assembly is inferred from allocation. */
-        final AssemblyContext assemblyContext = this.assemblyContextProvider.readOnlyComponentById(
+        final AssemblyContext assemblyContext = this.assemblyContextProvider.readObjectById(
                 AssemblyContext.class, allocationContext.getAssemblyContext_AllocationContext().getId());
 
         /** assemble event. */

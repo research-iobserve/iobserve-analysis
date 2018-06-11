@@ -82,7 +82,7 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.readComponentById(UsageModel.class, "0");
+            this.usageModelProvider.readObjectByIdAndLock(UsageModel.class, "0");
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

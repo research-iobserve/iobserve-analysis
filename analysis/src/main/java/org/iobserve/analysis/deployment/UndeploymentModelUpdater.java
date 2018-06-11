@@ -64,11 +64,11 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
-                .readOnlyComponentByName(AllocationContext.class, allocationContextName);
+                .readObjectsByName(AllocationContext.class, allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
-            this.allocationContextModelGraphProvider.deleteComponent(AllocationContext.class,
+            this.allocationContextModelGraphProvider.deleteObjectById(AllocationContext.class,
                     allocationContext.getId());
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {

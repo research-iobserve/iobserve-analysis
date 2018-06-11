@@ -15,21 +15,16 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
@@ -44,149 +39,70 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  * @since 0.0.2
  *
  */
-public class SystemModelProviderTest implements IModelProviderTest { // NOCS no constructor in test
-
-    private static final File GRAPH_DIR = new File("./testdb");
-
-    private static final Graph GRAPH = new GraphLoader(SystemModelProviderTest.GRAPH_DIR)
-            .createModelGraph(SystemFactory.eINSTANCE);
-
-    private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+public class SystemModelProviderTest extends AbstractEnityModelProviderTest<System> { // NOCS no
+                                                                                      // constructor
+                                                                                      // in test
 
     @Override
     @Before
-    public void clearGraph() {
-        new ModelProvider<>(SystemModelProviderTest.GRAPH, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                .clearGraph();
-    }
-
-    @Override
-    @Test
-    public void createThenCloneThenRead() {
-        final ModelProvider<System> modelProvider1 = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<System> modelProvider2;
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final System readModel;
-        final Graph graph2;
-
-        modelProvider1.storeModelPartition(writtenModel);
-
-        graph2 = modelProvider1.cloneNewGraphVersion(SystemFactory.eINSTANCE);
-        modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        readModel = modelProvider2.readOnlyRootComponent(System.class);
-        graph2.getGraphDatabaseService().shutdown();
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-    }
-
-    @Override
-    @Test
-    public void createThenClearGraph() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-
-        modelProvider.storeModelPartition(writtenModel);
-
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-
-        modelProvider.clearGraph();
-
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @Override
-    @Test
-    public void createThenReadById() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final System readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = modelProvider.readOnlyComponentById(System.class, writtenModel.getId());
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-    }
-
-    @Override
-    @Test
-    public void createThenReadByName() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final List<System> readModels;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModels = modelProvider.readOnlyComponentByName(System.class, writtenModel.getEntityName());
-
-        for (final System readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-        }
+    public void setUp() {
+        this.testModel = new TestModelBuilder().getSystem();
+        this.factory = SystemFactory.eINSTANCE;
+        this.clazz = System.class;
     }
 
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final List<String> readIds;
+        final Graph graph = this.prepareGraph("createThenReadByType");
 
-        modelProvider.storeModelPartition(writtenModel);
-        readIds = modelProvider.readComponentByType(System.class);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
 
-        for (final String readId : readIds) {
-            Assert.assertTrue(writtenModel.getId().equals(readId));
+        modelProvider.storeModelPartition(this.testModel);
+
+        final List<String> collectedIds = modelProvider.collectAllObjectIdsByType(System.class);
+
+        for (final String id : collectedIds) {
+            Assert.assertTrue(this.testModel.getId().equals(id));
         }
 
     }
 
     @Override
     @Test
-    public void createThenReadRoot() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final System readModel;
-
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = modelProvider.readOnlyRootComponent(System.class);
-
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
-    }
-
-    @Override
-    @Test
     public void createThenReadContaining() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        final System readModel;
-        final AssemblyContext ac = writtenModel.getAssemblyContexts__ComposedStructure().get(0);
+        final Graph graph = this.prepareGraph("createThenReadContaining");
 
-        modelProvider.storeModelPartition(writtenModel);
-        readModel = (System) modelProvider.readOnlyContainingComponentById(AssemblyContext.class, ac.getId());
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+        final AssemblyContext ac = this.testModel.getAssemblyContexts__ComposedStructure().get(0);
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        modelProvider.storeModelPartition(this.testModel);
+
+        final System readModel = (System) modelProvider.readOnlyContainingComponentById(AssemblyContext.class,
+                ac.getId());
+
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final Graph graph = this.prepareGraph("createThenReadByType");
+
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
+
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final System writtenModel = testModelBuilder.getSystem();
+
         final List<EObject> expectedReferencingComponents = new LinkedList<>();
         final List<EObject> readReferencingComponents;
 
         expectedReferencingComponents.add(testModelBuilder.getBusinessQueryInputConnector());
         expectedReferencingComponents.add(testModelBuilder.getBusinessPayConnector());
-
-        modelProvider.storeModelPartition(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
                 testModelBuilder.getBusinessOrderAssemblyContext().getId());
@@ -202,21 +118,22 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        final System writtenModel = testModelBuilder.getSystem();
-        final System readModel;
+        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
 
-        modelProvider.storeModelPartition(writtenModel);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
+
+        modelProvider.storeModelPartition(this.testModel);
 
         // Update the model by renaming and removing the business context
-        writtenModel.setEntityName("MyVideoOnDemandService");
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
 
-        writtenModel.getAssemblyContexts__ComposedStructure()
+        this.testModel.setEntityName("MyVideoOnDemandService");
+
+        this.testModel.getAssemblyContexts__ComposedStructure()
                 .remove(testModelBuilder.getBusinessOrderAssemblyContext());
-        writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
-        writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
+        this.testModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
+        this.testModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
 
         // Replace the business context by a context for groups of people placing an order
         final AssemblyContext sharedOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
@@ -238,66 +155,57 @@ public class SystemModelProviderTest implements IModelProviderTest { // NOCS no 
         sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(testModelBuilder.getPaymentAssemblyContext());
         sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
 
-        writtenModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
-        writtenModel.getConnectors__ComposedStructure().add(sharedQueryInputConnector);
-        writtenModel.getConnectors__ComposedStructure().add(sharedPayConnector);
+        this.testModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
+        this.testModel.getConnectors__ComposedStructure().add(sharedQueryInputConnector);
+        this.testModel.getConnectors__ComposedStructure().add(sharedPayConnector);
 
-        modelProvider.updateComponent(System.class, writtenModel);
+        modelProvider.updateObject(System.class, this.testModel);
 
-        readModel = modelProvider.readOnlyRootComponent(System.class);
+        final System readModel = modelProvider.readRootNode(System.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
 
     @Override
     @Test
-    public void createThenDeleteComponent() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+    public void createThenDeleteObject() {
+        final Graph graph = this.prepareGraph("createThenDeleteObject");
+
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
         final System writtenModel = new TestModelBuilder().getSystem();
 
         modelProvider.storeModelPartition(writtenModel);
 
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponent(System.class, writtenModel.getId());
+        modelProvider.deleteObjectById(System.class, writtenModel.getId());
 
         // Manually delete the proxy nodes from the repository model
-        try (Transaction tx = SystemModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            SystemModelProviderTest.GRAPH.getGraphDatabaseService()
+        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
+            graph.getGraphDatabaseService()
                     .execute("MATCH (n:OperationProvidedRole), (m:OperationRequiredRole) DELETE n, m");
             tx.success();
         }
 
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
     }
 
     @Override
     @Test
-    public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final System writtenModel = new TestModelBuilder().getSystem();
+    public void createThenDeleteObjectAndDatatypes() {
+        final Graph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
 
-        modelProvider.storeModelPartition(writtenModel);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
 
-        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
+        modelProvider.storeModelPartition(this.testModel);
 
-        modelProvider.deleteComponentAndDatatypes(System.class, writtenModel.getId(), true);
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
-        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
+        modelProvider.deleteObjectByIdAndDatatypes(System.class, this.testModel.getId(), true);
 
-    /**
-     * Remove database directory.
-     *
-     * @throws IOException
-     *             When an error occurs while deleting
-     */
-    @AfterClass
-    public static void cleanUp() throws IOException {
-        SystemModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
-        FileUtils.deleteRecursively(SystemModelProviderTest.GRAPH_DIR);
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
     }
 
 }

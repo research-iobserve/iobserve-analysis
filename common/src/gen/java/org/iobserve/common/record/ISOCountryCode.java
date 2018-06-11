@@ -22,7 +22,25 @@ package org.iobserve.common.record;
  * @since 0.0.3
  */
 public enum ISOCountryCode {
-	GERMANY,
-	USA,
-	EVIL_EMPIRE;
+	GERMANY(276),
+	USA(840),
+	EVIL_EMPIRE(1);
+	
+	private int value;
+		
+	private ISOCountryCode(final int value) {
+		this.value = value;
+	}
+		
+	public int getValue() {
+		return this.value;
+	}
+	
+	public static ISOCountryCode getEnum(final int value) {
+		for (final ISOCountryCode type : ISOCountryCode.values()) {
+			if (type.getValue() == value)
+				return type;
+		}
+		throw new RuntimeException("Illegal value for ISOCountryCode enumeration.");
+	}
 }
