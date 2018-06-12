@@ -36,21 +36,22 @@ public final class GraphLoaderUtil {
      *            The graph database directories
      * @return The highest version number
      */
-    public static int getNextVersionNumber(final File[] files) {
-        int max = 0;
-
+    public static int getLastVersionNumber(final File[] files) {
         if (files != null) {
-            for (final File file : files) {
-                final int v = GraphLoaderUtil.getVersionNumber(file);
+            int max = 0;
 
-                if (max < v) {
-                    max = v;
+            for (final File file : files) {
+                final int version = GraphLoaderUtil.getVersionNumber(file);
+
+                if (max < version) {
+                    max = version;
                 }
             }
-            max++; // after detecting highest existing version add one
+            return max;
+        } else {
+            return -1;
         }
 
-        return max;
     }
 
     /**

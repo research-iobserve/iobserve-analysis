@@ -140,6 +140,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(rootElement,
                     new HashSet<>());
 
+            for (final EObject o : containmentsAndDatatypes) {
+                System.err.println("> " + o.eClass().getInstanceTypeName());
+            }
+
             this.createNodes(rootElement, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
@@ -202,6 +206,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         // Create a label representing the type of the component
         final Label label = Label.label(storeableObject.eClass().getInstanceTypeName());
+        System.err.println("createNodes " + label.name());
         Node node = null;
 
         // TODO unnecessary complicated
@@ -613,6 +618,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T readRootNode(final Class<T> clazz) {
+        System.err.println("root node " + clazz.getCanonicalName());
         EObject object = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
 
