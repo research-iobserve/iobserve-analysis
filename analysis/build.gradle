@@ -3,18 +3,24 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
+project.ext {
+	aspectjVersion = '1.8.12'
+}
+
 mainClassName = 'org.iobserve.analysis.AnalysisMain'
 
 buildscript {
     repositories {
     	// SHADOW
     	jcenter()
+    	maven {url "https://plugins.gradle.org/m2/"}
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
         maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
     }
 
     dependencies {
-        classpath "nl.eveoh:gradle-aspectj:1.6"
+        //classpath "nl.eveoh:gradle-aspectj:1.6"
+        classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
     }
 }
@@ -43,6 +49,7 @@ dependencies {
 	compile 'commons-io:commons-io:2.5'
 	compile group: 'org.glassfish', name: 'javax.json', version: '1.1.2'
 	compile group: 'org.json', name: 'json', version: '20180130'
+	
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
