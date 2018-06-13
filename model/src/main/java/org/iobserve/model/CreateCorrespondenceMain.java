@@ -59,29 +59,34 @@ public final class CreateCorrespondenceMain {
         CreateCorrespondenceMain.NAME_MAPS.put("Assembly_OrderDatabase", "jpetstore-order-database");
 
         final String pcmDirectory = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-        final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
 
-        // final Repository repository = modelHandler.getRepositoryModel();
-        // final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
-        final System system = modelHandler.getSystemModel();
-        // final Allocation allocation = modelHandler.getAllocationModel();
+        try {
+            final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
 
-        final CorrespondenceModel correspondenceModel = CorrespondenceFactory.eINSTANCE.createCorrespondenceModel();
+            // final Repository repository = modelHandler.getRepositoryModel();
+            // final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
+            final System system = modelHandler.getSystemModel();
+            // final Allocation allocation = modelHandler.getAllocationModel();
 
-        final Part part = CorrespondenceFactory.eINSTANCE.createPart();
-        correspondenceModel.getParts().add(part);
+            final CorrespondenceModel correspondenceModel = CorrespondenceFactory.eINSTANCE.createCorrespondenceModel();
 
-        part.setModelType(system);
-        for (final AssemblyContext assembly : system.getAssemblyContexts__ComposedStructure()) {
-            final AssemblyEntry entry = CorrespondenceFactory.eINSTANCE.createAssemblyEntry();
-            final String value = CreateCorrespondenceMain.NAME_MAPS.get(assembly.getEntityName());
-            entry.setImplementationId(value);
-            entry.setAssembly(assembly);
-            part.getEntries().add(entry);
+            final Part part = CorrespondenceFactory.eINSTANCE.createPart();
+            correspondenceModel.getParts().add(part);
+
+            part.setModelType(system);
+            for (final AssemblyContext assembly : system.getAssemblyContexts__ComposedStructure()) {
+                final AssemblyEntry entry = CorrespondenceFactory.eINSTANCE.createAssemblyEntry();
+                final String value = CreateCorrespondenceMain.NAME_MAPS.get(assembly.getEntityName());
+                entry.setImplementationId(value);
+                entry.setAssembly(assembly);
+                part.getEntries().add(entry);
+            }
+
+            final URI outputURI = URI.createFileURI("/home/reiner/correspondence.rac");
+            CreateCorrespondenceMain.save(correspondenceModel, outputURI);
+        } catch (final IOException e) {
+            java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
         }
-
-        final URI outputURI = URI.createFileURI("/home/reiner/correspondence.rac");
-        CreateCorrespondenceMain.save(correspondenceModel, outputURI);
     }
 
     private static void save(final CorrespondenceModel correspondenceModel, final URI writeModelURI) {

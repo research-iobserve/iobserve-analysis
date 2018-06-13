@@ -19,6 +19,7 @@ import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.cost.costPackage;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * Model provider to provide a {@link CostRepository} model.
@@ -32,9 +33,12 @@ public class CostModelHandler extends AbstractModelHandler<CostRepository> {
 
     /**
      * Create a new provider with the given model file.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public CostModelHandler() {
-        super();
+    public CostModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

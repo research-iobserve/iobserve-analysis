@@ -206,7 +206,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         // Create a label representing the type of the component
         final Label label = Label.label(storeableObject.eClass().getInstanceTypeName());
-        System.err.println("createNodes " + label.name());
         Node node = null;
 
         // TODO unnecessary complicated
@@ -255,10 +254,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             if (containmentsAndDatatypes.contains(storeableObject)) {
 
                 for (final EReference ref : storeableObject.eClass().getEAllReferences()) {
-                    final Object refReprensation = storeableObject.eGet(ref);
+                    final Object refRepresentation = storeableObject.eGet(ref);
 
                     // 0..* refs are represented as a list and 1 refs are represented directly
-                    if (refReprensation instanceof EList<?>) {
+                    if (refRepresentation instanceof EList<?>) {
 
                         final EList<?> refs = (EList<?>) storeableObject.eGet(ref);
                         for (int i = 0; i < refs.size(); i++) {
@@ -272,11 +271,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                         }
                     } else {
-                        if (refReprensation != null) {
-                            final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
+                        if (refRepresentation != null) {
+                            final Node refNode = this.createNodes((EObject) refRepresentation, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
                             final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                                    ModelProviderUtil.getRelationshipType(ref, refRepresentation));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                             rel.setProperty(ModelProvider.REF_POS, 0);
 

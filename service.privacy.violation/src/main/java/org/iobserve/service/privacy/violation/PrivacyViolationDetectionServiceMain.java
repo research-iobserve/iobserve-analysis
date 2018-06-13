@@ -102,50 +102,50 @@ public final class PrivacyViolationDetectionServiceMain
             throws ConfigurationException {
 
         /** load models. */
-        final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
-        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
-
-        /** initialize database. */
-        graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
-                modelHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelHandler.getAllocationModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelHandler.getCorrespondenceModel(), null,
-                ModelProvider.IMPLEMENTATION_ID);
-        graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(), null,
-                ModelProvider.PCM_ID);
-
-        /** load neo4j graphs. */
-        final Graph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-        final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
-        final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
-        final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
-        final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
-        final Graph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
-
-        /** model provider. */
-        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
-                allocationModelGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemModelGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
         try {
+            final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
+            final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+
+            /** initialize database. */
+            graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
+                    modelHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelHandler.getAllocationModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelHandler.getCorrespondenceModel(),
+                    null, ModelProvider.IMPLEMENTATION_ID);
+            graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(), null,
+                    ModelProvider.PCM_ID);
+
+            /** load neo4j graphs. */
+            final Graph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+            final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+            final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+            final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
+            final Graph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
+
+            /** model provider. */
+            final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
+                    allocationModelGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+                    resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
             return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, correspondenceModelGraph,
                     repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
                     allocationContextModelProvider, systemModelProvider, privacyModelProvider, this.warningFile,

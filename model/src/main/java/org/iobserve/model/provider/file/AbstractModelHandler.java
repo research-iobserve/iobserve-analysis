@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.slf4j.Logger;
@@ -51,13 +50,22 @@ public abstract class AbstractModelHandler<T extends EObject> {
 
     private final Resource.Factory.Registry resourceRegistry;
 
+    private final ResourceSet resourceSet;
+
     /**
      * Create an abstract model handler.
+     *
+     * @param resourceSet
+     *            resource set for all models
      */
-    public AbstractModelHandler() {
+    public AbstractModelHandler(final ResourceSet resourceSet) {
+        this.resourceSet = resourceSet;
         this.resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = this.resourceRegistry.getExtensionToFactoryMap();
         map.put("*", new XMIResourceFactoryImpl());
+
+        this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
+
     }
 
     /**
@@ -69,10 +77,9 @@ public abstract class AbstractModelHandler<T extends EObject> {
      *            is the model to be stored
      */
     public final void save(final URI writeModelURI, final T model) {
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
+        this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
-        final Resource resource = resourceSet.createResource(writeModelURI.appendFileExtension(this.getSuffix()));
+        final Resource resource = this.resourceSet.createResource(writeModelURI.appendFileExtension(this.getSuffix()));
         resource.getContents().add(model);
         try {
             resource.save(null);
@@ -114,16 +121,13 @@ public abstract class AbstractModelHandler<T extends EObject> {
     public T load(final URI readModelURI) {
         this.getPackage().eClass();
 
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
-
-        final Resource resource = resourceSet.getResource(readModelURI, true);
+        final Resource resource = this.resourceSet.getResource(readModelURI, true);
         try {
-            resource.load(null);
+            resource.load(this.resourceSet.getLoadOptions());
         } catch (final IOException e) {
             AbstractModelHandler.LOGGER.error("Cannot load model from {}", readModelURI.toString());
         }
-        EcoreUtil.resolveAll(resourceSet);
+        EcoreUtil.resolveAll(this.resourceSet);
         T model = null;
         if (!resource.getContents().isEmpty()) {
             model = (T) resource.getContents().get(0);

@@ -63,18 +63,22 @@ public final class CreatePrivacyMain {
         CreatePrivacyMain.createPrivacyAnnotations();
 
         final String pcmDirectory = "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore";
-        final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
+        try {
+            final ModelImporter modelHandler = new ModelImporter(new File(pcmDirectory));
 
-        final Repository repository = modelHandler.getRepositoryModel();
-        final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
+            final Repository repository = modelHandler.getRepositoryModel();
+            final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
 
-        final PrivacyModel privacyModel = PrivacyFactory.eINSTANCE.createPrivacyModel();
+            final PrivacyModel privacyModel = PrivacyFactory.eINSTANCE.createPrivacyModel();
 
-        CreatePrivacyMain.addGeoLocations(privacyModel, environment);
-        CreatePrivacyMain.addPrivacyAnnotations(privacyModel, repository);
+            CreatePrivacyMain.addGeoLocations(privacyModel, environment);
+            CreatePrivacyMain.addPrivacyAnnotations(privacyModel, repository);
 
-        final URI outputURI = URI.createFileURI("/home/reiner/privacyTestModel.privacy");
-        CreatePrivacyMain.save(privacyModel, outputURI);
+            final URI outputURI = URI.createFileURI("/home/reiner/privacyTestModel.privacy");
+            CreatePrivacyMain.save(privacyModel, outputURI);
+        } catch (final IOException e) {
+            java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+        }
     }
 
     private static void createPrivacyAnnotations() {

@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 
@@ -31,9 +32,12 @@ public class CorrespondenceModelHandler extends AbstractModelHandler<Corresponde
 
     /**
      * Create usage model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public CorrespondenceModelHandler() {
-        super();
+    public CorrespondenceModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

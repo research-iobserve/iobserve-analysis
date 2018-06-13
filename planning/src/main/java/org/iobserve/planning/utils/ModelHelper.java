@@ -261,9 +261,10 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler().save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX),
-                environment);
-        new CostModelHandler().save(writeURI.appendFileExtension(CostModelHandler.SUFFIX), costRepositoryModel);
+        new ResourceEnvironmentModelHandler(modelHandler.getResourceSet())
+                .save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX), environment);
+        new CostModelHandler(modelHandler.getResourceSet()).save(writeURI.appendFileExtension(CostModelHandler.SUFFIX),
+                costRepositoryModel);
     }
 
     /**

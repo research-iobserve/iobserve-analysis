@@ -135,57 +135,64 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
         /** Configure model handling. */
         if (this.pcmFeature) {
-            final ModelImporter modelFileHandler = new ModelImporter(this.modelInitDirectory);
+            try {
+                final ModelImporter modelFileHandler = new ModelImporter(this.modelInitDirectory);
 
-            /** initialize neo4j graphs. */
-            final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+                /** initialize neo4j graphs. */
+                final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-            graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelFileHandler.getRepositoryModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
-                    modelFileHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelFileHandler.getAllocationModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelFileHandler.getSystemModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            // graphLoader.initializeModelGraph(UsageModel.class, modelFileHandler.getUsageModel(),
-            // ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelFileHandler.getCorrespondenceModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelFileHandler.getRepositoryModel(),
+                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
+                        modelFileHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
+                graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelFileHandler.getAllocationModel(),
+                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelFileHandler.getSystemModel(),
+                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                // graphLoader.initializeModelGraph(UsageModel.class,
+                // modelFileHandler.getUsageModel(),
+                // ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE,
+                        modelFileHandler.getCorrespondenceModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-            /** load neo4j graphs. */
-            final Graph repositoryModelGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-            final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
-            final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
-            final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
-            final Graph usageModelGraph = graphLoader.createModelGraph(UsagemodelFactory.eINSTANCE);
-            final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
+                /** load neo4j graphs. */
+                final Graph repositoryModelGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+                final Graph resourceEnvironmentGraph = graphLoader
+                        .createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+                final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+                final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+                final Graph usageModelGraph = graphLoader.createModelGraph(UsagemodelFactory.eINSTANCE);
+                final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
 
-            /** new graphModelProvider. */
-            repositoryModelProvider = new ModelProvider<>(repositoryModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            resourceEnvironmentModelProvider = new ModelProvider<>(resourceEnvironmentGraph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            allocationModelProvider = new ModelProvider<>(allocationModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            allocationContextModelProvider = new ModelProvider<>(allocationModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            systemModelProvider = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            assemblyContextProvicer = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
-            usageModelProvider = new ModelProvider<>(usageModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                    ModelProvider.PCM_ID);
+                /** new graphModelProvider. */
+                repositoryModelProvider = new ModelProvider<>(repositoryModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
+                resourceEnvironmentModelProvider = new ModelProvider<>(resourceEnvironmentGraph,
+                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                allocationModelProvider = new ModelProvider<>(allocationModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
+                allocationContextModelProvider = new ModelProvider<>(allocationModelGraph,
+                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                systemModelProvider = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
+                assemblyContextProvicer = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
+                usageModelProvider = new ModelProvider<>(usageModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                        ModelProvider.PCM_ID);
 
-            // get systemId
-            final System systemModel = systemModelProvider.readRootNode(System.class);
+                // get systemId
+                final System systemModel = systemModelProvider.readRootNode(System.class);
 
-            configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
+                configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
 
-            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,
-                    correspondenceModelGraph);
+                return new AnalysisConfiguration(configuration, repositoryModelProvider,
+                        resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider,
+                        systemModelProvider, usageModelProvider, correspondenceModelGraph);
+            } catch (final IOException e) {
+                java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+                return null;
+            }
         } else {
             return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
                     allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,

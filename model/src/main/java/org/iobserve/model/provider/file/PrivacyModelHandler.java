@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.system.System;
@@ -33,9 +34,12 @@ public final class PrivacyModelHandler extends AbstractModelHandler<PrivacyModel
 
     /**
      * Create an empty model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public PrivacyModelHandler() {
-        super();
+    public PrivacyModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

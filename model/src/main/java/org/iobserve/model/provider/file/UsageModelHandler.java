@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
@@ -33,9 +34,12 @@ public final class UsageModelHandler extends AbstractModelHandler<UsageModel> {
 
     /**
      * Create usage model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public UsageModelHandler() {
-        super();
+    public UsageModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

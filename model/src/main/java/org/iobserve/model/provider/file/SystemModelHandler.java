@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
@@ -32,9 +33,12 @@ public final class SystemModelHandler extends AbstractModelHandler<System> {
 
     /**
      * Create an empty model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public SystemModelHandler() {
-        super();
+    public SystemModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

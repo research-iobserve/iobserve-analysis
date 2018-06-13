@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
@@ -33,9 +34,12 @@ public final class AllocationModelHandler extends AbstractModelHandler<Allocatio
 
     /**
      * Create an uninitialized empty provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public AllocationModelHandler() {
-        super();
+    public AllocationModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

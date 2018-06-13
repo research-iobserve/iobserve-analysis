@@ -24,6 +24,8 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
@@ -51,6 +53,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public final class ModelHelper {
 
     private static final String INTERNET_LINKING_RESOURCE_NAME = "Internet";
+
+    private static final ResourceSet resourceSet = new ResourceSetImpl();
 
     private ModelHelper() {
     }
@@ -261,9 +265,10 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler().save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX),
-                environment);
-        new CostModelHandler().save(writeURI.appendFileExtension(CostModelHandler.SUFFIX), costRepositoryModel);
+        new ResourceEnvironmentModelHandler(ModelHelper.resourceSet)
+                .save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX), environment);
+        new CostModelHandler(ModelHelper.resourceSet).save(writeURI.appendFileExtension(CostModelHandler.SUFFIX),
+                costRepositoryModel);
     }
 
     /**

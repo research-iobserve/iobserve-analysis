@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -33,9 +34,12 @@ public class ResourceEnvironmentModelHandler extends AbstractModelHandler<Resour
 
     /**
      * Create an empty resource environment model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public ResourceEnvironmentModelHandler() {
-        super();
+    public ResourceEnvironmentModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override

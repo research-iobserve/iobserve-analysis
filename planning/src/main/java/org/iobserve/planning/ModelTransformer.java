@@ -81,8 +81,9 @@ public class ModelTransformer {
      *
      * @param planningData
      *            input data
+     * @throws IOException
      */
-    public ModelTransformer(final PlanningData planningData) {
+    public ModelTransformer(final PlanningData planningData) throws IOException {
         this.planningData = planningData;
         final String originalModelDir = planningData.getOriginalModelDir().toFileString();
         final File directory = new File(originalModelDir);
@@ -175,10 +176,13 @@ public class ModelTransformer {
     }
 
     private void saveModels() {
-        new DesignDecisionModelHandler().save(this.processedModelDir, this.decisionModel);
-        new AllocationModelHandler().save(this.processedModelDir, this.allocationModel);
-        new CostModelHandler().save(this.processedModelDir, this.costModel);
-        new ResourceEnvironmentModelHandler().save(this.processedModelDir, this.resourceEnvironmentModel);
+        new DesignDecisionModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
+                this.decisionModel);
+        new AllocationModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
+                this.allocationModel);
+        new CostModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir, this.costModel);
+        new ResourceEnvironmentModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
+                this.resourceEnvironmentModel);
     }
 
     private void createResourcesAndReplicationDegrees(final AllocationGroup allocationGroup)
