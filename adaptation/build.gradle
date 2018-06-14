@@ -44,6 +44,8 @@ test {
   include '**/service/suites/*'
   exclude '**/service/services/*'
   exclude '**/service/updater/*'
+  exclude '**/*$*' // otherwise clover fails with initialization error
+  exclude '**/*ActionComputationTestConfig*' // otherwise clover fails with initialization error
 }
 
 install {
