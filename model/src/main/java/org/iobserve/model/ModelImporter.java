@@ -64,7 +64,7 @@ public final class ModelImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelImporter.class);
 
-    final ResourceSet resourceSet = new ResourceSetImpl();
+    private final ResourceSet resourceSet = new ResourceSetImpl();
 
     private final Repository repositoryModel;
     private final Allocation allocationModel;

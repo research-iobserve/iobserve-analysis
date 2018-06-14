@@ -51,24 +51,36 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  *
  */
 public class PrivacyWarnerIntegrationTest {
-    private static final String PCM_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
-    private static final String MODEL_DATABASE_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
+    // pcm "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
+    // db "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
 
-    // private static final String PCM_DIRECTORY_PATH =
-    // "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
-    // private static final String MODEL_DATABASE_DIRECTORY_PATH =
-    // "D:/Experiment/distributed-jpetstore-experiment/db";
+    // pcm "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    // db "D:/Experiment/distributed-jpetstore-experiment/db";
 
-    private final File pcmDirectory = new File(PrivacyWarnerIntegrationTest.PCM_DIRECTORY_PATH);
-    private final File modelDatabaseDirectory = new File(PrivacyWarnerIntegrationTest.MODEL_DATABASE_DIRECTORY_PATH);
+    private final File pcmDirectory;
+    private final File modelDatabaseDirectory;
 
     private PrivacyWarner pw;
 
     /**
      * Default constructor.
+     *
+     * @param database
+     *            database directory
+     * @param model
+     *            model directory
+     * @throws IOException
+     *             when directories do not exist
      */
-    public PrivacyWarnerIntegrationTest() {
-        // nothing to do here for now.
+    public PrivacyWarnerIntegrationTest(final String model, final String database) throws IOException {
+        this.pcmDirectory = new File(model);
+        if (!this.pcmDirectory.isDirectory()) {
+            throw new IOException(model + " is not a directory.");
+        }
+        this.modelDatabaseDirectory = new File(database);
+        if (!this.modelDatabaseDirectory.isDirectory()) {
+            throw new IOException(database + " is not a directory.");
+        }
     }
 
     /**
@@ -76,11 +88,17 @@ public class PrivacyWarnerIntegrationTest {
      *
      * @param args
      *            command line arguments
+     * @throws IOException
+     *             on io errors
      */
-    public void main(final String[] args) {
-        final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest();
-        test.initializePW();
-        test.testPW();
+    public static void main(final String[] args) throws IOException {
+        if (args.length == 2) {
+            final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest(args[0], args[1]);
+            test.initializePW();
+            test.testPW();
+        } else {
+            java.lang.System.err.println("Usage: warner <initialization-model> <database-directory>");
+        }
     }
 
     /**
