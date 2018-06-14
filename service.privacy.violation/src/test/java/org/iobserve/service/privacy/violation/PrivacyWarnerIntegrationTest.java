@@ -35,8 +35,6 @@ import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.stages.data.Warnings;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -52,7 +50,7 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  * @author Clemens Brackmann
  *
  */
-public class PrivacyWarnerTest {
+public class PrivacyWarnerIntegrationTest {
     private static final String PCM_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
     private static final String MODEL_DATABASE_DIRECTORY_PATH = "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
 
@@ -61,15 +59,33 @@ public class PrivacyWarnerTest {
     // private static final String MODEL_DATABASE_DIRECTORY_PATH =
     // "D:/Experiment/distributed-jpetstore-experiment/db";
 
-    private final File pcmDirectory = new File(PrivacyWarnerTest.PCM_DIRECTORY_PATH);
-    private final File modelDatabaseDirectory = new File(PrivacyWarnerTest.MODEL_DATABASE_DIRECTORY_PATH);
+    private final File pcmDirectory = new File(PrivacyWarnerIntegrationTest.PCM_DIRECTORY_PATH);
+    private final File modelDatabaseDirectory = new File(PrivacyWarnerIntegrationTest.MODEL_DATABASE_DIRECTORY_PATH);
 
     private PrivacyWarner pw;
 
     /**
+     * Default constructor.
+     */
+    public PrivacyWarnerIntegrationTest() {
+        // nothing to do here for now.
+    }
+
+    /**
+     * Entry point into integration test.
+     *
+     * @param args
+     *            command line arguments
+     */
+    public void main(final String[] args) {
+        final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest();
+        test.initializePW();
+        test.testPW();
+    }
+
+    /**
      * Initialize database.
      */
-    @Before
     public void initializePW() {
         this.clearDirectory(this.modelDatabaseDirectory);
         this.modelDatabaseDirectory.mkdirs();
@@ -137,7 +153,6 @@ public class PrivacyWarnerTest {
     /**
      * Test run component.
      */
-    @Test
     public void testPW() {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
         assemblyContext.setEntityName("EntityName");
