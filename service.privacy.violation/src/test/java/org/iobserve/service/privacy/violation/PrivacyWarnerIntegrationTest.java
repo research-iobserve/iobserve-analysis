@@ -31,8 +31,6 @@ import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.stages.data.Warnings;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
@@ -43,7 +41,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Clemens Brackmann
  *
  */
-public class PrivacyWarnerTest {
+public class PrivacyWarnerIntegrationTest {
     private final File pcmDirectory = new File(
             "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore");
 
@@ -53,9 +51,27 @@ public class PrivacyWarnerTest {
     private PrivacyWarner pw;
 
     /**
+     * Default constructor.
+     */
+    public PrivacyWarnerIntegrationTest() {
+        // nothing to do here for now.
+    }
+
+    /**
+     * Entry point into integration test.
+     *
+     * @param args
+     *            command line arguments
+     */
+    public void main(final String[] args) {
+        final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest();
+        test.initializePW();
+        test.testPW();
+    }
+
+    /**
      * Initialize database.
      */
-    @Before
     public void initializePW() {
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
@@ -89,7 +105,6 @@ public class PrivacyWarnerTest {
     /**
      * Test run component.
      */
-    @Test
     public void testPW() {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
         assemblyContext.setEntityName("EntityName");
