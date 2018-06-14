@@ -606,18 +606,18 @@ eclipseResourceFilters {
 // Setup a headless launch //
 /////////////////////////////
 apply plugin: 'com.diffplug.gradle.equinoxlaunch'
+
+// Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
 equinoxLaunch {
 	codegenSetup {
 		source.addProject(project(':peropteryx.rcp'))
-		//source.addMaven('com.google.guava:guava:17.0')
-		//source.addMaven('com.google.guava:guava:18.0')
 		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
-    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
-    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')
-    	source.addMaven('extra:org.apache.batik.css:1.8.0.v20170214-1941')
+	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
+	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')
+	    	source.addMaven('extra:org.apache.batik.css:1.8.0.v20170214-1941')
 		source.addMaven('extra:org.apache.batik.util:1.7.0.v201011041433')
-    	source.addMaven('extra:org.apache.batik.util:1.8.0.v20170214-1941')
-    	source.addMaven('extra:org.apache.batik.util.gui:1.7.0.v200903091627')
-    	source.addMaven('extra:org.apache.batik.util.gui:1.8.0.v20170214-1941')
+	    	source.addMaven('extra:org.apache.batik.util:1.8.0.v20170214-1941')
+	    	source.addMaven('extra:org.apache.batik.util.gui:1.7.0.v200903091627')
+	    	source.addMaven('extra:org.apache.batik.util.gui:1.8.0.v20170214-1941')
 	}
 }

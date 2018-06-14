@@ -42,12 +42,13 @@ bundles.group = 'Build'
 bundles.description = 'Converts maven dependencies into OSGi bundles.'
 
 dependencies {
-	// Gradle kicks out all but the newest, and we need both 18 and 17
-	// platformaux 'com.google.guava:guava:17.0'
+	// Gradle kicks out all but the newest version of a dependency. Specify the older version(s) here if
+	// multiple versions of a dependency are required and specified in ../build.gradle
     platformaux 'extra:org.antlr.runtime:3.2.0.v201101311130'
     platformaux 'extra:org.apache.batik.css:1.7.0.v201011041433'
 	platformaux 'extra:org.apache.batik.util:1.7.0.v201011041433'
     platformaux 'extra:org.apache.batik.util.gui:1.7.0.v200903091627'
+	
 	// RxJava wants sun.misc
 	// platformaux 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
 }
