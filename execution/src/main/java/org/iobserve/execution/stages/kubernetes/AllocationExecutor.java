@@ -104,10 +104,6 @@ public class AllocationExecutor extends AbstractExecutor<AllocateNodeAction> {
                 /*--------------------*/ .withName("LOGGER") //
                 /*--------------------*/ .withValue("%LOGGER%") //
                 /*----------------*/ .endEnv() //
-                // /*----------------*/ .addNewEnv() //
-                // /*--------------------*/ .withName("JPETSTORE_DOMAIN") //
-                // /*--------------------*/ .withValue(".jpetstore") //
-                // /*----------------*/ .endEnv() //
                 /*------------*/ .endContainer() //
                 /*--------*/ .endSpec() //
                 /*----*/ .endTemplate() //

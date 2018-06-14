@@ -35,7 +35,6 @@ public class ModelOptimization extends AbstractConsumerStage<File> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelOptimization.class);
 
     private static final int EXEC_SUCCESS = 0;
-    private static final String REDEPLOYMENT_MODEL_FOLDER = "redeploymentModel";
 
     private final OutputPort<File> runtimeModelOutputPort = this.createOutputPort();
     private final OutputPort<File> redeploymentModelOutputPort = this.createOutputPort();

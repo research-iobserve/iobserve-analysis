@@ -55,7 +55,7 @@ public class ComposedActionComputationTest {
     private AdaptationTestModel redeploymentModel;
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public ComposedActionComputationTest() {
         // empty default constructor

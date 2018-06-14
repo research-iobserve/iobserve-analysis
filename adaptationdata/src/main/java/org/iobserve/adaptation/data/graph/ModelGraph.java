@@ -46,7 +46,7 @@ public class ModelGraph {
      * @param components
      *            list of component nodes
      * @param pcmModels
-     *            all PCM models TODO only use those models which are really necessary
+     *            all PCM models
      * @param revision
      *            the model graph's revision
      */

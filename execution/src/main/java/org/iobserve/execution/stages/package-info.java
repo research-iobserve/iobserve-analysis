@@ -13,30 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.stages.kubernetes;
-
-import java.util.Locale;
-
-import org.iobserve.adaptation.executionplan.AtomicAction;
-import org.iobserve.execution.stages.IExecutor;
-
-/**
- *
- * @author Lars Bluemke
- *
- * @param <T>
- */
-public abstract class AbstractExecutor<T extends AtomicAction> implements IExecutor<T> {
-
-    /**
-     * Normalizes component names to conform to the kubernetes standard which uses this regex for
-     * validation: '[a-z0-9]([-a-z0-9]*[a-z0-9])?').
-     *
-     * @param componentName
-     *            The component's original name
-     * @return The normalized name
-     */
-    protected String normalizeComponentName(final String componentName) {
-        return componentName.toLowerCase(Locale.ENGLISH).replaceAll("[^a-z0-9\\-]", "");
-    }
-}
+package org.iobserve.execution.stages;

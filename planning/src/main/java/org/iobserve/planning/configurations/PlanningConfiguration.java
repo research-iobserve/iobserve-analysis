@@ -71,6 +71,11 @@ public class PlanningConfiguration extends Configuration {
         tcpReader = new SingleConnectionTcpReaderStage(runtimeModelInputPort, runtimeModelDirectory);
         modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
         modelPreProcessor = new ModelProcessing();
+        runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        runtimeTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationRuntimeModelInputPort);
+        redeploymentTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname,
+                adaptationRedeploymentModelInputPort);
 
         if ((perOpteryxHeadlessDir != null) && (lqnsDir != null)) {
             modelOptimizer = new ModelOptimization(perOpteryxHeadlessDir, lqnsDir, redeploymentModelDirectory);
@@ -78,12 +83,6 @@ public class PlanningConfiguration extends Configuration {
             throw new IllegalArgumentException(
                     "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");
         }
-
-        runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
-        redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
-        runtimeTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationRuntimeModelInputPort);
-        redeploymentTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname,
-                adaptationRedeploymentModelInputPort);
 
         this.connectPorts(tcpReader.getOutputPort(), modelFilesCollector.getInputPort());
         this.connectPorts(modelFilesCollector.getOutputPort(), modelPreProcessor.getInputPort());
