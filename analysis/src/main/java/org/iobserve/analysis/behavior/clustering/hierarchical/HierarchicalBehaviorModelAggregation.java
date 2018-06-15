@@ -31,7 +31,7 @@ import weka.core.Instances;
  *
  */
 public class HierarchicalBehaviorModelAggregation extends CompositeStage {
-    private final VectorQuantizationClusteringStage clustering;
+    //private final VectorQuantizationClusteringStage clustering;
 
     /**
      * Constructor configuration of the aggregation filters.
@@ -48,16 +48,16 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
         final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
         // NEED HierarchicalClusteringStage in analysis.behavior.filter
-        this.clustering = new HierarchicalClusteringStage(new HierarchicalClustering()); // Arguments
+        //this.clustering = new HierarchicalClusteringStage(new HierarchicalClustering()); // Arguments
                                                                                          // may be
                                                                                          // necessary
-        this.connectPorts(this.clustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
+        //this.connectPorts(this.clustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */
-        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl,
-                signatureCreationStrategy);
+        //final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl,
+        //        signatureCreationStrategy);
 
-        this.connectPorts(behaviorModelCreationStage.getOutputPort(), tIObserveUBM.getInputPort());
+        //this.connectPorts(behaviorModelCreationStage.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**
