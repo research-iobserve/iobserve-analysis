@@ -533,6 +533,14 @@ configure(subprojects.findAll(IS_PLUGIN)) {
 	sourceCompatibility = VER_JAVA
 	targetCompatibility = VER_JAVA
 
+	// Add SWT and the appropriate platform-native SWT for building and testing
+	// (We removed the dependencies resolved from p2 repository with goomph because they inconsistently caused 
+	// build failures. However, they will be needed to export an peropteryx product with goomph)
+	// dependencies {
+	//	compile "eclipse-deps:org.eclipse.swt:+"
+	//	compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
+	// }
+
 	//////////
 	// OSGI //
 	//////////
