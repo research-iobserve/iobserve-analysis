@@ -18,6 +18,7 @@ package org.iobserve.monitoring.probe.servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy_ServletDeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 
@@ -50,7 +51,7 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
         final String countryCode = servletContext.getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
 
         this.monitoringCtrl.newMonitoringRecord(new Privacy_ServletDeployedEvent(this.timeSource.getTime(), service,
-                context, deploymentId, Short.valueOf(countryCode)));
+                context, deploymentId, ISOCountryCode.getEnum(Short.valueOf(countryCode))));
     }
 
     @Override

@@ -176,7 +176,7 @@ public final class ConfigurationKeys {
     public static final String SINGLE_EVENT_MODE = ConfigurationKeys.PREFIX + "singleEventMode";
 
     /**
-     * Set similarity radius DOUBLE
+     * Set similarity radius DOUBLE.
      */
     public static final String SIM_MATCH_RADIUS = ConfigurationKeys.PREFIX + "behavior.sm.radius";
 

@@ -19,14 +19,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +33,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -60,17 +61,13 @@ public class DeploymentVisualizationStageTest { // NOCS test
 
     private static final String TEST_NODE_ID = "test_nodeId";
 
-    /** test correspondent. */
-    private static Correspondent testCorrespondent;
-    private static Optional<Correspondent> optTestCorrespondent;
-
     /** stage under test. */
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelProvider<ResourceEnvironment, ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelProvider<Allocation, AssemblyContext> mockedAssemblyContextModelProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -102,12 +99,6 @@ public class DeploymentVisualizationStageTest { // NOCS test
                 + DeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
                 + DeploymentVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
-        /** test correspondent */
-        DeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
-                "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
-        DeploymentVisualizationStageTest.optTestCorrespondent = Optional
-                .of(DeploymentVisualizationStageTest.testCorrespondent);
-
         /** test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
         this.testResourceContainer.setId(DeploymentVisualizationStageTest.TEST_NODE_ID);
@@ -117,7 +108,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         final String urlContext = DeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + DeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
         this.deployedEvent = new PCMDeployedEvent(DeploymentVisualizationStageTest.SERVICE,
-                DeploymentVisualizationStageTest.testCorrespondent, url, (short) 0);
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, url, ISOCountryCode.EVIL_EMPIRE);
 
         this.deployedEvent.setResourceContainer(this.testResourceContainer);
 
@@ -125,7 +116,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         this.inputEvents.add(this.deployedEvent);
 
         /** test assembly context */
-        final String asmContextName = DeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
+        final String asmContextName = AssemblyContextDataFactory.ASSEMBLY_CONTEXT.getEntityName() + " : "
                 + DeploymentVisualizationStageTest.SERVICE;
 
         this.testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
@@ -137,8 +128,9 @@ public class DeploymentVisualizationStageTest { // NOCS test
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,
                 DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
-        Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
-                .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
+        // does this make sense?
+        // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
+        // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
         Mockito.when(
                 this.mockedAssemblyContextModelProvider.readOnlyComponentByName(AssemblyContext.class, asmContextName))

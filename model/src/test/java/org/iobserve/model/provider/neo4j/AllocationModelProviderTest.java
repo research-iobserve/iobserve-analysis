@@ -44,29 +44,32 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
                                                                          // test
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private static Graph graph = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).createAllocationModelGraph();
+    private static Graph<Allocation> graph = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR)
+            .createModelGraph(Allocation.class);
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(AllocationModelProviderTest.graph).clearGraph();
+        new ModelProvider<>(AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                .clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<Allocation> modelProvider1 = new ModelProvider<>(AllocationModelProviderTest.graph);
-        final ModelProvider<Allocation> modelProvider2;
+        final ModelProvider<Allocation, Allocation> modelProvider1 = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<Allocation, Allocation> modelProvider2;
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
-        final Graph graph2;
+        final Graph<Allocation> graph2;
 
         modelProvider1.createComponent(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(Allocation.class);
-        modelProvider2 = new ModelProvider<>(graph2);
+        modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         readModel = modelProvider2.readOnlyRootComponent(Allocation.class);
         graph2.getGraphDatabaseService().shutdown();
@@ -77,7 +80,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);
@@ -92,7 +96,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
@@ -105,7 +110,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<Allocation> readModels;
 
@@ -120,7 +126,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<String> readIds;
 
@@ -136,7 +143,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
@@ -149,7 +157,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
         final AllocationContext writtenContext = writtenModel.getAllocationContexts_Allocation().get(0);
@@ -164,7 +173,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Allocation writtenModel = testModelBuilder.getAllocation();
         final List<EObject> readReferencingComponents;
@@ -185,7 +195,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Allocation writtenModel = testModelBuilder.getAllocation();
         final AllocationContext businessOrderServerAllocationContext = testModelBuilder
@@ -227,7 +238,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);
@@ -249,7 +261,8 @@ public class AllocationModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
+        final ModelProvider<Allocation, Allocation> modelProvider = new ModelProvider<>(
+                AllocationModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);

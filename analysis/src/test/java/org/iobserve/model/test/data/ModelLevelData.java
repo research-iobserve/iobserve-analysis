@@ -17,6 +17,7 @@ package org.iobserve.model.test.data;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.common.record.ISOCountryCode;
 
 /**
  * @author Reiner Jung
@@ -24,8 +25,10 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
  */
 public final class ModelLevelData {
 
-    public static final PCMDeployedEvent PCM_DEPLOYED_EVENT = ModelLevelData.createPCMDeployedEvent((short) 0);
-    public static final PCMDeployedEvent PCM_DEPLOYED_DE_EVENT = ModelLevelData.createPCMDeployedEvent((short) 49);
+    public static final PCMDeployedEvent PCM_DEPLOYED_EVENT = ModelLevelData
+            .createPCMDeployedEvent(ISOCountryCode.EVIL_EMPIRE);
+    public static final PCMDeployedEvent PCM_DEPLOYED_DE_EVENT = ModelLevelData
+            .createPCMDeployedEvent(ISOCountryCode.GERMANY);
 
     public static final PCMUndeployedEvent PCM_UNDEPLOYED_EVENT = ModelLevelData.createPCMUndeployedEvent();
 
@@ -33,17 +36,17 @@ public final class ModelLevelData {
         // private factory constructor
     }
 
-    private static PCMDeployedEvent createPCMDeployedEvent(final short countryCode) { // NOPMD
+    private static PCMDeployedEvent createPCMDeployedEvent(final ISOCountryCode countryCode) { // NOPMD
         final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
 
-        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE,
-                CorrespondenceModelDataFactory.CORRESPONDENT, url, countryCode);
+        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, AssemblyContextDataFactory.ASSEMBLY_CONTEXT,
+                url, countryCode);
     }
 
     private static PCMUndeployedEvent createPCMUndeployedEvent() {
         return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE,
-                CorrespondenceModelDataFactory.CORRESPONDENT);
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
     }
 
 }

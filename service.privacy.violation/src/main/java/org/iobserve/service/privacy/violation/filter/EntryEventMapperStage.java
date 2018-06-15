@@ -18,7 +18,8 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
@@ -30,7 +31,7 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  */
 public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent> {
 
-    private final ICorrespondence rac;
+    private final IModelProvider<AssemblyEntry> rac;
     private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
     /**
@@ -39,7 +40,7 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
      * @param rac
      *            correspondence model
      */
-    public EntryEventMapperStage(final ICorrespondence rac) {
+    public EntryEventMapperStage(final IModelProvider<AssemblyEntry> rac) {
         this.rac = rac;
     }
 

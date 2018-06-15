@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.PlanningMain'
+mainClassName = 'org.iobserve.planning.PlanningMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")
@@ -25,7 +25,7 @@ dependencies {
     compile 'org.json:json:20170516'
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    testCompile 'com.sun.net.httpserver:http:20070405'
+    // testCompile 'com.sun.net.httpserver:http:20070405'
 }
 
 clover {

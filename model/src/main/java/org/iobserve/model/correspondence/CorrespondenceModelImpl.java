@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Boltz
  * @author Alessandro Giusa
  *
+ * @deprecated since 0.0.3 jss-paper
  */
+@Deprecated
 class CorrespondenceModelImpl implements ICorrespondence {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrespondenceModelImpl.class);

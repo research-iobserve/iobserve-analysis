@@ -1,4 +1,4 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 apply plugin: 'java'
 
@@ -18,10 +18,10 @@ dependencies {
 }
 
 // SHADOW
-shadowJar {
-   zip64 = true
-   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
-}
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
+//}
 
 clover {
 	report {

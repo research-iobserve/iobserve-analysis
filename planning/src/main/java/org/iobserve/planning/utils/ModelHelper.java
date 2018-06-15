@@ -25,6 +25,7 @@ import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.iobserve.model.IPCMModelHandler;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.CostModelFactory;
@@ -106,8 +107,8 @@ public final class ModelHelper {
 
         final LinkingResource linkingResource = internetLink.orElseGet(() -> {
             try {
-                return org.iobserve.model.factory.ResourceEnvironmentCloudFactory.createLinkingResource(environment,
-                        null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME);
+                return ResourceEnvironmentCloudFactory.createLinkingResource(environment, null,
+                        ModelHelper.INTERNET_LINKING_RESOURCE_NAME);
             } catch (final ModelHandlingErrorException e) {
                 return null;
             }
@@ -265,8 +266,8 @@ public final class ModelHelper {
             }
         }
         new ResourceEnvironmentModelHandler()
-                .save(writeURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX), environment);
-        new CostModelHandler().save(writeURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), costRepositoryModel);
+                .save(writeURI.appendFileExtension(IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX), environment);
+        new CostModelHandler().save(writeURI.appendFileExtension(IPCMModelHandler.COST_SUFFIX), costRepositoryModel);
     }
 
     /**
@@ -279,7 +280,7 @@ public final class ModelHelper {
      */
     public static String getGroupName(final ResourceContainerCloud cloudContainer) {
         String groupName = cloudContainer.getGroupName();
-        if (groupName == null || groupName.trim().isEmpty()) {
+        if ((groupName == null) || groupName.trim().isEmpty()) {
             groupName = cloudContainer.getEntityName();
         }
         return groupName;
@@ -349,7 +350,7 @@ public final class ModelHelper {
 
         if (cloudProvider != null) {
             final VMType vmType = cloudProvider.getCloudResources().stream()
-                    .filter(resource -> (resource instanceof VMType
+                    .filter(resource -> ((resource instanceof VMType)
                             && ((VMType) resource).getLocation().equals(location)
                             && ((VMType) resource).getName().equals(instanceType)))
                     .map(resource -> (VMType) resource).findFirst().orElse(null);

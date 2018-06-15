@@ -15,41 +15,43 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.data.graph.ModelGraph;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
 /**
  * This class provides all data required for planning and adapting the system.
  *
  * @author Philipp Weimann
+ * @author Lars Blümke (terminology: (de-)allocate.sh -> (de-)replicate.sh, use of File instead of
+ *         URI)
  */
 public class AdaptationData {
     public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup.sh";
-    public static final String ALLOCATE_SCRIPT_NAME = "allocate.sh";
-    public static final String DEALLOCATE_SCRIPT_NAME = "deallocate.sh";
+    public static final String REPLICATE_SCRIPT_NAME = "replicate.sh";
+    public static final String DEREPLICATE_SCRIPT_NAME = "dereplicate.sh";
     public static final String PRE_MIGRATE_SCRIPT_NAME = "pre_migrate.sh";
     public static final String POST_MIGRATE_SCRIPT_NAME = "post_migrate.sh";
     public static final String NODE_PRE_TERMINATE_SCRIPT_NAME = "node_pre_terminate.sh";
 
-    private URI runtimeModelURI;
+    private File runtimeModelDir;
     private ModelGraph runtimeGraph;
 
-    private URI reDeploymentURI;
+    private File reDeploymentModelDir;
     private ModelGraph reDeploymentGraph;
 
-    private URI deployablesFolderURI;
+    private File deployablesDir;
 
     private List<AssemblyContextAction> acActions;
     private List<ResourceContainerAction> rcActions;
 
-    private List<Action> executionOrder;
+    private List<ComposedAction> executionOrder;
 
     private final Set<String> allocatedContexts = new HashSet<>();
     private final Set<String> deallocatedContexts = new HashSet<>();
@@ -65,18 +67,18 @@ public class AdaptationData {
 
     ////////////////////// GETTERS & SETTERS //////////////////////
     /**
-     * @return the runtimeModelURI
+     * @return the runtimeModelDir
      */
-    public URI getRuntimeModelURI() {
-        return this.runtimeModelURI;
+    public File getRuntimeModelDir() {
+        return this.runtimeModelDir;
     }
 
     /**
-     * @param runtimeModelURI
-     *            the runtimeModelURI to set
+     * @param runtimeModelDir
+     *            the runtimeModelDir to set
      */
-    public void setRuntimeModelURI(final URI runtimeModelURI) {
-        this.runtimeModelURI = runtimeModelURI;
+    public void setRuntimeModelDir(final File runtimeModelDir) {
+        this.runtimeModelDir = runtimeModelDir;
     }
 
     /**
@@ -95,18 +97,18 @@ public class AdaptationData {
     }
 
     /**
-     * @return the reDeploymentURI
+     * @return the reDeploymentModelDir
      */
-    public URI getReDeploymentURI() {
-        return this.reDeploymentURI;
+    public File getReDeploymentModelDir() {
+        return this.reDeploymentModelDir;
     }
 
     /**
-     * @param reDeploymentURI
-     *            the reDeploymentURI to set
+     * @param reDeploymentModelDir
+     *            the reDeploymentModelDir to set
      */
-    public void setReDeploymentURI(final URI reDeploymentURI) {
-        this.reDeploymentURI = reDeploymentURI;
+    public void setReDeploymentModelDir(final File reDeploymentModelDir) {
+        this.reDeploymentModelDir = reDeploymentModelDir;
     }
 
     /**
@@ -157,7 +159,7 @@ public class AdaptationData {
     /**
      * @return the executionOrder
      */
-    public List<Action> getExecutionOrder() {
+    public List<ComposedAction> getExecutionOrder() {
         return this.executionOrder;
     }
 
@@ -165,16 +167,16 @@ public class AdaptationData {
      * @param executionOrder
      *            the executionOrder to set
      */
-    public void setExecutionOrder(final List<Action> executionOrder) {
+    public void setExecutionOrder(final List<ComposedAction> executionOrder) {
         this.executionOrder = executionOrder;
     }
 
-    public URI getDeployablesFolderURI() {
-        return this.deployablesFolderURI;
+    public File getDeployablesDir() {
+        return this.deployablesDir;
     }
 
-    public void setDeployablesFolderURI(final URI deployablesFolderURI) {
-        this.deployablesFolderURI = deployablesFolderURI;
+    public void setDeployablesDir(final File deployablesDir) {
+        this.deployablesDir = deployablesDir;
     }
 
     public Set<String> getAllocatedContexts() {

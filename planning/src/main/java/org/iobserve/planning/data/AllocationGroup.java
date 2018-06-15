@@ -116,8 +116,7 @@ public class AllocationGroup {
      * @return the representative allocation context
      */
     public AllocationContext getRepresentingContext() {
-        final AllocationContext representingContext = this.allocationContexts.iterator().next();
-        return representingContext;
+        return this.allocationContexts.iterator().next();
     }
 
     /**

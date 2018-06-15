@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -38,12 +41,6 @@ public class GraphLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
 
-    private static final String ALLOCATION_GRAPH_DIR = "allocationmodel";
-    private static final String REPOSITORY_GRAPH_DIR = "repositorymodel";
-    private static final String RESOURCEENVIRONMENT_GRAPH_DIR = "resourceenvironmentmodel";
-    private static final String SYSTEM_GRAPH_DIR = "systemmodel";
-    private static final String USAGE_GRAPH_DIR = "usagemodel";
-
     private final File baseDirectory;
 
     /**
@@ -61,11 +58,14 @@ public class GraphLoader {
      * Helper method for cloning: Clones and returns a new version from the current newest version
      * of the model graph.
      *
-     * @param graphTypeDirName
-     *            Name of root directory for a certain graph type
+     * @param clazz
+     *            Type for the cloned model
+     * @param <T>
+     *            graph type
      * @return The the model graph
      */
-    private Graph cloneNewModelGraphVersion(final String graphTypeDirName) {
+    public <T> Graph<T> cloneNewModelGraphVersion(final Class<T> clazz) {
+        final String graphTypeDirName = clazz.getCanonicalName();
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
         final File newGraphDir = new File(graphTypeDir,
@@ -82,7 +82,7 @@ public class GraphLoader {
             }
         }
 
-        return new Graph(newGraphDir);
+        return new Graph<>(newGraphDir);
     }
 
     /**
@@ -91,8 +91,8 @@ public class GraphLoader {
      *
      * @return The allocation model graph
      */
-    public Graph cloneNewAllocationModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
+    public Graph<Allocation> cloneNewAllocationModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(Allocation.class);
     }
 
     /**
@@ -101,8 +101,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public Graph cloneNewRepositoryModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
+    public Graph<Repository> cloneNewRepositoryModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(Repository.class);
     }
 
     /**
@@ -111,8 +111,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public Graph cloneNewResourceEnvironmentModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
+    public Graph<ResourceEnvironment> cloneNewResourceEnvironmentModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(ResourceEnvironment.class);
     }
 
     /**
@@ -121,8 +121,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public Graph cloneNewSystemModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
+    public Graph<System> cloneNewSystemModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(System.class);
     }
 
     /**
@@ -131,18 +131,41 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public Graph cloneNewUsageModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
+    public Graph<UsageModel> cloneNewUsageModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(UsageModel.class);
+    }
+
+    /**
+     * Clones and returns a new version from the current newest version of the privacy model graph.
+     * If there is none yet an empty graph is returned.
+     *
+     * @return The privacy model graph
+     */
+    public Graph<PrivacyModel> cloneNewPrivacyModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(PrivacyModel.class);
+    }
+
+    /**
+     * Clones and returns a new version from the current newest version of the correspondence model
+     * graph. If there is none yet an empty graph is returned.
+     *
+     * @return The privacy model graph
+     */
+    public Graph<CorrespondenceModel> cloneNewEorrespondenceModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(CorrespondenceModel.class);
     }
 
     /**
      * Helper method for getting graphs: Returns the newest version of the model graph.
      *
-     * @param graphTypeDirName
-     *            Name of root directory for a certain graph type
+     * @param clazz
+     *            class type used to define the name of root directory for a certain graph type
+     * @param <T>
+     *            model type
      * @return The model graph
      */
-    private Graph createModelGraphVersion(final String graphTypeDirName) {
+    public <T extends EObject> Graph<T> createModelGraph(final Class<T> clazz) {
+        final String graphTypeDirName = clazz.getCanonicalName();
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
 
@@ -150,147 +173,31 @@ public class GraphLoader {
             maxVersionNumber = 1; // no version at all so far
         }
 
-        return new Graph(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
+        return new Graph<>(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
     }
 
     /**
-     * Returns the newest version of the allocation model graph. If there is none yet an empty graph
-     * is returned.
+     * Initializes the newest version of a model graph with the given model. Overwrites a potential
+     * existing graph in the database directory of this loader.
      *
-     * @return The allocation model graph
+     * @param clazz
+     *            class type of the model
+     * @param model
+     *            the model to use for initialization
+     * @param nameLabel
+     *            label for the name attribute in the DB and model
+     * @param idLabel
+     *            label for the id attribute in the DB and model
+     * @param <V>
+     *            the type of the root element
      */
-    public Graph createAllocationModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
-    }
-
-    /**
-     * Returns the newest version of the repository model graph. If there is none yet an empty graph
-     * is returned.
-     *
-     * @return The repository model graph
-     */
-    public Graph createRepositoryModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
-    }
-
-    /**
-     * Returns the newest version of the resourceEnvironment model graph. If there is none yet an
-     * empty graph is returned.
-     *
-     * @return The resourceEnvironment model graph
-     */
-    public Graph createResourceEnvironmentModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
-    }
-
-    /**
-     * Returns the newest version of the system model graph. If there is none yet an empty graph is
-     * returned.
-     *
-     * @return The system model graph
-     */
-    public Graph createSystemModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
-    }
-
-    /**
-     * Returns the newest version of the usage model graph. If there is none yet an empty graph is
-     * returned.
-     *
-     * @return The usage model graph
-     */
-    public Graph createUsageModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
-    }
-
-    /**
-     * Initializes the newest version of the allocation model graph with the given model. Overwrites
-     * a possibly existing graph in the database directory of this loader.
-     *
-     * @param allocationModel
-     *            The allocation model
-     * @return The allocation model graph
-     */
-    public Graph initializeAllocationModelGraph(final Allocation allocationModel) {
-        final Graph graph = this.createAllocationModelGraph();
-        final ModelProvider<Allocation> provider = new ModelProvider<>(graph);
+    public <V extends EObject> void initializeModelGraph(final Class<V> clazz, final V model, final String nameLabel,
+            final String idLabel) {
+        final Graph<V> graph = this.createModelGraph(clazz);
+        final ModelProvider<V, V> provider = new ModelProvider<>(graph, nameLabel, idLabel);
         provider.clearGraph();
-        provider.createComponent(allocationModel);
+        provider.createComponent(model);
         graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the repository model graph with the given model. Overwrites
-     * a possibly existing graph in the database directory of this loader.
-     *
-     * @param repositoryModel
-     *            The repository model
-     * @return The repository model graph
-     */
-    public Graph initializeRepositoryModelGraph(final Repository repositoryModel) {
-        final Graph graph = this.createRepositoryModelGraph();
-        final ModelProvider<Repository> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(repositoryModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the resource environment model graph with the given model.
-     * Overwrites a possibly existing graph in the database directory of this loader.
-     *
-     * @param resourceEnvironmentModel
-     *            The resource environment model
-     * @return The resource environment model graph
-     */
-    public Graph initializeResourceEnvironmentModelGraph(final ResourceEnvironment resourceEnvironmentModel) {
-        final Graph graph = this.createResourceEnvironmentModelGraph();
-        final ModelProvider<ResourceEnvironment> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(resourceEnvironmentModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the system model graph with the given model. Overwrites a
-     * possibly existing graph in the database directory of this loader.
-     *
-     * @param systemModel
-     *            The system model
-     * @return The system model graph
-     */
-    public Graph initializeSystemModelGraph(final System systemModel) {
-        final Graph graph = this.createSystemModelGraph();
-        final ModelProvider<System> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(systemModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the usage model graph with the given model. Overwrites a
-     * possibly existing graph in the database directory of this loader.
-     *
-     * @param usageModel
-     *            The usage model
-     * @return The usage model graph
-     */
-    public Graph initializeUsageModelGraph(final UsageModel usageModel) {
-        final Graph graph = this.createUsageModelGraph();
-        final ModelProvider<UsageModel> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(usageModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
     }
 
 }

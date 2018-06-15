@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Optional;
 
@@ -56,18 +55,16 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
 
     @Override
     protected void execute(final IDeallocationEvent event) throws Exception {
-        final URL url;
+        final String service;
         if (event instanceof ContainerAllocationEvent) {
-            url = new URL(((ContainerAllocationEvent) event).getUrl());
+            service = ((ContainerAllocationEvent) event).getService();
         } else {
             throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
         }
-        final String hostName = url.getHost();
-
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
                         this.resourceEnvironmentModelProvider.readOnlyRootComponent(ResourceEnvironment.class),
-                        hostName);
+                        service);
 
         if (resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
@@ -82,7 +79,7 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
             this.deallocationOutputPort.send(event);
         } else {
             /** error deallocation already happened. */
-            this.logger.error("ResourceContainer %s is missing." + hostName);
+            this.logger.error("ResourceContainer {} is missing.", service);
         }
     }
 

@@ -27,7 +27,9 @@ import java.util.Optional;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
+ * @deprecated since 0.0.3 jss-paper
  */
+@Deprecated
 public interface ICorrespondence {
 
     // Operation Signature + Class Signature + Session ID + Host name

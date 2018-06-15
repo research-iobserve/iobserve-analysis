@@ -33,8 +33,9 @@ import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
@@ -54,6 +55,7 @@ import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -80,6 +82,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            resource environment model provider
      * @param allocationModelProvider
      *            allocation model provider
+     * @param allocationContextModelProvider
+     *            allocation context model provider (view)
      * @param systemModelProvider
      *            system model provider
      * @param warningFile
@@ -90,8 +94,11 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final ICorrespondence rac, final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
+            final IModelProvider<AssemblyEntry> rac,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final IModelProvider<System> systemModelProvider, final IModelProvider<PrivacyModel> privacyModelProvider,
             final File warningFile, final File alarmFile) throws IOException {
 
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
@@ -120,9 +127,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
         /** deployment. */
         final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, rac);
+                allocationModelProvider, allocationContextModelProvider, rac);
         final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
-                resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, rac);
+                resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider, rac);
 
         /** geolocation. */
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);

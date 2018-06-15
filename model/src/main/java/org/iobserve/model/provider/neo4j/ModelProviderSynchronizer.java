@@ -32,7 +32,7 @@ public final class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
 
-    private static ConcurrentHashMap<Graph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Graph<?>, ModelProvider<?, ?>> locks = new ConcurrentHashMap<>();
 
     private ModelProviderSynchronizer() {
         // private constructor, utility class
@@ -45,12 +45,12 @@ public final class ModelProviderSynchronizer {
      * @param modelProvider
      *            The model provider trying for the lock
      */
-    public static void getLock(final ModelProvider<?> modelProvider) {
-        final Graph graph = modelProvider.getGraph();
+    public static void getLock(final ModelProvider<?, ?> modelProvider) {
+        final Graph<?> graph = modelProvider.getGraph();
 
         synchronized (graph) {
-            while (ModelProviderSynchronizer.locks.get(graph) != null
-                    && ModelProviderSynchronizer.locks.get(graph) != modelProvider) {
+            while ((ModelProviderSynchronizer.locks.get(graph) != null)
+                    && (ModelProviderSynchronizer.locks.get(graph) != modelProvider)) {
                 try {
                     graph.wait();
                 } catch (final InterruptedException e) {
@@ -71,8 +71,8 @@ public final class ModelProviderSynchronizer {
      * @param modelProvider
      *            The model provider trying to release the lock
      */
-    public static void releaseLock(final ModelProvider<?> modelProvider) {
-        final Graph graph = modelProvider.getGraph();
+    public static void releaseLock(final ModelProvider<?, ?> modelProvider) {
+        final Graph<?> graph = modelProvider.getGraph();
 
         synchronized (graph) {
             if (ModelProviderSynchronizer.locks.get(graph) == modelProvider) {

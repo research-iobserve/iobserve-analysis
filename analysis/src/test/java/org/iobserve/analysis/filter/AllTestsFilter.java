@@ -15,20 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 /**
  * Test suite that run all tests for classes in org.iobserve.analysis.filter.
  *
  * @author jweg
  *
  */
-@RunWith(Suite.class) // NOCS
-@SuiteClasses({ AllocationNoResourceContainerTest.class, AllocationResourceContainerTest.class,
-        DeployPCMMapperTest.class, DeploymentResourceContainerTest.class, UndeploymentNoResourceContainerTest.class,
-        UndeploymentResourceContainerTest.class })
+// @RunWith(Suite.class) // NOCS
+// @SuiteClasses({ AllocationNoResourceContainerTest.class, AllocationResourceContainerTest.class })
 public class AllTestsFilter {
 
 }

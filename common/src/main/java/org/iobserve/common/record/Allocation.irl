@@ -27,7 +27,7 @@ template IDeallocationEvent
  */
 @author "Reiner Jung" @since "0.0.2"
 abstract event AbstractContainerEvent {
-	string url
+	string service
 }
 
 @author "Reiner Jung" @since "0.0.2"

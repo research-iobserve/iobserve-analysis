@@ -78,7 +78,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
              * TAllocation (creating the resource container) and forward the deployment event to
              * TDeployment (deploying on created resource container).
              */
-            this.allocationOutputPort.send(new ContainerAllocationEvent(event.getUrl()));
+            this.allocationOutputPort.send(new ContainerAllocationEvent(event.getService()));
             this.deployedRelayOutputPort.send(event);
         }
     }

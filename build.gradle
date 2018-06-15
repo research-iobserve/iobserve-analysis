@@ -3,12 +3,32 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
+
+        
+        ////////// Goomph //////////
+        // make it easy to test a snapshot version of goomph
+		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		// grab dependencies from the gradle plugin portal
+		maven { url 'https://plugins.gradle.org/m2/' }
+    }
+
+	// make sure we don't cache stale snapshot versions
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+
         // maven { url "https://plugins.gradle.org/m2/" } // shadow
+
     }
 
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
+         
+        ////////// Goomph //////////      
+        // a bunch of eclipse stuff
+		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+		// creates a targetplatform
+		classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
     }
 }
 
@@ -169,6 +189,18 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
 		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
+
+		////////// Goomph //////////
+		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+		if (project.version.endsWith('SNAPSHOT')) {
+			maven {
+				url 'https://oss.sonatype.org/content/repositories/snapshots/'
+			}
+		}
+		// local eclipse maven (created by Goomph)
+		maven {
+			url rootProject.file('target.p2/build/p2asmaven/maven')
+		}
     }
 
     ext {
@@ -472,4 +504,122 @@ rootProject.subprojects.each { project -> configure(project) {
 	}
 }
 
+//////////////////////////
+// GOOMPH configuration //
+//////////////////////////
+/////////////
+// PLUGINS //
+/////////////
+// tasks to clean and jar all of the plugins
+Closure IS_PLUGIN = { it.name.startsWith('peropteryx') }
+configure(subprojects.findAll(IS_PLUGIN)) {
+	// we need the maven repo from p2
+	evaluationDependsOn(':target.p2')
 
+	def PROJECT_NAME = it.name
+
+	//////////
+	// JAVA //
+	//////////
+	apply plugin: 'java'
+	sourceSets {
+		main { java {
+			srcDir 'src'
+		} }
+		test { java {
+			srcDir 'test'
+		} }
+	}
+	sourceCompatibility = VER_JAVA
+	targetCompatibility = VER_JAVA
+
+	// Add SWT and the appropriate platform-native SWT for building and testing
+	// (We removed the dependencies resolved from p2 repository with goomph because they inconsistently caused 
+	// build failures. However, they will be needed to export an peropteryx product with goomph)
+	// dependencies {
+	//	compile "eclipse-deps:org.eclipse.swt:+"
+	//	compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
+	// }
+
+	//////////
+	// OSGI //
+	//////////
+	// create the manifest
+	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
+	osgiBndManifest {
+		copyTo 'META-INF/MANIFEST.MF'
+	}
+	// configure the OSGi bundle
+	jar.manifest.attributes(
+		'-exportcontents': 'peropteryx.*',
+		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
+		'Import-Package': '!javax.annotation.*,*',
+		'Bundle-SymbolicName': project.name,
+		'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
+		'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
+		'Bundle-Vendor': 'iObserve',
+		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0",
+		'Export-Package': 'org.iobserve.peropteryx.rcp'
+	)
+
+	//////////////////////
+	// ECLIPSE PROJECTS //
+	//////////////////////
+	apply plugin: 'eclipse'
+	// remove the build folder
+	apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+	// improve the project deps
+	apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
+	// handle build.properties correctly
+	apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
+	eclipse {
+		project {
+			natures 'org.eclipse.pde.PluginNature'
+			natures 'org.eclipse.jdt.core.javanature'
+
+			buildCommand 'org.eclipse.jdt.core.javabuilder'
+			buildCommand 'org.eclipse.pde.ManifestBuilder'
+			buildCommand 'org.eclipse.pde.SchemaBuilder'
+		}
+		classpath {
+			downloadSources true
+			downloadJavadoc true
+		}
+		jdt {
+			sourceCompatibility VER_JAVA
+			targetCompatibility VER_JAVA
+		}
+	}
+	// always create "fresh" projects
+	tasks.eclipse.dependsOn(cleanEclipse)
+}
+
+/////////////////////////////////////////////////////////
+// Root eclipse project for tinkering with build files //
+/////////////////////////////////////////////////////////
+apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
+eclipseResourceFilters {
+	exclude().folders().name('com.diffplug.*')
+}
+
+
+/////////////////////////////
+// Setup a headless launch //
+/////////////////////////////
+apply plugin: 'com.diffplug.gradle.equinoxlaunch'
+
+// Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
+equinoxLaunch {
+	codegenSetup {
+		source.addProject(project(':peropteryx.rcp'))
+		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
+	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
+	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')
+	    	source.addMaven('extra:org.apache.batik.css:1.8.0.v20170214-1941')
+		source.addMaven('extra:org.apache.batik.util:1.7.0.v201011041433')
+	    	source.addMaven('extra:org.apache.batik.util:1.8.0.v20170214-1941')
+	    	source.addMaven('extra:org.apache.batik.util.gui:1.7.0.v200903091627')
+	    	source.addMaven('extra:org.apache.batik.util.gui:1.8.0.v20170214-1941')
+	}
+}

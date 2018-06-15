@@ -53,19 +53,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lars Bluemke
  *
+ * @param <R>
+ *            Type of the model graph root element
  * @param <T>
  *            Type of the model's or submodel's root component
  * @since 0.0.2
  */
-public class ModelProvider<T extends EObject> implements IModelProvider<T> {
+public class ModelProvider<R extends EObject, T extends EObject> implements IModelProvider<T> {
+
+    /** TODO these should be moved elsewhere. */
+    public static final String PCM_ENTITY_NAME = "entityName";
+    public static final String PCM_ID = "id";
+    public static final String IMPLEMENTATION_ID = "implementationId";
 
     protected static final String EMF_URI = "emfUri";
     protected static final String REF_POS = "refPos";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProvider.class);
 
-    private static final String ENTITY_NAME = "entityName";
-    private static final String ID = "id";
     private static final String REF_NAME = "refName";
     private static final String TYPE = "type";
 
@@ -73,7 +78,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
-    private final Graph graph;
+    private final Graph<R> graph;
+    private final String nameLabel;
+    private final String idLabel;
 
     /**
      * Creates a new model provider.
@@ -81,8 +88,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param graph
      *            The neo4j graph database
      */
-    public ModelProvider(final Graph graph) {
+    public ModelProvider(final Graph<R> graph, final String nameLabel, final String idLabel) {
         this.graph = graph;
+        this.nameLabel = nameLabel;
+        this.idLabel = idLabel;
     }
 
     /**
@@ -109,27 +118,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The cloned graph
      */
-    public Graph cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph<T> cloneNewGraphVersion(final Class<T> clazz) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
-        if (clazz.equals(Allocation.class)) {
-            return graphLoader.cloneNewAllocationModelGraphVersion();
-        } else if (clazz.equals(Repository.class)) {
-            return graphLoader.cloneNewRepositoryModelGraphVersion();
-        } else if (clazz.equals(ResourceEnvironment.class)) {
-            return graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
-        } else if (clazz.equals(System.class)) {
-            return graphLoader.cloneNewSystemModelGraphVersion();
-        } else if (clazz.equals(UsageModel.class)) {
-            return graphLoader.cloneNewUsageModelGraphVersion();
-        } else {
-            if (ModelProvider.LOGGER.isWarnEnabled()) {
-                ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
-                        + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
-            }
-            return null;
-        }
+        return graphLoader.cloneNewModelGraphVersion(clazz);
     }
 
     /*
@@ -210,7 +203,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
@@ -316,7 +309,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
@@ -357,7 +350,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodesIter = this.graph.getGraphDatabaseService().findNodes(label,
-                    ModelProvider.ENTITY_NAME, entityName);
+                    this.nameLabel, entityName);
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
@@ -537,6 +530,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     public List<String> readComponentByType(final Class<T> clazz) {
+        java.lang.System.err.println(this.graph.getGraphDatabaseService());
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(clazz.getSimpleName()));
@@ -544,7 +538,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add(n.getProperty(ModelProvider.ID).toString());
+                ids.add(n.getProperty(this.idLabel).toString());
             }
 
             tx.success();
@@ -627,7 +621,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Iterator<Relationship> inRels = node
                     .getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS).iterator();
 
@@ -674,7 +668,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(clazz.getSimpleName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
@@ -706,7 +700,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         if (idAttr != null) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-                node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+                node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
                 containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component, new HashSet<>());
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
@@ -849,7 +843,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(clazz.getSimpleName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             if (node != null) {
                 this.deleteComponentNodes(node);
             }
@@ -894,7 +888,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Node node;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             this.deleteComponentAndDatatypeNodes(node, forceDelete);
             tx.success();
         }
@@ -1053,7 +1047,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The graph
      */
-    public Graph getGraph() {
+    public Graph<R> getGraph() {
         return this.graph;
     }
 }

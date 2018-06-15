@@ -21,8 +21,9 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.data.graph.GraphFactory;
-import org.iobserve.analysis.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.GraphFactory;
+import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.model.PCMModelHandler;
 
 /**
@@ -51,7 +52,7 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
             // TODO finish
             final PCMModelHandler modelProviders = new PCMModelHandler(new File(element.toFileString()));
             final GraphFactory graphFactory = new GraphFactory();
-            final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
+            final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders, ModelGraphRevision.RUNTIME);
 
             if (runtimeGraph.equals(this.baseAdaptationData.getReDeploymentGraph())
                     && this.baseAdaptationData.getReDeploymentGraph().equals(runtimeGraph)) {

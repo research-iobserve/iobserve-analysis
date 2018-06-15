@@ -44,29 +44,32 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
                                                                          // test
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private static Graph graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).createRepositoryModelGraph();
+    private static Graph<Repository> graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR)
+            .createModelGraph(Repository.class);
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(RepositoryModelProviderTest.graph).clearGraph();
+        new ModelProvider<>(RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                .clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.graph);
-        final ModelProvider<Repository> modelProvider2;
+        final ModelProvider<Repository, Repository> modelProvider1 = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<Repository, Repository> modelProvider2;
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
-        final Graph graph2;
+        final Graph<Repository> graph2;
 
         modelProvider1.createComponent(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(Repository.class);
-        modelProvider2 = new ModelProvider<>(graph2);
+        modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         readModel = modelProvider2.readOnlyRootComponent(Repository.class);
         graph2.getGraphDatabaseService().shutdown();
@@ -77,7 +80,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
@@ -92,7 +96,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
 
@@ -105,7 +110,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final List<Repository> readModels;
 
@@ -120,7 +126,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final List<String> readIds;
 
@@ -136,7 +143,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
 
@@ -149,7 +157,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final OperationInterface writtenInterface = (OperationInterface) writtenModel.getInterfaces__Repository()
                 .get(0);
@@ -165,7 +174,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Repository writtenModel = testModelBuilder.getRepository();
         final List<EObject> readReferencingComponents;
@@ -186,7 +196,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Repository writtenModel = testModelBuilder.getRepository();
         final Interface payInterface = testModelBuilder.getPayInterface();
@@ -215,7 +226,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
@@ -230,7 +242,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
+        final ModelProvider<Repository, Repository> modelProvider = new ModelProvider<>(
+                RepositoryModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
