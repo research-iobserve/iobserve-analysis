@@ -46,8 +46,7 @@ public class InitializeUserBehaviorVisualization {
      * @param usageModelGraphProvider
      *            usage model provier
      */
-    public InitializeUserBehaviorVisualization(
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+    public InitializeUserBehaviorVisualization(final IModelProvider<System> systemModelGraphProvider,
             final IModelProvider<UsageModel> usageModelGraphProvider) {
         this.systemModelProvider = systemModelGraphProvider;
         this.usageModelProvider = usageModelGraphProvider;
@@ -83,7 +82,7 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.readComponentById(UsageModel.class, "0");
+            this.usageModelProvider.readObjectByIdAndLock(UsageModel.class, "0");
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

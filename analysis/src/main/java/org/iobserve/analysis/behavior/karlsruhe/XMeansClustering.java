@@ -36,7 +36,7 @@ public class XMeansClustering extends AbstractClustering {
      * Default constructor.
      */
     public XMeansClustering() {
-
+        // empty constructor
     }
 
     /**

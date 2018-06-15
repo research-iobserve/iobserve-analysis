@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
 
@@ -27,15 +28,26 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage
  */
 public class CloudProfileModelHandler extends AbstractModelHandler<CloudProfile> {
 
+    public static final String SUFFIX = "cloudprofile";
+
     /**
      * Create a new provider with the given model file.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public CloudProfileModelHandler() {
+    public CloudProfileModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override
     protected EPackage getPackage() {
         return CloudprofilePackage.eINSTANCE;
+    }
+
+    @Override
+    protected String getSuffix() {
+        return CloudProfileModelHandler.SUFFIX;
     }
 
 }

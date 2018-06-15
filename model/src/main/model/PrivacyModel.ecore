@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="privacy" nsURI="https://www.iobserve-devops.net/model/0.0.3/privacy"
+    nsPrefix="privacy">
+  <eClassifiers xsi:type="ecore:EClass" name="PrivacyModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resourceContainerLocations"
+        upperBound="-1" eType="#//GeoLocation" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="privacyLevels" upperBound="-1"
+        eType="#//IPrivacyAnnotation" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="encapsulatedDataSources"
+        upperBound="-1" eType="#//EncapsulatedDataSource" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReturnTypePrivacy" eSuperTypes="#//IPrivacyAnnotation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operationSignature" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/OperationSignature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IPrivacyAnnotation" abstract="true"
+      interface="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="level" unique="false" lowerBound="1"
+        eType="#//EDataPrivacyLevel"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GeoLocation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isocode" eType="#//EISOCode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resourceContainer" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"
+        derived="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ParameterPrivacy" eSuperTypes="#//IPrivacyAnnotation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/Parameter"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EDataPrivacyLevel">
+    <eLiterals name="anonymous" literal="ANONYMOUS"/>
+    <eLiterals name="depersonalized" value="1" literal="DEPERSONALIZED"/>
+    <eLiterals name="personal" value="2" literal="PERSONAL"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EISOCode">
+    <eLiterals name="USA" value="840"/>
+    <eLiterals name="Germany" value="276" literal="GERMANY"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EncapsulatedDataSource">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dataSource" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="component" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/BasicComponent"/>
+  </eClassifiers>
+</ecore:EPackage>

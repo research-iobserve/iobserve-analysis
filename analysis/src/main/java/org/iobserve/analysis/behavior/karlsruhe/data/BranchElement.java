@@ -60,6 +60,8 @@ public class BranchElement implements ISequenceElement {
 
     @Override
     public void setAbsoluteCount(final int absoluteCount) {
+        // branch element has no count
+        // TODO if is does not have one why does the interface require one?
     }
 
     @Override

@@ -19,6 +19,7 @@ import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarationsPackage;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * TODO add description.
@@ -28,16 +29,26 @@ import org.eclipse.emf.ecore.EPackage;
  */
 public class QMLDeclarationsModelHandler extends AbstractModelHandler<QMLDeclarations> {
 
+    public static final String SUFFIX = "qmldeclarations";
+
     /**
      * Create a QML declaration model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public QMLDeclarationsModelHandler() {
-        super();
+    public QMLDeclarationsModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override
     protected EPackage getPackage() {
         return QMLDeclarationsPackage.eINSTANCE;
+    }
+
+    @Override
+    protected String getSuffix() {
+        return QMLDeclarationsModelHandler.SUFFIX;
     }
 
 }

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.utils;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -62,7 +63,7 @@ public final class StringUtils {
      * @return lower case string
      */
     public static Supplier<String> modifyForOperationSigMatching(final String str) {
-        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase();
+        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase(Locale.getDefault());
     }
 
 }

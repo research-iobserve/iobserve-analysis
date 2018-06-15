@@ -97,7 +97,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     @Override
     protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
         // Resets the current usage model
-        final UsageModel model = this.usageModelProvider.readRootComponent(UsageModel.class);
+        final UsageModel model = this.usageModelProvider.readRootNodeAndLock(UsageModel.class);
         int numberOfUserGroups = model.getUsageScenario_UsageModel().size();
         TEntryEventSequence.LOGGER.debug("EntryEventSequence found: numberOfUserGroups before: {}", numberOfUserGroups);
 
@@ -124,7 +124,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 
         // Sets the new usage model within iObserve
         this.usageModelProvider.clearGraph();
-        this.usageModelProvider.createComponent(model);
+        this.usageModelProvider.storeModelPartition(model);
 
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         this.outputPortSnapshot.send(false);

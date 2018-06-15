@@ -35,7 +35,7 @@ public class CLIEventListener implements IAdaptationEventListener {
     private final boolean interactiveMode;
 
     /**
-     * Create an CLIEventListener
+     * Create an CLIEventListener.
      *
      * @param interactiveMode
      *            allows to set the listener into interactive mode

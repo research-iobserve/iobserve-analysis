@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
+import java.util.List;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -22,10 +24,8 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.
@@ -35,19 +35,17 @@ import org.slf4j.LoggerFactory;
  */
 public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UndeployPCMMapper.class);
-
-    private final ICorrespondence correspondence;
+    private final IModelProvider<AssemblyEntry> correspondenceModelProvider;
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
     /**
      * Creates and undeploy event mapper.
      *
-     * @param correspondence
+     * @param correspondenceModelProvider
      *            correspondence model handler
      */
-    public UndeployPCMMapper(final ICorrespondence correspondence) {
-        this.correspondence = correspondence;
+    public UndeployPCMMapper(final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+        this.correspondenceModelProvider = correspondenceModelProvider;
     }
 
     public OutputPort<PCMUndeployedEvent> getOutputPort() {
@@ -68,11 +66,17 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         final String service = event.getService();
         final String context = event.getContext();
 
-        final Correspondent correspondent = this.correspondence.getCorrespondent(context).get();
-        if (this.correspondence.getCorrespondent(context) != null) {
-            this.outputPort.send(new PCMUndeployedEvent(service, correspondent));
-        } else {
-            UndeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
+                .readObjectsByName(AssemblyEntry.class, context);
+
+        if (assemblyEntry.size() == 1) {
+            this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));
+        } else if (assemblyEntry.isEmpty()) {
+            this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
+                    service);
+        } else if (assemblyEntry.size() > 1) {
+            this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.", context,
+                    service);
         }
     }
 
@@ -80,11 +84,17 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         final String service = event.getService();
         final String context = event.getContext();
 
-        final Correspondent correspondent = this.correspondence.getCorrespondent(context).get();
-        if (this.correspondence.getCorrespondent(context) != null) {
-            this.outputPort.send(new PCMUndeployedEvent(service, correspondent));
-        } else {
-            UndeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
+                .readObjectsByName(AssemblyEntry.class, context);
+
+        if (assemblyEntry.size() == 1) {
+            this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));
+        } else if (assemblyEntry.isEmpty()) {
+            this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
+                    service);
+        } else if (assemblyEntry.size() > 1) {
+            this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.", context,
+                    service);
         }
     }
 

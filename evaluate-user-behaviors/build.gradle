@@ -1,4 +1,4 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 apply plugin: 'java'
 
@@ -18,22 +18,16 @@ dependencies {
 }
 
 // SHADOW
-shadowJar {
-   zip64 = true
-   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
-}
-
-clover {
-	report {
-		html=true
-	}	
-}
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
+//}
 
 test {
   println 'Starting unit tests.'
-  scanForTestClasses= false
-  include '**/evaluation/suites/*'
-  exclude '**/evaluation/filter/*'
+  scanForTestClasses = false
+  include '**/evaluation/test/suites/Test*.java'
+  exclude '**/evaluation/test/filter/*'
 }
 
 install {

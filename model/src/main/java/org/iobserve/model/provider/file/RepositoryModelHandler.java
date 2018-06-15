@@ -15,18 +15,9 @@
  ***************************************************************************/
 package org.iobserve.model.provider.file;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.emf.ecore.EPackage;
-import org.palladiosimulator.pcm.repository.BasicComponent;
-import org.palladiosimulator.pcm.repository.Interface;
-import org.palladiosimulator.pcm.repository.OperationInterface;
-import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.ProvidedRole;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 /**
@@ -39,63 +30,16 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
  */
 public final class RepositoryModelHandler extends AbstractModelHandler<Repository> {
 
-    /** map of operation interfaces mapped by id. */
-    private Map<String, OperationInterface> operationInterfaceMap;
-    /** map of operation signatures mapped by id. */
-    private Map<String, OperationSignature> operationSignatureMap;
-    /** map between operation interface id and the provided interface id that implements it. */
-    private Map<String, String> opInfToProvInfMap;
-    /** map of operation provided roles mapped by id. */
-    private Map<String, OperationProvidedRole> opProvidedRoleMap;
+    public static final String SUFFIX = "repository";
 
     /**
      * Create model provider to provide {@link Repository} model.
-     */
-    public RepositoryModelHandler() {
-        super();
-    }
-
-    /**
-     * Loading and initializing the maps for data access.
      *
-     * @param model
-     *            repository model
-     * @deprecated this functionality now resides in {@link RepositoryLookupModelProvier}
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    @Deprecated
-    public void loadData(final Repository model) {
-        this.opInfToProvInfMap = new HashMap<>();
-        this.opProvidedRoleMap = new HashMap<>();
-        this.operationInterfaceMap = new HashMap<>();
-        this.operationSignatureMap = new HashMap<>();
-
-        // loading OperationProvidedRoles and OperationInterfaces in dedicated maps
-        for (final RepositoryComponent nextRepoCmp : model.getComponents__Repository()) {
-            if (nextRepoCmp instanceof BasicComponent) {
-                final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
-
-                for (final ProvidedRole providedRole : basicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
-                    if (providedRole instanceof OperationProvidedRole) {
-                        final OperationProvidedRole opProvRole = (OperationProvidedRole) providedRole;
-                        final OperationInterface opInterface = opProvRole.getProvidedInterface__OperationProvidedRole();
-                        this.opInfToProvInfMap.put(opInterface.getId(), opProvRole.getId());
-                        this.opProvidedRoleMap.put(opProvRole.getId(), opProvRole);
-                    }
-                }
-            }
-        }
-
-        // loading OperationInterfaces and OperationSignatures in dedicated maps
-        for (final Interface nextInterface : model.getInterfaces__Repository()) {
-            if (nextInterface instanceof OperationInterface) {
-                final OperationInterface opInf = (OperationInterface) nextInterface;
-                this.operationInterfaceMap.put(opInf.getId(), opInf);
-
-                for (final OperationSignature opSig : opInf.getSignatures__OperationInterface()) {
-                    this.operationSignatureMap.put(opSig.getId(), opSig);
-                }
-            }
-        }
+    public RepositoryModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override
@@ -103,29 +47,9 @@ public final class RepositoryModelHandler extends AbstractModelHandler<Repositor
         return RepositoryPackage.eINSTANCE;
     }
 
-    /**
-     * Get the {@link OperationSignature} with the given signature. The comparison is done by the
-     * {@link OperationSignature#getEntityName()}.
-     *
-     * @param operationID
-     *            operation id
-     * @return operation signature instance or null if no operation signature with the given id
-     *         could be found
-     */
-    public OperationSignature getOperationSignature(final String operationID) {
-        return this.operationSignatureMap.get(operationID);
+    @Override
+    protected String getSuffix() {
+        return RepositoryModelHandler.SUFFIX;
     }
 
-    /**
-     * Get the {@link OperationProvidedRole} by the given operation interface and basic component.
-     *
-     * @param operationInterface
-     *            operation interface.
-     * @return operation provide role instance or null if none available by the given operation
-     *         interface
-     */
-    public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface) {
-        final String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
-        return this.opProvidedRoleMap.get(provRoleId);
-    }
 }

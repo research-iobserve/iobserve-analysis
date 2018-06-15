@@ -23,7 +23,7 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.analysis.data.graph.ModelGraph;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 
 /**
  *
@@ -49,7 +49,7 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
         boolean equalGraphs = false;
         if (this.baseAdaptationData != null) {
             // TODO finish
-            final PCMModelHandler modelProviders = new PCMModelHandler(new File(element.toFileString()));
+            final ModelImporter modelProviders = new ModelImporter(new File(element.toFileString()));
             final GraphFactory graphFactory = new GraphFactory();
             final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
 

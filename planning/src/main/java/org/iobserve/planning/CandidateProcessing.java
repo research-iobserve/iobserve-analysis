@@ -22,7 +22,7 @@ import teetime.stage.basic.AbstractTransformation;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.analysis.data.graph.ModelGraph;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.planning.data.PlanningData;
 
 /**
@@ -40,7 +40,7 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 
         final GraphFactory factory = new GraphFactory();
         final File directory = new File(adapdationData.getReDeploymentURI().toFileString());
-        final ModelGraph graph = factory.buildGraph(new PCMModelHandler(directory));
+        final ModelGraph graph = factory.buildGraph(new ModelImporter(directory));
         element.getAdaptationData().setReDeploymentGraph(graph);
 
         this.outputPort.send(element.getAdaptationData());

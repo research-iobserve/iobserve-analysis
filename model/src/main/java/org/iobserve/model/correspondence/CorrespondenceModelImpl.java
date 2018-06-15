@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas Boltz
  * @author Alessandro Giusa
  *
+ * @deprecated since 0.0.3 jss-paper
  */
+@Deprecated
 class CorrespondenceModelImpl implements ICorrespondence {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CorrespondenceModelImpl.class);
@@ -227,8 +229,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @return null if not available
      */
     private PcmEntityCorrespondent getPcmEntityCorrespondent(final String classSig) {
-        final PcmEntityCorrespondent pcmEntityCorrespondent = this.mapping.get(classSig.trim().replaceAll(" ", ""));
-        return pcmEntityCorrespondent;
+        return this.mapping.get(classSig.trim().replaceAll(" ", ""));
     }
 
     /**

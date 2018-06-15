@@ -49,7 +49,6 @@ public class SystemModification {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);
 
     private final Repository repositoryModel;
-    private final RepositoryComponent[] repositoryComponents;
     private final System systemModel;
 
     private final Map<String, List<RepositoryComponent>> duplicateRepositoryComponents;
@@ -57,16 +56,24 @@ public class SystemModification {
     private final Map<String, List<AssemblyContext>> openRequiredInterfaces = new HashMap<>();
     private final Map<String, List<AssemblyContext>> openProvidedInterfaces = new HashMap<>();
 
+    /**
+     * Create a system modification.
+     *
+     * @param systemModel
+     *            system model
+     * @param repositoryModel
+     *            repository model
+     */
     public SystemModification(final System systemModel, final Repository repositoryModel) {
         this.systemModel = systemModel;
         this.repositoryModel = repositoryModel;
         final int componentsCount = repositoryModel.getComponents__Repository().size();
-        this.repositoryComponents = repositoryModel.getComponents__Repository()
+        final RepositoryComponent[] repositoryComponents = repositoryModel.getComponents__Repository()
                 .toArray(new RepositoryComponent[componentsCount]);
 
         this.duplicateRepositoryComponents = new HashMap<>();
 
-        this.initDuplicateRepo(this.repositoryComponents);
+        this.initDuplicateRepo(repositoryComponents);
     }
 
     /*

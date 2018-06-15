@@ -33,8 +33,9 @@ import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
@@ -54,6 +55,8 @@ import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -74,14 +77,20 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            port to listen for Kieker records
      * @param outputs
      *            host and port for the Kieker adaptive monitoring
-     * @param rac
+     * @param correspondenceProvider
      *            correspondence model
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param resourceEnvironmentModelProvider
      *            resource environment model provider
      * @param allocationModelProvider
      *            allocation model provider
+     * @param allocationContextModelProvider
+     *            allocation context model provider (view)
      * @param systemModelProvider
      *            system model provider
+     * @param privacyModelProvider
+     *            provider for the privacy model
      * @param warningFile
      *            warnings
      * @param alarmFile
@@ -90,11 +99,12 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final ICorrespondence rac, final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
+            final Graph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final IModelProvider<System> systemModelProvider, final IModelProvider<PrivacyModel> privacyModelProvider,
             final File warningFile, final File alarmFile) throws IOException {
-
-        final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 
         /** instantiating filters. */
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
@@ -120,29 +130,30 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
         /** deployment. */
         final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, rac);
+                allocationModelProvider, allocationContextModelProvider, correspondenceGraph);
         final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
-                resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, rac);
+                allocationContextModelProvider, correspondenceGraph);
 
         /** geolocation. */
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
 
         final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+                resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
 
         final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);
         final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 
         final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
-        final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(rac);
+        final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceGraph,
+                repositoryModelProvider.getGraph(), systemModelProvider.getGraph(), allocationModelProvider.getGraph());
         final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
         final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
         final ModelProbeController modelProbeController = new ModelProbeController(allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        final ProbeMapper probeMapper = new ProbeMapper(rac);
+        final ProbeMapper probeMapper = new ProbeMapper(correspondenceGraph);
         final ProbeController probeController = new ProbeController(outputs);
 
         try {
@@ -176,7 +187,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 throw new IOException("Cannot create warning file.", eWarning);
             }
         } catch (final IOException eAlarm) {
-            throw new IOException("Cannot create warning file.", eAlarm);
+            throw new IOException("Cannot create alarm file.", eAlarm);
         }
 
     }

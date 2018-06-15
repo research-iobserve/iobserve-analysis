@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.service.privacy.violation.data.IProbeManagement;
 
 /**
@@ -30,7 +30,6 @@ import org.iobserve.service.privacy.violation.data.IProbeManagement;
 public class ProbeMapper extends AbstractConsumerStage<IProbeManagement> {
 
     private final OutputPort<String> outputPort = this.createOutputPort();
-    private final ICorrespondence rac;
 
     /**
      * Initialize probe mapper from model to code level.
@@ -38,8 +37,7 @@ public class ProbeMapper extends AbstractConsumerStage<IProbeManagement> {
      * @param rac
      *            correspondence model used for mapping
      */
-    public ProbeMapper(final ICorrespondence rac) {
-        this.rac = rac;
+    public ProbeMapper(final Graph rac) {
     }
 
     @Override

@@ -26,7 +26,6 @@ import java.util.Optional;
  * @author Jannis Kuckei
  *
  */
-
 public class EntryCallNode {
     private String signature;
     private final Map<String, CallInformation> entryCallInformation;

@@ -26,14 +26,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for pcm model handler. Implements common methods for loading/saving pcm model.
+ * The model handler allows to load and store in memory models in XMI files.
  *
  * @author Philipp Weimann
  * @author Tobias Poeppke
@@ -42,43 +41,59 @@ import org.slf4j.LoggerFactory;
  * @author Reiner Jung
  *
  * @param <T>
+ *            root class of metamodel
  *
  */
 public abstract class AbstractModelHandler<T extends EObject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractModelHandler.class);
 
+    private final Resource.Factory.Registry resourceRegistry;
+
+    private final ResourceSet resourceSet;
+
     /**
      * Create an abstract model handler.
+     *
+     * @param resourceSet
+     *            resource set for all models
      */
-    public AbstractModelHandler() {
-        // empty
+    public AbstractModelHandler(final ResourceSet resourceSet) {
+        this.resourceSet = resourceSet;
+        this.resourceRegistry = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = this.resourceRegistry.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
+
+        this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
+
     }
 
     /**
      * Save the internal model. This will override the existing.
      *
      * @param writeModelURI
-     *            URI refering where to store the model
+     *            URI referring where to store the model
      * @param model
      *            is the model to be stored
      */
     public final void save(final URI writeModelURI, final T model) {
-        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
+        this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
-
-        final Resource resource = resourceSet.createResource(writeModelURI);
+        final Resource resource = this.resourceSet.createResource(writeModelURI.appendFileExtension(this.getSuffix()));
         resource.getContents().add(model);
         try {
             resource.save(null);
         } catch (final IOException e) {
-            e.printStackTrace();
+            AbstractModelHandler.LOGGER.error("Cannot save model at {}", writeModelURI.toString());
         }
     }
+
+    /**
+     * Return the suffix associated with a specific type of model.
+     *
+     * @return the suffix
+     */
+    protected abstract String getSuffix();
 
     /**
      * Get an instance of the package where this model belongs to. <br>
@@ -106,20 +121,13 @@ public abstract class AbstractModelHandler<T extends EObject> {
     public T load(final URI readModelURI) {
         this.getPackage().eClass();
 
-        final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.setResourceFactoryRegistry(resourceRegistry);
-
-        final Resource resource = resourceSet.getResource(readModelURI, true);
+        final Resource resource = this.resourceSet.getResource(readModelURI, true);
         try {
-            resource.load(null);
+            resource.load(this.resourceSet.getLoadOptions());
         } catch (final IOException e) {
-            e.printStackTrace();
+            AbstractModelHandler.LOGGER.error("Cannot load model from {}", readModelURI.toString());
         }
-        EcoreUtil.resolveAll(resourceSet);
+        EcoreUtil.resolveAll(this.resourceSet);
         T model = null;
         if (!resource.getContents().isEmpty()) {
             model = (T) resource.getContents().get(0);

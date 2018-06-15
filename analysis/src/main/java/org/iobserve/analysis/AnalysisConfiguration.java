@@ -37,7 +37,7 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
@@ -47,6 +47,7 @@ import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -90,21 +91,24 @@ public class AnalysisConfiguration extends Configuration {
      *            provider for an environment model
      * @param allocationModelProvider
      *            provider for the allocation model
+     * @param allocationContextModelProvider
+     *            provider for a view on the allocation model
      * @param systemModelProvider
      *            provider for the system model
      * @param usageModelProvider
      *            usage model provider
-     * @param correspondenceModelProvider
-     *            provider for the correspondence model
+     * @param correspondenceModelGraph
+     *            graph for the correspondence model
      * @throws ConfigurationException
      *             if the configuration fails
      */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
             final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
-            final IModelProvider<UsageModel> usageModelProvider, final ICorrespondence correspondenceModelProvider)
-            throws ConfigurationException {
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final IModelProvider<System> systemModelProvider, final IModelProvider<UsageModel> usageModelProvider,
+            final Graph correspondenceModelGraph) throws ConfigurationException {
         this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
@@ -116,7 +120,7 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(sourceCompositeStage.getOutputPort(), this.eventDispatcher.getInputPort());
 
             this.containerManagement(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, correspondenceModelProvider);
+                    allocationContextModelProvider, systemModelProvider, correspondenceModelGraph);
             this.traceProcessing(configuration);
             this.geoLocation(configuration);
         } else {
@@ -133,6 +137,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param resourceEnvironmentModelProvider
      * @param allocationModelProvider
      * @param systemModelProvider
+     * @param allocationContextModelProvider
      * @param correspondenceModelProvider
      *
      * @throws ConfigurationException
@@ -140,8 +145,10 @@ public class AnalysisConfiguration extends Configuration {
      */
     private void containerManagement(final kieker.common.configuration.Configuration configuration,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final IModelProvider<System> systemModelProvider, final Graph correspondenceModelGraph)
+            throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             /** allocation. */
@@ -165,7 +172,7 @@ public class AnalysisConfiguration extends Configuration {
                     IDeployedEvent.class, null);
             this.eventDispatcher.registerOutput(deployedEventMatcher);
             this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+                    allocationModelProvider, allocationContextModelProvider, correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(deployedEventMatcher.getOutputPort(), this.deploymentStage.getDeployedInputPort());
 
@@ -173,14 +180,14 @@ public class AnalysisConfiguration extends Configuration {
             final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
                     IUndeployedEvent.class, null);
             this.eventDispatcher.registerOutput(undeployedEventMatcher);
-            this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+            this.undeploymentStage = new UndeploymentCompositeStage(allocationContextModelProvider,
+                    correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 
             /** dependent features. */
             this.createContainerManagementSink(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, correspondenceModelProvider);
+                    systemModelProvider);
         }
 
     }
@@ -193,15 +200,14 @@ public class AnalysisConfiguration extends Configuration {
      * @param resourceEnvironmentModelProvider
      * @param allocationModelProvider
      * @param systemModelProvider
-     * @param correspondenceModelProvider
      *
      * @throws ConfigurationException
      *             when configuration fails
      */
     private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider)
+            throws ConfigurationException {
         final String[] containerManagementSinks = configuration
                 .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {

@@ -27,16 +27,26 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
+import org.iobserve.model.correspondence.CorrespondenceFactory;
+import org.iobserve.model.privacy.PrivacyFactory;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
  * Collector main class.
@@ -58,10 +68,16 @@ public final class PrivacyViolationDetectionServiceMain
             "--pcm" }, required = true, description = "PCM model directory.", converter = FileConverter.class)
     private File pcmDirectory;
 
+    @Parameter(names = { "-w",
+            "--warnings" }, required = true, description = "Warnings file.", converter = FileConverter.class)
     private File warningFile;
 
+    @Parameter(names = { "-a",
+            "--alarms" }, required = true, description = "Alarms file.", converter = FileConverter.class)
     private File alarmsFile;
 
+    @Parameter(names = { "-d",
+            "--db-directory" }, required = true, description = "Model database directory.", converter = FileConverter.class)
     private File modelDatabaseDirectory;
 
     /**
@@ -84,26 +100,56 @@ public final class PrivacyViolationDetectionServiceMain
     @Override
     protected PrivacyViolationDetectionConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
+
         /** load models. */
-        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
-        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
-
-        final Graph allocationModelGraph = graphLoader
-                .initializeAllocationModelGraph(modelHandler.getAllocationModel());
-
-        final Graph resourceEnvironmentGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
-        final Graph systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
-
-        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph);
-        final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemGraph);
-
         try {
-            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,
-                    modelHandler.getCorrespondenceModel(), resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, this.warningFile, this.alarmsFile);
+            final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
+            final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+
+            /** initialize database. */
+            graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
+                    modelHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelHandler.getAllocationModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelHandler.getCorrespondenceModel(),
+                    null, ModelProvider.IMPLEMENTATION_ID);
+            graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(), null,
+                    ModelProvider.PCM_ID);
+
+            /** load neo4j graphs. */
+            final Graph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+            final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+            final Graph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+            final Graph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
+            final Graph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
+
+            /** model provider. */
+            final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
+                    allocationModelGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+                    resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
+            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, correspondenceModelGraph,
+                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
+                    allocationContextModelProvider, systemModelProvider, privacyModelProvider, this.warningFile,
+                    this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -120,7 +166,7 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected void shutdownService() {
-
+        // empty, no special shutdown required
     }
 
     @Override
@@ -130,7 +176,17 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        return true;
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory, "model database",
+                    commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.alarmsFile.getParentFile(), "alarm location",
+                            commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.warningFile.getParentFile(),
+                            "warnings location", commander);
+        } catch (final IOException e) {
+            AbstractServiceMain.LOGGER.error("Evaluating command line parameter failed.", e);
+            return false;
+        }
     }
 
 }

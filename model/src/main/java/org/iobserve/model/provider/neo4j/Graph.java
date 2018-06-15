@@ -16,7 +16,13 @@
 package org.iobserve.model.provider.neo4j;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
@@ -31,17 +37,49 @@ public class Graph {
 
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;
+    private final List<EFactory> eFactories = new ArrayList<>();
+    private final List<EClass> classes = new ArrayList<>();
 
     /**
      * Creates a new {@link GraphDatabaseService} at the given location.
      *
+     * @param factory
+     *            factory for the particular metamodel
      * @param graphDirectory
      *            Directory where the graph database shall be located
      */
-    public Graph(final File graphDirectory) {
+    public Graph(final EFactory factory, final File graphDirectory) {
         this.graphDirectory = graphDirectory;
         this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(this.graphDirectory);
         this.registerShutdownHook(this.graphDatabaseService);
+        this.eFactories.add(factory);
+        if (factory.getEPackage() != null) {
+            for (final EClassifier classifier : factory.getEPackage().getEClassifiers()) {
+                if (classifier instanceof EClass) {
+                    this.checkClassForContainmentReferences((EClass) classifier);
+                }
+            }
+        }
+    }
+
+    private void checkClassForContainmentReferences(final EClass clazz) {
+        if (!this.classes.contains(clazz)) {
+            this.classes.add(clazz);
+            for (final EReference reference : clazz.getEAllReferences()) {
+                final EClass type = reference.getEReferenceType();
+                this.addFactoryToCollection(type);
+                if (reference.isContainment()) {
+                    this.checkClassForContainmentReferences(type);
+                }
+            }
+        }
+    }
+
+    private void addFactoryToCollection(final EClass clazz) {
+        final EFactory subFactory = clazz.getEPackage().getEFactoryInstance();
+        if (!this.eFactories.contains(subFactory)) {
+            this.eFactories.add(subFactory);
+        }
     }
 
     /**
@@ -76,5 +114,9 @@ public class Graph {
                 graph.shutdown();
             }
         });
+    }
+
+    public List<EFactory> getEFactories() {
+        return this.eFactories;
     }
 }

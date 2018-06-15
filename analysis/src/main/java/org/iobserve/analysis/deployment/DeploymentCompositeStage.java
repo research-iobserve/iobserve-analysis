@@ -22,13 +22,15 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
@@ -50,25 +52,29 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      *            model provider for the resource environment
      * @param allocationModelProvider
      *            model provider for the allocation model (deployment model)
-     * @param systemModelProvider
+     * @param allocationContextModelProvider
      *            model provider for the system model
-     * @param correspondence
-     *            the correspondence model handler
+     * @param correspondenceModelGraph
+     *            the correspondence model graph
      */
     public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondence) {
-        this.deployPCMMapper = new DeployPCMMapper(correspondence);
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final Graph correspondenceModelGraph) {
+
+        final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
+                ModelProvider.IMPLEMENTATION_ID, null);
+        this.deployPCMMapper = new DeployPCMMapper(correspondenceModelProvider);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
                 resourceEnvironmentModelProvider);
 
         final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationModelProvider,
-                systemModelProvider);
+                allocationContextModelProvider);
 
         this.syntehticAllocation = new AllocationStage(resourceEnvironmentModelProvider);
         final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
         final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationModelProvider,
-                systemModelProvider);
+                allocationContextModelProvider);
 
         this.relayDeployedEventStage = new AggregateEventStage<>(2);
 

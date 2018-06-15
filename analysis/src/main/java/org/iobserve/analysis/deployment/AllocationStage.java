@@ -16,7 +16,6 @@
 package org.iobserve.analysis.deployment;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.List;
 import java.util.Optional;
@@ -88,27 +87,26 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      */
     @Override
     protected void execute(final IAllocationEvent event) throws MalformedURLException, UnknownObjectException {
-        final URL url;
+        final String service;
         if (event instanceof ContainerAllocationEvent) {
-            url = new URL(((ContainerAllocationEvent) event).getUrl());
+            service = ((ContainerAllocationEvent) event).getService();
         } else {
             throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
         }
-        final String hostName = url.getHost();
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
-                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
-                        hostName);
+                        this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
+                        service);
 
         if (!resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
-                    .readOnlyRootComponent(ResourceEnvironment.class);
+                    .readRootNode(ResourceEnvironment.class);
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
-                    .createResourceContainer(resourceEnvironmentModelGraph, hostName);
+                    .createResourceContainer(resourceEnvironmentModelGraph, service);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
-            this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
+            this.resourceEnvironmentModelGraphProvider.updateObject(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             /** signal allocation update. */
@@ -116,7 +114,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
             this.allocationOutputPort.send(event);
         } else {
             /** error allocation already happened. */
-            this.logger.debug("ResourceContainer %s was available." + hostName);
+            this.logger.debug("ResourceContainer %s was available." + service);
             final List<ProcessingResourceSpecification> procResSpec = resourceContainer.get()
                     .getActiveResourceSpecifications_ResourceContainer();
             for (int i = 0; i < procResSpec.size(); i++) {

@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -34,8 +34,8 @@ import org.palladiosimulator.pcm.system.System;
  */
 public final class ActionFactory {
 
-    private static PCMModelHandler runtimeModelHandler;
-    private static PCMModelHandler redeploymentModelHandler;
+    private static ModelImporter runtimeModelHandler;
+    private static ModelImporter redeploymentModelHandler;
 
     private ActionFactory() {
 
@@ -84,19 +84,19 @@ public final class ActionFactory {
                 .filter(s -> s.getId().equals(resourceContainerID)).findFirst().get();
     }
 
-    public static PCMModelHandler getRuntimeModels() {
+    public static ModelImporter getRuntimeModels() {
         return ActionFactory.runtimeModelHandler;
     }
 
-    public static void setRuntimeModels(final PCMModelHandler runtimeModels) {
+    public static void setRuntimeModels(final ModelImporter runtimeModels) {
         ActionFactory.runtimeModelHandler = runtimeModels;
     }
 
-    public static PCMModelHandler getRedeploymentModels() {
+    public static ModelImporter getRedeploymentModels() {
         return ActionFactory.redeploymentModelHandler;
     }
 
-    public static void setRedeploymentModels(final PCMModelHandler redeploymentModels) {
+    public static void setRedeploymentModels(final ModelImporter redeploymentModels) {
         ActionFactory.redeploymentModelHandler = redeploymentModels;
     }
 }

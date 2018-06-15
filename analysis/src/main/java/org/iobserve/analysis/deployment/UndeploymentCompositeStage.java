@@ -21,16 +21,14 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
+import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
- * Undeployment stage. TODO we need a separate silo to collect synthetic allocations which can then
- * be used by the undeployment stage to automatically deallocate host which have been automatically
- * allocated.
+ * Undeployment stage.
  *
  * @author Reiner Jung
  *
@@ -43,22 +41,19 @@ public class UndeploymentCompositeStage extends CompositeStage {
     /**
      * Create a composite stage handling undeployment.
      *
-     * @param resourceEnvironmentModelGraphProvider
-     *            resource environment provider
-     * @param allocationModelGraphProvider
-     *            allocation model provider
-     * @param systemModelGraphProvider
-     *            system model provider
-     * @param correspondence
-     *            correspondence model handler
+     * @param allocationContextModelGraphProvider
+     *            allocation context model provider
+     * @param correspondenceModelGraph
+     *            correspondence model graph
      */
-    public UndeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
+    public UndeploymentCompositeStage(final IModelProvider<AllocationContext> allocationContextModelGraphProvider,
+            final Graph correspondenceModelGraph) {
 
-        this.undeployPCMMapper = new UndeployPCMMapper(correspondence);
+        final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
+                ModelProvider.IMPLEMENTATION_ID, null);
+        this.undeployPCMMapper = new UndeployPCMMapper(correspondenceModelProvider);
 
-        this.undeployment = new UndeploymentModelUpdater(allocationModelGraphProvider, systemModelGraphProvider);
+        this.undeployment = new UndeploymentModelUpdater(allocationContextModelGraphProvider);
 
         /** connect internal ports. */
         this.connectPorts(this.undeployPCMMapper.getOutputPort(), this.undeployment.getInputPort());

@@ -29,7 +29,10 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  * @see BiFunction
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ *
+ * @deprecated 0.0.3 is no longer required
  */
+@Deprecated
 @FunctionalInterface
 public interface IOperationSignatureSelector extends IToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
 

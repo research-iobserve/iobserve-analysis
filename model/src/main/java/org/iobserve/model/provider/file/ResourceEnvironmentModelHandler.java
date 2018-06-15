@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -29,11 +30,16 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class ResourceEnvironmentModelHandler extends AbstractModelHandler<ResourceEnvironment> {
 
+    public static final String SUFFIX = "resourceenvironment";
+
     /**
      * Create an empty resource environment model provider.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public ResourceEnvironmentModelHandler() {
-        super();
+    public ResourceEnvironmentModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override
@@ -41,4 +47,8 @@ public class ResourceEnvironmentModelHandler extends AbstractModelHandler<Resour
         return ResourceenvironmentcloudPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return ResourceEnvironmentModelHandler.SUFFIX;
+    }
 }

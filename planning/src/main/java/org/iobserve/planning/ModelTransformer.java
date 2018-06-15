@@ -27,7 +27,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.ModelHandlingErrorException;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
@@ -62,8 +62,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class ModelTransformer {
 
     private final PlanningData planningData;
-    private final PCMModelHandler originalModelHandler;
-    private PCMModelHandler processedModelHandler;
+    private final ModelImporter originalModelHandler;
+    private ModelImporter processedModelHandler;
 
     private AllocationGroupsContainer originalAllocationGroups;
     private Allocation allocationModel;
@@ -81,13 +81,14 @@ public class ModelTransformer {
      *
      * @param planningData
      *            input data
+     * @throws IOException
      */
-    public ModelTransformer(final PlanningData planningData) {
+    public ModelTransformer(final PlanningData planningData) throws IOException {
         this.planningData = planningData;
         final String originalModelDir = planningData.getOriginalModelDir().toFileString();
         final File directory = new File(originalModelDir);
 
-        this.originalModelHandler = new PCMModelHandler(directory);
+        this.originalModelHandler = new ModelImporter(directory);
     }
 
     /**
@@ -130,7 +131,7 @@ public class ModelTransformer {
 
         this.planningData.setProcessedModelDir(this.processedModelDir);
 
-        this.processedModelHandler = new PCMModelHandler(new File(this.processedModelDir.toFileString()));
+        this.processedModelHandler = new ModelImporter(new File(this.processedModelDir.toFileString()));
 
         this.allocationModel = this.processedModelHandler.getAllocationModel();
         this.cloudProfileModel = this.processedModelHandler.getCloudProfileModel();
@@ -175,14 +176,12 @@ public class ModelTransformer {
     }
 
     private void saveModels() {
-        new DesignDecisionModelHandler().save(
-                this.processedModelDir.appendFileExtension(PCMModelHandler.DESIGN_DECISION_SUFFIX), this.decisionModel);
-        new AllocationModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
+        new DesignDecisionModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
+                this.decisionModel);
+        new AllocationModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
                 this.allocationModel);
-        new CostModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.COST_SUFFIX),
-                this.costModel);
-        new ResourceEnvironmentModelHandler().save(
-                this.processedModelDir.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
+        new CostModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir, this.costModel);
+        new ResourceEnvironmentModelHandler(this.originalModelHandler.getResourceSet()).save(this.processedModelDir,
                 this.resourceEnvironmentModel);
     }
 

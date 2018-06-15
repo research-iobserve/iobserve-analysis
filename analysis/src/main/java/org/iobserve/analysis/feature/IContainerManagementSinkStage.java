@@ -32,8 +32,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  */
 public interface IContainerManagementSinkStage {
 
-    public Class<?>[] SIGNATURE = { Configuration.class, IModelProvider.class, IModelProvider.class,
-            IModelProvider.class, IModelProvider.class };
+    Class<?>[] SIGNATURE = { Configuration.class, IModelProvider.class, IModelProvider.class, IModelProvider.class,
+            IModelProvider.class };
 
     /**
      *

@@ -29,6 +29,11 @@ import teetime.framework.OutputPort;
  */
 public interface ISourceCompositeStage {
 
+    /**
+     * get the output port of a source composite stage.
+     *
+     * @return the proper output port
+     */
     OutputPort<IMonitoringRecord> getOutputPort();
 
 }

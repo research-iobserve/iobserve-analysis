@@ -28,6 +28,8 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
@@ -38,11 +40,8 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
-import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +58,16 @@ import org.slf4j.LoggerFactory;
  */
 public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
+    /** TODO these should be moved elsewhere. */
+    public static final String PCM_ENTITY_NAME = "entityName";
+    public static final String PCM_ID = "id";
+    public static final String IMPLEMENTATION_ID = "implementationId";
+
     protected static final String EMF_URI = "emfUri";
     protected static final String REF_POS = "refPos";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProvider.class);
 
-    private static final String ENTITY_NAME = "entityName";
-    private static final String ID = "id";
     private static final String REF_NAME = "refName";
     private static final String TYPE = "type";
 
@@ -74,15 +76,25 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String VISITED = "visited";
 
     private final Graph graph;
+    private final String nameLabel;
+    private final String idLabel;
 
     /**
      * Creates a new model provider.
      *
      * @param graph
      *            The neo4j graph database
+     * @param nameLabel
+     *            label used for the name property, e.g., entityName in PCM (can be null if no names
+     *            are present)
+     * @param idLabel
+     *            label used for tne id property, e.g., id in PCM (can be null if no ids are
+     *            present)
      */
-    public ModelProvider(final Graph graph) {
+    public ModelProvider(final Graph graph, final String nameLabel, final String idLabel) {
         this.graph = graph;
+        this.nameLabel = nameLabel;
+        this.idLabel = idLabel;
     }
 
     /**
@@ -103,33 +115,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Clones and returns a new version from the current newest version of the model graph. If there
      * is none yet an empty graph is returned.
      *
-     * @param clazz
-     *            The model type (only {@link Allocation}, {@link Repository},
-     *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
+     * @param factory
+     *            metamodel factory class
      *
      * @return The cloned graph
      */
-    public Graph cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph cloneNewGraphVersion(final EFactory factory) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
-        if (clazz.equals(Allocation.class)) {
-            return graphLoader.cloneNewAllocationModelGraphVersion();
-        } else if (clazz.equals(Repository.class)) {
-            return graphLoader.cloneNewRepositoryModelGraphVersion();
-        } else if (clazz.equals(ResourceEnvironment.class)) {
-            return graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
-        } else if (clazz.equals(System.class)) {
-            return graphLoader.cloneNewSystemModelGraphVersion();
-        } else if (clazz.equals(UsageModel.class)) {
-            return graphLoader.cloneNewUsageModelGraphVersion();
-        } else {
-            if (ModelProvider.LOGGER.isWarnEnabled()) {
-                ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
-                        + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
-            }
-            return null;
-        }
+        return graphLoader.cloneNewModelGraphVersion(factory);
     }
 
     /*
@@ -138,13 +133,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#createComponent(T)
      */
     @Override
-    public void createComponent(final T component) {
+    public void storeModelPartition(final T rootElement) {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
+            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(rootElement,
                     new HashSet<>());
-            this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
+
+            this.createNodes(rootElement, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
 
@@ -191,7 +187,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Helper method for writing: Writes the given component into the provider's {@link #graph}
      * recursively. Calls to this method have to be performed from inside a {@link Transaction}.
      *
-     * @param component
+     * @param storeableObject
      *            Component to save
      * @param containmentsAndDatatypes
      *            Set of EObjects contained in the root preferably created by
@@ -201,48 +197,49 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            sure nodes are written just once
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component, final Set<EObject> containmentsAndDatatypes,
+    private Node createNodes(final EObject storeableObject, final Set<EObject> containmentsAndDatatypes,
             final Map<EObject, Node> objectsToCreatedNodes) {
+
         // Create a label representing the type of the component
-        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
+        final Label label = Label.label(storeableObject.eClass().getInstanceTypeName());
         Node node = null;
 
+        // TODO unnecessary complicated
         // Check if node has already been created
-        final EAttribute idAttr = component.eClass().getEIDAttribute();
+        final EAttribute idAttr = storeableObject.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
-        } else if (component instanceof PrimitiveDataType) {
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, storeableObject.eGet(idAttr));
+        } else if (storeableObject instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
-                    ((PrimitiveDataType) component).getType().name());
-        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
+                    ((PrimitiveDataType) storeableObject).getType().name());
+        } else if (storeableObject instanceof UsageModel || storeableObject instanceof ResourceEnvironment) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                    .findNodes(Label.label(component.eClass().getName()));
+                    .findNodes(Label.label(storeableObject.eClass().getName()));
             if (nodes.hasNext()) {
                 node = nodes.next();
             }
         } else {
             // For components that cannot be found in the graph (e.g. due to missing id) but have
             // been created in this recursion
-            node = objectsToCreatedNodes.get(component);
+            node = objectsToCreatedNodes.get(storeableObject);
         }
 
         // If there is no node yet, create one
         if (node == null) {
-
             node = this.graph.getGraphDatabaseService().createNode(label);
-            objectsToCreatedNodes.put(component, node);
+            objectsToCreatedNodes.put(storeableObject, node);
 
             // Create a URI to enable proxy resolving
-            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
+            final URI uri = ((BasicEObjectImpl) storeableObject).eProxyURI();
             if (uri == null) {
-                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
+                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(storeableObject));
             } else {
                 node.setProperty(ModelProvider.EMF_URI, uri.toString());
             }
 
             // Save attributes as node properties
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                final Object value = component.eGet(attr);
+            for (final EAttribute attr : storeableObject.eClass().getEAllAttributes()) {
+                final Object value = storeableObject.eGet(attr);
                 if (value != null) {
                     node.setProperty(attr.getName(), value.toString());
                 }
@@ -250,15 +247,15 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             // Outgoing references are only stored for containments and data types of the root,
             // otherwise we just store the blank node as a proxy
-            if (containmentsAndDatatypes.contains(component)) {
+            if (containmentsAndDatatypes.contains(storeableObject)) {
 
-                for (final EReference ref : component.eClass().getEAllReferences()) {
-                    final Object refReprensation = component.eGet(ref);
+                for (final EReference ref : storeableObject.eClass().getEAllReferences()) {
+                    final Object refRepresentation = storeableObject.eGet(ref);
 
                     // 0..* refs are represented as a list and 1 refs are represented directly
-                    if (refReprensation instanceof EList<?>) {
+                    if (refRepresentation instanceof EList<?>) {
 
-                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        final EList<?> refs = (EList<?>) storeableObject.eGet(ref);
                         for (int i = 0; i < refs.size(); i++) {
                             final Object o = refs.get(i);
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
@@ -270,11 +267,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                         }
                     } else {
-                        if (refReprensation != null) {
-                            final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
+                        if (refRepresentation != null) {
+                            final Node refNode = this.createNodes((EObject) refRepresentation, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
                             final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                                    ModelProviderUtil.getRelationshipType(ref, refRepresentation));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                             rel.setProperty(ModelProvider.REF_POS, 0);
 
@@ -294,9 +291,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    public T readComponentById(final Class<T> clazz, final String id) {
+    public T readObjectByIdAndLock(final Class<T> clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyComponentById(clazz, id);
+        return this.readObjectById(clazz, id);
     }
 
     /**
@@ -310,13 +307,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T readOnlyComponentById(final Class<T> clazz, final String id) {
-        final Label label = Label.label(clazz.getSimpleName());
+    public T readObjectById(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getCanonicalName());
 
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
@@ -334,7 +331,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @Override
     public List<T> readComponentByName(final Class<T> clazz, final String entityName) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyComponentByName(clazz, entityName);
+        return this.readObjectsByName(clazz, entityName);
     }
 
     /**
@@ -351,13 +348,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName) {
-        final Label label = Label.label(clazz.getSimpleName());
+    public List<T> readObjectsByName(final Class<T> clazz, final String entityName) {
+        final Label label = Label.label(clazz.getCanonicalName());
         final List<T> nodes = new LinkedList<>();
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodesIter = this.graph.getGraphDatabaseService().findNodes(label,
-                    ModelProvider.ENTITY_NAME, entityName);
+                    this.nameLabel, entityName);
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
@@ -384,12 +381,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
     private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
-
         if (!containmentsAndDatatypes.contains(node)) {
             containmentsAndDatatypes.add(node);
 
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                    EMFRelationshipType.IS_TYPE)) {
                 this.getAllContainmentsAndDatatypes(rel.getEndNode(), containmentsAndDatatypes);
             }
         }
@@ -418,7 +414,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         if (!nodesToCreatedObjects.containsKey(node)) {
             // Get node's data type label and instantiate a new empty object of this data type
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
-            component = ModelProviderUtil.instantiateEObject(label.name());
+            component = ModelProviderUtil.instantiateEObject(this.graph.getEFactories(), label.name());
 
             this.loadAttributes(component, node.getAllProperties());
 
@@ -470,11 +466,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             } else {
                 // Create proxy EObject here...
                 final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
-                final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
+                final EObject endComponent = ModelProviderUtil.instantiateEObject(this.graph.getEFactories(),
+                        endLabel.name());
 
                 if (endComponent != null) {
                     final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
                     ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
+                    // TODO here to set the unique identifier
 
                     // Load attribute values from the node
                     final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
@@ -485,8 +483,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                         // attr == null for the emfUri property stored in the graph
                         if (attr != null) {
-                            final Object value = ModelProviderUtil.instantiateAttribute(
-                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+                            final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType(),
+                                    property.getValue().toString());
 
                             if (value != null) {
                                 endComponent.eSet(attr, value);
@@ -497,7 +495,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     if (refReprensation instanceof EList<?>) {
                         ((EList<EObject>) refReprensation).add(endComponent);
                     } else {
-                        component.eSet(ref, endComponent);
+                        if (ref.isChangeable()) { // TODO what to do with unchangeable elements
+                            component.eSet(ref, endComponent);
+                        }
                     }
                 }
             }
@@ -520,13 +520,51 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             // attr == null for the emfUri property stored in the graph
             if (attr != null) {
-                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                        property.getValue().toString());
+                if (attr.isMany()) {
+                    this.createManyValuesAttribute(component, attr, property);
+                } else {
+                    this.createSingleValueAttribute(component, attr, property);
+                }
+
+            }
+        }
+    }
+
+    private void createManyValuesAttribute(final EObject component, final EAttribute attr,
+            final Entry<String, Object> property) {
+        @SuppressWarnings("unchecked")
+        final List<Object> attribute = (List<Object>) component.eGet(attr);
+
+        final String valueString = property.getValue().toString();
+
+        final String[] values = valueString.substring(1, valueString.length() - 1).split(", ");
+        for (final String value : values) {
+            final Object convertedValue = this.convertValue(attr.getEAttributeType(), value);
+
+            attribute.add(convertedValue);
+        }
+    }
+
+    private void createSingleValueAttribute(final EObject component, final EAttribute attr,
+            final Entry<String, Object> property) {
+        component.eSet(attr, this.convertValue(attr.getEAttributeType(), property.getValue().toString()));
+    }
+
+    private Object convertValue(final EDataType type, final String input) {
+        Object value = ModelProviderUtil.instantiateAttribute(type, input);
+
+        if (value == null) {
+            for (final EFactory factory : this.graph.getEFactories()) {
+                value = factory.createFromString(type, input);
 
                 if (value != null) {
-                    component.eSet(attr, value);
+                    return value;
                 }
             }
+
+            throw new InternalError("Type " + type.getInstanceClassName() + " is not supported.");
+        } else {
+            return value;
         }
     }
 
@@ -536,15 +574,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByType(java.lang.Class)
      */
     @Override
-    public List<String> readComponentByType(final Class<T> clazz) {
+    public List<String> collectAllObjectIdsByType(final Class<T> clazz) {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                    .findNodes(Label.label(clazz.getSimpleName()));
+                    .findNodes(Label.label(clazz.getCanonicalName()));
+
             final List<String> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add(n.getProperty(ModelProvider.ID).toString());
+                ids.add(n.getProperty(this.idLabel).toString());
             }
 
             tx.success();
@@ -558,44 +597,40 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readRootComponent(java.lang.Class)
      */
     @Override
-    public T readRootComponent(final Class<T> clazz) {
+    public T readRootNodeAndLock(final Class<T> clazz) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyRootComponent(clazz);
+        return this.readRootNode(clazz);
     }
 
     /**
-     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
-     * UsageModel without locking the graph for other providers.
+     * Reads the models (partition) root node and all contained classes without locking the graph
+     * for other providers.
      *
      * @param clazz
-     *            Data type of the root component
-     * @return The read component
+     *            Data type of the root object
+     * @return The read object
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T readOnlyRootComponent(final Class<T> clazz) {
-        EObject component = null;
+    public T readRootNode(final Class<T> clazz) {
+        EObject object = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            if (clazz.equals(Allocation.class) || clazz.equals(Repository.class)
-                    || clazz.equals(ResourceEnvironment.class) || clazz.equals(System.class)
-                    || clazz.equals(UsageModel.class)) {
-                final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                        .findNodes(Label.label(clazz.getSimpleName()));
-                if (nodes.hasNext()) {
-                    final Node node = nodes.next();
-                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
-                            new HashSet<Node>());
-                    component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
-                }
-            } else {
-                ModelProvider.LOGGER.warn(
-                        "Passed type of readRootComponent(final Class<T> clazz) has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+
+            final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
+                    .findNodes(Label.label(clazz.getCanonicalName()));
+
+            if (nodes.hasNext()) {
+                final Node node = nodes.next();
+
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                        new HashSet<Node>());
+                object = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
 
             tx.success();
         }
 
-        return (T) component;
+        return (T) object;
     }
 
     /**
@@ -623,13 +658,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The containing component
      */
     public EObject readOnlyContainingComponentById(final Class<?> clazz, final String id) {
-        final Label label = Label.label(clazz.getSimpleName());
+        final Label label = Label.label(clazz.getCanonicalName());
+
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Iterator<Relationship> inRels = node
-                    .getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS).iterator();
+                    .getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS).iterator();
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
@@ -671,17 +707,20 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @Override
     public List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id) {
         final List<EObject> referencingComponents = new LinkedList<>();
-        final Label label = Label.label(clazz.getSimpleName());
+        final Label label = Label.label(clazz.getCanonicalName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
-                final Node startNode = inRel.getStartNode();
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
-                        new HashSet<Node>());
-                final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
-                        new HashMap<Node, EObject>());
-                referencingComponents.add(component);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
+            if (node != null) {
+                for (final Relationship inRel : node.getRelationships(Direction.INCOMING,
+                        EMFRelationshipType.REFERENCES)) {
+                    final Node startNode = inRel.getStartNode();
+                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
+                            new HashSet<Node>());
+                    final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
+                            new HashMap<Node, EObject>());
+                    referencingComponents.add(component);
+                }
             }
 
             tx.success();
@@ -696,17 +735,18 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
     @Override
-    public void updateComponent(final Class<T> clazz, final T component) {
+    public void updateObject(final Class<T> clazz, final T component) {
         ModelProviderSynchronizer.getLock(this);
 
         final EAttribute idAttr = component.eClass().getEIDAttribute();
-        final Label label = Label.label(clazz.getSimpleName());
+        final Label label = Label.label(clazz.getCanonicalName());
+
         final Set<EObject> containmentsAndDatatypes;
         final Node node;
 
         if (idAttr != null) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-                node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+                node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
                 containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component, new HashSet<>());
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
@@ -714,7 +754,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
-                        .findNodes(Label.label(clazz.getSimpleName()));
+                        .findNodes(Label.label(clazz.getCanonicalName()));
                 if (nodes.hasNext()) {
                     node = nodes.next();
                     containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component, new HashSet<>());
@@ -843,13 +883,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    public void deleteComponent(final Class<T> clazz, final String id) {
+    public void deleteObjectById(final Class<T> clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
 
-        final Label label = Label.label(clazz.getSimpleName());
+        final Label label = Label.label(clazz.getCanonicalName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             if (node != null) {
                 this.deleteComponentNodes(node);
             }
@@ -861,15 +901,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     /**
      * Helper method for deleting: Starting with a given node this method recursively traverses down
-     * through all nodes accessible via {@link PcmRelationshipType#CONTAINS} edges and then deletes
+     * through all nodes accessible via {@link EMFRelationshipType#CONTAINS} edges and then deletes
      * them from bottom to the top.
      *
      * @param node
      *            The node to start with
      */
     private void deleteComponentNodes(final Node node) {
-
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS)) {
             this.deleteComponentNodes(rel.getEndNode());
         }
 
@@ -887,14 +926,15 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * String, boolean)
      */
     @Override
-    public void deleteComponentAndDatatypes(final Class<T> clazz, final String id, final boolean forceDelete) {
+    public void deleteObjectByIdAndDatatypes(final Class<T> clazz, final String id, final boolean forceDelete) {
         ModelProviderSynchronizer.getLock(this);
 
-        final Label label = Label.label(clazz.getSimpleName());
+        final Label label = Label.label(clazz.getCanonicalName());
+
         final Node node;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             this.deleteComponentAndDatatypeNodes(node, forceDelete);
             tx.success();
         }
@@ -922,8 +962,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     /**
      * Helper method for deleting: Starting from a given node this method recursively marks all
-     * nodes accessible via {@link PcmRelationshipType#CONTAINS} or
-     * {@link PcmRelationshipType#IS_TYPE} edges. Calls to this method have to be performed from
+     * nodes accessible via {@link EMFRelationshipType#CONTAINS} or
+     * {@link EMFRelationshipType#IS_TYPE} edges. Calls to this method have to be performed from
      * inside a {@link Transaction}.
      *
      * @param node
@@ -932,8 +972,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private void markAccessibleNodes(final Node node) {
         node.setProperty(ModelProvider.DELETE, true);
 
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
                 rel.setProperty(ModelProvider.ACCESSIBLE, true);
                 this.markAccessibleNodes(rel.getEndNode());
@@ -945,9 +985,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Helper method for deleting: Starting from a given node this method recursively marks all
      * accessible nodes marked with {@link #markAccessibleNodes(Node)} which can be deleted.
      * Starting from one node all contained nodes can be deleted as well. Nodes with incoming
-     * {@link PcmRelationshipType#IS_TYPE} edges may only be deleted if they are not referenced from
+     * {@link EMFRelationshipType#IS_TYPE} edges may only be deleted if they are not referenced from
      * outside the accessible nodes and have no predecessor which is referenced from outside the
-     * accessible nodes via an {@link PcmRelationshipType#IS_TYPE} edge. Calls to this method have
+     * accessible nodes via an {@link EMFRelationshipType#IS_TYPE} edge. Calls to this method have
      * to be performed from inside a {@link Transaction}.
      *
      * @param node
@@ -959,8 +999,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         boolean reallyDelete = reallyDeletePred;
 
         // Check if there are incoming IS_TYPE relations from outside
-        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.ACCESSIBLE) && !forceDelete) {
                 reallyDelete = false;
             }
@@ -972,8 +1012,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
 
         // Recursively check successors and mark already visited edges to prevent call circles
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.VISITED)) {
                 rel.setProperty(ModelProvider.VISITED, true);
                 this.markDeletableNodes(rel.getEndNode(), reallyDelete, false);
@@ -981,8 +1021,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
 
         // Remove edge marks when returned from successor node's calls
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
             rel.removeProperty(ModelProvider.VISITED);
         }
     }
@@ -998,8 +1038,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     private void deleteMarkedNodes(final Node node) {
         // Recursively go to the lowest node and mark already visited edges to prevent call circles
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
 
             try {
                 if (!rel.hasProperty(ModelProvider.VISITED)) {
@@ -1022,8 +1062,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             } else {
                 // Only remove visited mark
-                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                        PcmRelationshipType.IS_TYPE)) {
+                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                        EMFRelationshipType.IS_TYPE)) {
                     rel.removeProperty(ModelProvider.VISITED);
                 }
             }
@@ -1053,6 +1093,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The graph
      */
+    @Override
     public Graph getGraph() {
         return this.graph;
     }

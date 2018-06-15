@@ -34,5 +34,5 @@ public interface IParameterMetric {
      *            second model
      * @return returns the distance
      */
-    public double getDistance(BehaviorModel a, BehaviorModel b);
+    double getDistance(BehaviorModel a, BehaviorModel b);
 }

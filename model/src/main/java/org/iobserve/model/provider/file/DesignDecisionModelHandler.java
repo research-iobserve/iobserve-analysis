@@ -19,6 +19,7 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * Model provider to provide a {@link DecisionSpace} model.
@@ -28,11 +29,16 @@ import org.eclipse.emf.ecore.EPackage;
  */
 public class DesignDecisionModelHandler extends AbstractModelHandler<DecisionSpace> {
 
+    public static final String SUFFIX = "designdecision";
+
     /**
      * Create a new provider with the given model file.
+     * 
+     * @param resourceSet
+     *            set the resource set for the resource
      */
-    public DesignDecisionModelHandler() {
-        super();
+    public DesignDecisionModelHandler(final ResourceSet resourceSet) {
+        super(resourceSet);
     }
 
     @Override
@@ -40,4 +46,8 @@ public class DesignDecisionModelHandler extends AbstractModelHandler<DecisionSpa
         return designdecisionPackage.eINSTANCE;
     }
 
+    @Override
+    protected String getSuffix() {
+        return DesignDecisionModelHandler.SUFFIX;
+    }
 }

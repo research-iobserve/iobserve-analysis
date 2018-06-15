@@ -16,6 +16,7 @@
 package org.iobserve.model.correspondence;
 
 import java.io.FileInputStream;
+import java.util.Locale;
 
 import javax.xml.bind.JAXB;
 
@@ -29,9 +30,11 @@ import org.iobserve.model.utils.StringUtils;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
- * @version 1.0
+ * @version 0.0.2
  *
+ * @deprecated since 0.0.3 jss-paper
  */
+@Deprecated
 public final class CorrespondeceModelFactory {
 
     /** singleton instance of factory. */
@@ -52,8 +55,8 @@ public final class CorrespondeceModelFactory {
     public static final IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
             operationSignature) -> CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method,
                     operationSignature)
-                    || method.getParent().getUnitName().toLowerCase()
-                            .contains(operationSignature.getName().toLowerCase());
+                    || method.getParent().getUnitName().toLowerCase(Locale.getDefault())
+                            .contains(operationSignature.getName().toLowerCase(Locale.getDefault()));
 
     /**
      * Simple constructor does nothing.

@@ -20,9 +20,9 @@ import kieker.common.record.IMonitoringRecord;
 /**
  * @author Reiner Jung
  * 
- * @since 0.0.2
+ * @since 0.0.3
  */
 public interface GeoLocation extends IMonitoringRecord {
-	public short getCountryCode();
+	public ISOCountryCode getCountryCode();
 	
 }

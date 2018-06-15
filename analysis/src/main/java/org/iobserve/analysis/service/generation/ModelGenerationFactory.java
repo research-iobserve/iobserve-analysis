@@ -21,7 +21,9 @@ import java.io.IOException;
 import org.apache.commons.cli.CommandLine;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.PCMModelHandler;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.RepositoryModelHandler;
 import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
@@ -42,6 +44,8 @@ public final class ModelGenerationFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);
 
+    private static final ResourceSet resourceSet = new ResourceSetImpl();
+
     private ModelGenerationFactory() {
         // factory
     }
@@ -53,7 +57,7 @@ public final class ModelGenerationFactory {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelGenerationFactory.LOGGER.info("Copying repository model to new location.");
-        final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler();
+        final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler(ModelGenerationFactory.resourceSet);
         repoModelProvider.load(repoLocation);
         ModelGenerationFactory.copyRepoToOutput(outputLocation, repoModelProvider);
 
@@ -68,15 +72,22 @@ public final class ModelGenerationFactory {
     }
 
     private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {
-        final PCMModelHandler modelProviders = new PCMModelHandler(new File(outputLocation.toFileString()));
-        final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModel());
-        final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
+        try {
+            final ModelImporter modelProviders = new ModelImporter(new File(outputLocation.toFileString()));
+            final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModel());
+            final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 
-        final SystemModelHandler systemModelProvider = new SystemModelHandler();
-        final URI systemModelURI = URI.createFileURI(
-                outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
-        systemModelProvider.save(systemModelURI, systemModel);
-        return systemModel;
+            final SystemModelHandler systemModelProvider = new SystemModelHandler(ModelGenerationFactory.resourceSet);
+            final URI systemModelURI = URI.createFileURI(
+                    outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
+            systemModelProvider.save(systemModelURI, systemModel);
+
+            return systemModel;
+
+        } catch (final IOException e) {
+            java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+            return null;
+        }
     }
 
     private static ResourceEnvironment generateAndSaveResourceEnvironment(final CommandLine commandLine,
@@ -85,7 +96,8 @@ public final class ModelGenerationFactory {
         final ResourceEnvironment resEnvModel = resEnvGen
                 .craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
 
-        final ResourceEnvironmentModelHandler resEnvModelProvider = new ResourceEnvironmentModelHandler();
+        final ResourceEnvironmentModelHandler resEnvModelProvider = new ResourceEnvironmentModelHandler(
+                ModelGenerationFactory.resourceSet);
         final URI resEnvModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".resourceenvironment");
         resEnvModelProvider.save(resEnvModelURI, resEnvModel);
@@ -97,7 +109,8 @@ public final class ModelGenerationFactory {
         final AllocationGeneration allocationGen = new AllocationGeneration(systemModel, resEnvModel);
         final Allocation allocationModel = allocationGen.generateAllocation();
 
-        final AllocationModelHandler allocationModelProvider = new AllocationModelHandler();
+        final AllocationModelHandler allocationModelProvider = new AllocationModelHandler(
+                ModelGenerationFactory.resourceSet);
         final URI allocationModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".allocation");
         allocationModelProvider.save(allocationModelURI, allocationModel);
