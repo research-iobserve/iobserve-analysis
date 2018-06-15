@@ -59,6 +59,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         try {
             HierarchicalClustering.hieraricalClusterer.buildClusterer(instances);
 
+            // ##### TESTING
             // Print normal
             HierarchicalClustering.hieraricalClusterer.setPrintNewick(false);
             System.out.println(HierarchicalClustering.hieraricalClusterer.graph());
@@ -87,6 +88,8 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             // eval.evaluateClusterer(newInstances); // data to evaluate the clusterer on
             // System.out.println("# of clusters: " + eval.getNumClusters()); // output # of
             // // clusters
+
+            // ##### END TESTING
 
             return clusteringResults;
 

@@ -1,0 +1,101 @@
+## common
+
+# data location
+
+DATA_DIR="C:/Users/student/git/single-jpetstore-clustering-experiment/data"
+
+# fixed dir
+
+FIXED_DIR="C:/Users/student/git/single-jpetstore-clustering-experiment/fixed/FishLover"
+
+# PCM directory
+
+PCM_DIR="$BASE_DIR/pcm"
+
+# aggregations of comparison results
+
+AGGREGATE_DIR="$BASE_DIR/aggregates"
+
+# comparisons results
+
+COMPARISON_DIR="$BASE_DIR/comparisons"
+
+# ideal behavior models
+
+IDEAL_MODELS_DIR="C:/Users/student/git/single-jpetstore-clustering-experiment/ideal-behavior-models"
+
+# database directory
+
+DB_DIR="$BASE_DIR/db"
+
+# analysis results
+
+RESULT_DIR="C:/Users/student/git/single-jpetstore-clustering-experiment/results"
+
+# Kieker distribution archive extract directory
+
+KIEKER_DIR=""
+
+
+
+# application url
+
+SERVICE_URL="http://172.17.0.2:8080/jpetstore"
+
+
+
+# workloads
+
+WORKLOAD_DIR=$BASE_DIR/../../workloads/jpetstore-selenium-workloads/
+
+
+
+# iobserve analysis
+
+ANALYSIS="C:/Users/student/git/single-jpetstore-clustering-experiment/analysis-0.0.3-SNAPSHOT/bin/analysis"
+
+
+
+## analysis
+
+# visualization
+
+UBM_VISUALIZATION=$BASE_DIR/../../iobserve-ui-user-behavior/code/docker-compose.yml
+
+
+
+## evaluation
+
+# user behavior comparison tool
+
+EVALUATE_BEHAVIOR=$BASE_DIR/../evaluate-user-behaviors-0.0.3-SNAPSHOT/bin/evaluate-user-behaviors
+
+
+
+## reconstructor
+
+RECONSTRUCTOR=$BASE_DIR/../reconstructor-0.0.3-SNAPSHOT/bin/reconstructor
+
+
+
+# Kieker trace analysis
+
+TRACE_ANALYSIS=$KIEKER_DIR/bin/trace-analysis.sh
+
+# dot to pict converter
+
+DOT_PIC=$KIEKER_DIR/bin/dotPic-fileConverter.sh
+
+
+
+# Workload runner
+
+WORKLOAD_RUNNER="$BASE_DIR/../selenium-experiment-workloads-1.0/bin/selenium-experiment-workloads"
+
+# collector
+
+COLLECTOR="$BASE_DIR/../collector-0.0.3-SNAPSHOT/bin/collector"
+
+# Phantom JS installation
+
+PHANTOM_JS="$BASE_DIR/../phantomjs-2.1.1-linux-x86_64/bin/phantomjs"
