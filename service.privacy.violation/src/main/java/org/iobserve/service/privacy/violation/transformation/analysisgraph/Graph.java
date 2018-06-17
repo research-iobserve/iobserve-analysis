@@ -1,4 +1,4 @@
-package org.iobserve.service.privacy.violation.transformation;
+package org.iobserve.service.privacy.violation.transformation.analysisgraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,27 +6,39 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
+
 /**
  *
  * @author Clemens
+ * @author Eric Schmieders
  *
  */
+
 public class Graph {
+
+    private final String name;
+
     private final List<Edge> edges;
     private final LinkedHashMap<String, Vertice> vertices;
 
-    public Graph() {
+    public Graph(final String name) {
+        this.name = name;
         this.edges = new ArrayList<>();
         this.vertices = new LinkedHashMap<>();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void addVertice(final Vertice v) {
+        v.setGraph(this);
         this.vertices.put(v.getName(), v);
     }
 
     public void addEdge(final Vertice source, final Vertice target) {
-        final Edge e = new Edge(source, target);
-        this.edges.add(e);
+        this.edges.add(new Edge(source, target));
     }
 
     public void addEdge(final Edge e) {
@@ -141,6 +153,10 @@ public class Graph {
         return matrix;
     }
 
+    public Vertice getVertice(final String name) {
+        return this.getVertices().get(name);
+    }
+
     public void printGraph() {
         for (final Vertice v : this.getVertices().values()) {
             // for (Edge e : v.getIncomingEdges()) {
@@ -156,6 +172,12 @@ public class Graph {
 
     public void printAdjacentMatrix() {
         System.out.println(Arrays.deepToString(this.getAdjacencyMatrix()).replace("], ", "]\n"));
+    }
+
+    public LinkedHashMap<String, Vertice> getComponentVerticesDeployedAt(final Policy.GEOLOCATION geoLocation) {
+        final Vertice vertice = this.getVertice(geoLocation.name());
+
+        return vertice.getAllReachableVertices();
     }
 
 }

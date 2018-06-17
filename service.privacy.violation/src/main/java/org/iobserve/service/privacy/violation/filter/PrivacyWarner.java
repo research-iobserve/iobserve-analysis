@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,12 +23,15 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.IPrivacyAnnotation;
+import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.service.privacy.violation.transformation.Edge;
-import org.iobserve.service.privacy.violation.transformation.Graph;
-import org.iobserve.service.privacy.violation.transformation.Vertice;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice.STEREOTYPES;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -43,7 +45,6 @@ import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
-import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -137,10 +138,8 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private void createAnalysisGraph() {
-        final Graph g = new Graph();
+        final Graph g = new Graph("PrivacyWarner");
 
-        final Map<String, Vertice> vertices = new LinkedHashMap<>();
-        final Map<String, GeoLocation> geolocations = new HashMap<>();
         this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
@@ -164,9 +163,17 @@ public class PrivacyWarner extends AbstractStage {
                 "******************************************************************************************************************");
         this.print("Starting creation of Analysis Graph");
 
+        final Map<String, GeoLocation> geolocations = new LinkedHashMap<>();
         for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
             geolocations.put(geo.getResourceContainer().getId(), geo);
         }
+
+        final Map<String, EncapsulatedDataSource> stereotypes = new LinkedHashMap<>();
+        for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
+            stereotypes.put(stereotype.getComponent().getId(), stereotype);
+        }
+
+        final Map<String, Vertice> vertices = new LinkedHashMap<>();
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
@@ -175,44 +182,35 @@ public class PrivacyWarner extends AbstractStage {
 
             final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class, rc.getId());
             //
-            for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
-
-                if (or instanceof OperationProvidedRole) {
-                    final OperationProvidedRole opr = (OperationProvidedRole) or;
-                    this.print(opr.getProvidedInterface__OperationProvidedRole().getEntityName());
-                }
-            }
+            // for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
             //
+            // if (or instanceof OperationProvidedRole) {
+            // final OperationProvidedRole opr = (OperationProvidedRole) or;
+            // this.print(opr.getProvidedInterface__OperationProvidedRole().getEntityName());
+            // }
+            // }
+            //
+
             /** Creating component vertices **/
-            final Vertice v = new Vertice(bc.getEntityName());
+            final Vertice v = new Vertice(bc.getEntityName(), stereotypes.get(bc.getId()) != null
+                    ? stereotypes.get(bc.getId()).isDataSource() ? STEREOTYPES.Datasource : STEREOTYPES.ComputingNode
+                    : STEREOTYPES.ComputingNode);
             g.addVertice(v);
             vertices.put(bc.getId(), v);
-            // TODO Effizienter machen falls möglich
+
+            /** Adding deployment info **/
             final ResourceContainer queryResource = resourceContainerModelProvider
                     .readObjectById(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
-
             final GeoLocation geo = geolocations.get(queryResource.getId());
-            final Vertice vGeo = new Vertice(geo.getIsocode().getName());
-            if (!g.getVertices().containsValue(vGeo)) {
-                this.print("NEW GEOLOCATION :" + geo.getIsocode().getName());
-
+            final Vertice vGeo = new Vertice(geo.getIsocode().getName(), STEREOTYPES.Geolocation);
+            if (!vertices.containsKey(geo.getIsocode().getName())) {// New Geolocation
                 g.addVertice(vGeo);
                 g.addEdge(vGeo, v);
-                vertices.put(geo.getResourceContainer().getId(), vGeo);
-            } else {
-                g.addEdge(vertices.get(geo.getResourceContainer().getId()), v);
-                this.print("JUST ADDED A CONNECTION BETWEEN " + vGeo.getName() + " AND " + v.getName());
-            }
-        }
+                vertices.put(geo.getIsocode().getName(), vGeo);
+            } else {// Existing Geolocation
+                g.addEdge(vertices.get(geo.getIsocode().getName()), v);
 
-        for (final EncapsulatedDataSource eds : this.privacyRootElement.getEncapsulatedDataSources()) {
-            this.print(eds.isDataSource());
-        }
-        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
-            this.print(geo.getIsocode().getName());
-            final ResourceContainer tmp = geo.getResourceContainer();
-            final String s = tmp.getId();
-            final ResourceContainer rc = resourceContainerModelProvider.readObjectById(ResourceContainer.class, s);
+            }
         }
 
         /** Adding connections between components to the graph **/
@@ -244,7 +242,15 @@ public class PrivacyWarner extends AbstractStage {
 
                                 for (final Parameter p : os.getParameters__OperationSignature()) {
                                     for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
-
+                                        if (ipa instanceof ParameterPrivacy) {
+                                            final ParameterPrivacy pp = (ParameterPrivacy) ipa;
+                                            pp.getParameter();// TODO
+                                        }
+                                        if (ipa instanceof ReturnTypePrivacy) {
+                                            final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
+                                            rtp.getOperationSignature();// TODO
+                                        }
+                                        this.print(ipa.getLevel().name());
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.IN) {
                                         final Edge e = new Edge(vertices.get(rcRequiring.getId()),

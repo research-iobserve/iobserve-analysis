@@ -1,15 +1,18 @@
-package org.iobserve.service.privacy.violation.transformation;
+package org.iobserve.service.privacy.violation.transformation.analysisgraph;
+
+import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 
 /**
  *
  * @author Clemens
+ * @author Eric Schmieders
  *
  */
 public class Edge {
     /** The reference to the source and target vertices **/
     private final Vertice source, target;
     private String name;
-    private String dataProtectionClass = "";
+    private Policy.DATACLASSIFICATION dataProtectionClass = Policy.DATACLASSIFICATION.values()[0];
 
     /** Create a new Edge from source vertice to target vertice **/
     public Edge(final Vertice source, final Vertice target) {
@@ -36,11 +39,15 @@ public class Edge {
         this.name = s;
     }
 
-    public void setDPC(final String s) {
+    public void setDPC(final Policy.DATACLASSIFICATION s) {
         this.dataProtectionClass = s;
     }
 
-    public String getDPC() {
+    public Policy.DATACLASSIFICATION getDPC() {
         return this.dataProtectionClass;
     }
+
+	public Object getPrint() {
+		return "Edge '"+getName()+"' from '"+getSource()+"' to '"+getTarget()+"' with data protection class '"+getDPC()+"'";
+	}
 }

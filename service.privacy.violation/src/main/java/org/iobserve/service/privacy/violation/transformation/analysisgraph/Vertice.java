@@ -1,24 +1,44 @@
-package org.iobserve.service.privacy.violation.transformation;
+package org.iobserve.service.privacy.violation.transformation.analysisgraph;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 
 /**
  *
  * @author Clemens
+ * @author Eric Schmieders
  *
  */
 public class Vertice {
+
+    public static enum STEREOTYPES {
+        Geolocation, ComputingNode, Datasource
+    };
+
     private final String name;
+    private final STEREOTYPES stereotype;
+    private Graph g;
+
     private final List<Edge> incoming = new ArrayList<>(), outgoing = new ArrayList<>();
 
-    public Vertice(final String name) {
+    public Vertice(final String name, final STEREOTYPES stereotype) {
         this.name = name;
-
+        this.stereotype = stereotype;
     }
 
     public void addOutgoing(final Edge e) {
         this.outgoing.add(e);
+    }
+
+    public void setGraph(final Graph g) {
+        this.g = g;
+    }
+
+    public Graph getGraph() {
+        return this.g;
     }
 
     public void addIncoming(final Edge e) {
@@ -38,6 +58,18 @@ public class Vertice {
     /** Returns the incoming edges leading to this vertice **/
     public List<Edge> getIncomingEdges() {
         return this.incoming;
+    }
+
+    public List<Edge> getOutgoingEdgesClassifiedAtLeast(final Policy.DATACLASSIFICATION dataClassification) {
+        final List<Edge> edges = new ArrayList<>();
+
+        for (final Edge edge : this.getOutgoingEdges()) {
+            if (Policy.isEqualOrMoreCritical(dataClassification, edge.getDPC())) {
+                edges.add(edge);
+            }
+        }
+
+        return edges;
     }
 
     /**
@@ -81,4 +113,19 @@ public class Vertice {
     public String toString() {
         return this.name;
     }
+
+    public STEREOTYPES getStereoType() {
+        return this.stereotype;
+    }
+
+    public LinkedHashMap<String, Vertice> getAllReachableVertices() {
+        final LinkedHashMap<String, Vertice> reachableVertices = new LinkedHashMap<>();
+
+        for (final Edge edge : this.getOutgoingEdges()) {
+            reachableVertices.put(edge.getTarget().name, edge.getTarget());
+        }
+
+        return reachableVertices;
+    }
+
 }
