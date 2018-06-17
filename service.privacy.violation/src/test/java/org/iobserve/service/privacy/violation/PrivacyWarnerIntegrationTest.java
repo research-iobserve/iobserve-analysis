@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
@@ -46,16 +44,29 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemFactory;
 
+import teetime.framework.test.StageTester;
+
 /**
  * @author Clemens Brackmann
  *
  */
+<<<<<<< HEAD:service.privacy.violation/src/test/java/org/iobserve/service/privacy/violation/PrivacyWarnerIntegrationTest.java
 public class PrivacyWarnerIntegrationTest {
     // pcm "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
     // db "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
 
     // pcm "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
     // db "D:/Experiment/distributed-jpetstore-experiment/db";
+=======
+public class PrivacyWarnerTest {
+    // private static final String PCM_DIRECTORY_PATH =
+    // "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
+    // private static final String MODEL_DATABASE_DIRECTORY_PATH =
+    // "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
+
+    private static final String PCM_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
+    private static final String MODEL_DATABASE_DIRECTORY_PATH = "D:/Experiment/distributed-jpetstore-experiment/db";
+>>>>>>> Grapherstellung:service.privacy.violation/src/test/java/org/iobserve/service/privacy/violation/PrivacyWarnerTest.java
 
     private final File pcmDirectory;
     private final File modelDatabaseDirectory;

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -139,11 +140,11 @@ public class PrivacyWarner extends AbstractStage {
         final Graph g = new Graph();
 
         final Map<String, Vertice> vertices = new LinkedHashMap<>();
+        final Map<String, GeoLocation> geolocations = new HashMap<>();
         this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
         this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
         this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
-        this.resEnvRootElement = this.resourceEnvironmentModelGraphProvider
-                .readRootNode(ResourceEnvironment.class);
+        this.resEnvRootElement = this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class);
         this.privacyRootElement = this.privacyModelGraphProvider.readRootNode(PrivacyModel.class);
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
@@ -163,14 +164,16 @@ public class PrivacyWarner extends AbstractStage {
                 "******************************************************************************************************************");
         this.print("Starting creation of Analysis Graph");
 
+        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
+            geolocations.put(geo.getResourceContainer().getId(), geo);
+        }
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
                     .readObjectById(AssemblyContext.class, asc.getId());
             final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
 
-            final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class,
-                    rc.getId());
+            final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class, rc.getId());
             //
             for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
 
@@ -185,25 +188,20 @@ public class PrivacyWarner extends AbstractStage {
             g.addVertice(v);
             vertices.put(bc.getId(), v);
             // TODO Effizienter machen falls möglich
-            final ResourceContainer queryResource = resourceContainerModelProvider.readObjectById(
-                    ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
+            final ResourceContainer queryResource = resourceContainerModelProvider
+                    .readObjectById(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
 
-            if (this.privacyRootElement != null) {
-                for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
-                    this.print("GEO ID: " + geo.getResourceContainer().getId() + " "
-                            + geo.getResourceContainer().getEntityName() + " is proxy "
-                            + geo.getResourceContainer().eIsProxy());
+            final GeoLocation geo = geolocations.get(queryResource.getId());
+            final Vertice vGeo = new Vertice(geo.getIsocode().getName());
+            if (!g.getVertices().containsValue(vGeo)) {
+                this.print("NEW GEOLOCATION :" + geo.getIsocode().getName());
 
-                    this.print("RESOURCE ID: " + queryResource.getId());
-                    if (geo.getResourceContainer().getId() == queryResource.getId()) {
-                        final Vertice vGeo = new Vertice(geo.getIsocode().getName());
-                        g.addVertice(vGeo);
-                        g.addEdge(vGeo, v);
-                    }
-
-                }
+                g.addVertice(vGeo);
+                g.addEdge(vGeo, v);
+                vertices.put(geo.getResourceContainer().getId(), vGeo);
             } else {
-                this.print("PRIVACY ROOT IS NULL");
+                g.addEdge(vertices.get(geo.getResourceContainer().getId()), v);
+                this.print("JUST ADDED A CONNECTION BETWEEN " + vGeo.getName() + " AND " + v.getName());
             }
         }
 
@@ -214,8 +212,7 @@ public class PrivacyWarner extends AbstractStage {
             this.print(geo.getIsocode().getName());
             final ResourceContainer tmp = geo.getResourceContainer();
             final String s = tmp.getId();
-            final ResourceContainer rc = resourceContainerModelProvider.readObjectById(ResourceContainer.class,
-                    s);
+            final ResourceContainer rc = resourceContainerModelProvider.readObjectById(ResourceContainer.class, s);
         }
 
         /** Adding connections between components to the graph **/
