@@ -32,6 +32,7 @@ import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice.STEREOTYPES;
+import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -212,6 +213,18 @@ public class PrivacyWarner extends AbstractStage {
 
             }
         }
+        final Map<Parameter, ParameterPrivacy> parameterprivacy = new LinkedHashMap<>();
+        final Map<String, ReturnTypePrivacy> returntypeprivacy = new LinkedHashMap<>();
+        for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
+            if (ipa instanceof ParameterPrivacy) {
+                final ParameterPrivacy pp = (ParameterPrivacy) ipa;
+                parameterprivacy.put(pp.getParameter(), pp);
+            }
+            if (ipa instanceof ReturnTypePrivacy) {
+                final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
+                returntypeprivacy.put(rtp.getOperationSignature().getId(), rtp);
+            }
+        }
 
         /** Adding connections between components to the graph **/
         for (final Connector c : this.systemRootElement.getConnectors__ComposedStructure()) {
@@ -239,29 +252,24 @@ public class PrivacyWarner extends AbstractStage {
                             final OperationInterface oi = (OperationInterface) inf;
 
                             for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
-
+                                final IPrivacyAnnotation ipa_os = returntypeprivacy.get(os.getId());
+                                this.print(ipa_os);
                                 for (final Parameter p : os.getParameters__OperationSignature()) {
-                                    for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
-                                        if (ipa instanceof ParameterPrivacy) {
-                                            final ParameterPrivacy pp = (ParameterPrivacy) ipa;
-                                            pp.getParameter();// TODO
-                                        }
-                                        if (ipa instanceof ReturnTypePrivacy) {
-                                            final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
-                                            rtp.getOperationSignature();// TODO
-                                        }
-                                        this.print(ipa.getLevel().name());
-                                    }
+
                                     if (p.getModifier__Parameter() == ParameterModifier.IN) {
                                         final Edge e = new Edge(vertices.get(rcRequiring.getId()),
                                                 vertices.get(rcProvider.getId()));
-                                        // e.setDPC(s);//TODO
+                                        if (ipa_os != null) {
+                                            e.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
+                                        }
                                         g.addEdge(e);
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.OUT) {
                                         final Edge e = new Edge(vertices.get(rcProvider.getId()),
                                                 vertices.get(rcRequiring.getId()));
-
+                                        if (ipa_os != null) {
+                                            e.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
+                                        }
                                         g.addEdge(e);
                                     }
                                     if (p.getModifier__Parameter() == ParameterModifier.INOUT) {
@@ -270,6 +278,10 @@ public class PrivacyWarner extends AbstractStage {
                                                 vertices.get(rcRequiring.getId()));
                                         final Edge e2 = new Edge(vertices.get(rcRequiring.getId()),
                                                 vertices.get(rcProvider.getId()));
+                                        if (ipa_os != null) {
+                                            e1.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
+                                            e2.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
+                                        }
                                         g.addEdge(e1);
                                         g.addEdge(e2);
                                     }
