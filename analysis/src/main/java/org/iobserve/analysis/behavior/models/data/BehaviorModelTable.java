@@ -90,7 +90,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         // verify input
         final int length = signatures.size();
 
-        if (length == reverseSignatures.length && length == transitions.length) {
+        if ((length == reverseSignatures.length) && (length == transitions.length)) {
 
             for (final Integer[] transition : transitions) {
                 if (length != transition.length) {
@@ -192,7 +192,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         for (int i = 0; i < clearedTransitions.length; i++) {
             for (int j = 0; j < clearedTransitions.length; j++) {
-                clearedTransitions[i][j] = this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION
+                clearedTransitions[i][j] = (this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION)
                         && keepEmptyTransitions ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
 
             }
@@ -258,8 +258,11 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(
-                callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))));
+        this.signatures.values().stream()
+                .forEach(pair -> Arrays.stream(pair.getSecond())
+                        .filter(callInformation -> callInformation.getRepresentativeValue() != null)
+                        .forEach(callInformation -> attValues
+                                .add(Double.parseDouble(callInformation.getRepresentativeValue()))));
 
         final double[] attArray = new double[attValues.size()];
 
