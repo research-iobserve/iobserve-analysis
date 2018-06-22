@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.IPrivacyAnnotation;
@@ -77,10 +78,18 @@ public class PrivacyWarner extends AbstractStage {
     private final OutputPort<Warnings> probesOutputPort = this.createOutputPort(Warnings.class);
     private final OutputPort<Warnings> warningsOutputPort = this.createOutputPort(Warnings.class);
 
+    /** HashMaps for faster queries **/
+    final Map<String, GeoLocation> geolocations = new LinkedHashMap<>();
+    final Map<String, EncapsulatedDataSource> stereotypes = new LinkedHashMap<>();
+    final Map<String, ParameterPrivacy> parameterprivacy = new LinkedHashMap<>();
+    final Map<String, ReturnTypePrivacy> returntypeprivacy = new LinkedHashMap<>();
+    final Map<String, OperationInterface> interfaces = new LinkedHashMap<>();
+
+    final Map<String, Vertice> vertices = new LinkedHashMap<>();
+
     private Allocation allocationRootElement;
     private System systemRootElement;
     private Repository repositoryRootElement;
-    private ResourceEnvironment resEnvRootElement;
     private PrivacyModel privacyRootElement;
 
     /**
@@ -141,92 +150,81 @@ public class PrivacyWarner extends AbstractStage {
     private void createAnalysisGraph() {
         final Graph g = new Graph("PrivacyWarner");
 
-        this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
-        this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
-        this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
-        this.resEnvRootElement = this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class);
-        this.privacyRootElement = this.privacyModelGraphProvider.readRootNode(PrivacyModel.class);
+        this.loadRoots();
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
                 this.systemModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** RepositoryComponent View **/
         final IModelProvider<BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
                 this.repositoryModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        /** OperationInterface View **/
-        final IModelProvider<OperationInterface> operationInterfaceModelProvider = new ModelProvider<>(
-                this.repositoryModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** ResourceContainer View **/
         final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
                 this.resourceEnvironmentModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
-
+        // Fill the hashmaps
+        this.clearAndFillQueryMaps();
         this.print(
                 "******************************************************************************************************************");
-        this.print("Starting creation of Analysis Graph");
+        this.print("Starting Creation of Analysis Graph");
 
-        final Map<String, GeoLocation> geolocations = new LinkedHashMap<>();
-        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
-            geolocations.put(geo.getResourceContainer().getId(), geo);
-        }
+        this.addDeployedComponents(g, assemblyContextModelProvider, repositoryComponentModelProvider,
+                resourceContainerModelProvider);
 
-        final Map<String, EncapsulatedDataSource> stereotypes = new LinkedHashMap<>();
-        for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
-            stereotypes.put(stereotype.getComponent().getId(), stereotype);
-        }
+        this.addConnectors(g);
+        this.print();
+        this.print("End of Creation of Analysis Graph");
 
-        final Map<String, Vertice> vertices = new LinkedHashMap<>();
+        g.printGraph();
+        this.print(
+                "******************************************************************************************************************");
+
+    }
+
+    /** Loads the rootelement for eacoh model **/
+    private void loadRoots() {
+        this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
+        this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
+        this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
+        this.privacyRootElement = this.privacyModelGraphProvider.readRootNode(PrivacyModel.class);
+    }
+
+    /** Adding deployment info **/
+    private void addDeployedComponents(final Graph g,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
+            final IModelProvider<BasicComponent> repositoryComponentModelProvider,
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider) {
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
                     .readObjectById(AssemblyContext.class, asc.getId());
             final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
-
             final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class, rc.getId());
-            //
-            // for (final ProvidedRole or : bc.getProvidedRoles_InterfaceProvidingEntity()) {
-            //
-            // if (or instanceof OperationProvidedRole) {
-            // final OperationProvidedRole opr = (OperationProvidedRole) or;
-            // this.print(opr.getProvidedInterface__OperationProvidedRole().getEntityName());
-            // }
-            // }
-            //
-
             /** Creating component vertices **/
-            final Vertice v = new Vertice(bc.getEntityName(), stereotypes.get(bc.getId()) != null
-                    ? stereotypes.get(bc.getId()).isDataSource() ? STEREOTYPES.Datasource : STEREOTYPES.ComputingNode
-                    : STEREOTYPES.ComputingNode);
+            final Vertice v = new Vertice(bc.getEntityName(),
+                    this.stereotypes.get(bc.getId()) != null
+                            ? this.stereotypes.get(bc.getId()).isDataSource() ? STEREOTYPES.Datasource
+                                    : STEREOTYPES.ComputingNode
+                            : STEREOTYPES.ComputingNode);
             g.addVertice(v);
-            vertices.put(bc.getId(), v);
+            this.vertices.put(bc.getId(), v);
 
-            /** Adding deployment info **/
             final ResourceContainer queryResource = resourceContainerModelProvider
                     .readObjectById(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
-            final GeoLocation geo = geolocations.get(queryResource.getId());
+            final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertice vGeo = new Vertice(geo.getIsocode().getName(), STEREOTYPES.Geolocation);
-            if (!vertices.containsKey(geo.getIsocode().getName())) {// New Geolocation
+            if (!this.vertices.containsKey(geo.getIsocode().getName())) {// New Geolocation
                 g.addVertice(vGeo);
                 g.addEdge(vGeo, v);
-                vertices.put(geo.getIsocode().getName(), vGeo);
+                this.vertices.put(geo.getIsocode().getName(), vGeo);
             } else {// Existing Geolocation
-                g.addEdge(vertices.get(geo.getIsocode().getName()), v);
+                g.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
 
             }
         }
-        final Map<Parameter, ParameterPrivacy> parameterprivacy = new LinkedHashMap<>();
-        final Map<String, ReturnTypePrivacy> returntypeprivacy = new LinkedHashMap<>();
-        for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
-            if (ipa instanceof ParameterPrivacy) {
-                final ParameterPrivacy pp = (ParameterPrivacy) ipa;
-                parameterprivacy.put(pp.getParameter(), pp);
-            }
-            if (ipa instanceof ReturnTypePrivacy) {
-                final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
-                returntypeprivacy.put(rtp.getOperationSignature().getId(), rtp);
-            }
-        }
+    }
 
-        /** Adding connections between components to the graph **/
+    /** Adding connections between components to the graph **/
+    private void addConnectors(final Graph g) {
         for (final Connector c : this.systemRootElement.getConnectors__ComposedStructure()) {
             if (c instanceof AssemblyConnector) {
                 final AssemblyConnector ac = (AssemblyConnector) c;
@@ -236,71 +234,111 @@ public class PrivacyWarner extends AbstractStage {
                 // Requiring Component
                 final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
                 final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
-
                 if ((rcProvider != null) && (rcRequiring != null)) {
                     final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
-                    this.print(opr.getEntityName());
                     final String interfaceName = this.shortName(opr.getEntityName());
                     // Check Interface Name in Repository and add Edge
-                    for (final Interface inf : this.repositoryRootElement.getInterfaces__Repository()) {
-
-                        if (inf instanceof OperationInterface) {
-                            if (!inf.getEntityName().equals(interfaceName)) {
-                                continue;
-                            }
-
-                            final OperationInterface oi = (OperationInterface) inf;
-
-                            for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
-                                final IPrivacyAnnotation ipa_os = returntypeprivacy.get(os.getId());
-                                this.print(ipa_os);
-                                for (final Parameter p : os.getParameters__OperationSignature()) {
-
-                                    if (p.getModifier__Parameter() == ParameterModifier.IN) {
-                                        final Edge e = new Edge(vertices.get(rcRequiring.getId()),
-                                                vertices.get(rcProvider.getId()));
-                                        if (ipa_os != null) {
-                                            e.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
-                                        }
-                                        g.addEdge(e);
+                    final OperationInterface oi = this.interfaces.get(interfaceName);
+                    for (final OperationSignature os : oi.getSignatures__OperationInterface()) {
+                        final IPrivacyAnnotation ipa_os = this.returntypeprivacy.get(os.getId());
+                        EDataPrivacyLevel inEdge = null;
+                        EDataPrivacyLevel outEdge = null;
+                        // Ckeck Parameter
+                        for (final Parameter p : os.getParameters__OperationSignature()) {
+                            final ParameterModifier mod = p.getModifier__Parameter();
+                            if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                                if (outEdge != null) {
+                                    if (this.isMoreCritical(outEdge,
+                                            this.parameterprivacy.get(p.getParameterName()).getLevel())) {
+                                        outEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
                                     }
-                                    if (p.getModifier__Parameter() == ParameterModifier.OUT) {
-                                        final Edge e = new Edge(vertices.get(rcProvider.getId()),
-                                                vertices.get(rcRequiring.getId()));
-                                        if (ipa_os != null) {
-                                            e.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
-                                        }
-                                        g.addEdge(e);
-                                    }
-                                    if (p.getModifier__Parameter() == ParameterModifier.INOUT) {
-
-                                        final Edge e1 = new Edge(vertices.get(rcProvider.getId()),
-                                                vertices.get(rcRequiring.getId()));
-                                        final Edge e2 = new Edge(vertices.get(rcRequiring.getId()),
-                                                vertices.get(rcProvider.getId()));
-                                        if (ipa_os != null) {
-                                            e1.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
-                                            e2.setDPC(Policy.getDataClassification(ipa_os.getLevel()));
-                                        }
-                                        g.addEdge(e1);
-                                        g.addEdge(e2);
-                                    }
+                                } else {
+                                    outEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
                                 }
                             }
-
+                            if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
+                                if (inEdge != null) {
+                                    if (this.isMoreCritical(inEdge,
+                                            this.parameterprivacy.get(p.getParameterName()).getLevel())) {
+                                        inEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
+                                    }
+                                } else {
+                                    inEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
+                                }
+                            }
+                        }
+                        // Check Returntype
+                        if (ipa_os != null) {
+                            if (inEdge != null) {
+                                if (this.isMoreCritical(inEdge, ipa_os.getLevel())) {
+                                    inEdge = ipa_os.getLevel();
+                                }
+                            } else {
+                                inEdge = ipa_os.getLevel();
+                            }
+                        }
+                        // Add Edges
+                        if (inEdge != null) {
+                            final Edge e = new Edge(this.vertices.get(rcProvider.getId()),
+                                    this.vertices.get(rcRequiring.getId()));
+                            e.setDPC(Policy.getDataClassification(inEdge));
+                            e.setInterfaceName(os.getEntityName());
+                            g.addEdge(e);
+                        }
+                        if (outEdge != null) {
+                            final Edge e = new Edge(this.vertices.get(rcRequiring.getId()),
+                                    this.vertices.get(rcProvider.getId()));
+                            e.setDPC(Policy.getDataClassification(outEdge));
+                            e.setInterfaceName(os.getEntityName());
+                            g.addEdge(e);
                         }
 
                     }
+
                 }
             }
 
         }
-        this.print();
-        this.print("End of Graph Analysis");
+    }
 
-        g.printGraph();
-        this.print(
-                "******************************************************************************************************************");
+    /** Fills the hasmaps used for queries **/
+    private void clearAndFillQueryMaps() {
+        this.vertices.clear();
+        this.geolocations.clear();
+        this.stereotypes.clear();
+        this.parameterprivacy.clear();
+        this.returntypeprivacy.clear();
+        this.interfaces.clear();
+        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
+            this.geolocations.put(geo.getResourceContainer().getId(), geo);
+        }
+        for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
+            this.stereotypes.put(stereotype.getComponent().getId(), stereotype);
+        }
+        for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
+            if (ipa instanceof ParameterPrivacy) {
+                final ParameterPrivacy pp = (ParameterPrivacy) ipa;
+                this.parameterprivacy.put(pp.getParameter().getParameterName(), pp);
+            }
+            if (ipa instanceof ReturnTypePrivacy) {
+                final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
+                this.returntypeprivacy.put(rtp.getOperationSignature().getId(), rtp);
+            }
+        }
+
+        for (final Interface inf : this.repositoryRootElement.getInterfaces__Repository()) {
+            if (inf instanceof OperationInterface) {
+                this.interfaces.put(inf.getEntityName(), (OperationInterface) inf);
+            }
+        }
+    }
+
+    private boolean isMoreCritical(final EDataPrivacyLevel basis, final EDataPrivacyLevel compared) {
+        if (compared.ordinal() > basis.ordinal()) {
+            return true;
+        }
+
+        return false;
     }
 
     private String shortName(final String s) {

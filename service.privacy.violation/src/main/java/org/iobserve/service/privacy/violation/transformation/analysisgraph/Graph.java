@@ -165,7 +165,7 @@ public class Graph {
             // }
             System.out.println(v);
             for (final Edge e : v.getOutgoingEdges()) {
-                System.out.println("\t" + e.getName());
+                System.out.println("\t" + e.getPrint());
             }
         }
     }
