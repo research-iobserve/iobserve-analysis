@@ -181,6 +181,9 @@ public class PrivacyWarnerIntegrationTest {
         final List<Warnings> results = new ArrayList<>();
         StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)
                 .from(this.pw.getWarningsOutputPort()).and().start();
+        for (final Warnings s : results) {
+            java.lang.System.out.println("RESULT: " + s.getMessages());
+        }
         Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
     }
 

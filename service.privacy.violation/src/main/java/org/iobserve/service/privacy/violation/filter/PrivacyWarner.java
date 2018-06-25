@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
@@ -34,6 +37,7 @@ import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice.STEREOTYPES;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
+import org.iobserve.service.privacy.violation.transformation.privacycheck.PrivacyChecker;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -61,7 +65,7 @@ import teetime.framework.OutputPort;
  * Privacy warner.
  *
  * @author Reiner Jung -- initial contribution
- * @author Clemens Brackmann -- analysis algorithm
+ * @author Clemens Brackmann -- analysis graph
  *
  */
 public class PrivacyWarner extends AbstractStage {
@@ -127,27 +131,39 @@ public class PrivacyWarner extends AbstractStage {
     protected void execute() throws Exception {
 
         java.lang.System.out.print("Execution started");
-        final Warnings warnings = new Warnings();
+        Warnings warnings = new Warnings();
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
-        this.createAnalysisGraph();
+        final Graph g = this.createAnalysisGraph();
         if (deployedEvent != null) {
             // TODO generate warnings after the last deployment
-            java.lang.System.out.print("Received Deployment");
-            java.lang.System.out.print("CountryCode: " + deployedEvent.getCountryCode());
-            java.lang.System.out.print("Service: " + deployedEvent.getService());
+            this.print("Received Deployment");
+            this.print("CountryCode: " + deployedEvent.getCountryCode());
+            this.print("Service: " + deployedEvent.getService());
         }
         if (undeployedEvent != null) {
             // TODO generate warnings after the last undeployment
-            java.lang.System.out.print("Received undeployment");
+            this.print("Received undeployment");
         }
-
+        warnings = this.checkGraph(g);
         this.probesOutputPort.send(warnings);
 
         this.warningsOutputPort.send(warnings);
     }
 
-    private void createAnalysisGraph() {
+    private Warnings checkGraph(final Graph g) throws FileNotFoundException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException, IOException {
+        final Warnings w = new Warnings();
+        final PrivacyChecker p = new PrivacyChecker();
+        final Vector<Edge> edges = p.check(g);
+
+        for (final Edge edge : edges) {
+            w.addMessage(edge.getPrint() + " Interface: " + edge.getInterfaceName());
+        }
+        return w;
+    }
+
+    private Graph createAnalysisGraph() {
         final Graph g = new Graph("PrivacyWarner");
 
         this.loadRoots();
@@ -163,21 +179,13 @@ public class PrivacyWarner extends AbstractStage {
                 ModelProvider.PCM_ID);
         // Fill the hashmaps
         this.clearAndFillQueryMaps();
-        this.print(
-                "******************************************************************************************************************");
-        this.print("Starting Creation of Analysis Graph");
 
         this.addDeployedComponents(g, assemblyContextModelProvider, repositoryComponentModelProvider,
                 resourceContainerModelProvider);
 
         this.addConnectors(g);
-        this.print();
-        this.print("End of Creation of Analysis Graph");
 
-        g.printGraph();
-        this.print(
-                "******************************************************************************************************************");
-
+        return g;
     }
 
     /** Loads the rootelement for eacoh model **/
