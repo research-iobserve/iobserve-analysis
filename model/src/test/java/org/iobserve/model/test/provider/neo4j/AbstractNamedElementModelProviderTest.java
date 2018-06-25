@@ -30,6 +30,10 @@ import org.palladiosimulator.pcm.core.entity.NamedElement;
 public abstract class AbstractNamedElementModelProviderTest<T extends NamedElement>
         extends AbstractModelProviderTest<T> {
 
+    public static final String CREATE_THEN_CLONE_THEN_READ = "createThenCloneThenRead";
+    public static final String CREATE_THEN_CLEAR_GRAPH = "createThenClearGraph";
+    public static final String CREATE_THEN_READ_ROOT = "createThenReadRoot";
+
     /**
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
@@ -81,7 +85,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
+        final Graph storeGraph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
 
         final ModelProvider<T> storeModelProvider = new ModelProvider<>(storeGraph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -107,7 +111,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenClearGraph() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
+        final Graph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -130,7 +134,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() {
-        final Graph graph = this.prepareGraph("createThenReadRoot");
+        final Graph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

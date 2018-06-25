@@ -33,6 +33,9 @@ import org.palladiosimulator.pcm.core.entity.Entity;
 public abstract class AbstractEnityModelProviderTest<T extends Entity>
         extends AbstractNamedElementModelProviderTest<T> {
 
+    public static final String CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES = "createThenDeleteComponentAndDatatypes";
+    public static final String CREATE_THEN_READ_BY_ID = "crateThenReadById";
+
     /**
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#readObjectById(Class, String)} and asserts that it is equal to the one
@@ -40,7 +43,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenReadById() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
+        final Graph graph = this.prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -61,7 +64,8 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenDeleteComponentAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
+        final Graph graph = this
+                .prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

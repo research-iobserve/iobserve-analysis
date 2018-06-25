@@ -65,11 +65,11 @@ public class GraphLoader {
         final int maxVersionNumber = GraphLoaderUtil.getLastVersionNumber(graphTypeDir.listFiles());
 
         final File newGraphDir = new File(graphTypeDir,
-                graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber);
+                graphTypeDirName + GraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
 
         // Copy old graph files
         if (maxVersionNumber >= 0) {
-            final File currentGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber - 1);
+            final File currentGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
 
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);

@@ -246,7 +246,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     public Instance toInstance() {
         final List<Double> attValues = new ArrayList<>();
 
-        // add transitions
+        // create vector from matrix
         for (int i = 0; i < this.signatures.size(); i++) {
             for (int j = 0; j < this.signatures.size(); j++) {
 
@@ -258,8 +258,11 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(
-                callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))));
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> {
+            if (callInformation.getRepresentativeValue() != null) {
+                attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()));
+            }
+        }));
 
         final double[] attArray = new double[attValues.size()];
 

@@ -49,7 +49,16 @@ public class Graph {
      *            Directory where the graph database shall be located
      */
     public Graph(final EFactory factory, final File graphDirectory) {
-        this.graphDirectory = graphDirectory;
+        this.graphDirectory = graphDirectory.getAbsoluteFile();
+        if (!this.graphDirectory.exists()) {
+            if (!this.graphDirectory.mkdirs()) {
+                throw new InternalError("Cannot create directories for path " + this.graphDirectory);
+            }
+            if (!this.graphDirectory.isDirectory()) {
+                throw new InternalError("Path is not a directory " + this.graphDirectory);
+            }
+        }
+
         this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(this.graphDirectory);
         this.registerShutdownHook(this.graphDatabaseService);
         this.eFactories.add(factory);
