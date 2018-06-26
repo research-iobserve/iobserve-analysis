@@ -73,6 +73,8 @@ public class PrivacyChecker {
         this.loadConfigs();
     }
 
+    // TODO use provided InstantiationFactory for save instantiation of classes
+    // TODO use global config file
     private void loadConfigs() throws FileNotFoundException, IOException, InstantiationException,
             IllegalAccessException, ClassNotFoundException {
         final Properties properties = new Properties();
