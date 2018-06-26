@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.privacy.violation.transformation.privacycheck;
 
 import java.io.BufferedInputStream;
@@ -5,15 +20,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
-import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertice;
-import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy.DATACLASSIFICATION;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
+import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy.EDataClassification;
 
 /**
  *
@@ -27,10 +42,19 @@ public class PrivacyChecker {
 
     private static final String CONFIG_FILE = "privacy_checker.cfg";
 
-    private final Vector<Policy> policies;
+    private final List<Policy> policies;
 
     private boolean violatedByWalkthrough = false;
 
+    /**
+     * Create new privacy checker.
+     *
+     * @throws FileNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
     public PrivacyChecker() throws FileNotFoundException, InstantiationException, IllegalAccessException,
             ClassNotFoundException, IOException {
         PrivacyChecker.log("Starting Privacy Checker");
@@ -54,8 +78,15 @@ public class PrivacyChecker {
         }
     }
 
-    public Vector<Edge> check(final Graph graph) {
-        final Vector<Edge> out = new Vector<>();
+    /**
+     * TODO what is the purpose of this method?
+     *
+     * @param graph
+     *            a graph
+     * @return returns a list of edges
+     */
+    public List<Edge> check(final Graph graph) {
+        final List<Edge> out = new Vector<>();
         PrivacyChecker.log("Starting check");
         for (final Policy policy : this.policies) {
             out.addAll(this.checkPolicy(graph, policy));
@@ -65,7 +96,7 @@ public class PrivacyChecker {
     }
 
     /**
-     * TODO Anpassen an Logger
+     * TODO Anpassen an Logger.
      *
      * @param message
      */
@@ -75,43 +106,43 @@ public class PrivacyChecker {
         }
     }
 
-    private Vector<Edge> checkPolicy(final Graph graph, final Policy policy) {
+    private List<Edge> checkPolicy(final Graph graph, final Policy policy) {
         PrivacyChecker.log("Now checking: graph(" + graph.getName() + ") against " + policy.getPrint());
 
-        final Vector<Edge> WARNING_TMP = this.determineSetWARNING_TMP(graph, policy);
+        final List<Edge> potentialWarnings = this.determineSetPotentialWarnings(graph, policy);
         PrivacyChecker.log("WARNING_TMP includes:");
-        PrivacyChecker.printEdges(WARNING_TMP);
+        PrivacyChecker.printEdges(potentialWarnings);
 
-        final Vector<Edge> WARNING = this.determineSetWARNING(graph, WARNING_TMP, policy);
+        final List<Edge> warnings = this.determineSetWARNING(graph, potentialWarnings, policy);
         PrivacyChecker.log("WARNING includes:");
-        PrivacyChecker.printEdges(WARNING);
+        PrivacyChecker.printEdges(warnings);
 
-        return WARNING;
+        return warnings;
     }
 
-    private Vector<Edge> determineSetWARNING(final Graph graph, final Vector<Edge> WARNING_TMP, final Policy policy) {
-        final Vector<Edge> WARNING = new Vector<>();
+    private List<Edge> determineSetWARNING(final Graph graph, final List<Edge> potentialWarnings, final Policy policy) {
+        final List<Edge> warnings = new Vector<>();
 
-        for (final Edge edge : WARNING_TMP) {
+        for (final Edge edge : potentialWarnings) {
             this.violatedByWalkthrough = false;
-            final Vertice startNode = edge.getTarget();
+            final Vertex startNode = edge.getTarget();
 
-            final Vector<Vertice> walkthrough = new Vector<>();
+            final List<Vertex> walkthrough = new Vector<>();
             this.walkthroughFromToDatabase(startNode, policy.getDataClassification(), walkthrough);
 
             if (this.violatedByWalkthrough) {
-                WARNING.add(edge);
+                warnings.add(edge);
             }
         }
 
-        return WARNING;
+        return warnings;
     }
 
-    private void walkthroughFromToDatabase(final Vertice node, final DATACLASSIFICATION dataClassification,
-            final Vector<Vertice> walkthrough) {
+    private void walkthroughFromToDatabase(final Vertex node, final EDataClassification dataClassification,
+            final List<Vertex> walkthrough) {
         walkthrough.add(node);
 
-        if (node.getStereoType().equals(Vertice.STEREOTYPES.Datasource)) {
+        if (node.getStereoType().equals(Vertex.STEREOTYPES.Datasource)) {
             this.violatedByWalkthrough = true;
             return;
         }
@@ -119,7 +150,7 @@ public class PrivacyChecker {
         final List<Edge> outgoingEdgesClassifiedAtLeast = node.getOutgoingEdgesClassifiedAtLeast(dataClassification);
 
         for (final Edge edge : outgoingEdgesClassifiedAtLeast) {
-            final Vertice targetNode = edge.getTarget();
+            final Vertex targetNode = edge.getTarget();
 
             if (!walkthrough.contains(targetNode)) {
                 this.walkthroughFromToDatabase(targetNode, dataClassification, walkthrough);
@@ -127,36 +158,58 @@ public class PrivacyChecker {
         }
     }
 
-    private Vector<Edge> determineSetWARNING_TMP(final Graph graph, final Policy policy) {
-        final Vector<Edge> WARNING_TMP = new Vector<>();
+    /**
+     * Computes potential warning WARNING TMP.
+     *
+     * @param graph
+     *            the graph
+     * @param policy
+     *            the policy model
+     * @return returns list of edges
+     */
+    // TODO better method name
+    private List<Edge> determineSetPotentialWarnings(final Graph graph, final Policy policy) {
+        final List<Edge> warnings = new Vector<>();
 
-        final Vertice excludedGeolocationVertice = graph.getVertice(policy.getGeoLocation().toString());
+        final Vertex excludedGeolocationVertice = graph.getVertexByName(policy.getGeoLocation().toString());
 
         if (excludedGeolocationVertice == null) {
             PrivacyChecker.log("Policy's geo location not included in the runtime model");
         } else {
-            final LinkedHashMap<String, Vertice> componentVerticesDeployedAt = graph
+            final Map<String, Vertex> componentVerticesDeployedAt = graph
                     .getComponentVerticesDeployedAt(policy.getGeoLocation());
 
             for (final String verticeName : componentVerticesDeployedAt.keySet()) {
-                final Vertice verticeAtExcludedGeolocation = componentVerticesDeployedAt.get(verticeName);
+                final Vertex verticeAtExcludedGeolocation = componentVerticesDeployedAt.get(verticeName);
 
                 final List<Edge> relevantDatatransfers = verticeAtExcludedGeolocation
                         .getOutgoingEdgesClassifiedAtLeast(policy.getDataClassification());
-                WARNING_TMP.addAll(relevantDatatransfers);
+                warnings.addAll(relevantDatatransfers);
 
             }
         }
 
-        return WARNING_TMP;
+        return warnings;
     }
 
-    public static void printVerticeNames(final LinkedHashMap<String, Vertice> vertices) {
+    /**
+     * Print all given vertex names.
+     *
+     * @param vertices
+     *            map of vertices
+     */
+    public static void printVertexNames(final Map<String, Vertex> vertices) {
         for (final String verticeName : vertices.keySet()) {
             PrivacyChecker.log("Vertice: " + verticeName);
         }
     }
 
+    /**
+     * Print a list of edges.
+     *
+     * @param edges
+     *            list of edges
+     */
     public static void printEdges(final List<Edge> edges) {
         for (final Edge edge : edges) {
             PrivacyChecker.log(edge.getPrint() + " Interface: " + edge.getInterfaceName());

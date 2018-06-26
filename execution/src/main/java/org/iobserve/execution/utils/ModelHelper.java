@@ -54,7 +54,7 @@ public final class ModelHelper {
 
     private static final String INTERNET_LINKING_RESOURCE_NAME = "Internet";
 
-    private static final ResourceSet resourceSet = new ResourceSetImpl();
+    private static final ResourceSet RESOURCE_SET = new ResourceSetImpl();
 
     private ModelHelper() {
     }
@@ -265,9 +265,9 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler(ModelHelper.resourceSet)
+        new ResourceEnvironmentModelHandler(ModelHelper.RESOURCE_SET)
                 .save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX), environment);
-        new CostModelHandler(ModelHelper.resourceSet).save(writeURI.appendFileExtension(CostModelHandler.SUFFIX),
+        new CostModelHandler(ModelHelper.RESOURCE_SET).save(writeURI.appendFileExtension(CostModelHandler.SUFFIX),
                 costRepositoryModel);
     }
 

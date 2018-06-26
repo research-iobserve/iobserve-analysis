@@ -44,7 +44,7 @@ public final class ModelGenerationFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);
 
-    private static final ResourceSet resourceSet = new ResourceSetImpl();
+    private static final ResourceSet RESOURCE_SET = new ResourceSetImpl();
 
     private ModelGenerationFactory() {
         // factory
@@ -57,7 +57,7 @@ public final class ModelGenerationFactory {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelGenerationFactory.LOGGER.info("Copying repository model to new location.");
-        final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler(ModelGenerationFactory.resourceSet);
+        final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler(ModelGenerationFactory.RESOURCE_SET);
         repoModelProvider.load(repoLocation);
         ModelGenerationFactory.copyRepoToOutput(outputLocation, repoModelProvider);
 
@@ -77,7 +77,7 @@ public final class ModelGenerationFactory {
             final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModel());
             final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 
-            final SystemModelHandler systemModelProvider = new SystemModelHandler(ModelGenerationFactory.resourceSet);
+            final SystemModelHandler systemModelProvider = new SystemModelHandler(ModelGenerationFactory.RESOURCE_SET);
             final URI systemModelURI = URI.createFileURI(
                     outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
             systemModelProvider.save(systemModelURI, systemModel);
@@ -97,7 +97,7 @@ public final class ModelGenerationFactory {
                 .craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
 
         final ResourceEnvironmentModelHandler resEnvModelProvider = new ResourceEnvironmentModelHandler(
-                ModelGenerationFactory.resourceSet);
+                ModelGenerationFactory.RESOURCE_SET);
         final URI resEnvModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".resourceenvironment");
         resEnvModelProvider.save(resEnvModelURI, resEnvModel);
@@ -110,7 +110,7 @@ public final class ModelGenerationFactory {
         final Allocation allocationModel = allocationGen.generateAllocation();
 
         final AllocationModelHandler allocationModelProvider = new AllocationModelHandler(
-                ModelGenerationFactory.resourceSet);
+                ModelGenerationFactory.RESOURCE_SET);
         final URI allocationModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".allocation");
         allocationModelProvider.save(allocationModelURI, allocationModel);

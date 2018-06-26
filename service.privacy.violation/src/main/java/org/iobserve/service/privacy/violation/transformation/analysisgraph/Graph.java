@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.privacy.violation.transformation.analysisgraph;
 
 import java.util.ArrayList;
@@ -5,12 +20,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 
 /**
  *
- * @author Clemens
+ * @author Clemens Brackmann
  * @author Eric Schmieders
  *
  */
@@ -20,7 +36,7 @@ public class Graph {
     private final String name;
 
     private final List<Edge> edges;
-    private final LinkedHashMap<String, Vertice> vertices;
+    private final Map<String, Vertex> vertices;
 
     public Graph(final String name) {
         this.name = name;
@@ -32,12 +48,12 @@ public class Graph {
         return this.name;
     }
 
-    public void addVertice(final Vertice v) {
+    public void addVertice(final Vertex v) {
         v.setGraph(this);
         this.vertices.put(v.getName(), v);
     }
 
-    public void addEdge(final Vertice source, final Vertice target) {
+    public void addEdge(final Vertex source, final Vertex target) {
         this.edges.add(new Edge(source, target));
     }
 
@@ -47,7 +63,7 @@ public class Graph {
 
     public boolean removeEdge(final Edge e) {
         if (this.isConsistent() && this.getEdges().contains(e)) {
-            for (final Vertice v : this.getVertices().values()) {
+            for (final Vertex v : this.getVertices().values()) {
                 if (v.getIncomingEdges().contains(e)) {
                     v.getIncomingEdges().remove(e);
                 }
@@ -61,7 +77,7 @@ public class Graph {
         return false;
     }
 
-    public boolean removeVertice(final Vertice v) {
+    public boolean removeVertice(final Vertex v) {
         if (this.isConsistent() && this.getVertices().containsValue(v)) {
             final List<Edge> removals = new ArrayList<>();
             for (final Edge e : this.getEdges()) {
@@ -85,21 +101,29 @@ public class Graph {
         return this.edges;
     }
 
-    public LinkedHashMap<String, Vertice> getVertices() {
+    public Map<String, Vertex> getVertices() {
         return this.vertices;
     }
 
+    /**
+     * Checks whether the graph is consistent.
+     *
+     * @return returns true for consistent graphs, else false.
+     *
+     *         TODO this method should be able to return different types of answers, i.e., missing
+     *         vertices, missing incoming and outgoing edges TODO also all printlns must be removed
+     */
     public boolean isConsistent() {
         for (final Edge e : this.edges) {
-            final Vertice source = e.getSource();
-            final Vertice target = e.getTarget();
+            final Vertex source = e.getSource();
+            final Vertex target = e.getTarget();
             if (!this.vertices.containsValue(source) || !this.vertices.containsValue(target)) {
                 System.out.println("Vertices Missing");
                 return false;
             }
 
         }
-        for (final Vertice v : this.vertices.values()) {
+        for (final Vertex v : this.vertices.values()) {
             for (final Edge e : v.getIncomingEdges()) {
                 if (!this.edges.contains(e)) {
                     System.out.println("Edge Missing");
@@ -120,28 +144,28 @@ public class Graph {
      * Return the adjacency matrix of the current graph. The elements of the matrix indicate whether
      * pairs of vertices are adjacent or not in the graph.
      *
+     * @return the adjacency matrix
      */
-
     public int[][] getAdjacencyMatrix() {
         final int size = this.getVertices().size();
-        final int matrix[][] = new int[size][size];
+        final int[][] matrix = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 matrix[i][i] = 0;
             }
         }
-        final List<Vertice> vertices = new LinkedList<>(this.getVertices().values());
-        for (final Vertice v : vertices) {
-            final int positionX = vertices.indexOf(v);
+        final List<Vertex> localVertices = new LinkedList<>(this.getVertices().values());
+        for (final Vertex v : localVertices) {
+            final int positionX = localVertices.indexOf(v);
             for (final Edge e : v.getOutgoingEdges()) {
-                final int positionY = vertices.indexOf(e.getTarget());
+                final int positionY = localVertices.indexOf(e.getTarget());
                 if (matrix[positionX][positionY] != 0) {
                     continue;
                 }
                 matrix[positionX][positionY] = 1;
             }
             for (final Edge e : v.getIncomingEdges()) {
-                final int positionY = vertices.indexOf(e.getSource());
+                final int positionY = localVertices.indexOf(e.getSource());
                 if (matrix[positionX][positionY] != 0) {
                     continue;
                 }
@@ -153,12 +177,12 @@ public class Graph {
         return matrix;
     }
 
-    public Vertice getVertice(final String name) {
-        return this.getVertices().get(name);
+    public Vertex getVertexByName(final String vertexName) {
+        return this.getVertices().get(vertexName);
     }
 
     public void printGraph() {
-        for (final Vertice v : this.getVertices().values()) {
+        for (final Vertex v : this.getVertices().values()) {
             // for (Edge e : v.getIncomingEdges()) {
             // System.out.println("\t" + "(" + e.getSource() + "," +
             // e.getTarget() + ")");
@@ -174,8 +198,8 @@ public class Graph {
         System.out.println(Arrays.deepToString(this.getAdjacencyMatrix()).replace("], ", "]\n"));
     }
 
-    public LinkedHashMap<String, Vertice> getComponentVerticesDeployedAt(final Policy.GEOLOCATION geoLocation) {
-        final Vertice vertice = this.getVertice(geoLocation.name());
+    public Map<String, Vertex> getComponentVerticesDeployedAt(final Policy.EGeoLocation geoLocation) {
+        final Vertex vertice = this.getVertexByName(geoLocation.name());
 
         return vertice.getAllReachableVertices();
     }
