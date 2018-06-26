@@ -130,7 +130,8 @@ public class PrivacyWarnerIntegrationTest {
             /** load neo4j graphs. */
             final ModelGraph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
             final ModelGraph systemGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
-            final ModelGraph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final ModelGraph resourceEnvironmentGraph = graphLoader
+                    .createModelGraph(ResourceenvironmentFactory.eINSTANCE);
             final ModelGraph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
             final ModelGraph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
 
@@ -150,8 +151,11 @@ public class PrivacyWarnerIntegrationTest {
 
             java.lang.System.err.println(model.toString());
 
-            this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
-                    repositoryModelProvider, privacyModelProvider);
+            final String[] policyList = "NoPersonalDataInUSAPolicy".split(",");
+            final String policyPackage = "org.iobserve.service.privacy.violation.transformation.privacycheck.policies";
+
+            this.pw = new PrivacyWarner(policyList, policyPackage, allocationModelProvider, systemModelProvider,
+                    resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
         } catch (final IOException e) {
             PrivacyWarnerIntegrationTest.LOGGER.error("File IO error.", e);
         }

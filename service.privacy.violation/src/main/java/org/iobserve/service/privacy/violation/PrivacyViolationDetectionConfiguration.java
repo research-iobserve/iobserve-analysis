@@ -73,6 +73,10 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
     /**
      * Configuration for the JSS privacy violation detection service.
      *
+     * @param policyList
+     *            list of privacy policies
+     * @param policyPackage
+     *            package prefix for the policy list
      * @param inputPort
      *            port to listen for Kieker records
      * @param outputs
@@ -98,8 +102,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      * @throws IOException
      *             when files cannot be opened
      */
-    public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final ModelGraph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
+    public PrivacyViolationDetectionConfiguration(final String[] policyList, final String policyPackage,
+            final int inputPort, final List<ConnectionData> outputs, final ModelGraph correspondenceGraph,
+            final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
@@ -137,8 +142,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         /** geolocation. */
         final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
 
-        final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
+        final PrivacyWarner privacyWarner = new PrivacyWarner(policyList, policyPackage, allocationModelProvider,
+                systemModelProvider, resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
 
         final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);

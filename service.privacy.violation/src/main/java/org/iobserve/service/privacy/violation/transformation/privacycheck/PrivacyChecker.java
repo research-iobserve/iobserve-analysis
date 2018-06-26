@@ -15,15 +15,11 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.transformation.privacycheck;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
@@ -46,14 +42,17 @@ public class PrivacyChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PrivacyChecker.class);
 
-    private static final String CONFIG_FILE = "privacy_checker.cfg";
-
     private final List<Policy> policies;
 
     private boolean violatedByWalkthrough = false;
 
     /**
      * Create new privacy checker.
+     *
+     * @param policyList
+     *            list of class names for policies
+     * @param policyPackage
+     *            name of the package which contains the policies
      *
      * @throws FileNotFoundException
      *             when the privacy checker file cannot be found.
@@ -66,24 +65,18 @@ public class PrivacyChecker {
      * @throws IOException
      *             when a read error occurs during parsing
      */
-    public PrivacyChecker() throws FileNotFoundException, InstantiationException, IllegalAccessException,
-            ClassNotFoundException, IOException {
+    public PrivacyChecker(final String[] policyList, final String policyPackage) throws FileNotFoundException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
         PrivacyChecker.LOGGER.info("Starting Privacy Checker");
         this.policies = new Vector<>();
-        this.loadConfigs();
+        this.loadConfigs(policyList, policyPackage);
     }
 
     // TODO use provided InstantiationFactory for save instantiation of classes
-    // TODO use global config file
-    private void loadConfigs() throws FileNotFoundException, IOException, InstantiationException,
-            IllegalAccessException, ClassNotFoundException {
-        final Properties properties = new Properties();
-        properties.load(new BufferedInputStream(new FileInputStream(new File(PrivacyChecker.CONFIG_FILE))));
+    private void loadConfigs(final String[] policyList, final String policyPackage)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
-        final String policyPackage = new String(properties.getProperty("policy.package"));
-        final String policyList = new String(properties.getProperty("policy.list"));
-
-        for (final String policyString : policyList.split(",")) {
+        for (final String policyString : policyList) {
             final Policy policy = (Policy) Class.forName(policyPackage.trim() + "." + policyString.trim())
                     .newInstance();
             this.policies.add(policy);

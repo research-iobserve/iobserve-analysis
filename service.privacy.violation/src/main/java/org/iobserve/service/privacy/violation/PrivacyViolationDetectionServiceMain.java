@@ -122,7 +122,8 @@ public final class PrivacyViolationDetectionServiceMain
 
             /** load neo4j graphs. */
             final ModelGraph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-            final ModelGraph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final ModelGraph resourceEnvironmentGraph = graphLoader
+                    .createModelGraph(ResourceenvironmentFactory.eINSTANCE);
             final ModelGraph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
             final ModelGraph systemModelGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
             final ModelGraph correspondenceModelGraph = graphLoader.createModelGraph(CorrespondenceFactory.eINSTANCE);
@@ -146,10 +147,13 @@ public final class PrivacyViolationDetectionServiceMain
             final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, correspondenceModelGraph,
-                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    allocationContextModelProvider, systemModelProvider, privacyModelProvider, this.warningFile,
-                    this.alarmsFile);
+            final String policyPackage = configuration.getStringProperty("policy.package");
+            final String[] policyList = configuration.getStringArrayProperty("policy.list");
+
+            return new PrivacyViolationDetectionConfiguration(policyList, policyPackage, this.inputPort, this.outputs,
+                    correspondenceModelGraph, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, privacyModelProvider,
+                    this.warningFile, this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

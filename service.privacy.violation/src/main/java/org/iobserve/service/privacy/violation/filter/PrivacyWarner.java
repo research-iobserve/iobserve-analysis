@@ -95,10 +95,16 @@ public class PrivacyWarner extends AbstractStage {
     private System systemRootElement;
     private Repository repositoryRootElement;
     private PrivacyModel privacyRootElement;
+    private final String[] policyList;
+    private final String policyPackage;
 
     /**
      * Create and initialize privacy warner.
      *
+     * @param policyList
+     *            list of policies
+     * @param policyPackage
+     *            package prefix for the policy entries
      * @param allocationModelProvider
      *            allocation model provider
      * @param systemModelProvider
@@ -111,11 +117,14 @@ public class PrivacyWarner extends AbstractStage {
      *            privacy model provider
      * @param assemblyView2
      */
-    public PrivacyWarner(final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<System> systemModelProvider,
+    public PrivacyWarner(final String[] policyList, final String policyPackage,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<PrivacyModel> privacyModelProvider) {
+        this.policyList = policyList;
+        this.policyPackage = policyPackage;
+
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
@@ -154,7 +163,7 @@ public class PrivacyWarner extends AbstractStage {
     private Warnings checkGraph(final Graph g) throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
         final Warnings w = new Warnings();
-        final PrivacyChecker p = new PrivacyChecker();
+        final PrivacyChecker p = new PrivacyChecker(this.policyList, this.policyPackage);
         final List<Edge> edges = p.check(g);
 
         for (final Edge edge : edges) {
@@ -273,7 +282,8 @@ public class PrivacyWarner extends AbstractStage {
 
                     // Check Interface Name in Repository and add Edge
                     final OperationInterface operationInterface = this.interfaces.get(interfaceName);
-                    this.computePrivacyLevelsAndAddEdge(graph, operationInterface, providingComponent, requiringComponent);
+                    this.computePrivacyLevelsAndAddEdge(graph, operationInterface, providingComponent,
+                            requiringComponent);
 
                 }
             }
