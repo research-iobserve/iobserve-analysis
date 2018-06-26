@@ -30,6 +30,7 @@ import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 
 import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
@@ -37,18 +38,13 @@ import teetime.framework.InputPort;
  * @author Stephan Lenga
  *
  */
+@ReceiveUnfilteredConfiguration
 public class HierarchicalBehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final String PREFIX = HierarchicalBehaviorCompositeStage.class.getCanonicalName() + ".";
     private static final String OUTPUT_URL = HierarchicalBehaviorCompositeStage.PREFIX + "outputUrl";
     private static final String NAME_PREFIX = HierarchicalBehaviorCompositeStage.PREFIX + "prefix";
     private static final String REPRESENTATIVE_STRATEGY = HierarchicalBehaviorCompositeStage.PREFIX
             + "representativeStrategy";
-
-    // private static final String VARIANCE = HierarchicalBehaviorCompositeStage.PREFIX +
-    // "variance";
-
-    // private static final String EXPECTED_USER_GROUPS = HierarchicalBehaviorCompositeStage.PREFIX
-    // + "expectedUserGroups";
 
     private final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage;
 
@@ -61,8 +57,7 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
      *             on errors with the configuration
      */
     public HierarchicalBehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
-        // TODO make these options
-        final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
+    	final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
         final String representativeStrategyClassName = configuration
                 .getStringProperty(HierarchicalBehaviorCompositeStage.REPRESENTATIVE_STRATEGY);
         final IRepresentativeStrategy representativeStrategy = InstantiationFactory
@@ -72,6 +67,7 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
         this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
+        userSessionModelAggregator.declareActive();
 
         final BehaviorModelPrepratationStage hierarchicalBehaviorModelPreparation = new BehaviorModelPrepratationStage(
                 modelGenerationFilter, representativeStrategy, keepEmptyTransitions);
@@ -80,10 +76,6 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
         final String namePrefix = configuration.getStringProperty(HierarchicalBehaviorCompositeStage.NAME_PREFIX);
         final ISignatureCreationStrategy signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
         final String visualizationUrl = configuration.getStringProperty(HierarchicalBehaviorCompositeStage.OUTPUT_URL);
-        // final int expectedUserGroups = configuration
-        // .getIntProperty(HierarchicalBehaviorCompositeStage.EXPECTED_USER_GROUPS);
-        // final int variance =
-        // configuration.getIntProperty(HierarchicalBehaviorCompositeStage.VARIANCE);
 
         final HierarchicalBehaviorModelAggregation hierarchicalBehaviorModelAggregation = new HierarchicalBehaviorModelAggregation(
                 namePrefix, visualizationUrl, signatureCreationStrategy);

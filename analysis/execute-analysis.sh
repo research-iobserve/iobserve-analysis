@@ -102,21 +102,21 @@ case "$mode" in
 "${CLUSTERINGS[0]}")
 cat << EOF >> analysis.config
 # specific setup similarity matching
-iobserve.analysis.behaviour.filter=org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage
-org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage.expectedUserGroups=1
-org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage.variance=1
-org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage.prefix=jira
-org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage.outputUrl=/Users/student/git/single-jpetstore-clustering-experiment/results
-org.iobserve.analysis.clustering.xmeans.XMeansBehaviorCompositeStage.representativeStrategy=org.iobserve.analysis.systems.jira.JIRARepresentativeStrategy
+iobserve.analysis.behavior.filter=org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage
+org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage.expectedUserGroups=1
+org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage.variance=1
+org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage.prefix=jira
+org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage.outputUrl=/Users/student/git/single-jpetstore-clustering-experiment/results
+org.iobserve.analysis.behavior.clustering.xmeans.XMeansBehaviorCompositeStage.representativeStrategy=org.iobserve.analysis.systems.jira.JIRARepresentativeStrategy
 EOF
 ;;
 "${CLUSTERINGS[1]}")
 cat << EOF >> analysis.config
 # specific setup similarity matching
-iobserve.analysis.behaviour.filter=org.iobserve.analysis.clustering.em.EMBehaviorCompositeStage
-org.iobserve.analysis.clustering.xmeans.EMBehaviorCompositeStage.prefix=jira
-org.iobserve.analysis.clustering.xmeans.EMBehaviorCompositeStage.outputUrl=/Users/student/git/single-jpetstore-clustering-experiment/results
-org.iobserve.analysis.clustering.xmeans.EMBehaviorCompositeStage.representativeStrategy=org.iobserve.analysis.systems.jira.JIRARepresentativeStrategy
+iobserve.analysis.behavior.filter=org.iobserve.analysis.behavior.clustering.em.EMBehaviorCompositeStage
+org.iobserve.analysis.behavior.clustering.em.EMBehaviorCompositeStage.prefix=jira
+org.iobserve.analysis.behavior.clustering.em.EMBehaviorCompositeStage.outputUrl=/Users/student/git/single-jpetstore-clustering-experiment/results
+org.iobserve.analysis.behavior.clustering.em.EMBehaviorCompositeStage.representativeStrategy=org.iobserve.analysis.systems.jira.JIRARepresentativeStrategy
 EOF
 ;;
 "${CLUSTERINGS[2]}")
@@ -125,7 +125,7 @@ cat << EOF >> analysis.config
 iobserve.analysis.behavior.filter=org.iobserve.analysis.clustering.shared.ClassificationCompositeStage
 iobserve.analysis.behavior.visualizationUrl=123
 iobserve.analysis.behavior.sink.baseUrl=/Users/student/git/single-jpetstore-clustering-experiment/results
-iobserve.analysis.behavior.classification=org.iobserve.analysis.clustering.birch.BirchClassification
+iobserve.analysis.behavior.classification=org.iobserve.analysis.behavior.clustering.birch.BirchClassification
 iobserve.analysis.behavior.preprocess.keepTime=1000
 iobserve.analysis.behavior.preprocess.minSize=1
 iobserve.analysis.behavior.preprocess.keepEmpty=true

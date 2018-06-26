@@ -19,8 +19,10 @@ package org.iobserve.analysis.behavior.models.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
@@ -89,7 +91,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         // verify input
         final int length = signatures.size();
-
+        
         if ((length == reverseSignatures.length) && (length == transitions.length)) {
 
             for (final Integer[] transition : transitions) {
@@ -257,12 +259,14 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
                 }
             }
         }
-
+        
+        // Filter representative values that are null
         this.signatures.values().stream()
-                .forEach(pair -> Arrays.stream(pair.getSecond())
-                        .filter(callInformation -> callInformation.getRepresentativeValue() != null)
-                        .forEach(callInformation -> attValues
-                                .add(Double.parseDouble(callInformation.getRepresentativeValue()))));
+                .forEach(pair -> 
+                	Arrays.stream(pair.getSecond())
+                        //.filter(callInformation -> callInformation.getRepresentativeValue() != null)  // RepresentativeValues are somehow all null
+                        .forEach(callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))
+                        ));
 
         final double[] attArray = new double[attValues.size()];
 

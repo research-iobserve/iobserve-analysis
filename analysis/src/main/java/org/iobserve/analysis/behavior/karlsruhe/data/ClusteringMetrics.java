@@ -77,8 +77,6 @@ public class ClusteringMetrics {
 
         for (int i = 0; i < numberOfCentroids; i++) {
             for (int j = 0; j < this.instances.numInstances(); j++) {
-                System.out.println("# inst.: " + this.instances.numInstances());
-                System.out.println("# cent.: " + numberOfCentroids);
                 if (this.assignments[j] == i) {
                     this.sumOfSquaredErrors += Math
                             .pow(euclideanDistance.distance(this.instances.instance(j), this.centroids.instance(i)), 2);

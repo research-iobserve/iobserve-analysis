@@ -18,6 +18,8 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.sink.AbstractBehaviorModelOutputSink;
+import org.iobserve.analysis.sink.BehaviorModelSink;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -28,7 +30,7 @@ import weka.core.Instances;
  *
  */
 public class HierarchicalBehaviorModelAggregation extends CompositeStage {
-    // private final VectorQuantizationClusteringStage clustering;
+    private final HierarchicalClusteringProcess clustering;
 
     /**
      * Constructor configuration of the aggregation filters.
@@ -44,21 +46,13 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
             final ISignatureCreationStrategy signatureCreationStrategy) {
         final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
-        // NEED HierarchicalClusteringStage in analysis.behavior.filter
-        // this.clustering = new HierarchicalClusteringStage(new HierarchicalClustering()); //
-        // Arguments
-        // may be
-        // necessary
-        // this.connectPorts(this.clustering.getOutputPort(),
-        // behaviorModelCreationStage.getInputPort());
+        this.clustering = new HierarchicalClusteringProcess(new HierarchicalClustering());
+        this.connectPorts(this.clustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */
-        // final AbstractBehaviorModelOutputSink tIObserveUBM = new
-        // BehaviorModelSink(visualizationUrl,
-        // signatureCreationStrategy);
+        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
 
-        // this.connectPorts(behaviorModelCreationStage.getOutputPort(),
-        // tIObserveUBM.getInputPort());
+        this.connectPorts(behaviorModelCreationStage.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**
@@ -67,6 +61,6 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
      * @return input port
      */
     public InputPort<Instances> getInputPort() {
-        return null; // this.clustering.getInputPort();
+        return this.clustering.getInputPort();
     }
 }
