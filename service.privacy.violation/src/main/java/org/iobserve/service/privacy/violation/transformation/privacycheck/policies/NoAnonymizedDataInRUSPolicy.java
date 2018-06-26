@@ -25,6 +25,9 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
 
 public class NoAnonymizedDataInRUSPolicy extends Policy {
 
+    /**
+     * Create no anonymized data in Russia policy.
+     */
     public NoAnonymizedDataInRUSPolicy() {
         super(Policy.EDataClassification.ANONYMOUS, Policy.EGeoLocation.RUS);
     }

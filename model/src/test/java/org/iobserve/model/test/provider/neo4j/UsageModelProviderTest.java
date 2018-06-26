@@ -58,6 +58,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         this.clazz = UsageModel.class;
     }
 
+    /**
+     * Test whether we can create and send search for it by type.
+     */
     @Test
     public void createThenReadByType() {
         final ModelGraph graph = this.prepareGraph("createThenReadByType");
@@ -81,6 +84,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create and then read an object including containing elements.
+     */
     @Test
     public void createThenReadContaining() {
         final ModelGraph graph = this.prepareGraph("createThenReadContaining");
@@ -99,6 +105,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether creating and then reading referencing objects works.
+     */
     @Test
     public void createThenReadReferencing() {
         final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
@@ -124,6 +133,10 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create, update and then read the object for the DB with committed
+     * correctly.
+     */
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
@@ -170,6 +183,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test create with subsequent delete sequence.
+     */
     @Test
     public void createThenDeleteObject() {
         final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
@@ -199,6 +215,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create and then delete the object including its data types correctly.
+     */
     @Test
     public void createThenDeleteObjectAndDatatypes() {
         final ModelGraph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");

@@ -28,24 +28,43 @@ public class Policy {
 
     // TODO should be replaced by the existing model level enumeration if possible
     /** geolocation. */
-    public static enum EGeoLocation {
+    public enum EGeoLocation {
         DEU, USA, RUS
     }
 
     // TODO should be replaced by the existing model level enumeration if possible
     /** data classification. */
-    public static enum EDataClassification {
+    public enum EDataClassification {
         ANONYMOUS, DEPERSONALIZED, PERSONAL
     }
 
     private final EDataClassification dataClassification;
     private final EGeoLocation geoLocation;
 
+    /**
+     * Create new policy.
+     *
+     * @param dataClassification
+     *            data classification
+     * @param geoLocation
+     *            geolocation
+     */
     protected Policy(final EDataClassification dataClassification, final EGeoLocation geoLocation) {
         this.geoLocation = geoLocation;
         this.dataClassification = dataClassification;
     }
 
+    /**
+     * Check whether the compared classification is equal or higher than the basis.
+     *
+     * @param basis
+     *            the basis
+     * @param compared
+     *            the new classification
+     *
+     * @return true if the new classification is higher
+     */
+    // TODO this is a method which belongs to the enumeration
     public static boolean isEqualOrMoreCritical(final EDataClassification basis, final EDataClassification compared) {
         return compared.ordinal() >= basis.ordinal();
     }
@@ -58,9 +77,17 @@ public class Policy {
         return this.geoLocation;
     }
 
+    /**
+     * Get the data classification for a data privacy level.
+     *
+     * @param level
+     *            data privacy level
+     * @return the data classification
+     */
+    // TODO this is mostly useless, you could EDataPrivacyLevel instead
     public static EDataClassification getDataClassification(final EDataPrivacyLevel level) {
         for (final EDataClassification data : EDataClassification.values()) {
-            if (data.name().toLowerCase().equals(level.getName().toLowerCase())) {
+            if (data.name().equalsIgnoreCase(level.getName())) {
                 return data;
             }
         }

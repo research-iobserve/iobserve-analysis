@@ -228,10 +228,21 @@ public class Graph {
         return matrix;
     }
 
+    /**
+     * get a vertex by name.
+     *
+     * @param vertexName
+     *            the name of the vertex
+     *
+     * @return returns a vertex on success, else null
+     */
     public Vertex getVertexByName(final String vertexName) {
         return this.getVertices().get(vertexName);
     }
 
+    /**
+     * Print all vertices.
+     */
     public void printGraph() {
         for (final Vertex v : this.getVertices().values()) {
             // for (Edge e : v.getIncomingEdges()) {
@@ -245,10 +256,20 @@ public class Graph {
         }
     }
 
+    /**
+     * Print adjacent matrix.
+     */
     public void printAdjacentMatrix() {
         System.out.println(Arrays.deepToString(this.getAdjacencyMatrix()).replace("], ", "]\n"));
     }
 
+    /**
+     * Get a map of vertices which are located at the given geolocation.
+     *
+     * @param geoLocation
+     *            the geolocation
+     * @return the map.
+     */
     public Map<String, Vertex> getComponentVerticesDeployedAt(final Policy.EGeoLocation geoLocation) {
         final Vertex vertice = this.getVertexByName(geoLocation.name());
 

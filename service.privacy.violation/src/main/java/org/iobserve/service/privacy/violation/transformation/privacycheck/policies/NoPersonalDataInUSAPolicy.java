@@ -24,6 +24,9 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
  */
 public class NoPersonalDataInUSAPolicy extends Policy {
 
+    /**
+     * Create no personal data in the USA policy.
+     */
     public NoPersonalDataInUSAPolicy() {
         super(Policy.EDataClassification.PERSONAL, Policy.EGeoLocation.USA);
     }

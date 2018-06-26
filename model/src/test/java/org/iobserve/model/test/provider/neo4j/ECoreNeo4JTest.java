@@ -183,6 +183,9 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
         graph.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test create, clone and read sequence.
+     */
     @Test
     public void createThenCloneThenRead() {
         final ModelGraph storeGraph = this.prepareGraph("createThenCloneThenRead");

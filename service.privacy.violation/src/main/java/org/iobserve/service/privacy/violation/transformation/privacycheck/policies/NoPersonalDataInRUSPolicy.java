@@ -25,6 +25,9 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
 
 public class NoPersonalDataInRUSPolicy extends Policy {
 
+    /**
+     * Create no personal data in Russia policy.
+     */
     public NoPersonalDataInRUSPolicy() {
         super(Policy.EDataClassification.PERSONAL, Policy.EGeoLocation.RUS);
     }
