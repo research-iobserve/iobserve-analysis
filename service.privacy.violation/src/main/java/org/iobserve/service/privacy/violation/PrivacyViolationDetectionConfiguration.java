@@ -34,8 +34,8 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
@@ -77,8 +77,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            port to listen for Kieker records
      * @param outputs
      *            host and port for the Kieker adaptive monitoring
-     * @param correspondenceProvider
-     *            correspondence model
+     * @param correspondenceGraph
+     *            correspondence model graph
      * @param repositoryModelProvider
      *            repository model provider
      * @param resourceEnvironmentModelProvider
@@ -99,7 +99,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final Graph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
+            final ModelGraph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
@@ -183,10 +183,11 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 this.connectPorts(entryEventMapperStage.getOutputPort(), dataFlowDetectionStage.getInputPort());
                 this.connectPorts(dataFlowDetectionStage.getOutputPort(), alarmAnalysis.getInputPort());
                 this.connectPorts(alarmAnalysis.getOutputPort(), alarmSink.getInputPort());
-            } catch (final IOException eWarning) {
+            } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
+                                                   // control
                 throw new IOException("Cannot create warning file.", eWarning);
             }
-        } catch (final IOException eAlarm) {
+        } catch (final IOException eAlarm) { // NOPMD cannot be avoided to be used as flow control
             throw new IOException("Cannot create alarm file.", eAlarm);
         }
 

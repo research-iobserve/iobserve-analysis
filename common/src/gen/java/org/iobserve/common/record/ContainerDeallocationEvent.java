@@ -18,11 +18,8 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.AbstractContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-
-import org.iobserve.common.record.IDeallocationEvent;
 
 /**
  * @author Reiner Jung

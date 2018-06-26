@@ -172,6 +172,6 @@ public interface IModelProvider<T extends EObject> {
      *
      * @return return the corresponding graph
      */
-    Graph getGraph();
+    ModelGraph getGraph();
 
 }

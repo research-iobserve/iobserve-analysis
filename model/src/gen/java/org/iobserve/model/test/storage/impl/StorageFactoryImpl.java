@@ -6,12 +6,16 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.iobserve.model.test.storage.*;
+import org.iobserve.model.test.storage.EnumValueExample;
+import org.iobserve.model.test.storage.Other;
+import org.iobserve.model.test.storage.OtherSubType;
+import org.iobserve.model.test.storage.Root;
+import org.iobserve.model.test.storage.SpecialA;
+import org.iobserve.model.test.storage.SpecialB;
+import org.iobserve.model.test.storage.StorageFactory;
+import org.iobserve.model.test.storage.StoragePackage;
 
 /**
  * <!-- begin-user-doc -->

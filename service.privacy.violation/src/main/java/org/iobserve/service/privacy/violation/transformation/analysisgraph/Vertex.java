@@ -31,26 +31,46 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
 public class Vertex {
 
     /** vertex stereotypes. */
-    public enum STEREOTYPES {
-        Geolocation, ComputingNode, Datasource
+    public enum EStereoType {
+        GEOLOCATION, COMPUTING_NODE, DATASOURCE
     };
 
     private final String name;
-    private final STEREOTYPES stereotype;
+    private final EStereoType stereotype;
     private Graph graph;
 
     private final List<Edge> incoming = new ArrayList<>();
     private final List<Edge> outgoing = new ArrayList<>();
 
-    public Vertex(final String name, final STEREOTYPES stereotype) {
+    /**
+     * Create a new vertex with a name and stereotype.
+     *
+     * @param name
+     *            unique name of the vertex
+     * @param stereotype
+     *            a stereotype
+     */
+    public Vertex(final String name, final EStereoType stereotype) {
         this.name = name;
         this.stereotype = stereotype;
     }
 
+    /**
+     * Add an outgoing edge.
+     *
+     * @param edge
+     *            the edge
+     */
     public void addOutgoing(final Edge edge) {
         this.outgoing.add(edge);
     }
 
+    /**
+     * Set graph to which this vertex belongs. This is a parent reference
+     *
+     * @param graph
+     *            the graph
+     */
     public void setGraph(final Graph graph) {
         this.graph = graph;
     }
@@ -90,6 +110,14 @@ public class Vertex {
         return this.incoming;
     }
 
+    /**
+     * Get all outgoing edges which have at least the given data classification.
+     *
+     * @param dataClassification
+     *            the data classification
+     *
+     * @return returns all edges which match the criteria
+     */
     public List<Edge> getOutgoingEdgesClassifiedAtLeast(final Policy.EDataClassification dataClassification) {
         final List<Edge> edges = new ArrayList<>();
 
@@ -115,6 +143,11 @@ public class Vertex {
         return allEdges;
     }
 
+    /**
+     * Find all direct neighbors.
+     *
+     * @return return a list of neighboring vertices
+     */
     public List<Vertex> neighbourhood() {
         final List<Vertex> out = new ArrayList<>();
         for (final Edge e : this.getOutgoingEdges()) {
@@ -150,7 +183,7 @@ public class Vertex {
         return this.name;
     }
 
-    public STEREOTYPES getStereoType() {
+    public EStereoType getStereoType() {
         return this.stereotype;
     }
 

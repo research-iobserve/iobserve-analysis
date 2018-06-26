@@ -29,8 +29,8 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
+import org.iobserve.planning.systemadaptation.TerminateAction;
 
 /**
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter

@@ -33,7 +33,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
  * @author Lars Bluemke
  *
  */
-public class Graph {
+public class ModelGraph {
 
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;
@@ -48,7 +48,7 @@ public class Graph {
      * @param graphDirectory
      *            Directory where the graph database shall be located
      */
-    public Graph(final EFactory factory, final File graphDirectory) {
+    public ModelGraph(final EFactory factory, final File graphDirectory) {
         this.graphDirectory = graphDirectory.getAbsoluteFile();
         if (!this.graphDirectory.exists()) {
             if (!this.graphDirectory.mkdirs()) {

@@ -37,8 +37,8 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.data.trace.EventBasedTrace;
@@ -108,7 +108,7 @@ public class AnalysisConfiguration extends Configuration {
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
             final IModelProvider<System> systemModelProvider, final IModelProvider<UsageModel> usageModelProvider,
-            final Graph correspondenceModelGraph) throws ConfigurationException {
+            final ModelGraph correspondenceModelGraph) throws ConfigurationException {
         this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
@@ -147,7 +147,7 @@ public class AnalysisConfiguration extends Configuration {
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<System> systemModelProvider, final Graph correspondenceModelGraph)
+            final IModelProvider<System> systemModelProvider, final ModelGraph correspondenceModelGraph)
             throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 

@@ -26,15 +26,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Used to load a {@link Graph} including each of the different PCM models.
+ * Used to load a {@link ModelGraph} including each of the different PCM models.
  *
  * @author Lars Bluemke
  *
  */
-public class GraphLoader {
+public class ModelGraphLoader {
     protected static final String VERSION_PREFIX = "_v";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGraphLoader.class);
 
     private final File baseDirectory;
 
@@ -45,7 +45,7 @@ public class GraphLoader {
      *            The base directory. Subfolders for the different model types are created in this
      *            directory. The different model versions are stored in each of these subfolders.
      */
-    public GraphLoader(final File baseDirectory) {
+    public ModelGraphLoader(final File baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
 
@@ -59,13 +59,13 @@ public class GraphLoader {
      *            graph type
      * @return The the model graph
      */
-    public <T extends EObject> Graph cloneNewModelGraphVersion(final EFactory factory) {
+    public <T extends EObject> ModelGraph cloneNewModelGraphVersion(final EFactory factory) {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getLastVersionNumber(graphTypeDir.listFiles());
 
         final File newGraphDir = new File(graphTypeDir,
-                graphTypeDirName + GraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
+                graphTypeDirName + ModelGraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
 
         // Copy old graph files
         if (maxVersionNumber >= 0) {
@@ -74,13 +74,13 @@ public class GraphLoader {
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
             } catch (final IOException e) {
-                GraphLoader.LOGGER.error("Could not copy old graph version.");
+                ModelGraphLoader.LOGGER.error("Could not copy old graph version.");
             }
         } else {
             throw new InternalError("No such model available for cloning.");
         }
 
-        return new Graph(factory, newGraphDir);
+        return new ModelGraph(factory, newGraphDir);
     }
 
     /**
@@ -90,7 +90,7 @@ public class GraphLoader {
      *            the factory for the particular metamodel (partition)
      * @return The model graph
      */
-    public Graph createModelGraph(final EFactory factory) {
+    public ModelGraph createModelGraph(final EFactory factory) {
         final String graphTypeDirName = this.fullyQualifiedPackageName(factory.getEPackage());
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getLastVersionNumber(graphTypeDir.listFiles());
@@ -101,11 +101,11 @@ public class GraphLoader {
 
         final File newGraphDir = this.createGraphFile(graphTypeDir, graphTypeDirName, maxVersionNumber);
 
-        return new Graph(factory, newGraphDir);
+        return new ModelGraph(factory, newGraphDir);
     }
 
     private File createGraphFile(final File graphTypeDir, final String graphTypeDirName, final int versionNumber) {
-        return new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + versionNumber);
+        return new File(graphTypeDir, graphTypeDirName + ModelGraphLoader.VERSION_PREFIX + versionNumber);
     }
 
     /**
@@ -127,7 +127,7 @@ public class GraphLoader {
     // and populates a graph
     public <V extends EObject> void initializeModelGraph(final EFactory factory, final V model, final String nameLabel,
             final String idLabel) {
-        final Graph graph = this.createModelGraph(factory);
+        final ModelGraph graph = this.createModelGraph(factory);
         final ModelProvider<V> provider = new ModelProvider<>(graph, nameLabel, idLabel);
         provider.clearGraph();
         provider.storeModelPartition(model);

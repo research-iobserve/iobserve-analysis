@@ -20,7 +20,7 @@ import java.util.List;
 import de.uka.ipd.sdq.stoex.DoubleLiteral;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,7 +60,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final ModelGraph graph = this.prepareGraph("createThenReadByType");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -83,7 +83,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph("createThenReadContaining");
+        final ModelGraph graph = this.prepareGraph("createThenReadContaining");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -101,7 +101,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -126,7 +126,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+        final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -172,7 +172,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -201,7 +201,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
 
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Test;
@@ -85,14 +85,14 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final Graph storeGraph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
+        final ModelGraph storeGraph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
 
         final ModelProvider<T> storeModelProvider = new ModelProvider<>(storeGraph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
         storeModelProvider.storeModelPartition(this.testModel);
 
-        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(this.factory);
+        final ModelGraph cloneGraph = storeModelProvider.cloneNewGraphVersion(this.factory);
 
         final ModelProvider<T> cloneModelProvider = new ModelProvider<>(cloneGraph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -111,7 +111,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenClearGraph() {
-        final Graph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH);
+        final ModelGraph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -134,7 +134,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() {
-        final Graph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT);
+        final ModelGraph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

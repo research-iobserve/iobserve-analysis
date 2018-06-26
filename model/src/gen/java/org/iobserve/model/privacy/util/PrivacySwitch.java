@@ -4,10 +4,14 @@ package org.iobserve.model.privacy.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
-
-import org.iobserve.model.privacy.*;
+import org.iobserve.model.privacy.EncapsulatedDataSource;
+import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
+import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 
 /**
  * <!-- begin-user-doc -->

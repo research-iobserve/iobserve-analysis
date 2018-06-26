@@ -18,7 +18,7 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final ModelGraph graph = this.prepareGraph("createThenReadByType");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -94,7 +94,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph("createThenReadContaining");
+        final ModelGraph graph = this.prepareGraph("createThenReadContaining");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -115,7 +115,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -140,7 +140,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+        final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -196,7 +196,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -234,7 +234,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
 
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);

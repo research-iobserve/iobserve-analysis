@@ -28,8 +28,8 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
+import org.iobserve.planning.systemadaptation.TerminateAction;
 
 /**
  * <!-- begin-user-doc --> The <b>Switch</b> for the model's inheritance hierarchy. It supports the

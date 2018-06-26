@@ -4,10 +4,15 @@ package org.iobserve.model.correspondence.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
-
-import org.iobserve.model.correspondence.*;
+import org.iobserve.model.correspondence.AbstractEntry;
+import org.iobserve.model.correspondence.AllocationEntry;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.ComponentEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.OperationEntry;
+import org.iobserve.model.correspondence.Part;
 
 /**
  * <!-- begin-user-doc -->

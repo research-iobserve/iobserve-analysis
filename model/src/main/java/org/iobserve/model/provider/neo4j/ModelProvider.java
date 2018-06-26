@@ -75,7 +75,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
-    private final Graph graph;
+    private final ModelGraph graph;
     private final String nameLabel;
     private final String idLabel;
 
@@ -91,7 +91,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            label used for tne id property, e.g., id in PCM (can be null if no ids are
      *            present)
      */
-    public ModelProvider(final Graph graph, final String nameLabel, final String idLabel) {
+    public ModelProvider(final ModelGraph graph, final String nameLabel, final String idLabel) {
         this.graph = graph;
         this.nameLabel = nameLabel;
         this.idLabel = idLabel;
@@ -120,9 +120,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The cloned graph
      */
-    public Graph cloneNewGraphVersion(final EFactory factory) {
+    public ModelGraph cloneNewGraphVersion(final EFactory factory) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
-        final GraphLoader graphLoader = new GraphLoader(baseDirectory);
+        final ModelGraphLoader graphLoader = new ModelGraphLoader(baseDirectory);
 
         return graphLoader.cloneNewModelGraphVersion(factory);
     }
@@ -1094,7 +1094,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The graph
      */
     @Override
-    public Graph getGraph() {
+    public ModelGraph getGraph() {
         return this.graph;
     }
 }

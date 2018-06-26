@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,6 +30,8 @@ import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy.EDataClassification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,7 +41,10 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
  */
 
 public class PrivacyChecker {
+
     public static final boolean PRINT = true;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrivacyChecker.class);
 
     private static final String CONFIG_FILE = "privacy_checker.cfg";
 
@@ -50,14 +56,19 @@ public class PrivacyChecker {
      * Create new privacy checker.
      *
      * @throws FileNotFoundException
+     *             when the privacy checker file cannot be found.
      * @throws InstantiationException
+     *             when the policy class could not be instantiated
      * @throws IllegalAccessException
+     *             when the we cannot access the policy class
      * @throws ClassNotFoundException
+     *             when the policy class could not be found
      * @throws IOException
+     *             when a read error occurs during parsing
      */
     public PrivacyChecker() throws FileNotFoundException, InstantiationException, IllegalAccessException,
             ClassNotFoundException, IOException {
-        PrivacyChecker.log("Starting Privacy Checker");
+        PrivacyChecker.LOGGER.info("Starting Privacy Checker");
         this.policies = new Vector<>();
         this.loadConfigs();
     }
@@ -74,7 +85,7 @@ public class PrivacyChecker {
             final Policy policy = (Policy) Class.forName(policyPackage.trim() + "." + policyString.trim())
                     .newInstance();
             this.policies.add(policy);
-            PrivacyChecker.log("Policy " + policy.getPrint() + " added.");
+            PrivacyChecker.LOGGER.info("Policy {} added.", policy.getPrint());
         }
     }
 
@@ -86,48 +97,37 @@ public class PrivacyChecker {
      * @return returns a list of edges
      */
     public List<Edge> check(final Graph graph) {
-        final List<Edge> out = new Vector<>();
-        PrivacyChecker.log("Starting check");
+        final List<Edge> out = new ArrayList<>();
+        PrivacyChecker.LOGGER.debug("Starting check");
         for (final Policy policy : this.policies) {
             out.addAll(this.checkPolicy(graph, policy));
         }
-        PrivacyChecker.log("Check finishd");
+        PrivacyChecker.LOGGER.debug("Check finishd");
         return out;
     }
 
-    /**
-     * TODO Anpassen an Logger.
-     *
-     * @param message
-     */
-    public static void log(final Object message) {
-        if (PrivacyChecker.PRINT) {
-            System.out.println("PRIVACYCHECKER: " + message);
-        }
-    }
-
     private List<Edge> checkPolicy(final Graph graph, final Policy policy) {
-        PrivacyChecker.log("Now checking: graph(" + graph.getName() + ") against " + policy.getPrint());
+        PrivacyChecker.LOGGER.debug("Now checking: graph({}) against ", graph.getName(), policy.getPrint());
 
         final List<Edge> potentialWarnings = this.determineSetPotentialWarnings(graph, policy);
-        PrivacyChecker.log("WARNING_TMP includes:");
+        PrivacyChecker.LOGGER.debug("WARNING_TMP includes:");
         PrivacyChecker.printEdges(potentialWarnings);
 
-        final List<Edge> warnings = this.determineSetWARNING(graph, potentialWarnings, policy);
-        PrivacyChecker.log("WARNING includes:");
+        final List<Edge> warnings = this.determineSetWARNING(potentialWarnings, policy);
+        PrivacyChecker.LOGGER.debug("WARNING includes:");
         PrivacyChecker.printEdges(warnings);
 
         return warnings;
     }
 
-    private List<Edge> determineSetWARNING(final Graph graph, final List<Edge> potentialWarnings, final Policy policy) {
-        final List<Edge> warnings = new Vector<>();
+    private List<Edge> determineSetWARNING(final List<Edge> potentialWarnings, final Policy policy) {
+        final List<Edge> warnings = new ArrayList<>();
 
         for (final Edge edge : potentialWarnings) {
             this.violatedByWalkthrough = false;
             final Vertex startNode = edge.getTarget();
 
-            final List<Vertex> walkthrough = new Vector<>();
+            final List<Vertex> walkthrough = new ArrayList<>();
             this.walkthroughFromToDatabase(startNode, policy.getDataClassification(), walkthrough);
 
             if (this.violatedByWalkthrough) {
@@ -142,7 +142,7 @@ public class PrivacyChecker {
             final List<Vertex> walkthrough) {
         walkthrough.add(node);
 
-        if (node.getStereoType().equals(Vertex.STEREOTYPES.Datasource)) {
+        if (node.getStereoType().equals(Vertex.EStereoType.DATASOURCE)) {
             this.violatedByWalkthrough = true;
             return;
         }
@@ -169,13 +169,11 @@ public class PrivacyChecker {
      */
     // TODO better method name
     private List<Edge> determineSetPotentialWarnings(final Graph graph, final Policy policy) {
-        final List<Edge> warnings = new Vector<>();
+        final List<Edge> warnings = new ArrayList<>();
 
         final Vertex excludedGeolocationVertice = graph.getVertexByName(policy.getGeoLocation().toString());
 
-        if (excludedGeolocationVertice == null) {
-            PrivacyChecker.log("Policy's geo location not included in the runtime model");
-        } else {
+        if (excludedGeolocationVertice != null) {
             final Map<String, Vertex> componentVerticesDeployedAt = graph
                     .getComponentVerticesDeployedAt(policy.getGeoLocation());
 
@@ -187,6 +185,8 @@ public class PrivacyChecker {
                 warnings.addAll(relevantDatatransfers);
 
             }
+        } else {
+            PrivacyChecker.LOGGER.debug("Policy's geo location not included in the runtime model");
         }
 
         return warnings;
@@ -200,7 +200,7 @@ public class PrivacyChecker {
      */
     public static void printVertexNames(final Map<String, Vertex> vertices) {
         for (final String verticeName : vertices.keySet()) {
-            PrivacyChecker.log("Vertice: " + verticeName);
+            PrivacyChecker.LOGGER.debug("Vertice: {}", verticeName);
         }
     }
 
@@ -212,7 +212,7 @@ public class PrivacyChecker {
      */
     public static void printEdges(final List<Edge> edges) {
         for (final Edge edge : edges) {
-            PrivacyChecker.log(edge.getPrint() + " Interface: " + edge.getInterfaceName());
+            PrivacyChecker.LOGGER.debug("{} Interface: {}", edge.getPrint(), edge.getInterfaceName());
         }
     }
 }

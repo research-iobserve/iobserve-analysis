@@ -23,8 +23,8 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -60,7 +60,7 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
     public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final Graph correspondenceModelGraph) {
+            final ModelGraph correspondenceModelGraph) {
 
         final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
                 ModelProvider.IMPLEMENTATION_ID, null);

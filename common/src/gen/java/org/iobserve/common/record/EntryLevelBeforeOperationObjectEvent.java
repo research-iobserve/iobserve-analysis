@@ -22,8 +22,6 @@ import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEve
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IPayloadCharacterization;
-
 /**
  * @author Reiner Jung
  * API compatibility: Kieker 1.14.0

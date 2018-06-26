@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,7 +57,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final ModelGraph graph = this.prepareGraph("createThenReadByType");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -75,7 +75,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph("createThenReadContaining");
+        final ModelGraph graph = this.prepareGraph("createThenReadContaining");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -92,7 +92,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -119,7 +119,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+        final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -170,7 +170,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -195,7 +195,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
+        final ModelGraph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -216,7 +216,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
      */
     @Test
     public final void createThenReadByName() {
-        final Graph graph = this.prepareGraph("createThenReadByName");
+        final ModelGraph graph = this.prepareGraph("createThenReadByName");
 
         final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

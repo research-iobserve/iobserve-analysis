@@ -18,7 +18,7 @@ package org.iobserve.model.provider.neo4j;
 import java.io.File;
 
 /**
- * Provides different utilities for the {@link GraphLoader}.
+ * Provides different utilities for the {@link ModelGraphLoader}.
  *
  * @author Lars Bluemke
  *
@@ -62,13 +62,13 @@ public final class GraphLoaderUtil {
      * @return The version number
      */
     public static int getVersionNumber(final File file) {
-        final int versionNumberIndex = file.getName().lastIndexOf(GraphLoader.VERSION_PREFIX);
+        final int versionNumberIndex = file.getName().lastIndexOf(ModelGraphLoader.VERSION_PREFIX);
 
         if (versionNumberIndex == -1) {
             throw new InternalError(
                     "Missing version number in " + file + "  Every database path must have a version number.");
         } else {
-            return Integer.valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
+            return Integer.valueOf(file.getName().substring(versionNumberIndex + ModelGraphLoader.VERSION_PREFIX.length()));
         }
     }
 }

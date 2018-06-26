@@ -21,8 +21,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.OperationEntry;
-import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
@@ -67,8 +67,8 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
      * @param allocationGraph
      *            allocation model graph
      */
-    public EntryEventMapperStage(final Graph correspondenceModelGraph, final Graph repositoryGraph,
-            final Graph assemblyGraph, final Graph allocationGraph) {
+    public EntryEventMapperStage(final ModelGraph correspondenceModelGraph, final ModelGraph repositoryGraph,
+            final ModelGraph assemblyGraph, final ModelGraph allocationGraph) {
         this.componentEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
                 ModelProvider.IMPLEMENTATION_ID);
         this.operationSignatureEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,

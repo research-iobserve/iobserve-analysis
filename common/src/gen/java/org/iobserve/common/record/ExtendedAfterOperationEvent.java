@@ -22,8 +22,6 @@ import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IUserInformation;
-
 /**
  * @author Christoph Dornieden
  * API compatibility: Kieker 1.14.0

@@ -5,12 +5,16 @@ package org.iobserve.model.correspondence.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.iobserve.model.correspondence.*;
+import org.iobserve.model.correspondence.AllocationEntry;
+import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.ComponentEntry;
+import org.iobserve.model.correspondence.CorrespondenceFactory;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.OperationEntry;
+import org.iobserve.model.correspondence.Part;
 
 /**
  * <!-- begin-user-doc -->

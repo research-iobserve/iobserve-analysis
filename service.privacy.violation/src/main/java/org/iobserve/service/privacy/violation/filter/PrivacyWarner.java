@@ -39,7 +39,7 @@ import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
-import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.STEREOTYPES;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.PrivacyChecker;
 import org.iobserve.stages.data.Warnings;
@@ -70,11 +70,11 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    private final IModelProvider<System> systemModelGraphProvider;
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final IModelProvider<Repository> repositoryModelGraphProvider;
-    private final IModelProvider<PrivacyModel> privacyModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelProvider;
+    private final IModelProvider<System> systemModelProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final IModelProvider<Repository> repositoryModelProvider;
+    private final IModelProvider<PrivacyModel> privacyModelProvider;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -99,51 +99,55 @@ public class PrivacyWarner extends AbstractStage {
     /**
      * Create and initialize privacy warner.
      *
-     * @param allocationModelGraphProvider
+     * @param allocationModelProvider
      *            allocation model provider
-     * @param systemModelGraphProvider
+     * @param systemModelProvider
      *            system model provider
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentModelProvider
      *            resource environment model provider
+     * @param repositoryModelProvider
+     *            repository model provider
+     * @param privacyModelProvider
+     *            privacy model provider
      * @param assemblyView2
      */
-    public PrivacyWarner(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<Repository> repositoryModelGraphProvider,
-            final IModelProvider<PrivacyModel> privacyModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.systemModelGraphProvider = systemModelGraphProvider;
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
-        this.repositoryModelGraphProvider = repositoryModelGraphProvider;
-        this.privacyModelGraphProvider = privacyModelGraphProvider;
-    }
-
-    private void print(final Object o) {
-        java.lang.System.out.println(o);
+    public PrivacyWarner(final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<PrivacyModel> privacyModelProvider) {
+        this.allocationModelProvider = allocationModelProvider;
+        this.systemModelProvider = systemModelProvider;
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+        this.repositoryModelProvider = repositoryModelProvider;
+        this.privacyModelProvider = privacyModelProvider;
     }
 
     @Override
     protected void execute() throws Exception {
+        this.logger.info("Execution started");
 
-        java.lang.System.out.print("Execution started");
         Warnings warnings = new Warnings();
+
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
         final Graph g = this.createAnalysisGraph();
+
         if (deployedEvent != null) {
             // TODO generate warnings after the last deployment
-            this.print("Received Deployment");
-            this.print("CountryCode: " + deployedEvent.getCountryCode());
-            this.print("Service: " + deployedEvent.getService());
+            this.logger.info("Received Deployment");
+            this.logger.info("CountryCode: " + deployedEvent.getCountryCode());
+            this.logger.info("Service: " + deployedEvent.getService());
         }
+
         if (undeployedEvent != null) {
             // TODO generate warnings after the last undeployment
-            this.print("Received undeployment");
+            this.logger.info("Received undeployment");
         }
-        warnings = this.checkGraph(g);
-        this.probesOutputPort.send(warnings);
 
+        warnings = this.checkGraph(g);
+
+        this.probesOutputPort.send(warnings);
         this.warningsOutputPort.send(warnings);
     }
 
@@ -160,38 +164,37 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private Graph createAnalysisGraph() {
-        final Graph g = new Graph("PrivacyWarner");
+        final Graph graph = new Graph("PrivacyWarner");
 
         this.loadRoots();
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                this.systemModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                this.systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** RepositoryComponent View **/
         final IModelProvider<BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
-                this.repositoryModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                this.repositoryModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** ResourceContainer View **/
         final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                this.resourceEnvironmentModelGraphProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+                this.resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         // Fill the hashmaps
         this.clearAndFillQueryMaps();
 
-        this.addDeployedComponents(g, assemblyContextModelProvider, repositoryComponentModelProvider,
+        this.addDeployedComponents(graph, assemblyContextModelProvider, repositoryComponentModelProvider,
                 resourceContainerModelProvider);
 
-        this.addConnectors(g);
+        this.addConnectors(graph);
 
-        return g;
+        return graph;
     }
 
     /**
      * Loads the root element for each model.
      **/
     private void loadRoots() {
-        this.allocationRootElement = this.allocationModelGraphProvider.readRootNode(Allocation.class);
-        this.systemRootElement = this.systemModelGraphProvider.readRootNode(System.class);
-        this.repositoryRootElement = this.repositoryModelGraphProvider.readRootNode(Repository.class);
-        this.privacyRootElement = this.privacyModelGraphProvider.readRootNode(PrivacyModel.class);
+        this.allocationRootElement = this.allocationModelProvider.readRootNode(Allocation.class);
+        this.systemRootElement = this.systemModelProvider.readRootNode(System.class);
+        this.repositoryRootElement = this.repositoryModelProvider.readRootNode(Repository.class);
+        this.privacyRootElement = this.privacyModelProvider.readRootNode(PrivacyModel.class);
     }
 
     /**
@@ -220,18 +223,18 @@ public class PrivacyWarner extends AbstractStage {
             /** Creating component vertices. **/
             final Vertex v = new Vertex(bc.getEntityName(),
                     this.stereotypes.get(bc.getId()) != null
-                            ? this.stereotypes.get(bc.getId()).isDataSource() ? STEREOTYPES.Datasource
-                                    : STEREOTYPES.ComputingNode
-                            : STEREOTYPES.ComputingNode);
-            g.addVertice(v);
+                            ? this.stereotypes.get(bc.getId()).isDataSource() ? EStereoType.DATASOURCE
+                                    : EStereoType.COMPUTING_NODE
+                            : EStereoType.COMPUTING_NODE);
+            g.addVertex(v);
             this.vertices.put(bc.getId(), v);
 
             final ResourceContainer queryResource = resourceContainerModelProvider
                     .readObjectById(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
-            final Vertex vGeo = new Vertex(geo.getIsocode().getName(), STEREOTYPES.Geolocation);
+            final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
-                g.addVertice(vGeo);
+                g.addVertex(vGeo);
                 g.addEdge(vGeo, v);
                 this.vertices.put(geo.getIsocode().getName(), vGeo);
             } else { // Existing Geolocation
@@ -248,76 +251,29 @@ public class PrivacyWarner extends AbstractStage {
      *            graph
      */
     private void addConnectors(final Graph graph) {
-        for (final Connector c : this.systemRootElement.getConnectors__ComposedStructure()) {
-            if (c instanceof AssemblyConnector) {
-                final AssemblyConnector ac = (AssemblyConnector) c;
-                // Providing Component
-                final AssemblyContext provider = ac.getProvidingAssemblyContext_AssemblyConnector();
-                final RepositoryComponent rcProvider = provider.getEncapsulatedComponent__AssemblyContext();
-                // Requiring Component
-                final AssemblyContext requiring = ac.getRequiringAssemblyContext_AssemblyConnector();
-                final RepositoryComponent rcRequiring = requiring.getEncapsulatedComponent__AssemblyContext();
-                if (rcProvider != null && rcRequiring != null) {
-                    final OperationProvidedRole opr = ac.getProvidedRole_AssemblyConnector();
-                    final String interfaceName = this.shortName(opr.getEntityName());
-                    // Check Interface Name in Repository and add Edge
-                    final OperationInterface oi = this.interfaces.get(interfaceName);
-                    for (final OperationSignature operationSignature : oi.getSignatures__OperationInterface()) {
-                        final IPrivacyAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
-                                .get(operationSignature.getId());
-                        EDataPrivacyLevel inEdge = null;
-                        EDataPrivacyLevel outEdge = null;
-                        // Ckeck Parameter
-                        for (final Parameter p : operationSignature.getParameters__OperationSignature()) {
-                            final ParameterModifier mod = p.getModifier__Parameter();
-                            if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
-                                if (outEdge != null) {
-                                    if (this.isMoreCritical(outEdge,
-                                            this.parameterprivacy.get(p.getParameterName()).getLevel())) {
-                                        outEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
-                                    }
-                                } else {
-                                    outEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
-                                }
-                            }
-                            if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
-                                if (inEdge != null) {
-                                    if (this.isMoreCritical(inEdge,
-                                            this.parameterprivacy.get(p.getParameterName()).getLevel())) {
-                                        inEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
-                                    }
-                                } else {
-                                    inEdge = this.parameterprivacy.get(p.getParameterName()).getLevel();
-                                }
-                            }
-                        }
-                        // Check Returntype
-                        if (operationSignaturePrivacyAnnotation != null) {
-                            if (inEdge != null) {
-                                if (this.isMoreCritical(inEdge, operationSignaturePrivacyAnnotation.getLevel())) {
-                                    inEdge = operationSignaturePrivacyAnnotation.getLevel();
-                                }
-                            } else {
-                                inEdge = operationSignaturePrivacyAnnotation.getLevel();
-                            }
-                        }
-                        // Add Edges
-                        if (inEdge != null) {
-                            final Edge e = new Edge(this.vertices.get(rcProvider.getId()),
-                                    this.vertices.get(rcRequiring.getId()));
-                            e.setDPC(Policy.getDataClassification(inEdge));
-                            e.setInterfaceName(operationSignature.getEntityName());
-                            graph.addEdge(e);
-                        }
-                        if (outEdge != null) {
-                            final Edge e = new Edge(this.vertices.get(rcRequiring.getId()),
-                                    this.vertices.get(rcProvider.getId()));
-                            e.setDPC(Policy.getDataClassification(outEdge));
-                            e.setInterfaceName(operationSignature.getEntityName());
-                            graph.addEdge(e);
-                        }
+        for (final Connector connector : this.systemRootElement.getConnectors__ComposedStructure()) {
+            if (connector instanceof AssemblyConnector) {
+                final AssemblyConnector assemblyConnector = (AssemblyConnector) connector;
 
-                    }
+                // Providing Component
+                final AssemblyContext provididingAssemblyContext = assemblyConnector
+                        .getProvidingAssemblyContext_AssemblyConnector();
+                final RepositoryComponent providingComponent = provididingAssemblyContext
+                        .getEncapsulatedComponent__AssemblyContext();
+
+                // Requiring Component
+                final AssemblyContext requiringAssemblyContext = assemblyConnector
+                        .getRequiringAssemblyContext_AssemblyConnector();
+                final RepositoryComponent requiringComponent = requiringAssemblyContext
+                        .getEncapsulatedComponent__AssemblyContext();
+
+                if (providingComponent != null && requiringComponent != null) {
+                    final OperationProvidedRole providedRole = assemblyConnector.getProvidedRole_AssemblyConnector();
+                    final String interfaceName = this.shortName(providedRole.getEntityName());
+
+                    // Check Interface Name in Repository and add Edge
+                    final OperationInterface operationInterface = this.interfaces.get(interfaceName);
+                    this.computePrivacyLevelsAndAddEdge(graph, operationInterface, providingComponent, requiringComponent);
 
                 }
             }
@@ -325,8 +281,76 @@ public class PrivacyWarner extends AbstractStage {
         }
     }
 
+    private void computePrivacyLevelsAndAddEdge(final Graph graph, final OperationInterface operationInterface,
+            final RepositoryComponent providingComponent, final RepositoryComponent requiringComponent) {
+        for (final OperationSignature operationSignature : operationInterface.getSignatures__OperationInterface()) {
+            final IPrivacyAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
+                    .get(operationSignature.getId());
+            EDataPrivacyLevel inEdgePrivacyLevel = null;
+            EDataPrivacyLevel outEdgePrivacyLevel = null;
+
+            /** Check parameter. */
+            for (final Parameter parameter : operationSignature.getParameters__OperationSignature()) {
+                final ParameterModifier mod = parameter.getModifier__Parameter();
+                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
+                    outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
+                            this.parameterprivacy.get(parameter.getParameterName()).getLevel());
+                }
+                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
+                    inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
+                            this.parameterprivacy.get(parameter.getParameterName()).getLevel());
+                }
+            }
+
+            /** Check return type. */
+            if (operationSignaturePrivacyAnnotation != null) {
+                inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
+                        operationSignaturePrivacyAnnotation.getLevel());
+            }
+
+            // Add Edges
+            if (inEdgePrivacyLevel != null) {
+                final Edge edge = new Edge(this.vertices.get(providingComponent.getId()),
+                        this.vertices.get(requiringComponent.getId()));
+                edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
+                edge.setInterfaceName(operationSignature.getEntityName());
+                graph.addEdge(edge);
+            }
+            if (outEdgePrivacyLevel != null) {
+                final Edge edge = new Edge(this.vertices.get(requiringComponent.getId()),
+                        this.vertices.get(providingComponent.getId()));
+                edge.setDPC(Policy.getDataClassification(outEdgePrivacyLevel));
+                edge.setInterfaceName(operationSignature.getEntityName());
+                graph.addEdge(edge);
+            }
+
+        }
+    }
+
     /**
-     * Fills the hasmaps used for queries.
+     * Increase the privacy, in case the new privacy level is higher than the current one.
+     *
+     * @param currentPrivacyLevel
+     *            current privacy level of an edge
+     * @param newPrivacyLevel
+     *            new privacy level
+     * @return the resulting privacy level
+     */
+    private EDataPrivacyLevel updatePrivacyLevel(final EDataPrivacyLevel currentPrivacyLevel,
+            final EDataPrivacyLevel newPrivacyLevel) {
+        if (currentPrivacyLevel != null) {
+            if (this.isMoreCritical(currentPrivacyLevel, newPrivacyLevel)) {
+                return newPrivacyLevel;
+            } else {
+                return currentPrivacyLevel;
+            }
+        } else {
+            return newPrivacyLevel;
+        }
+    }
+
+    /**
+     * Fills the hash maps used for queries.
      **/
     private void clearAndFillQueryMaps() {
         this.vertices.clear();
@@ -335,20 +359,21 @@ public class PrivacyWarner extends AbstractStage {
         this.parameterprivacy.clear();
         this.returntypeprivacy.clear();
         this.interfaces.clear();
+
         for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
             this.geolocations.put(geo.getResourceContainer().getId(), geo);
         }
         for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
             this.stereotypes.put(stereotype.getComponent().getId(), stereotype);
         }
-        for (final IPrivacyAnnotation ipa : this.privacyRootElement.getPrivacyLevels()) {
-            if (ipa instanceof ParameterPrivacy) {
-                final ParameterPrivacy pp = (ParameterPrivacy) ipa;
-                this.parameterprivacy.put(pp.getParameter().getParameterName(), pp);
+        for (final IPrivacyAnnotation privacyAnnocation : this.privacyRootElement.getPrivacyLevels()) {
+            if (privacyAnnocation instanceof ParameterPrivacy) {
+                final ParameterPrivacy parameterPrivacy = (ParameterPrivacy) privacyAnnocation;
+                this.parameterprivacy.put(parameterPrivacy.getParameter().getParameterName(), parameterPrivacy);
             }
-            if (ipa instanceof ReturnTypePrivacy) {
-                final ReturnTypePrivacy rtp = (ReturnTypePrivacy) ipa;
-                this.returntypeprivacy.put(rtp.getOperationSignature().getId(), rtp);
+            if (privacyAnnocation instanceof ReturnTypePrivacy) {
+                final ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy) privacyAnnocation;
+                this.returntypeprivacy.put(returnTypePrivacy.getOperationSignature().getId(), returnTypePrivacy);
             }
         }
 
@@ -359,7 +384,7 @@ public class PrivacyWarner extends AbstractStage {
         }
     }
 
-    // better method name
+    // TODO better method name
     private boolean isMoreCritical(final EDataPrivacyLevel basis, final EDataPrivacyLevel compared) {
         return compared.ordinal() > basis.ordinal();
     }

@@ -27,9 +27,9 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.iobserve.model.provider.neo4j.ModelGraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.stages.data.Warnings;
@@ -43,13 +43,17 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Clemens Brackmann
+ * @author Reienr Jung -- converted to normal executable, as it is not a JunitTest
  *
  */
-
 public class PrivacyWarnerIntegrationTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrivacyWarnerIntegrationTest.class);
     // pcm "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
     // db "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
 
@@ -94,7 +98,7 @@ public class PrivacyWarnerIntegrationTest {
         if (args.length == 2) {
             final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest(args[0], args[1]);
             test.initializePW();
-            test.testPW();
+            test.executeTestPW();
         } else {
             java.lang.System.err.println("Usage: warner <initialization-model> <database-directory>");
         }
@@ -109,7 +113,7 @@ public class PrivacyWarnerIntegrationTest {
 
         try {
             final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
-            final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+            final ModelGraphLoader graphLoader = new ModelGraphLoader(this.modelDatabaseDirectory);
 
             /** graphs. */
             graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
@@ -124,11 +128,11 @@ public class PrivacyWarnerIntegrationTest {
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
             /** load neo4j graphs. */
-            final Graph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-            final Graph systemGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
-            final Graph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
-            final Graph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
-            final Graph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
+            final ModelGraph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
+            final ModelGraph systemGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+            final ModelGraph resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceenvironmentFactory.eINSTANCE);
+            final ModelGraph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+            final ModelGraph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
 
             /** model provider. */
             final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
@@ -149,8 +153,7 @@ public class PrivacyWarnerIntegrationTest {
             this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
                     repositoryModelProvider, privacyModelProvider);
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            PrivacyWarnerIntegrationTest.LOGGER.error("File IO error.", e);
         }
     }
 
@@ -170,7 +173,7 @@ public class PrivacyWarnerIntegrationTest {
     /**
      * Test run component.
      */
-    public void testPW() {
+    public void executeTestPW() {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
         assemblyContext.setEntityName("EntityName");
         final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService", assemblyContext, "http://Test.test",
@@ -183,7 +186,7 @@ public class PrivacyWarnerIntegrationTest {
         for (final Warnings s : results) {
             java.lang.System.out.println("RESULT: " + s.getMessages());
         }
-//        Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
+        // Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
 
         if (results.isEmpty()) {
             java.lang.System.err.println("No warnings generated.");

@@ -4,10 +4,14 @@ package org.iobserve.model.test.storage.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
-
-import org.iobserve.model.test.storage.*;
+import org.iobserve.model.test.storage.Other;
+import org.iobserve.model.test.storage.OtherInterface;
+import org.iobserve.model.test.storage.OtherSubType;
+import org.iobserve.model.test.storage.Root;
+import org.iobserve.model.test.storage.SpecialA;
+import org.iobserve.model.test.storage.SpecialB;
+import org.iobserve.model.test.storage.StoragePackage;
 
 /**
  * <!-- begin-user-doc -->

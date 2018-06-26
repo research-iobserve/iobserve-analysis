@@ -4,12 +4,9 @@ package org.iobserve.model.test.storage.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.iobserve.model.test.storage.Other;
 import org.iobserve.model.test.storage.OtherSubType;
 import org.iobserve.model.test.storage.StoragePackage;

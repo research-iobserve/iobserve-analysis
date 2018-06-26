@@ -30,7 +30,7 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
  * @author Eric Schmieders
  *
  */
-
+// TODO maybe convert to POJO + factory
 public class Graph {
 
     private final String name;
@@ -38,6 +38,12 @@ public class Graph {
     private final List<Edge> edges;
     private final Map<String, Vertex> vertices;
 
+    /**
+     * Create a named dataflow graph.
+     *
+     * @param name
+     *            name of the graph
+     */
     public Graph(final String name) {
         this.name = name;
         this.edges = new ArrayList<>();
@@ -48,50 +54,85 @@ public class Graph {
         return this.name;
     }
 
-    public void addVertice(final Vertex v) {
-        v.setGraph(this);
-        this.vertices.put(v.getName(), v);
+    /**
+     * Add a vertex to a graph.
+     *
+     * @param vertex
+     *            the vertex
+     */
+    public void addVertex(final Vertex vertex) {
+        vertex.setGraph(this);
+        this.vertices.put(vertex.getName(), vertex);
     }
 
+    /**
+     * Create and add an edge to the graph.
+     *
+     * @param source
+     *            source vertex
+     * @param target
+     *            target vertex
+     */
     public void addEdge(final Vertex source, final Vertex target) {
         this.edges.add(new Edge(source, target));
     }
 
-    public void addEdge(final Edge e) {
-        this.edges.add(e);
+    /**
+     * Add an externally created edge.
+     *
+     * @param edge
+     *            the edge to be added
+     */
+    public void addEdge(final Edge edge) {
+        this.edges.add(edge);
     }
 
-    public boolean removeEdge(final Edge e) {
-        if (this.isConsistent() && this.getEdges().contains(e)) {
+    /**
+     * Remove an edge from the graph.
+     *
+     * @param edge
+     *            edge to be removed
+     *
+     * @return returns true on success else false
+     */
+    public boolean removeEdge(final Edge edge) {
+        if (this.isConsistent() && this.getEdges().contains(edge)) {
             for (final Vertex v : this.getVertices().values()) {
-                if (v.getIncomingEdges().contains(e)) {
-                    v.getIncomingEdges().remove(e);
+                if (v.getIncomingEdges().contains(edge)) {
+                    v.getIncomingEdges().remove(edge);
                 }
-                if (v.getOutgoingEdges().contains(e)) {
-                    v.getOutgoingEdges().remove(e);
+                if (v.getOutgoingEdges().contains(edge)) {
+                    v.getOutgoingEdges().remove(edge);
                 }
             }
-            this.edges.remove(e);
+            this.edges.remove(edge);
             return true;
         }
         return false;
     }
 
-    public boolean removeVertice(final Vertex v) {
-        if (this.isConsistent() && this.getVertices().containsValue(v)) {
+    /**
+     * Remove a vertex and all edges related to the vertex.
+     *
+     * @param vertex
+     *            vertex to be removed
+     * @return returns true on success else false
+     */
+    public boolean removeVertice(final Vertex vertex) {
+        if (this.isConsistent() && this.getVertices().containsValue(vertex)) {
             final List<Edge> removals = new ArrayList<>();
-            for (final Edge e : this.getEdges()) {
-                if (e.getSource().equals(v)) {
-                    removals.add(e);
+            for (final Edge edge : this.getEdges()) {
+                if (edge.getSource().equals(vertex)) {
+                    removals.add(edge);
                 }
-                if (e.getTarget().equals(v)) {
-                    removals.add(e);
+                if (edge.getTarget().equals(vertex)) {
+                    removals.add(edge);
                 }
             }
             for (final Edge e : removals) {
                 this.removeEdge(e);
             }
-            this.vertices.remove(v);
+            this.vertices.remove(vertex.getName());
             return true;
         }
         return false;
@@ -114,15 +155,10 @@ public class Graph {
      *         vertices, missing incoming and outgoing edges TODO also all printlns must be removed
      */
     public boolean isConsistent() {
-        for (final Edge e : this.edges) {
-            final Vertex source = e.getSource();
-            final Vertex target = e.getTarget();
-            if (!this.vertices.containsValue(source) || !this.vertices.containsValue(target)) {
-                System.out.println("Vertices Missing");
-                return false;
-            }
+        return this.checkEdgeConsistency() && this.checkVertexConsistency();
+    }
 
-        }
+    private boolean checkVertexConsistency() {
         for (final Vertex v : this.vertices.values()) {
             for (final Edge e : v.getIncomingEdges()) {
                 if (!this.edges.contains(e)) {
@@ -137,6 +173,21 @@ public class Graph {
                 }
             }
         }
+        return true;
+    }
+
+    private boolean checkEdgeConsistency() {
+        for (final Edge edge : this.edges) {
+            final Vertex source = edge.getSource();
+            final Vertex target = edge.getTarget();
+
+            if (!this.vertices.containsValue(source) || !this.vertices.containsValue(target)) {
+                System.out.println("Vertices Missing");
+                return false;
+            }
+
+        }
+
         return true;
     }
 

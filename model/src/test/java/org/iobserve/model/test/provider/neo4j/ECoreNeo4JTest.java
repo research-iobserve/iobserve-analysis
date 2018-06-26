@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.model.test.storage.EnumValueExample;
 import org.iobserve.model.test.storage.Other;
@@ -128,7 +128,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      */
     @Test
     public void testStoreGraphCreate() {
-        final Graph graph = this.prepareGraph("testStoreGraphCreate");
+        final ModelGraph graph = this.prepareGraph("testStoreGraphCreate");
 
         final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
 
@@ -148,7 +148,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      */
     @Test
     public void testStoreGraphAndRead() {
-        final Graph graph = this.prepareGraph("testStoreGraphAndRead");
+        final ModelGraph graph = this.prepareGraph("testStoreGraphAndRead");
 
         final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
 
@@ -185,14 +185,14 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
 
     @Test
     public void createThenCloneThenRead() {
-        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
+        final ModelGraph storeGraph = this.prepareGraph("createThenCloneThenRead");
 
         final ModelProvider<Root> storeModelProvider = new ModelProvider<>(storeGraph, "name", null);
 
         storeModelProvider.storeModelPartition(this.testModel);
         storeGraph.getGraphDatabaseService().shutdown();
 
-        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(StorageFactory.eINSTANCE);
+        final ModelGraph cloneGraph = storeModelProvider.cloneNewGraphVersion(StorageFactory.eINSTANCE);
 
         final ModelProvider<Root> cloneModelProvider = new ModelProvider<>(cloneGraph, "name", null);
 

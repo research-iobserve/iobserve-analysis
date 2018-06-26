@@ -3,20 +3,15 @@
 package org.iobserve.model.correspondence.impl;
 
 import de.uka.ipd.sdq.identifier.IdentifierPackage;
-
 import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
-
 import de.uka.ipd.sdq.stoex.StoexPackage;
-
 import de.uka.ipd.sdq.units.UnitsPackage;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
@@ -26,13 +21,9 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.correspondence.Part;
-
 import org.palladiosimulator.pcm.PcmPackage;
-
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
-
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
-
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 /**

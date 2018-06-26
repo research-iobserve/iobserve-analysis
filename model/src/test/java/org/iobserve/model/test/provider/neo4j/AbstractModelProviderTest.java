@@ -19,8 +19,8 @@ import java.io.File;
 
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.iobserve.model.provider.neo4j.ModelGraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Before;
 import org.neo4j.graphdb.Node;
@@ -80,13 +80,13 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
      *
      * @return the prepared graph
      */
-    protected Graph prepareGraph(final String name) {
+    protected ModelGraph prepareGraph(final String name) {
         final File graphBaseDir = new File(
                 "./testdb/" + this.prefix + "." + this.factory.eClass().getName() + "." + name);
 
         this.removeDirectory(graphBaseDir);
 
-        final GraphLoader graphLoader = new GraphLoader(graphBaseDir);
+        final ModelGraphLoader graphLoader = new ModelGraphLoader(graphBaseDir);
         return graphLoader.createModelGraph(this.factory);
     }
 

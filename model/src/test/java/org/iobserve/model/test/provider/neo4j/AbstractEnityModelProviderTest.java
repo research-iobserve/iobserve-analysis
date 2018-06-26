@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenReadById() {
-        final Graph graph = this.prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID);
+        final ModelGraph graph = this.prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -64,7 +64,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenDeleteComponentAndDatatypes() {
-        final Graph graph = this
+        final ModelGraph graph = this
                 .prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES);
 
         final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,

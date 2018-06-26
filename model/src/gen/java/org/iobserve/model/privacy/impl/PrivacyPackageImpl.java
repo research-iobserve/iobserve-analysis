@@ -3,11 +3,8 @@
 package org.iobserve.model.privacy.impl;
 
 import de.uka.ipd.sdq.identifier.IdentifierPackage;
-
 import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
-
 import de.uka.ipd.sdq.stoex.StoexPackage;
-
 import de.uka.ipd.sdq.units.UnitsPackage;
 
 import org.eclipse.emf.ecore.EAttribute;
@@ -15,9 +12,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
@@ -28,11 +23,8 @@ import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
-
 import org.palladiosimulator.pcm.PcmPackage;
-
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
-
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**

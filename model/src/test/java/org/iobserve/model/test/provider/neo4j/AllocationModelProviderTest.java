@@ -18,7 +18,7 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE);
+        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE);
 
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -80,7 +80,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING);
+        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING);
 
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -100,7 +100,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING);
+        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING);
 
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -122,7 +122,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED);
+        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED);
 
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -170,7 +170,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
      */
     @Test
     public final void createThenReadByName() {
-        final Graph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME);
+        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME);
 
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);

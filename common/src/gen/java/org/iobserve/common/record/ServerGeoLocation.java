@@ -23,9 +23,6 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IEvent;
-import org.iobserve.common.record.GeoLocation;
-
 /**
  * @author Reiner Jung
  * API compatibility: Kieker 1.14.0
