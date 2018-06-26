@@ -122,7 +122,7 @@ public class PrivacyWarner extends AbstractStage {
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<PrivacyModel> privacyModelProvider) {
-        this.policyList = policyList;
+        this.policyList = policyList; // NOPMD
         this.policyPackage = policyPackage;
 
         this.allocationModelProvider = allocationModelProvider;
