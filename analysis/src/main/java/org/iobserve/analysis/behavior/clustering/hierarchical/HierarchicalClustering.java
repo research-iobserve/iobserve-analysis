@@ -40,7 +40,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 
-    private static HierarchicalClusterer hieraricalClusterer;
+    private static HierarchicalClusterer hierarchicalClusterer;
     private String[] linkage;
     private DistanceFunction distanceFunction;
 
@@ -52,21 +52,19 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     @Override
     public Optional<ClusteringResults> clusterInstances(final Instances instances) {
         final Optional<ClusteringResults> clusteringResults = Optional.empty();
-        HierarchicalClustering.hieraricalClusterer = new HierarchicalClusterer();
-        HierarchicalClustering.hieraricalClusterer.setDistanceFunction(this.distanceFunction);
-        HierarchicalClustering.hieraricalClusterer.setDistanceIsBranchLength(false);
+        HierarchicalClustering.hierarchicalClusterer = new HierarchicalClusterer();
+        HierarchicalClustering.hierarchicalClusterer.setDistanceFunction(this.distanceFunction);
+        HierarchicalClustering.hierarchicalClusterer.setDistanceIsBranchLength(false);
+        HierarchicalClustering.hierarchicalClusterer.setNumClusters(1);
 
         try {
-            HierarchicalClustering.hieraricalClusterer.buildClusterer(instances);
+            HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
 
             // ##### TESTING
-            // Print normal
-            HierarchicalClustering.hieraricalClusterer.setPrintNewick(false);
-            System.out.println(HierarchicalClustering.hieraricalClusterer.graph());
-
             // Print Newick
-            // HierarchicalClustering.hieraricalClusterer.setPrintNewick(true);
-            // System.out.println(HierarchicalClustering.hieraricalClusterer.graph());
+            System.out.println("#### NEWICK ####");
+            HierarchicalClustering.hierarchicalClusterer.setPrintNewick(true);
+            System.out.println(HierarchicalClustering.hierarchicalClusterer.toString());
 
             // Show clustered data
             final JFrame mainFrame = new JFrame("Weka Test");
@@ -76,7 +74,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             content.setLayout(new GridLayout(1, 1));
 
             final HierarchyVisualizer visualizer = new HierarchyVisualizer(
-                    HierarchicalClustering.hieraricalClusterer.graph());
+                    HierarchicalClustering.hierarchicalClusterer.toString());
             content.add(visualizer);
 
             mainFrame.setVisible(true);

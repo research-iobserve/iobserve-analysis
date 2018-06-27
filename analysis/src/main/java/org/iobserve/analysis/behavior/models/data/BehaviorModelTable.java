@@ -18,12 +18,14 @@ package org.iobserve.analysis.behavior.models.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.behavior.SingleOrNoneCollector;
@@ -153,7 +155,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
             final List<AggregatedCallInformation> aggCallInformations = Arrays
                     .asList(this.signatures.get(eventSignature).getSecond());
-
+            
             for (final CallInformation newCallInformation : newCallInformations) {
 
                 // add new CallInfromation to the aggregation correctly
@@ -260,13 +262,23 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
         
-        // Filter representative values that are null
-        this.signatures.values().stream()
-                .forEach(pair -> 
-                	Arrays.stream(pair.getSecond())
-                        //.filter(callInformation -> callInformation.getRepresentativeValue() != null)  // RepresentativeValues are somehow all null
-                        .forEach(callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))
-                        ));
+        Collection<Pair<Integer, AggregatedCallInformation[]>> signatureCollection = this.signatures.values();
+        for (Pair<Integer, AggregatedCallInformation[]> pair : signatureCollection) {
+			for (AggregatedCallInformation callInformation : pair.getValue()) {
+				if (callInformation.getRepresentativeValue() != null) { // Check for representativeValues that are null
+					attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()));
+				} else {
+					attValues.add(0.0);
+				}
+				
+			}
+		}
+        
+//        this.signatures.values().stream()
+//                .forEach(pair -> 
+//                	Arrays.stream(pair.getSecond())
+//                        .forEach(callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))
+//                        ));
 
         final double[] attArray = new double[attValues.size()];
 
