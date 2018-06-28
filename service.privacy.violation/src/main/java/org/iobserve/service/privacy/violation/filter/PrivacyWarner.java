@@ -38,9 +38,10 @@ import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.privacy.violation.DebugHelper;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
-import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
@@ -155,17 +156,15 @@ public class PrivacyWarner extends AbstractStage {
 
     private void performPrivacyEvaluation() throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
-        final Graph g = this.createAnalysisGraph();
+        final PrivacyGraph graph = this.createAnalysisGraph();
 
-        Warnings warnings = new Warnings();
-
-        warnings = this.checkGraph(g);
+        final Warnings warnings = this.checkGraph(graph);
 
         this.probesOutputPort.send(warnings);
         this.warningsOutputPort.send(warnings);
     }
 
-    private Warnings checkGraph(final Graph graph) throws FileNotFoundException, InstantiationException,
+    private Warnings checkGraph(final PrivacyGraph graph) throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
         final Warnings warnings = new Warnings();
         final PrivacyChecker privacyChecker = new PrivacyChecker(this.policyList, this.policyPackage);
@@ -177,10 +176,11 @@ public class PrivacyWarner extends AbstractStage {
         return warnings;
     }
 
-    private Graph createAnalysisGraph() {
-        final Graph graph = new Graph("PrivacyWarner");
+    private PrivacyGraph createAnalysisGraph() {
+        final PrivacyGraph graph = new PrivacyGraph("PrivacyWarner");
 
         this.loadRoots();
+
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
                 this.systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
@@ -214,7 +214,7 @@ public class PrivacyWarner extends AbstractStage {
     /**
      * Adding deployment info.
      *
-     * @param g
+     * @param graph
      *            the graph
      * @param assemblyContextModelProvider
      *            assembly model view on assembly contexts
@@ -223,37 +223,40 @@ public class PrivacyWarner extends AbstractStage {
      * @param resourceContainerModelProvider
      *            resource environment model view on resource container
      */
-    private void addDeployedComponents(final Graph g,
+    private void addDeployedComponents(final PrivacyGraph graph,
             final IModelProvider<AssemblyContext> assemblyContextModelProvider,
             final IModelProvider<BasicComponent> repositoryComponentModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider) {
-        for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
-            final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
+        DebugHelper.printModelPartition(this.allocationRootElement);
+        for (final AllocationContext allocationContext : this.allocationRootElement
+                .getAllocationContexts_Allocation()) {
+            final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
-                    .getObjectByTypeAndId(AssemblyContext.class, asc.getId());
-            final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
-            final BasicComponent bc = repositoryComponentModelProvider.getObjectByTypeAndId(BasicComponent.class,
-                    rc.getId());
+                    .getObjectByTypeAndId(AssemblyContext.class, assemblyContext.getId());
+            final RepositoryComponent repositoryComponent = queryAssemblyContext
+                    .getEncapsulatedComponent__AssemblyContext();
+            final BasicComponent basicComponent = repositoryComponentModelProvider
+                    .getObjectByTypeAndId(BasicComponent.class, repositoryComponent.getId());
 
             /** Creating component vertices. **/
-            final Vertex v = new Vertex(bc.getEntityName(),
-                    this.stereotypes.get(bc.getId()) != null
-                            ? this.stereotypes.get(bc.getId()).isDataSource() ? EStereoType.DATASOURCE
+            final Vertex v = new Vertex(basicComponent.getEntityName(),
+                    this.stereotypes.get(basicComponent.getId()) != null
+                            ? this.stereotypes.get(basicComponent.getId()).isDataSource() ? EStereoType.DATASOURCE
                                     : EStereoType.COMPUTING_NODE
                             : EStereoType.COMPUTING_NODE);
-            g.addVertex(v);
-            this.vertices.put(bc.getId(), v);
+            graph.addVertex(v);
+            this.vertices.put(basicComponent.getId(), v);
 
-            final ResourceContainer queryResource = resourceContainerModelProvider
-                    .getObjectByTypeAndId(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
+            final ResourceContainer queryResource = resourceContainerModelProvider.getObjectByTypeAndId(
+                    ResourceContainer.class, allocationContext.getResourceContainer_AllocationContext().getId());
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
-                g.addVertex(vGeo);
-                g.addEdge(vGeo, v);
+                graph.addVertex(vGeo);
+                graph.addEdge(vGeo, v);
                 this.vertices.put(geo.getIsocode().getName(), vGeo);
             } else { // Existing Geolocation
-                g.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
+                graph.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
 
             }
         }
@@ -265,7 +268,7 @@ public class PrivacyWarner extends AbstractStage {
      * @param graph
      *            graph
      */
-    private void addConnectors(final Graph graph) {
+    private void addConnectors(final PrivacyGraph graph) {
         for (final Connector connector : this.systemRootElement.getConnectors__ComposedStructure()) {
             if (connector instanceof AssemblyConnector) {
                 final AssemblyConnector assemblyConnector = (AssemblyConnector) connector;
@@ -297,7 +300,7 @@ public class PrivacyWarner extends AbstractStage {
         }
     }
 
-    private void computePrivacyLevelsAndAddEdge(final Graph graph, final OperationInterface operationInterface,
+    private void computePrivacyLevelsAndAddEdge(final PrivacyGraph graph, final OperationInterface operationInterface,
             final RepositoryComponent providingComponent, final RepositoryComponent requiringComponent) {
         for (final OperationSignature operationSignature : operationInterface.getSignatures__OperationInterface()) {
             final IPrivacyAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
@@ -376,8 +379,8 @@ public class PrivacyWarner extends AbstractStage {
         this.returntypeprivacy.clear();
         this.interfaces.clear();
 
-        for (final GeoLocation geo : this.privacyRootElement.getResourceContainerLocations()) {
-            this.geolocations.put(geo.getResourceContainer().getId(), geo);
+        for (final GeoLocation location : this.privacyRootElement.getResourceContainerLocations()) {
+            this.geolocations.put(location.getResourceContainer().getId(), location);
         }
         for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
             this.stereotypes.put(stereotype.getComponent().getId(), stereotype);

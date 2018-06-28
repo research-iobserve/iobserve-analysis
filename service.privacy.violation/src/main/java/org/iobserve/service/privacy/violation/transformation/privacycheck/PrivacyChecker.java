@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
-import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy.EDataClassification;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class PrivacyChecker {
      *            a graph
      * @return returns a list of edges
      */
-    public List<Edge> check(final Graph graph) {
+    public List<Edge> check(final PrivacyGraph graph) {
         final List<Edge> out = new ArrayList<>();
         PrivacyChecker.LOGGER.debug("Starting check");
         for (final Policy policy : this.policies) {
@@ -100,7 +100,7 @@ public class PrivacyChecker {
         return out;
     }
 
-    private List<Edge> checkPolicy(final Graph graph, final Policy policy) {
+    private List<Edge> checkPolicy(final PrivacyGraph graph, final Policy policy) {
         PrivacyChecker.LOGGER.debug("Now checking: graph({}) against ", graph.getName(), policy.getPrint());
 
         final List<Edge> potentialWarnings = this.determineSetPotentialWarnings(graph, policy);
@@ -162,7 +162,7 @@ public class PrivacyChecker {
      * @return returns list of edges
      */
     // TODO better method name
-    private List<Edge> determineSetPotentialWarnings(final Graph graph, final Policy policy) {
+    private List<Edge> determineSetPotentialWarnings(final PrivacyGraph graph, final Policy policy) {
         final List<Edge> warnings = new ArrayList<>();
 
         final Vertex excludedGeolocationVertice = graph.getVertexByName(policy.getGeoLocation().toString());

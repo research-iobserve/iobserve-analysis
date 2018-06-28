@@ -46,7 +46,6 @@ public class EventDelayer<I> extends AbstractConsumerStage<I> {
 
     @Override
     protected void execute(final I element) throws Exception {
-        this.logger.debug("delay event {}", element);
         Thread.sleep(this.delay);
         this.outputPort.send(element);
     }

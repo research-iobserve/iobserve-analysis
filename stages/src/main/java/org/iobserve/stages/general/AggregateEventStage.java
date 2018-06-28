@@ -51,10 +51,7 @@ public class AggregateEventStage<T> extends AbstractStage {
     protected void execute() throws Exception {
         for (final InputPort<T> input : this.inputPorts) {
             final T event = input.receive();
-
-            this.logger.debug("port={} event={}", input, event);
-
-            Thread.sleep(1000);
+            Thread.sleep(100);
             if (event != null) {
                 this.outputPort.send(event);
             }

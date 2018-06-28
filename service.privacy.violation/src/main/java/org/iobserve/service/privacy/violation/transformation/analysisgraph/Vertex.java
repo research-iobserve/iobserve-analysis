@@ -37,7 +37,7 @@ public class Vertex {
 
     private final String name;
     private final EStereoType stereotype;
-    private Graph graph;
+    private PrivacyGraph graph;
 
     private final List<Edge> incoming = new ArrayList<>();
     private final List<Edge> outgoing = new ArrayList<>();
@@ -71,11 +71,11 @@ public class Vertex {
      * @param graph
      *            the graph
      */
-    public void setGraph(final Graph graph) {
+    public void setGraph(final PrivacyGraph graph) {
         this.graph = graph;
     }
 
-    public Graph getGraph() {
+    public PrivacyGraph getGraph() {
         return this.graph;
     }
 

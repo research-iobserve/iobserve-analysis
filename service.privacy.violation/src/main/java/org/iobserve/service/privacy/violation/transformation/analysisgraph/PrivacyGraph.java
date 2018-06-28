@@ -31,7 +31,7 @@ import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy
  *
  */
 // TODO maybe convert to POJO + factory
-public class Graph {
+public class PrivacyGraph {
 
     private final String name;
 
@@ -44,7 +44,7 @@ public class Graph {
      * @param name
      *            name of the graph
      */
-    public Graph(final String name) {
+    public PrivacyGraph(final String name) {
         this.name = name;
         this.edges = new ArrayList<>();
         this.vertices = new LinkedHashMap<>();
