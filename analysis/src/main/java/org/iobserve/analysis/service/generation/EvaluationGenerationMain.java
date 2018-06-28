@@ -23,8 +23,11 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.iobserve.analysis.data.graph.GraphFactory;
+
+import org.iobserve.adaptation.data.graph.GraphFactory;
+import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.model.ModelImporter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +71,7 @@ public final class EvaluationGenerationMain {
 
                     final ModelImporter modelProviders = new ModelImporter(model);
                     final GraphFactory graphFactory = new GraphFactory();
-                    graphFactory.buildGraph(modelProviders);
+                    graphFactory.buildGraph(modelProviders, ModelGraphRevision.RUNTIME);
                 }
                 if (commandLine.hasOption("m")) {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
@@ -76,7 +79,7 @@ public final class EvaluationGenerationMain {
 
                     final ModelImporter modelProviers = new ModelImporter(model);
                     final GraphFactory graphFactory = new GraphFactory();
-                    graphFactory.buildGraph(modelProviers);
+                    graphFactory.buildGraph(modelProviers, ModelGraphRevision.RUNTIME);
                 }
             }
         } catch (final Exception e) { // NOCS NOPMD

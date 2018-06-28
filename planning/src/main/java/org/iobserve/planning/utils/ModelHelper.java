@@ -25,6 +25,7 @@ import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.iobserve.model.IPCMModelHandler;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
@@ -277,7 +278,7 @@ public final class ModelHelper {
      */
     public static String getGroupName(final ResourceContainerCloud cloudContainer) {
         String groupName = cloudContainer.getGroupName();
-        if (groupName == null || groupName.trim().isEmpty()) {
+        if ((groupName == null) || groupName.trim().isEmpty()) {
             groupName = cloudContainer.getEntityName();
         }
         return groupName;
@@ -347,7 +348,7 @@ public final class ModelHelper {
 
         if (cloudProvider != null) {
             return cloudProvider.getCloudResources().stream()
-                    .filter(resource -> (resource instanceof VMType
+                    .filter(resource -> ((resource instanceof VMType)
                             && ((VMType) resource).getLocation().equals(location)
                             && ((VMType) resource).getName().equals(instanceType)))
                     .map(resource -> (VMType) resource).findFirst().orElse(null);

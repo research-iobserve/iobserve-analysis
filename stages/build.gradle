@@ -4,6 +4,7 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 	
 	compile project(":common")
+	compile project(":model")
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

@@ -18,49 +18,43 @@ package org.iobserve.planning.systemadaptation.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-import org.iobserve.planning.systemadaptation.AcquireAction;
-import org.iobserve.planning.systemadaptation.Action;
-import org.iobserve.planning.systemadaptation.AllocateAction;
-import org.iobserve.planning.systemadaptation.AssemblyContextAction;
-import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
-import org.iobserve.planning.systemadaptation.DeallocateAction;
-import org.iobserve.planning.systemadaptation.MigrateAction;
-import org.iobserve.planning.systemadaptation.ReplicateAction;
-import org.iobserve.planning.systemadaptation.ResourceContainerAction;
-import org.iobserve.planning.systemadaptation.SystemAdaptation;
-import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
-import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.iobserve.planning.systemadaptation.TerminateAction;
+
+import org.iobserve.planning.systemadaptation.*;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc -->
+ * An implementation of the model <b>Factory</b>.
+ * <!-- end-user-doc -->
  * @generated
  */
 public class SystemadaptationFactoryImpl extends EFactoryImpl implements SystemadaptationFactory {
     /**
-     * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates the default factory implementation.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public static SystemadaptationFactory init() {
         try {
-            final SystemadaptationFactory thesystemadaptationFactory = (SystemadaptationFactory) EPackage.Registry.INSTANCE
-                    .getEFactory(SystemadaptationPackage.eNS_URI);
-            if (thesystemadaptationFactory != null) {
-                return thesystemadaptationFactory;
+            SystemadaptationFactory theSystemadaptationFactory = (SystemadaptationFactory)EPackage.Registry.INSTANCE.getEFactory(SystemadaptationPackage.eNS_URI);
+            if (theSystemadaptationFactory != null) {
+                return theSystemadaptationFactory;
             }
-        } catch (final Exception exception) {
+        }
+        catch (Exception exception) {
             EcorePlugin.INSTANCE.log(exception);
         }
         return new SystemadaptationFactoryImpl();
     }
 
     /**
-     * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates an instance of the factory.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public SystemadaptationFactoryImpl() {
@@ -68,174 +62,107 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     @Override
-    public EObject create(final EClass eClass) {
+    public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
-        case SystemadaptationPackage.SYSTEM_ADAPTATION:
-            return this.createSystemAdaptation();
-        case SystemadaptationPackage.ACTION:
-            return this.createAction();
-        case SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION:
-            return this.createAssemblyContextAction();
-        case SystemadaptationPackage.RESOURCE_CONTAINER_ACTION:
-            return this.createResourceContainerAction();
-        case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION:
-            return this.createChangeRepositoryComponentAction();
-        case SystemadaptationPackage.ALLOCATE_ACTION:
-            return this.createAllocateAction();
-        case SystemadaptationPackage.DEALLOCATE_ACTION:
-            return this.createDeallocateAction();
-        case SystemadaptationPackage.MIGRATE_ACTION:
-            return this.createMigrateAction();
-        case SystemadaptationPackage.ACQUIRE_ACTION:
-            return this.createAcquireAction();
-        case SystemadaptationPackage.TERMINATE_ACTION:
-            return this.createTerminateAction();
-        case SystemadaptationPackage.REPLICATE_ACTION:
-            return this.createReplicateAction();
-        default:
-            throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+            case SystemadaptationPackage.SYSTEM_ADAPTATION: return createSystemAdaptation();
+            case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION: return createChangeRepositoryComponentAction();
+            case SystemadaptationPackage.REPLICATE_ACTION: return createReplicateAction();
+            case SystemadaptationPackage.DEREPLICATE_ACTION: return createDereplicateAction();
+            case SystemadaptationPackage.MIGRATE_ACTION: return createMigrateAction();
+            case SystemadaptationPackage.ALLOCATE_ACTION: return createAllocateAction();
+            case SystemadaptationPackage.DEALLOCATE_ACTION: return createDeallocateAction();
+            default:
+                throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public SystemAdaptation createSystemAdaptation() {
-        final SystemAdaptationImpl systemAdaptation = new SystemAdaptationImpl();
+        SystemAdaptationImpl systemAdaptation = new SystemAdaptationImpl();
         return systemAdaptation;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public Action createAction() {
-        final ActionImpl action = new ActionImpl();
-        return action;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public AssemblyContextAction createAssemblyContextAction() {
-        final AssemblyContextActionImpl assemblyContextAction = new AssemblyContextActionImpl();
-        return assemblyContextAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public ResourceContainerAction createResourceContainerAction() {
-        final ResourceContainerActionImpl resourceContainerAction = new ResourceContainerActionImpl();
-        return resourceContainerAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
     public ChangeRepositoryComponentAction createChangeRepositoryComponentAction() {
-        final ChangeRepositoryComponentActionImpl changeRepositoryComponentAction = new ChangeRepositoryComponentActionImpl();
+        ChangeRepositoryComponentActionImpl changeRepositoryComponentAction = new ChangeRepositoryComponentActionImpl();
         return changeRepositoryComponentAction;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public AllocateAction createAllocateAction() {
-        final AllocateActionImpl allocateAction = new AllocateActionImpl();
-        return allocateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public DeallocateAction createDeallocateAction() {
-        final DeallocateActionImpl deallocateAction = new DeallocateActionImpl();
-        return deallocateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public MigrateAction createMigrateAction() {
-        final MigrateActionImpl migrateAction = new MigrateActionImpl();
-        return migrateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public AcquireAction createAcquireAction() {
-        final AcquireActionImpl acquireAction = new AcquireActionImpl();
-        return acquireAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public TerminateAction createTerminateAction() {
-        final TerminateActionImpl terminateAction = new TerminateActionImpl();
-        return terminateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
     public ReplicateAction createReplicateAction() {
-        final ReplicateActionImpl replicateAction = new ReplicateActionImpl();
+        ReplicateActionImpl replicateAction = new ReplicateActionImpl();
         return replicateAction;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public SystemadaptationPackage getsystemadaptationPackage() {
-        return (SystemadaptationPackage) this.getEPackage();
+    public DereplicateAction createDereplicateAction() {
+        DereplicateActionImpl dereplicateAction = new DereplicateActionImpl();
+        return dereplicateAction;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public MigrateAction createMigrateAction() {
+        MigrateActionImpl migrateAction = new MigrateActionImpl();
+        return migrateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public AllocateAction createAllocateAction() {
+        AllocateActionImpl allocateAction = new AllocateActionImpl();
+        return allocateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public DeallocateAction createDeallocateAction() {
+        DeallocateActionImpl deallocateAction = new DeallocateActionImpl();
+        return deallocateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public SystemadaptationPackage getSystemadaptationPackage() {
+        return (SystemadaptationPackage)getEPackage();
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @deprecated
      * @generated
      */
@@ -244,4 +171,5 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
         return SystemadaptationPackage.eINSTANCE;
     }
 
-} // systemadaptationFactoryImpl
+} //SystemadaptationFactoryImpl
+>>>>>>> master
