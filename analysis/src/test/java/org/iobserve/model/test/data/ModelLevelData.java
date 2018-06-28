@@ -46,7 +46,7 @@ public final class ModelLevelData {
 
     private static PCMUndeployedEvent createPCMUndeployedEvent() {
         return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, null);
     }
 
 }

@@ -52,7 +52,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
-     * {@link ModelProvider#readOnlyReferencingComponentsById(Class, String)} and asserts that it is
+     * {@link ModelProvider#collectReferencingObjectsByTypeAndId(Class, String)} and asserts that it is
      * equal to the referencing components from the original model.
      */
     @Test
@@ -97,7 +97,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
         final ModelProvider<T> cloneModelProvider = new ModelProvider<>(cloneGraph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
-        final T clonedModel = cloneModelProvider.readRootNode(this.clazz);
+        final T clonedModel = cloneModelProvider.getModelRootNode(this.clazz);
         cloneGraph.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
@@ -129,7 +129,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readRootNode(Class)} and asserts that it is equal to the one written to
+     * {@link ModelProvider#getModelRootNode(Class)} and asserts that it is equal to the one written to
      * the graph.
      */
     @Test
@@ -141,7 +141,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final T readModel = modelProvider.readRootNode(this.clazz);
+        final T readModel = modelProvider.getModelRootNode(this.clazz);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 

@@ -89,27 +89,46 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        final ComponentEntry componentEntry = this.componentEntryProvider.readObjectById(ComponentEntry.class,
+        final ComponentEntry componentEntry = this.componentEntryProvider.getObjectByTypeAndId(ComponentEntry.class,
                 event.getClassSignature());
-        final OperationEntry operationEntry = this.operationSignatureEntryProvider
-                .readObjectById(OperationEntry.class, event.getOperationSignature());
-        final AllocationEntry allocationEntry = this.allocationEntryProvider
-                .readObjectById(AllocationEntry.class, event.getHostname());
+        if (componentEntry != null) {
+            final OperationEntry operationEntry = this.operationSignatureEntryProvider
+                    .getObjectByTypeAndId(OperationEntry.class, event.getOperationSignature());
 
+            if (operationEntry != null) {
+                final AllocationEntry allocationEntry = this.allocationEntryProvider
+                        .getObjectByTypeAndId(AllocationEntry.class, event.getHostname());
+                if (allocationEntry != null) {
+                    this.computePcmEntryCallEvent(componentEntry, operationEntry, allocationEntry, event);
+                } else {
+                    this.logger.debug("No corresponding allocation for entry call {}", event.toString());
+                }
+            } else {
+                this.logger.debug("No corresponding component for entry call {}", event.toString());
+            }
+        } else {
+            this.logger.debug("No corresponding component for entry call {}", event.toString());
+        }
+    }
+
+    private void computePcmEntryCallEvent(final ComponentEntry componentEntry, final OperationEntry operationEntry,
+            final AllocationEntry allocationEntry, final EntryCallEvent event) {
         /** retrieve PCM model elements from mapping. */
         final AllocationContext allocationContext = this.allocationContextProvider
-                .readObjectById(AllocationContext.class, allocationEntry.getAllocation().getId());
+                .getObjectByTypeAndId(AllocationContext.class, allocationEntry.getAllocation().getId());
         final OperationSignature operationSignature = this.operationSignatureProvider
-                .readObjectByIdAndLock(OperationSignature.class, operationEntry.getOperation().getId());
-        final RepositoryComponent component = this.componentProvider.readObjectById(RepositoryComponent.class,
+                .findAndLockObjectById(OperationSignature.class, operationEntry.getOperation().getId());
+        final RepositoryComponent component = this.componentProvider.getObjectByTypeAndId(RepositoryComponent.class,
                 componentEntry.getComponent().getId());
+
         /** assembly is inferred from allocation. */
-        final AssemblyContext assemblyContext = this.assemblyContextProvider.readObjectById(
-                AssemblyContext.class, allocationContext.getAssemblyContext_AllocationContext().getId());
+        final AssemblyContext assemblyContext = this.assemblyContextProvider.getObjectByTypeAndId(AssemblyContext.class,
+                allocationContext.getAssemblyContext_AllocationContext().getId());
 
         /** assemble event. */
         final PCMEntryCallEvent mappedEvent = new PCMEntryCallEvent(event.getEntryTime(), event.getExitTime(),
                 component, operationSignature, assemblyContext, allocationContext);
+
         this.outputPort.send(mappedEvent);
     }
 

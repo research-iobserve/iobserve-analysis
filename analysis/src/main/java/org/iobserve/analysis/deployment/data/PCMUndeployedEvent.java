@@ -26,7 +26,7 @@ public class PCMUndeployedEvent {
 
     private final String service;
     private final AssemblyContext assemblyContext;
-    private ResourceContainer resourceContainer;
+    private final ResourceContainer resourceContainer;
 
     /**
      * Create an model level undeployed event.
@@ -36,9 +36,11 @@ public class PCMUndeployedEvent {
      * @param assemblyContext
      *            the correspondent for the component to be removed
      */
-    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext) {
+    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
+            final ResourceContainer resourceContainer) {
         this.service = service;
         this.assemblyContext = assemblyContext;
+        this.resourceContainer = resourceContainer;
     }
 
     public final String getService() {
@@ -47,10 +49,6 @@ public class PCMUndeployedEvent {
 
     public final AssemblyContext getAssemblyContext() {
         return this.assemblyContext;
-    }
-
-    public void setResourceContainer(final ResourceContainer resourceContainer) {
-        this.resourceContainer = resourceContainer;
     }
 
     public final ResourceContainer getResourceContainer() {

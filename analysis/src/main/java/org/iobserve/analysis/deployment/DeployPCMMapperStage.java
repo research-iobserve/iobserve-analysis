@@ -24,11 +24,11 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.common.record.Privacy_EJBDeployedEvent;
-import org.iobserve.common.record.Privacy_ServletDeployedEvent;
+import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.
@@ -36,9 +36,11 @@ import org.iobserve.model.provider.neo4j.IModelProvider;
  * @author Reiner Jung
  *
  */
-public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
+public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> {
 
     private final IModelProvider<AssemblyEntry> correspondenceModelProvider;
+    private final IModelProvider<AssemblyContext> assemblyContextModelProvider;
+
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
     /**
@@ -46,9 +48,13 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
      *
      * @param correspondenceModelProvider
      *            correspondence model handler
+     * @param assemblyContextModelProvider
+     *            assembly context model provider
      */
-    public DeployPCMMapper(final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+    public DeployPCMMapperStage(final IModelProvider<AssemblyEntry> correspondenceModelProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider) {
         this.correspondenceModelProvider = correspondenceModelProvider;
+        this.assemblyContextModelProvider = assemblyContextModelProvider;
     }
 
     /**
@@ -62,6 +68,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
 
     @Override
     protected void execute(final IDeployedEvent event) throws Exception {
+        this.logger.debug("Received deployment event {}", event);
         if (event instanceof ServletDeployedEvent) {
             this.servletMapper((ServletDeployedEvent) event);
         } else if (event instanceof EJBDeployedEvent) {
@@ -74,47 +81,34 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
         final String service = event.getService();
         final String context = event.getContext();
 
-        // build the url for the containerAllocationEvent
-        final String urlContext = context.replaceAll("\\.", "/");
-        final String url = "http://" + service + '/' + urlContext;
-
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readObjectsByName(AssemblyEntry.class, context);
-
-        if (assemblyEntry.size() == 1) {
-            if (event instanceof Privacy_EJBDeployedEvent) {
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
-                        ((Privacy_EJBDeployedEvent) event).getCountryCode()));
-            } else {
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
-                        ISOCountryCode.EVIL_EMPIRE));
-            }
-        } else if (assemblyEntry.isEmpty()) {
-            this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);
-        } else if (assemblyEntry.size() > 1) {
-            this.logger.error("Deplyoment failed: Multiple corresponding assembly context {} found on {}.", context,
-                    service);
-        }
+        this.performMapping(event, service, context);
     }
 
     private void servletMapper(final ServletDeployedEvent event) {
         final String service = event.getService();
         final String context = event.getContext();
 
+        this.performMapping(event, service, context);
+    }
+
+    private void performMapping(final IDeployedEvent event, final String service, final String context) {
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
+                .getObjectsByTypeAndName(AssemblyEntry.class, context);
+
         // build the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readObjectsByName(AssemblyEntry.class, context);
-
         if (assemblyEntry.size() == 1) {
-            if (event instanceof Privacy_ServletDeployedEvent) {
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
-                        ((Privacy_ServletDeployedEvent) event).getCountryCode()));
+            final AssemblyContext assemblyContext = this.assemblyContextModelProvider
+                    .getObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
+            if (event instanceof Privacy) {
+                this.logger.debug("privacy {}", event);
+                this.outputPort
+                        .send(new PCMDeployedEvent(service, assemblyContext, url, ((Privacy) event).getCountryCode()));
             } else {
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyEntry.get(0).getAssembly(), url,
-                        ISOCountryCode.EVIL_EMPIRE));
+                this.logger.debug("evil {}", event);
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url, ISOCountryCode.EVIL_EMPIRE));
             }
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);

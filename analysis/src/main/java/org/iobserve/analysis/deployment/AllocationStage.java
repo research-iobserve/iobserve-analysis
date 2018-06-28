@@ -90,31 +90,34 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
         final String service;
         if (event instanceof ContainerAllocationEvent) {
             service = ((ContainerAllocationEvent) event).getService();
+            this.logger.debug("Allocate {}", service);
         } else {
-            throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
+            this.logger.error("Unknown allocation event type {}", event.getClass());
+            throw new UnknownObjectException(String.format("%s is not supported by the allocation filter.",
+                    event.getClass().getCanonicalName()));
         }
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
-                        this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
+                        this.resourceEnvironmentModelGraphProvider.getModelRootNode(ResourceEnvironment.class),
                         service);
 
         if (!resourceContainer.isPresent()) {
+            this.logger.debug("ResourceContainer {} is created.", service);
             /** new provider: update the resource environment graph. */
-            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
-                    .readRootNode(ResourceEnvironment.class);
+            final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelGraphProvider
+                    .getModelRootNode(ResourceEnvironment.class);
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
-                    .createResourceContainer(resourceEnvironmentModelGraph, service);
-            resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
-            this.resourceEnvironmentModelGraphProvider.updateObject(ResourceEnvironment.class,
-                    resourceEnvironmentModelGraph);
+                    .createResourceContainer(resourceEnvironment, service);
+            resourceEnvironment.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
+            this.resourceEnvironmentModelGraphProvider.updateObject(ResourceEnvironment.class, resourceEnvironment);
 
             /** signal allocation update. */
             this.allocationNotifyOutputPort.send(newResourceContainer);
             this.allocationOutputPort.send(event);
         } else {
             /** error allocation already happened. */
-            this.logger.debug("ResourceContainer %s was available." + service);
+            this.logger.debug("ResourceContainer {} was available.", service);
             final List<ProcessingResourceSpecification> procResSpec = resourceContainer.get()
                     .getActiveResourceSpecifications_ResourceContainer();
             for (int i = 0; i < procResSpec.size(); i++) {

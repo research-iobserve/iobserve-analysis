@@ -71,13 +71,17 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      */
     @Override
     protected void execute(final PCMDeployedEvent event) {
+        this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
+        this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
+                event.getAssemblyContext(), event.getResourceContainer(), event.getService());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
-                .readObjectsByName(AllocationContext.class, allocationContextName);
+                .getObjectsByTypeAndName(AllocationContext.class, allocationContextName);
         if (allocationContext.isEmpty()) {
-            final Allocation allocationModel = this.allocationModelGraphProvider.readRootNodeAndLock(Allocation.class);
+            this.logger.debug("Create allocation context {}", event);
+            final Allocation allocationModel = this.allocationModelGraphProvider.getModelRootNode(Allocation.class);
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
             newAllocationContext.setAssemblyContext_AllocationContext(event.getAssemblyContext());

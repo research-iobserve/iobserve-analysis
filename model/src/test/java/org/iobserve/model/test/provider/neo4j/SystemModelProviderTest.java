@@ -105,7 +105,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         expectedReferencingComponents.add(this.testModelBuilder.getBusinessQueryInputConnector());
         expectedReferencingComponents.add(this.testModelBuilder.getBusinessPayConnector());
 
-        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
+        readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
                 this.testModelBuilder.getBusinessOrderAssemblyContext().getId());
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
@@ -162,7 +162,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         modelProvider.updateObject(System.class, this.testModel);
 
-        final System readModel = modelProvider.readRootNode(System.class);
+        final System readModel = modelProvider.getModelRootNode(System.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
@@ -180,7 +180,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteObjectById(System.class, writtenModel.getId());
+        modelProvider.deleteObjectByTypeAndId(System.class, writtenModel.getId());
 
         // Manually delete the proxy nodes from the repository model
         try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
@@ -211,8 +211,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
-     * one written to the graph.
+     * {@link ModelProvider#getObjectsByTypeAndName(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
      */
     @Test
     public final void createThenReadByName() {
@@ -223,7 +223,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<System> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
+        final List<System> readModels = modelProvider.getObjectsByTypeAndName(this.clazz,
+                this.testModel.getEntityName());
 
         for (final System readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));

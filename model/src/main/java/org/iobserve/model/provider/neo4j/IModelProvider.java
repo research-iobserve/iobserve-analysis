@@ -47,7 +47,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    T readObjectByIdAndLock(Class<T> clazz, String id);
+    T findAndLockObjectById(Class<T> clazz, String id);
 
     /**
      * Reads components from the provider's model serialization by their entityName. Note that not
@@ -61,7 +61,7 @@ public interface IModelProvider<T extends EObject> {
      *            EntityName of the component(s) to be read
      * @return List of the read component(s)
      */
-    List<T> readComponentByName(Class<T> clazz, String entityName);
+    List<T> collectAllObjectsByTypeAndName(Class<T> clazz, String entityName);
 
     /**
      * Reads the ids of all objects of a specified data type.
@@ -73,13 +73,22 @@ public interface IModelProvider<T extends EObject> {
     List<String> collectAllObjectIdsByType(Class<T> clazz);
 
     /**
+     * Reads all objects of a specified data type.
+     *
+     * @param clazz
+     *            The data type
+     * @return List of objects of the specified data type
+     */
+    List<T> collectAllObjectsByType(Class<T> clazz);
+
+    /**
      * Reads the model partition root objects.
      *
      * @param clazz
      *            Data type of the root component
      * @return The read component
      */
-    T readRootNodeAndLock(Class<T> clazz);
+    T getAndLockModelRootNode(Class<T> clazz);
 
     /**
      * Update a the specified object in the the provider's model serialization.
@@ -103,7 +112,7 @@ public interface IModelProvider<T extends EObject> {
      * @param id
      *            Id of component to be deleted
      */
-    void deleteObjectById(Class<T> clazz, String id);
+    void deleteObjectByTypeAndId(Class<T> clazz, String id);
 
     /**
      * Deletes a specified object from the provider's model serialization. This method also deletes
@@ -128,7 +137,7 @@ public interface IModelProvider<T extends EObject> {
      *            Data type of the root component
      * @return The read component
      */
-    T readRootNode(final Class<T> clazz);
+    T getModelRootNode(final Class<T> clazz);
 
     /**
      * Reads a specified object from the provider's graph without locking it for other providers.
@@ -139,7 +148,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    T readObjectById(final Class<T> clazz, final String id);
+    T getObjectByTypeAndId(final Class<T> clazz, final String id);
 
     /**
      * Reads object referencing the specified object from the provider's graph without locking it
@@ -151,7 +160,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of the referenced object
      * @return The referencing objects
      */
-    List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id);
+    List<EObject> collectReferencingObjectsByTypeAndId(final Class<?> clazz, final String id);
 
     /**
      * Reads objects from the provider's graph by their entityName without locking it for other
@@ -165,7 +174,7 @@ public interface IModelProvider<T extends EObject> {
      *            EntityName of the object(s) to be read
      * @return List of the read object(s)
      */
-    List<T> readObjectsByName(final Class<T> clazz, final String entityName);
+    List<T> getObjectsByTypeAndName(final Class<T> clazz, final String entityName);
 
     /**
      * Get underlying graph.

@@ -17,16 +17,20 @@ package org.iobserve.service.privacy.violation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;
 
+import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.deployment.AllocationStage;
+import org.iobserve.analysis.deployment.DeallocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
-import org.iobserve.analysis.privacy.GeoLocation;
+import org.iobserve.analysis.privacy.GeoLocationStage;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.traces.traceReconstruction.TraceReconstructionFilter;
 import org.iobserve.common.record.IAllocationEvent;
@@ -36,6 +40,8 @@ import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
@@ -45,18 +51,20 @@ import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeController;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
+import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.data.trace.ConcurrentHashMapWithCreate;
 import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.data.trace.EventBasedTraceFactory;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
-import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
-import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -68,19 +76,11 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class PrivacyViolationDetectionConfiguration extends Configuration {
 
-    private static final int BUFFER_SIZE = 4096;
-
     /**
      * Configuration for the JSS privacy violation detection service.
      *
-     * @param policyList
-     *            list of privacy policies
-     * @param policyPackage
-     *            package prefix for the policy list
-     * @param inputPort
-     *            port to listen for Kieker records
-     * @param outputs
-     *            host and port for the Kieker adaptive monitoring
+     * @param configuration
+     *            configuration object
      * @param correspondenceGraph
      *            correspondence model graph
      * @param repositoryModelProvider
@@ -93,109 +93,147 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            allocation context model provider (view)
      * @param systemModelProvider
      *            system model provider
-     * @param privacyModelProvider
-     *            provider for the privacy model
+     * @param privacyModelGraph
+     *            graph for the privacy model
      * @param warningFile
      *            warnings
      * @param alarmFile
      *            alarms
      * @throws IOException
      *             when files cannot be opened
+     * @throws ConfigurationException
+     *             on configuration errors
      */
-    public PrivacyViolationDetectionConfiguration(final String[] policyList, final String policyPackage,
-            final int inputPort, final List<ConnectionData> outputs, final ModelGraph correspondenceGraph,
-            final IModelProvider<Repository> repositoryModelProvider,
+    public PrivacyViolationDetectionConfiguration(final kieker.common.configuration.Configuration configuration,
+            final ModelGraph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<System> systemModelProvider, final IModelProvider<PrivacyModel> privacyModelProvider,
-            final File warningFile, final File alarmFile) throws IOException {
+            final IModelProvider<System> systemModelProvider, final ModelGraph privacyModelGraph,
+            final File warningFile, final File alarmFile) throws IOException, ConfigurationException {
+
+        final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
+                systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
+                resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         /** instantiating filters. */
-        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-                PrivacyViolationDetectionConfiguration.BUFFER_SIZE, new NoneTraceMetadataRewriter());
+        final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
+        if (!sourceClassName.isEmpty()) {
+            final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
+                    .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
-        final IEventMatcher<IDeployedEvent> deployedEventMatcher = new ImplementsEventMatcher<>(IDeployedEvent.class,
-                null);
-        final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
-                IUndeployedEvent.class, deployedEventMatcher);
+            final IEventMatcher<IDeployedEvent> deployedEventMatcher = new ImplementsEventMatcher<>(
+                    IDeployedEvent.class, null);
+            final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
+                    IUndeployedEvent.class, deployedEventMatcher);
 
-        final IEventMatcher<IAllocationEvent> allocationEventMatcher = new ImplementsEventMatcher<>(
-                IAllocationEvent.class, undeployedEventMatcher);
-        final IEventMatcher<IDeallocationEvent> deallocationEventMatcher = new ImplementsEventMatcher<>(
-                IDeallocationEvent.class, allocationEventMatcher);
+            final IEventMatcher<IAllocationEvent> allocationEventMatcher = new ImplementsEventMatcher<>(
+                    IAllocationEvent.class, undeployedEventMatcher);
+            final IEventMatcher<IDeallocationEvent> deallocationEventMatcher = new ImplementsEventMatcher<>(
+                    IDeallocationEvent.class, allocationEventMatcher);
 
-        final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class,
-                deallocationEventMatcher);
+            final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class,
+                    deallocationEventMatcher);
 
-        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
+            final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
 
-        /** allocation. */
-        final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+            /** allocation. */
+            final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+            final DeallocationStage deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
 
-        /** deployment. */
-        final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                allocationModelProvider, allocationContextModelProvider, correspondenceGraph);
-        final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
-                allocationContextModelProvider, correspondenceGraph);
+            /** deployment. */
+            final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(
+                    resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider,
+                    assemblyContextModelProvider, correspondenceGraph);
+            final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
+                    allocationContextModelProvider, assemblyContextModelProvider, resourceContainerModelProvider,
+                    correspondenceGraph);
 
-        /** geolocation. */
-        final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
+            /** geo location. */
+            final GeoLocationStage geoLocationStage = new GeoLocationStage(privacyModelGraph);
 
-        final PrivacyWarner privacyWarner = new PrivacyWarner(policyList, policyPackage, allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
+            final PrivacyWarner privacyWarner = new PrivacyWarner(configuration, allocationModelProvider,
+                    systemModelProvider, resourceEnvironmentModelProvider, repositoryModelProvider,
+                    new ModelProvider<PrivacyModel>(privacyModelGraph, ModelProvider.PCM_ENTITY_NAME,
+                            ModelProvider.PCM_ID));
+            privacyWarner.declareActive();
 
-        final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
-                EventBasedTraceFactory.INSTANCE);
-        final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
+            final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
+                    EventBasedTraceFactory.INSTANCE);
+            final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 
-        final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
-        final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceGraph,
-                repositoryModelProvider.getGraph(), systemModelProvider.getGraph(), allocationModelProvider.getGraph());
-        final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
+            final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
+            final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceGraph,
+                    repositoryModelProvider.getGraph(), systemModelProvider.getGraph(),
+                    allocationModelProvider.getGraph());
+            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
+                    systemModelProvider, resourceEnvironmentModelProvider);
+            final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
-        final ModelProbeController modelProbeController = new ModelProbeController(allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        final ProbeMapper probeMapper = new ProbeMapper(correspondenceGraph);
-        final ProbeController probeController = new ProbeController(outputs);
+            final ModelProbeController modelProbeController = new ModelProbeController(allocationModelProvider,
+                    systemModelProvider, resourceEnvironmentModelProvider);
+            final ProbeMapper probeMapper = new ProbeMapper(correspondenceGraph);
 
-        try {
-            final AlarmSink alarmSink = new AlarmSink(alarmFile);
+            final ProbeController probeController = new ProbeController(this.createProbeConnections(
+                    configuration.getStringArrayProperty(PrivacyConfigurationsKeys.PROBE_CONNECTIONS_OUTPUTS)));
+
+            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(200);
 
             try {
-                final WarnSink warnSink = new WarnSink(warningFile);
+                final AlarmSink alarmSink = new AlarmSink(alarmFile);
 
-                /** connect ports. */
-                this.connectPorts(reader.getOutputPort(), eventDispatcher.getInputPort());
-                this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
-                this.connectPorts(undeployedEventMatcher.getOutputPort(), undeploymentStage.getUndeployedInputPort());
-                this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
+                try {
+                    final WarnSink warnSink = new WarnSink(warningFile);
 
-                this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocation.getInputPort());
-                this.connectPorts(geoLocation.getOutputPort(), privacyWarner.getDeployedInputPort());
-                this.connectPorts(undeploymentStage.getUndeployedOutputPort(), privacyWarner.getUndeployedInputPort());
+                    /** connect ports. */
+                    this.connectPorts(sourceCompositeStage.getOutputPort(), eventDelayer.getInputPort());
+                    this.connectPorts(eventDelayer.getOutputPort(), eventDispatcher.getInputPort());
+                    this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
+                    this.connectPorts(undeployedEventMatcher.getOutputPort(),
+                            undeploymentStage.getUndeployedInputPort());
+                    this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
+                    this.connectPorts(deallocationEventMatcher.getOutputPort(), deallocationStage.getInputPort());
 
-                this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
-                this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
-                this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
-                this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
+                    this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
+                    this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
+                    this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
+                            privacyWarner.getUndeployedInputPort());
 
-                this.connectPorts(flowMatcher.getOutputPort(), traceReconstructionFilter.getInputPort());
-                this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), entryCallStage.getInputPort());
-                this.connectPorts(entryCallStage.getOutputPort(), entryEventMapperStage.getInputPort());
-                this.connectPorts(entryEventMapperStage.getOutputPort(), dataFlowDetectionStage.getInputPort());
-                this.connectPorts(dataFlowDetectionStage.getOutputPort(), alarmAnalysis.getInputPort());
-                this.connectPorts(alarmAnalysis.getOutputPort(), alarmSink.getInputPort());
-            } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
-                                                   // control
-                throw new IOException("Cannot create warning file.", eWarning);
+                    this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
+                    this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
+                    this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
+                    this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
+
+                    this.connectPorts(flowMatcher.getOutputPort(), traceReconstructionFilter.getInputPort());
+                    this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(),
+                            entryCallStage.getInputPort());
+                    this.connectPorts(entryCallStage.getOutputPort(), entryEventMapperStage.getInputPort());
+                    this.connectPorts(entryEventMapperStage.getOutputPort(), dataFlowDetectionStage.getInputPort());
+                    this.connectPorts(dataFlowDetectionStage.getOutputPort(), alarmAnalysis.getInputPort());
+                    this.connectPorts(alarmAnalysis.getOutputPort(), alarmSink.getInputPort());
+                } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
+                                                       // control
+                    throw new IOException("Cannot create warning file.", eWarning);
+                }
+            } catch (final IOException eAlarm) { // NOPMD cannot be avoided to be used as flow
+                                                 // control
+                throw new IOException("Cannot create alarm file.", eAlarm);
             }
-        } catch (final IOException eAlarm) { // NOPMD cannot be avoided to be used as flow control
-            throw new IOException("Cannot create alarm file.", eAlarm);
+        }
+    }
+
+    private List<ConnectionData> createProbeConnections(final String[] connectionConfigurations) {
+        final List<ConnectionData> probeConnections = new ArrayList<>();
+
+        for (final String connectionConfig : connectionConfigurations) {
+            final String[] parameter = connectionConfig.split(":");
+            if (parameter.length == 2) {
+                probeConnections.add(new ConnectionData(parameter[0], Integer.parseInt(parameter[1])));
+            }
         }
 
+        return probeConnections;
     }
 
 }

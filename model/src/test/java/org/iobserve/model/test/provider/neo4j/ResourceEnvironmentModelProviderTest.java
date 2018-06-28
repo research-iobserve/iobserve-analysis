@@ -122,7 +122,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
+        final List<EObject> readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(
                 CommunicationLinkResourceType.class, this.testModelBuilder.getLan1Type().getId());
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
@@ -185,7 +185,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.updateObject(ResourceEnvironment.class, this.testModel);
 
-        final ResourceEnvironment readModel = modelProvider.readRootNode(ResourceEnvironment.class);
+        final ResourceEnvironment readModel = modelProvider.getModelRootNode(ResourceEnvironment.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
@@ -207,12 +207,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
             new ModelProvider<LinkingResource>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectById(LinkingResource.class, lr.getId());
+                    .deleteObjectByTypeAndId(LinkingResource.class, lr.getId());
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
             new ModelProvider<ResourceContainer>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectById(ResourceContainer.class, rc.getId());
+                    .deleteObjectByTypeAndId(ResourceContainer.class, rc.getId());
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are

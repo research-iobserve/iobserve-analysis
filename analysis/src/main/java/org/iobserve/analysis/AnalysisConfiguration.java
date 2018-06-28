@@ -39,6 +39,7 @@ import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.data.trace.EventBasedTrace;
@@ -48,6 +49,7 @@ import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -151,6 +153,11 @@ public class AnalysisConfiguration extends Configuration {
             throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
+            final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
+                    systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
+                    resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+
             /** allocation. */
             this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
             final IEventMatcher<IAllocationEvent> allocationMatcher = new ImplementsEventMatcher<>(
@@ -172,7 +179,8 @@ public class AnalysisConfiguration extends Configuration {
                     IDeployedEvent.class, null);
             this.eventDispatcher.registerOutput(deployedEventMatcher);
             this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, correspondenceModelGraph);
+                    allocationModelProvider, allocationContextModelProvider, assemblyContextModelProvider,
+                    correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(deployedEventMatcher.getOutputPort(), this.deploymentStage.getDeployedInputPort());
 
@@ -181,7 +189,7 @@ public class AnalysisConfiguration extends Configuration {
                     IUndeployedEvent.class, null);
             this.eventDispatcher.registerOutput(undeployedEventMatcher);
             this.undeploymentStage = new UndeploymentCompositeStage(allocationContextModelProvider,
-                    correspondenceModelGraph);
+                    assemblyContextModelProvider, resourceContainerModelProvider, correspondenceModelGraph);
             /** connect ports. */
             this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 

@@ -105,7 +105,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
+        final List<EObject> readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(
                 BasicComponent.class, this.testModelBuilder.getCatalogSearchComponent().getId());
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
@@ -144,7 +144,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.updateObject(Repository.class, testModel);
 
-        final Repository readModel = modelProvider.readRootNode(Repository.class);
+        final Repository readModel = modelProvider.getModelRootNode(Repository.class);
 
         Assert.assertTrue(this.equalityHelper.equals(testModel, readModel));
 
@@ -168,7 +168,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteObjectById(this.clazz, this.testModel.getId());
+        modelProvider.deleteObjectByTypeAndId(this.clazz, this.testModel.getId());
 
         Assert.assertTrue(this.isGraphEmpty(modelProvider));
 
@@ -177,8 +177,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
-     * one written to the graph.
+     * {@link ModelProvider#getObjectsByTypeAndName(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
      */
     @Test
     public final void createThenReadByName() {
@@ -189,7 +189,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<Repository> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
+        final List<Repository> readModels = modelProvider.getObjectsByTypeAndName(this.clazz,
+                this.testModel.getEntityName());
 
         for (final Repository readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));

@@ -112,10 +112,10 @@ public class DeploymentResourceContainerTest {
         // .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
         Mockito.when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider
-                .readRootNode(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
+                .getModelRootNode(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
 
         Mockito.when(DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readRootNode(ResourceEnvironment.class))
+                .getModelRootNode(ResourceEnvironment.class))
                 .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         // TODO fix this

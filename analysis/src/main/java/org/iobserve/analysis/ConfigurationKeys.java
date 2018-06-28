@@ -33,7 +33,7 @@ import org.iobserve.stages.general.IEntryCallTraceMatcher;
  *
  */
 public final class ConfigurationKeys {
-    private static final String PREFIX = "iobserve.analysis.";
+    public static final String PREFIX = "iobserve.analysis.";
 
     /**
      * Container Management.

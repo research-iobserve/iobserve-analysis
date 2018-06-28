@@ -271,29 +271,17 @@ public final class ModelProviderUtil {
     public static EObject instantiateEObject(final List<EFactory> factories, final String name) {
 
         final int separationPoint = name.lastIndexOf('.');
-        final String packageName = name.substring(0, separationPoint);
         final String className = name.substring(separationPoint + 1);
 
         for (final EFactory factory : factories) {
             final EPackage ePackage = factory.getEPackage();
-            // final String factoryPackageName = ModelProviderUtil.fullyQualifiedName(ePackage);
-            // if (factoryPackageName.equals(packageName)) {
             final EClass eClass = (EClass) ePackage.getEClassifier(className);
             if (eClass != null) {
                 return factory.create(eClass);
             }
-            // }
         }
         return null;
 
-    }
-
-    private static String fullyQualifiedName(final EPackage ePackage) {
-        if (ePackage.getESuperPackage() != null) {
-            return ModelProviderUtil.fullyQualifiedName(ePackage.getESuperPackage()) + "." + ePackage.getName();
-        } else {
-            return ePackage.getName();
-        }
     }
 
     /**

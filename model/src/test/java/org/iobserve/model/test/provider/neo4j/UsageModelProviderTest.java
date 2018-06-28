@@ -121,7 +121,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         // Using usage scenario because usage model does not have an id
         final List<EObject> readReferencingComponents = modelProvider
-                .readOnlyReferencingComponentsById(UsageScenario.class, writtenScenario.getId());
+                .collectReferencingObjectsByTypeAndId(UsageScenario.class, writtenScenario.getId());
 
         // Only the scenario behavior and the closed workload reference the usage scenario
         for (final EObject readReferencingComponent : readReferencingComponents) {
@@ -176,7 +176,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         modelProvider.updateObject(UsageModel.class, this.testModel);
 
-        final UsageModel readModel = modelProvider.readRootNode(UsageModel.class);
+        final UsageModel readModel = modelProvider.getModelRootNode(UsageModel.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
@@ -199,7 +199,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         Assert.assertFalse(this.isGraphEmpty(modelProvider));
 
         new ModelProvider<UsageScenario>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                .deleteObjectById(UsageScenario.class, writtenScenario.getId());
+                .deleteObjectByTypeAndId(UsageScenario.class, writtenScenario.getId());
 
         // Manually delete the root node (as it has no id), the double literal node (as it is not
         // contained anywhere) and the proxy nodes (as they are no containments in this graph)

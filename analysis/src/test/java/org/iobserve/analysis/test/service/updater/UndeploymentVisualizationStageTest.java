@@ -118,9 +118,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
         final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
-
-        undeployedEvent.setResourceContainer(this.testResourceContainer);
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, this.testResourceContainer);
 
         /** input events */
         this.inputEvents.add(undeployedEvent);
@@ -137,7 +135,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.readObjectsByName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.getObjectsByTypeAndName(ResourceContainer.class,
                 UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
@@ -146,7 +144,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
                 + UndeploymentVisualizationStageTest.SERVICE;
         Mockito.when(
-                this.mockedAssemblyContextModelProvider.readObjectsByName(AssemblyContext.class, asmContextName))
+                this.mockedAssemblyContextModelProvider.getObjectsByTypeAndName(AssemblyContext.class, asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 
     }

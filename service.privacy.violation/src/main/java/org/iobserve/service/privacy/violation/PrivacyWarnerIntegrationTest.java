@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import kieker.common.configuration.Configuration;
+
 import teetime.framework.test.StageTester;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
@@ -147,14 +149,16 @@ public class PrivacyWarnerIntegrationTest {
             final IModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph,
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
-            final PrivacyModel model = privacyModelProvider.readRootNode(PrivacyModel.class);
+            final PrivacyModel model = privacyModelProvider.getModelRootNode(PrivacyModel.class);
 
             java.lang.System.err.println(model.toString());
 
-            final String[] policyList = "NoPersonalDataInUSAPolicy".split(",");
-            final String policyPackage = "org.iobserve.service.privacy.violation.transformation.privacycheck.policies";
+            final Configuration configration = new Configuration();
+            configration.setProperty("policy.package",
+                    "org.iobserve.service.privacy.violation.transformation.privacycheck.policies");
+            configration.setStringArrayProperty("policy.list", "NoPersonalDataInUSAPolicy".split(","));
 
-            this.pw = new PrivacyWarner(policyList, policyPackage, allocationModelProvider, systemModelProvider,
+            this.pw = new PrivacyWarner(configration, allocationModelProvider, systemModelProvider,
                     resourceEnvironmentModelProvider, repositoryModelProvider, privacyModelProvider);
         } catch (final IOException e) {
             PrivacyWarnerIntegrationTest.LOGGER.error("File IO error.", e);

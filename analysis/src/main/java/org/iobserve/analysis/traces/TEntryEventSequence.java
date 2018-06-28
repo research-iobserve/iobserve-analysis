@@ -97,7 +97,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     @Override
     protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
         // Resets the current usage model
-        final UsageModel model = this.usageModelProvider.readRootNodeAndLock(UsageModel.class);
+        final UsageModel model = this.usageModelProvider.getAndLockModelRootNode(UsageModel.class);
         int numberOfUserGroups = model.getUsageScenario_UsageModel().size();
         TEntryEventSequence.LOGGER.debug("EntryEventSequence found: numberOfUserGroups before: {}", numberOfUserGroups);
 

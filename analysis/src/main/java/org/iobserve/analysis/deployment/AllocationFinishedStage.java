@@ -92,16 +92,20 @@ public class AllocationFinishedStage extends AbstractStage {
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
 
         if (resourceContainer != null) {
+            this.logger.debug("Receive resource container {}", resourceContainer);
             this.allocations.add(resourceContainer);
         }
 
         if (deployedEvent != null) {
+            this.logger.debug("Receive deployed event {}", deployedEvent);
             this.deployments.add(deployedEvent);
         }
 
         if (this.allocations.size() > 0 && this.deployments.size() > 0) {
             final PCMDeployedEvent deployed = this.deployments.poll();
-            deployed.setResourceContainer(resourceContainer);
+            deployed.setResourceContainer(this.allocations.poll());
+
+            this.logger.debug("Send deployed {}", deployed);
             this.deployedOutputPort.send(deployed);
         }
 

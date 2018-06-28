@@ -107,7 +107,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<EObject> readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(
+        final List<EObject> readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(
                 AssemblyContext.class, this.testModelBuilder.getPaymentAssemblyContext().getId());
 
         // Only the payment server allocation context is referencing the payment assembly context
@@ -156,7 +156,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.updateObject(Allocation.class, this.testModel);
 
-        final Allocation readModel = modelProvider.readRootNode(Allocation.class);
+        final Allocation readModel = modelProvider.getModelRootNode(Allocation.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
@@ -165,7 +165,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
+     * {@link ModelProvider#getObjectsByTypeAndName(Class, String)} and asserts that it is equal to the
      * one written to the graph.
      */
     @Test
@@ -177,7 +177,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<Allocation> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
+        final List<Allocation> readModels = modelProvider.getObjectsByTypeAndName(this.clazz, this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));

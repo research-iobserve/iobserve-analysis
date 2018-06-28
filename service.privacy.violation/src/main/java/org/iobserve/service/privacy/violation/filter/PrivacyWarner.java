@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import kieker.common.configuration.Configuration;
+
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -36,6 +38,7 @@ import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Graph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
@@ -101,10 +104,8 @@ public class PrivacyWarner extends AbstractStage {
     /**
      * Create and initialize privacy warner.
      *
-     * @param policyList
-     *            list of policies
-     * @param policyPackage
-     *            package prefix for the policy entries
+     * @param configuration
+     *            configuration object
      * @param allocationModelProvider
      *            allocation model provider
      * @param systemModelProvider
@@ -117,13 +118,15 @@ public class PrivacyWarner extends AbstractStage {
      *            privacy model provider
      * @param assemblyView2
      */
-    public PrivacyWarner(final String[] policyList, final String policyPackage,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+    public PrivacyWarner(final Configuration configuration, final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Repository> repositoryModelProvider,
             final IModelProvider<PrivacyModel> privacyModelProvider) {
-        this.policyList = policyList; // NOPMD
-        this.policyPackage = policyPackage;
+
+        /** get policy parameters. */
+        this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
+        this.policyList = configuration.getStringArrayProperty(PrivacyConfigurationsKeys.POLICY_LIST);
 
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
@@ -134,25 +137,27 @@ public class PrivacyWarner extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
-        this.logger.info("Execution started");
-
-        Warnings warnings = new Warnings();
-
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
-        final Graph g = this.createAnalysisGraph();
 
         if (deployedEvent != null) {
-            // TODO generate warnings after the last deployment
-            this.logger.info("Received Deployment");
-            this.logger.info("CountryCode: " + deployedEvent.getCountryCode());
-            this.logger.info("Service: " + deployedEvent.getService());
+            this.logger.debug("Received Deployment");
+            this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
+            this.logger.debug("Service: " + deployedEvent.getService());
+            this.performPrivacyEvaluation();
         }
 
         if (undeployedEvent != null) {
-            // TODO generate warnings after the last undeployment
-            this.logger.info("Received undeployment");
+            this.logger.debug("Received undeployment");
+            this.performPrivacyEvaluation();
         }
+    }
+
+    private void performPrivacyEvaluation() throws FileNotFoundException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException, IOException {
+        final Graph g = this.createAnalysisGraph();
+
+        Warnings warnings = new Warnings();
 
         warnings = this.checkGraph(g);
 
@@ -160,16 +165,16 @@ public class PrivacyWarner extends AbstractStage {
         this.warningsOutputPort.send(warnings);
     }
 
-    private Warnings checkGraph(final Graph g) throws FileNotFoundException, InstantiationException,
+    private Warnings checkGraph(final Graph graph) throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
-        final Warnings w = new Warnings();
-        final PrivacyChecker p = new PrivacyChecker(this.policyList, this.policyPackage);
-        final List<Edge> edges = p.check(g);
+        final Warnings warnings = new Warnings();
+        final PrivacyChecker privacyChecker = new PrivacyChecker(this.policyList, this.policyPackage);
+        final List<Edge> edges = privacyChecker.check(graph);
 
         for (final Edge edge : edges) {
-            w.addMessage(edge.getPrint() + " Interface: " + edge.getInterfaceName());
+            warnings.addMessage(edge.getPrint() + " Interface: " + edge.getInterfaceName());
         }
-        return w;
+        return warnings;
     }
 
     private Graph createAnalysisGraph() {
@@ -200,10 +205,10 @@ public class PrivacyWarner extends AbstractStage {
      * Loads the root element for each model.
      **/
     private void loadRoots() {
-        this.allocationRootElement = this.allocationModelProvider.readRootNode(Allocation.class);
-        this.systemRootElement = this.systemModelProvider.readRootNode(System.class);
-        this.repositoryRootElement = this.repositoryModelProvider.readRootNode(Repository.class);
-        this.privacyRootElement = this.privacyModelProvider.readRootNode(PrivacyModel.class);
+        this.allocationRootElement = this.allocationModelProvider.getModelRootNode(Allocation.class);
+        this.systemRootElement = this.systemModelProvider.getModelRootNode(System.class);
+        this.repositoryRootElement = this.repositoryModelProvider.getModelRootNode(Repository.class);
+        this.privacyRootElement = this.privacyModelProvider.getModelRootNode(PrivacyModel.class);
     }
 
     /**
@@ -225,9 +230,10 @@ public class PrivacyWarner extends AbstractStage {
         for (final AllocationContext ac : this.allocationRootElement.getAllocationContexts_Allocation()) {
             final AssemblyContext asc = ac.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
-                    .readObjectById(AssemblyContext.class, asc.getId());
+                    .getObjectByTypeAndId(AssemblyContext.class, asc.getId());
             final RepositoryComponent rc = queryAssemblyContext.getEncapsulatedComponent__AssemblyContext();
-            final BasicComponent bc = repositoryComponentModelProvider.readObjectById(BasicComponent.class, rc.getId());
+            final BasicComponent bc = repositoryComponentModelProvider.getObjectByTypeAndId(BasicComponent.class,
+                    rc.getId());
 
             /** Creating component vertices. **/
             final Vertex v = new Vertex(bc.getEntityName(),
@@ -239,7 +245,7 @@ public class PrivacyWarner extends AbstractStage {
             this.vertices.put(bc.getId(), v);
 
             final ResourceContainer queryResource = resourceContainerModelProvider
-                    .readObjectById(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
+                    .getObjectByTypeAndId(ResourceContainer.class, ac.getResourceContainer_AllocationContext().getId());
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation

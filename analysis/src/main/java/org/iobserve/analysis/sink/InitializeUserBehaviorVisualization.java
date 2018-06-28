@@ -71,7 +71,7 @@ public class InitializeUserBehaviorVisualization {
             final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
 
             final List<EObject> usergroupConnectors = this.systemModelProvider
-                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
+                    .collectReferencingObjectsByTypeAndId(OperationProvidedRole.class, providedRoleId);
             final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
                     .get(0);
 
@@ -82,7 +82,7 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.readObjectByIdAndLock(UsageModel.class, "0");
+            this.usageModelProvider.findAndLockObjectById(UsageModel.class, "0");
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

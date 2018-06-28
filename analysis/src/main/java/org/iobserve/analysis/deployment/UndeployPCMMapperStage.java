@@ -26,6 +26,8 @@ import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.
@@ -33,9 +35,12 @@ import org.iobserve.model.provider.neo4j.IModelProvider;
  * @author Reiner Jung
  *
  */
-public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
+public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEvent> {
 
     private final IModelProvider<AssemblyEntry> correspondenceModelProvider;
+    private final IModelProvider<AssemblyContext> assemblyContextModelProvider;
+    private final IModelProvider<ResourceContainer> resourceContainerModelProvider;
+
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
     /**
@@ -43,9 +48,17 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
      *
      * @param correspondenceModelProvider
      *            correspondence model handler
+     * @param assemblyContextModelProvider
+     *            assembly context model provider
+     * @param resourceContainerModelProvider
+     *            resource container model provider
      */
-    public UndeployPCMMapper(final IModelProvider<AssemblyEntry> correspondenceModelProvider) {
+    public UndeployPCMMapperStage(final IModelProvider<AssemblyEntry> correspondenceModelProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider) {
         this.correspondenceModelProvider = correspondenceModelProvider;
+        this.assemblyContextModelProvider = assemblyContextModelProvider;
+        this.resourceContainerModelProvider = resourceContainerModelProvider;
     }
 
     public OutputPort<PCMUndeployedEvent> getOutputPort() {
@@ -54,29 +67,11 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
 
     @Override
     protected void execute(final IUndeployedEvent event) throws Exception {
+        this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);
         } else if (event instanceof EJBUndeployedEvent) {
             this.ejbMapper((EJBUndeployedEvent) event);
-        }
-
-    }
-
-    private void ejbMapper(final EJBUndeployedEvent event) {
-        final String service = event.getService();
-        final String context = event.getContext();
-
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readObjectsByName(AssemblyEntry.class, context);
-
-        if (assemblyEntry.size() == 1) {
-            this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));
-        } else if (assemblyEntry.isEmpty()) {
-            this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
-                    service);
-        } else if (assemblyEntry.size() > 1) {
-            this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.", context,
-                    service);
         }
     }
 
@@ -84,11 +79,29 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         final String service = event.getService();
         final String context = event.getContext();
 
+        this.performMapping(service, context);
+    }
+
+    private void ejbMapper(final EJBUndeployedEvent event) {
+        final String service = event.getService();
+        final String context = event.getContext();
+
+        this.performMapping(service, context);
+
+    }
+
+    private void performMapping(final String service, final String context) {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .readObjectsByName(AssemblyEntry.class, context);
+                .getObjectsByTypeAndName(AssemblyEntry.class, context);
+
+        final List<ResourceContainer> resourceContainers = this.resourceContainerModelProvider
+                .getObjectsByTypeAndName(ResourceContainer.class, service);
 
         if (assemblyEntry.size() == 1) {
-            this.outputPort.send(new PCMUndeployedEvent(service, assemblyEntry.get(0).getAssembly()));
+            final ResourceContainer resourceContainer = resourceContainers.get(0);
+            final AssemblyContext assemblyContext = this.assemblyContextModelProvider
+                    .getObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
+            this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer));
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
                     service);

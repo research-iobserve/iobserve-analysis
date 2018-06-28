@@ -38,7 +38,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectById(Class, String)} and asserts that it is equal to the one
+     * {@link ModelProvider#getObjectByTypeAndId(Class, String)} and asserts that it is equal to the one
      * written to the graph.
      */
     @Test
@@ -50,7 +50,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final T readModel = modelProvider.readObjectById(this.clazz, this.testModel.getId());
+        final T readModel = modelProvider.getObjectByTypeAndId(this.clazz, this.testModel.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 

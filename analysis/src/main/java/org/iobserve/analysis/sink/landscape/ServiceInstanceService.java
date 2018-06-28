@@ -90,7 +90,7 @@ public class ServiceInstanceService {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
         final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider
-                .readOnlyReferencingComponentsById(AssemblyContext.class, assemblyContext.getId());
+                .collectReferencingObjectsByTypeAndId(AssemblyContext.class, assemblyContext.getId());
         // if so, delete all communicationInstances
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {

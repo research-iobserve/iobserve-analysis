@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
+import java.util.Optional;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -64,15 +66,22 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
 
     @Override
     protected void execute(final PCMDeployedEvent event) throws Exception {
-        final ResourceContainer resourceContainer = ResourceEnvironmentModelFactory.getResourceContainerByName(
-                this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
-                event.getService()).get();
+        this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
+                event.getAssemblyContext().getEntityName(), event.getCountryCode(), event.getResourceContainer(),
+                event.getService(), event.getUrl());
 
-        if (resourceContainer != null) {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelGraphProvider
+                .getModelRootNode(ResourceEnvironment.class);
+        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
+                .getResourceContainerByName(resourceEnvironment, event.getService());
+
+        if (resourceContainer.isPresent()) {
+            this.logger.debug("Resource container {} exists.", event.getService());
             /** execution environment exists. Can deploy. */
-            event.setResourceContainer(resourceContainer);
+            event.setResourceContainer(resourceContainer.get());
             this.deployedOutputPort.send(event);
         } else {
+            this.logger.debug("Resource container {} missing, create allocation event", event.getService());
             /**
              * If the resource container with this serverName is not available, send an event to
              * TAllocation (creating the resource container) and forward the deployment event to

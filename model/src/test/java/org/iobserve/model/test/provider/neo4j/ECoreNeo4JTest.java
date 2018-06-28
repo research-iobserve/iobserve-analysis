@@ -176,7 +176,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
             tx.success();
         }
 
-        final List<Root> readModel = modelProvider.readObjectsByName(Root.class, this.testModel.getName());
+        final List<Root> readModel = modelProvider.getObjectsByTypeAndName(Root.class, this.testModel.getName());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel.get(0)));
 
@@ -199,7 +199,7 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
 
         final ModelProvider<Root> cloneModelProvider = new ModelProvider<>(cloneGraph, "name", null);
 
-        final Root clonedModel = cloneModelProvider.readRootNode(Root.class);
+        final Root clonedModel = cloneModelProvider.getModelRootNode(Root.class);
         cloneGraph.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));

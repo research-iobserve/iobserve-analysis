@@ -60,15 +60,17 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) {
+        this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
+                event.getResourceContainer());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
-                .readObjectsByName(AllocationContext.class, allocationContextName);
+                .getObjectsByTypeAndName(AllocationContext.class, allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
-            this.allocationContextModelGraphProvider.deleteObjectById(AllocationContext.class,
+            this.allocationContextModelGraphProvider.deleteObjectByTypeAndId(AllocationContext.class,
                     allocationContext.getId());
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {

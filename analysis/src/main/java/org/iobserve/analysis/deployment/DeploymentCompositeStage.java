@@ -29,6 +29,7 @@ import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -41,7 +42,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class DeploymentCompositeStage extends CompositeStage implements IDeploymentCompositeStage {
 
-    private final DeployPCMMapper deployPCMMapper;
+    private final DeployPCMMapperStage deployPCMMapper;
     private final AggregateEventStage<PCMDeployedEvent> relayDeployedEventStage;
     private final AllocationStage syntehticAllocation;
 
@@ -54,17 +55,20 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      *            model provider for the allocation model (deployment model)
      * @param allocationContextModelProvider
      *            model provider for the system model
+     * @param assemblyContextModelProvider
+     *            assembly context model provider
      * @param correspondenceModelGraph
      *            the correspondence model graph
      */
     public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider,
             final IModelProvider<AllocationContext> allocationContextModelProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
             final ModelGraph correspondenceModelGraph) {
 
         final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
                 ModelProvider.IMPLEMENTATION_ID, null);
-        this.deployPCMMapper = new DeployPCMMapper(correspondenceModelProvider);
+        this.deployPCMMapper = new DeployPCMMapperStage(correspondenceModelProvider, assemblyContextModelProvider);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
                 resourceEnvironmentModelProvider);
 
@@ -73,10 +77,13 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
 
         this.syntehticAllocation = new AllocationStage(resourceEnvironmentModelProvider);
         final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
+        allocationFinished.declareActive();
+
         final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationModelProvider,
                 allocationContextModelProvider);
 
         this.relayDeployedEventStage = new AggregateEventStage<>(2);
+        this.relayDeployedEventStage.declareActive();
 
         /** connect internal ports. */
         this.connectPorts(this.deployPCMMapper.getOutputPort(), synthesizeAllocationEvent.getInputPort());

@@ -110,9 +110,6 @@ public final class ModelImporter {
             this.usageModel = null;
         }
 
-        uri = this.getUriFileModelType(files, CorrespondenceModelHandler.SUFFIX, false);
-        this.correspondenceModel = new CorrespondenceModelHandler(this.resourceSet).load(uri);
-
         uri = this.getUriFileModelType(files, CloudProfileModelHandler.SUFFIX, true);
         if (uri != null) {
             this.cloudProfileModel = new CloudProfileModelHandler(this.resourceSet).load(uri);
@@ -147,6 +144,9 @@ public final class ModelImporter {
         } else {
             this.privacyModel = null;
         }
+
+        uri = this.getUriFileModelType(files, CorrespondenceModelHandler.SUFFIX, false);
+        this.correspondenceModel = new CorrespondenceModelHandler(this.resourceSet).load(uri);
 
         EcoreUtil.resolveAll(this.resourceSet);
     }

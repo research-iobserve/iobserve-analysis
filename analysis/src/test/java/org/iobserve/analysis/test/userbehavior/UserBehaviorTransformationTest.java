@@ -76,7 +76,7 @@ public final class UserBehaviorTransformationTest {
         final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
-                repositoryModelProvider.readRootNodeAndLock(Repository.class));
+                repositoryModelProvider.getAndLockModelRootNode(Repository.class));
 
         final int numberOfIterations = 500;
         final int stepSize = 1;

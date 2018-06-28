@@ -26,6 +26,8 @@ import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * Undeployment stage.
@@ -35,7 +37,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  */
 public class UndeploymentCompositeStage extends CompositeStage {
 
-    private final UndeployPCMMapper undeployPCMMapper;
+    private final UndeployPCMMapperStage undeployPCMMapper;
     private final UndeploymentModelUpdater undeployment;
 
     /**
@@ -43,15 +45,22 @@ public class UndeploymentCompositeStage extends CompositeStage {
      *
      * @param allocationContextModelGraphProvider
      *            allocation context model provider
+     * @param assemblyContextModelProvider
+     *            assembly context model provider
+     * @param resourceContainerModelProvider
+     *            resource container model provider
      * @param correspondenceModelGraph
      *            correspondence model graph
      */
     public UndeploymentCompositeStage(final IModelProvider<AllocationContext> allocationContextModelGraphProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
             final ModelGraph correspondenceModelGraph) {
 
         final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
                 ModelProvider.IMPLEMENTATION_ID, null);
-        this.undeployPCMMapper = new UndeployPCMMapper(correspondenceModelProvider);
+        this.undeployPCMMapper = new UndeployPCMMapperStage(correspondenceModelProvider, assemblyContextModelProvider,
+                resourceContainerModelProvider);
 
         this.undeployment = new UndeploymentModelUpdater(allocationContextModelGraphProvider);
 

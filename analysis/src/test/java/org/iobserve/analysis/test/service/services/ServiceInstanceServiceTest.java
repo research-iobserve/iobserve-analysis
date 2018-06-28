@@ -92,7 +92,7 @@ public class ServiceInstanceServiceTest { // NOCS test
                 .add("nodeId", this.nodeId).build();
 
         // stubbing
-        Mockito.when(this.mockedSystemModelGraphProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
+        Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
                 this.testAssemblyContext.getId())).thenReturn(this.noAssemblyConnectors);
     }
 
