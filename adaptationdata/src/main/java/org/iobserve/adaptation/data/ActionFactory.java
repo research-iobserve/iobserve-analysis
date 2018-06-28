@@ -15,14 +15,10 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-
-import org.iobserve.model.ModelImporter;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.iobserve.model.IPCMModelHandler;
-
+import org.iobserve.model.IModelImporter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -46,8 +42,8 @@ import org.palladiosimulator.pcm.system.System;
  */
 public final class ActionFactory {
 
-    private static IPCMModelHandler runtimeModelHandler;
-    private static IPCMModelHandler redeploymentModelHandler;
+    private static IModelImporter runtimeModelHandler;
+    private static IModelImporter redeploymentModelHandler;
 
     private ActionFactory() {
 
@@ -164,19 +160,19 @@ public final class ActionFactory {
                 .collect(Collectors.toList());
     }
 
-    public static IPCMModelHandler getRuntimeModels() {
+    public static IModelImporter getRuntimeModels() {
         return ActionFactory.runtimeModelHandler;
     }
 
-    public static void setRuntimeModels(final IPCMModelHandler runtimeModels) {
+    public static void setRuntimeModels(final IModelImporter runtimeModels) {
         ActionFactory.runtimeModelHandler = runtimeModels;
     }
 
-    public static IPCMModelHandler getRedeploymentModels() {
+    public static IModelImporter getRedeploymentModels() {
         return ActionFactory.redeploymentModelHandler;
     }
 
-    public static void setRedeploymentModels(final IPCMModelHandler redeploymentModels) {
+    public static void setRedeploymentModels(final IModelImporter redeploymentModels) {
         ActionFactory.redeploymentModelHandler = redeploymentModels;
     }
 }

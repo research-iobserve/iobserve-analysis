@@ -25,6 +25,7 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
@@ -68,36 +69,37 @@ public class SerializePcmModelStage extends AbstractTransformation<EObject, File
 
     @Override
     protected void execute(final EObject model) throws Exception {
+    	ResourceSet resourceSet = model.eResource().getResourceSet();
         final String filePathPrefix = this.modelDirectory.getAbsolutePath() + File.separator + this.modelName;
         final String filePath;
 
         if (model instanceof Allocation) {
             filePath = filePathPrefix + ".allocation";
-            new AllocationModelHandler().save(URI.createFileURI(filePath), (Allocation) model);
+            new AllocationModelHandler(resourceSet).save(URI.createFileURI(filePath), (Allocation) model);
         } else if (model instanceof CloudProfile) {
             filePath = filePathPrefix + ".cloudprofile";
-            new CloudProfileModelHandler().save(URI.createFileURI(filePath), (CloudProfile) model);
+            new CloudProfileModelHandler(resourceSet).save(URI.createFileURI(filePath), (CloudProfile) model);
         } else if (model instanceof CostRepository) {
             filePath = filePathPrefix + ".cost";
-            new CostModelHandler().save(URI.createFileURI(filePath), (CostRepository) model);
+            new CostModelHandler(resourceSet).save(URI.createFileURI(filePath), (CostRepository) model);
         } else if (model instanceof DecisionSpace) {
             filePath = filePathPrefix + ".designdecision";
-            new DesignDecisionModelHandler().save(URI.createFileURI(filePath), (DecisionSpace) model);
+            new DesignDecisionModelHandler(resourceSet).save(URI.createFileURI(filePath), (DecisionSpace) model);
         } else if (model instanceof QMLDeclarations) {
             filePath = filePathPrefix + ".qmldeclarations";
-            new QMLDeclarationsModelHandler().save(URI.createFileURI(filePath), (QMLDeclarations) model);
+            new QMLDeclarationsModelHandler(resourceSet).save(URI.createFileURI(filePath), (QMLDeclarations) model);
         } else if (model instanceof Repository) {
             filePath = filePathPrefix + ".repository";
-            new RepositoryModelHandler().save(URI.createFileURI(filePath), (Repository) model);
+            new RepositoryModelHandler(resourceSet).save(URI.createFileURI(filePath), (Repository) model);
         } else if (model instanceof ResourceEnvironment) {
             filePath = filePathPrefix + ".resourceenvironment";
-            new ResourceEnvironmentModelHandler().save(URI.createFileURI(filePath), (ResourceEnvironment) model);
+            new ResourceEnvironmentModelHandler(resourceSet).save(URI.createFileURI(filePath), (ResourceEnvironment) model);
         } else if (model instanceof System) {
             filePath = filePathPrefix + ".system";
-            new SystemModelHandler().save(URI.createFileURI(filePath), (System) model);
+            new SystemModelHandler(resourceSet).save(URI.createFileURI(filePath), (System) model);
         } else if (model instanceof UsageModel) {
             filePath = filePathPrefix + ".usagemodel";
-            new UsageModelHandler().save(URI.createFileURI(filePath), (UsageModel) model);
+            new UsageModelHandler(resourceSet).save(URI.createFileURI(filePath), (UsageModel) model);
         } else {
             throw new IllegalArgumentException("The EObject passed to this stage must be a PCM model!");
         }

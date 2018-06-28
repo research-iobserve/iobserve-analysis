@@ -21,6 +21,8 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
@@ -40,30 +42,32 @@ import org.iobserve.model.provider.file.UsageModelHandler;
  */
 public class DeserializePcmModelStage extends AbstractTransformation<File, EObject> {
 
-    @Override
+    private final ResourceSet resourceSet = new ResourceSetImpl();
+
+	@Override
     protected void execute(final File modelFile) throws Exception {
         final String modelFileName = modelFile.getName();
         final String modelFileExtension = modelFileName.substring(modelFileName.lastIndexOf(".") + 1);
         final EObject model;
 
         if (".allocation".equals(modelFileExtension)) {
-            model = new AllocationModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new AllocationModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".cloudprofile".equals(modelFileExtension)) {
-            model = new CloudProfileModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new CloudProfileModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".cost".equals(modelFileExtension)) {
-            model = new CostModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new CostModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".designdecision".equals(modelFileExtension)) {
-            model = new DesignDecisionModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new DesignDecisionModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".qmldeclarations".equals(modelFileExtension)) {
-            model = new QMLDeclarationsModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new QMLDeclarationsModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".repository".equals(modelFileExtension)) {
-            model = new RepositoryModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new RepositoryModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".resourceenvironment".equals(modelFileExtension)) {
-            model = new ResourceEnvironmentModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new ResourceEnvironmentModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".system".equals(modelFileExtension)) {
-            model = new SystemModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new SystemModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else if (".usagemodel".equals(modelFileExtension)) {
-            model = new UsageModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+            model = new UsageModelHandler(resourceSet).load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else {
             throw new IllegalArgumentException("File extension does not look like a PCM model!");
         }

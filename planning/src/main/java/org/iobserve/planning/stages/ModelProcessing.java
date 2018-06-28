@@ -33,6 +33,10 @@ import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
+import org.iobserve.model.provider.file.AllocationModelHandler;
+import org.iobserve.model.provider.file.CostModelHandler;
+import org.iobserve.model.provider.file.DesignDecisionModelHandler;
+import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.utils.ModelHelper;
@@ -124,13 +128,13 @@ public class ModelProcessing extends AbstractFilter<File> {
         for (final File nextFile : files) {
             final String filename = nextFile.getName();
             final String extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length());
-            if (PCMModelHandler.ALLOCATION_SUFFIX.equalsIgnoreCase(extension)) {
+            if (AllocationModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.allocationModelName = filename;
-            } else if (PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (ResourceEnvironmentModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.resourceEnvironmentName = filename;
-            } else if (PCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (CostModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.costModelName = filename;
-            } else if (PCMModelHandler.DESIGN_DECISION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (DesignDecisionModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
                 this.decisionSpaceName = filename;
             }
 
@@ -139,13 +143,13 @@ public class ModelProcessing extends AbstractFilter<File> {
 
     private void initModelTransformation(final File originalModelDirectory)
             throws IOException, InitializationException {
-        final PCMModelHandler originalModelHandler = new PCMModelHandler(originalModelDirectory);
+        final ModelImporter originalModelHandler = new ModelImporter(originalModelDirectory);
 
         this.processedModelDirectory = new File(originalModelDirectory, ModelProcessing.PROCESSED_MODEL_FOLDER);
 
         FileUtils.copyDirectory(originalModelDirectory, this.processedModelDirectory);
 
-        this.processedModelHandler = new PCMModelHandler(this.processedModelDirectory);
+        this.processedModelHandler = new ModelImporter(this.processedModelDirectory);
 
         this.allocationModel = this.processedModelHandler.getAllocationModel();
         this.cloudProfileModel = this.processedModelHandler.getCloudProfileModel();

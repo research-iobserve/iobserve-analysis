@@ -16,6 +16,7 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 
@@ -27,9 +28,18 @@ import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
  */
 public class ExecutionPlanHandler extends AbstractModelHandler<ExecutionPlan> {
 
-    @Override
+    public ExecutionPlanHandler(final ResourceSet resourceSet) {
+		super(resourceSet);
+	}
+
+	@Override
     protected EPackage getPackage() {
         return ExecutionplanPackage.eINSTANCE;
     }
+
+	@Override
+	protected String getSuffix() {
+		return "exp";
+	}
 
 }

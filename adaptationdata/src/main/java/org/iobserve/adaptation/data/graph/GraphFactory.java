@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
 
-    private PCMModelHandler modelProvider;
+    private ModelImporter modelProvider;
 
     private Map<String, AllocationContext> allocationContexts;
     private Map<String, AssemblyContext> assemblyContexts;
@@ -79,7 +79,7 @@ public class GraphFactory {
      * @throws Exception
      *             on error
      */
-    public ModelGraph buildGraph(final PCMModelHandler modelHandler, final ModelGraphRevision revision)
+    public ModelGraph buildGraph(final ModelImporter modelHandler, final ModelGraphRevision revision)
             throws Exception {
         this.modelProvider = modelHandler;
         this.init();

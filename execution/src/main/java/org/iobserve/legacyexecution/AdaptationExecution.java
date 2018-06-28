@@ -52,7 +52,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
      *
      * @param listener
      *            the event listener
-     * @param deployablesFolderURI
+     * @param deployablesDir
      *            Uri to the folder of deployables
      */
     public AdaptationExecution(final IAdaptationEventListener listener, final File deployablesDir) {

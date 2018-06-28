@@ -34,16 +34,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Lars Bluemke
  *
  */
-public interface IPCMModelHandler {
-
-    String ALLOCATION_SUFFIX = "allocation";
-    String CLOUD_PROFILE_SUFFIX = "cloudprofile";
-    String COST_SUFFIX = "cost";
-    String DESIGN_DECISION_SUFFIX = "designdecision";
-    String REPOSITORY_SUFFIX = "repository";
-    String RESOURCE_ENVIRONMENT_SUFFIX = "resourceenvironment";
-    String SYSTEM_SUFFIX = "system";
-    String USAGE_MODEL_SUFFIX = "usagemodel";
+public interface IModelImporter {
 
     /**
      * @return allocation model

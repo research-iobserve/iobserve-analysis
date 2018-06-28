@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Giusa
  * @author Reiner Jung
  */
-public final class ModelImporter {
+public final class ModelImporter implements IModelImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelImporter.class);
 

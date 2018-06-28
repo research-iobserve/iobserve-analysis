@@ -25,7 +25,6 @@ import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.model.IPCMModelHandler;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
