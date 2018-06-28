@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -35,7 +36,7 @@ public final class DebugHelper {
     }
 
     /**
-     * Print the complete partition of the given object
+     * Print the complete partition of the given object.
      *
      * @param object
      *            root element of the partition
@@ -54,12 +55,26 @@ public final class DebugHelper {
         for (final EReference reference : object.eClass().getEAllReferences()) {
             DebugHelper.LOGGER.debug("{} + {} : {}", indent, reference.getName(), reference.getEReferenceType());
             if (reference.isContainment()) {
-                for (final EObject content : reference.eContents()) {
-                    DebugHelper.printModelPartition(content, indent + "\t");
+                final Object contents = object.eGet(reference);
+                if (contents != null) {
+                    if (contents instanceof EList<?>) {
+                        for (final Object content : (EList<?>) contents) {
+                            DebugHelper.printModelPartition((EObject) content, indent + "\t");
+                        }
+                    } else {
+                        DebugHelper.printModelPartition((EObject) contents, indent + "\t");
+                    }
                 }
             } else {
-                for (final EObject content : reference.eContents()) {
-                    DebugHelper.LOGGER.debug("{} - {}", content.hashCode());
+                final Object contents = object.eGet(reference);
+                if (contents != null) {
+                    if (contents instanceof EList<?>) {
+                        for (final Object content : (EList<?>) contents) {
+                            DebugHelper.LOGGER.debug("{}\tref {}", indent, content.hashCode());
+                        }
+                    } else {
+                        DebugHelper.LOGGER.debug("{}\tref {}", indent, contents.hashCode());
+                    }
                 }
             }
         }

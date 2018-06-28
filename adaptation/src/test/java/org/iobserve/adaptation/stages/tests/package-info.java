@@ -13,30 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.mockup;
-
-import teetime.framework.Configuration;
-
-import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
-
-/**
- * Configuration for the stages of the mocked analysis service.
- *
- * @author Lars Bluemke
- *
- */
-public class AnalysisConfigurationMockup extends Configuration {
-
-    /**
-     * Create mock up object.
-     */
-    public AnalysisConfigurationMockup() {
-
-        // Debugging
-        final ModelProducer modelProducer = new ModelProducer();
-        final SingleConnectionTcpWriterStage modelWriter = new SingleConnectionTcpWriterStage("localhost", 50000);
-
-        this.connectPorts(modelProducer.getOutputPort(), modelWriter.getInputPort());
-    }
-
-}
+package org.iobserve.adaptation.stages.tests;

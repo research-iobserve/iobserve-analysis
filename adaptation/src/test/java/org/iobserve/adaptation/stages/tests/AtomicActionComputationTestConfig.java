@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.stages;
+package org.iobserve.adaptation.stages.tests;
 
 import teetime.framework.Configuration;
 import teetime.framework.test.StageTester;
@@ -21,6 +21,7 @@ import teetime.stage.CollectorSink;
 import teetime.stage.InitialElementProducer;
 
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
+import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 /**

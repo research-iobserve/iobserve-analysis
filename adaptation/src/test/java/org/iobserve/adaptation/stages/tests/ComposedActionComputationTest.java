@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.stages;
+package org.iobserve.adaptation.stages.tests;
 
 import java.util.Set;
 
@@ -30,6 +30,8 @@ import org.iobserve.adaptation.data.graph.DeploymentNode;
 import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
+import org.iobserve.adaptation.stages.ComposedActionComputation;
+import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
 import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;

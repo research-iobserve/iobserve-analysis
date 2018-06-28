@@ -35,6 +35,8 @@ public class PCMUndeployedEvent {
      *            the deployed service
      * @param assemblyContext
      *            the correspondent for the component to be removed
+     * @param resourceContainer
+     *            resource container
      */
     public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
             final ResourceContainer resourceContainer) {

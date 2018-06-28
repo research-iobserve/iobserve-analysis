@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.stages;
+package org.iobserve.adaptation.stages.tests;
 
 import java.util.Set;
 
@@ -42,6 +42,7 @@ import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.adaptation.executionplan.FinishComponentAction;
 import org.iobserve.adaptation.executionplan.MigrateComponentStateAction;
 import org.iobserve.adaptation.executionplan.UndeployComponentAction;
+import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.model.PCMModelHandlerMockup;
 import org.iobserve.planning.systemadaptation.AllocateAction;

@@ -31,6 +31,12 @@ public class ExecutionPlanSerializationMockup extends AbstractProducerStage<File
 
     private final File executionPlan;
 
+    /**
+     * create execution plan serialization mock up.
+     * 
+     * @param executionPlanURI
+     *            execution plan uri
+     */
     public ExecutionPlanSerializationMockup(final File executionPlanURI) {
         this.executionPlan = executionPlanURI;
     }

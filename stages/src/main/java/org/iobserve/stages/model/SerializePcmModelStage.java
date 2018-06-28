@@ -69,7 +69,7 @@ public class SerializePcmModelStage extends AbstractTransformation<EObject, File
 
     @Override
     protected void execute(final EObject model) throws Exception {
-    	ResourceSet resourceSet = model.eResource().getResourceSet();
+        final ResourceSet resourceSet = model.eResource().getResourceSet();
         final String filePathPrefix = this.modelDirectory.getAbsolutePath() + File.separator + this.modelName;
         final String filePath;
 
@@ -93,7 +93,8 @@ public class SerializePcmModelStage extends AbstractTransformation<EObject, File
             new RepositoryModelHandler(resourceSet).save(URI.createFileURI(filePath), (Repository) model);
         } else if (model instanceof ResourceEnvironment) {
             filePath = filePathPrefix + ".resourceenvironment";
-            new ResourceEnvironmentModelHandler(resourceSet).save(URI.createFileURI(filePath), (ResourceEnvironment) model);
+            new ResourceEnvironmentModelHandler(resourceSet).save(URI.createFileURI(filePath),
+                    (ResourceEnvironment) model);
         } else if (model instanceof System) {
             filePath = filePathPrefix + ".system";
             new SystemModelHandler(resourceSet).save(URI.createFileURI(filePath), (System) model);
