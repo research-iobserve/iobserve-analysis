@@ -67,6 +67,12 @@ public class DeploymentModelUpdaterTest {
         final IModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
+        final Allocation initDbAllocation = allocationModelGraphProvider.getModelRootNode(Allocation.class);
+        for (final AllocationContext context : initDbAllocation.getAllocationContexts_Allocation()) {
+            java.lang.System.err
+                    .println("in " + context.getEntityName() + " " + context.getAssemblyContext_AllocationContext());
+        }
+
         final ModelProvider<AllocationContext> allocationContextModelGraphProvider = new ModelProvider<>(graph,
                 ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
@@ -90,7 +96,13 @@ public class DeploymentModelUpdaterTest {
         Assert.assertThat(deploymentModelUpdater.getDeployedNotifyOutputPort(), StageTester.produces(deploymentEvent));
 
         // TODO check is DB contains a deployment
-
+        final Allocation dbAllocation = allocationModelGraphProvider.getModelRootNode(Allocation.class);
+        for (final AllocationContext context : dbAllocation.getAllocationContexts_Allocation()) {
+            java.lang.System.err
+                    .println("out " + context.getEntityName() + " " + context.getAssemblyContext_AllocationContext());
+            // Assert.assertNotEquals("No assembly context for " + context.getEntityName(),
+            // context.getAssemblyContext_AllocationContext(), null);
+        }
     }
 
     private void initializationDatabase(final ModelGraph graph) {
