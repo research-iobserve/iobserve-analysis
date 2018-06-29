@@ -766,18 +766,18 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     }
 
     /**
-     * Reads components referencing to the specified component from the provider's graph without
-     * locking it for other providers.
+     * Collects objects with refer to an object specified by class and id from the provider's graph
+     * without locking it for other providers.
      *
      * @param clazz
-     *            Data type of the referenced component
+     *            Data type of the referenced object
      * @param id
-     *            Id of the referenced component
-     * @return The referencing components
+     *            Id of the referenced object
+     * @return List of all objects which reference the specified object
      */
     @Override
     public List<EObject> collectReferencingObjectsByTypeAndId(final Class<?> clazz, final String id) {
-        final List<EObject> referencingComponents = new LinkedList<>();
+        final List<EObject> referencingObjects = new LinkedList<>();
         final Label label = Label.label(clazz.getCanonicalName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
@@ -790,14 +790,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             new HashSet<Node>());
                     final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                             new HashMap<Node, EObject>());
-                    referencingComponents.add(component);
+                    referencingObjects.add(component);
                 }
             }
 
             tx.success();
         }
 
-        return referencingComponents;
+        return referencingObjects;
     }
 
     /*

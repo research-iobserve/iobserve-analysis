@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
-        this.testModel = this.testModelBuilder.getRepository();
+        this.testModel = this.repository;
         this.factory = RepositoryFactory.eINSTANCE;
         this.clazz = Repository.class;
     }
@@ -105,14 +106,21 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<EObject> readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(
-                BasicComponent.class, this.testModelBuilder.getCatalogSearchComponent().getId());
+        final RepositoryComponent component = RepositoryModelDataFactory.findComponentByName(this.repository,
+                RepositoryModelDataFactory.SEARCH_COMPONENT);
+
+        final OperationProvidedRole providedSearchRole = RepositoryModelDataFactory.findProvidedRole(component,
+                RepositoryModelDataFactory.CATALOG_SEARCH_PROVIDED_ROLE);
+
+        final String id = component.getId();
+
+        final List<EObject> readReferencingObjects = modelProvider
+                .collectReferencingObjectsByTypeAndId(BasicComponent.class, id);
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
-        Assert.assertTrue(readReferencingComponents.size() == 1);
+        Assert.assertTrue(readReferencingObjects.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModelBuilder.getProvidedSearchOperation(),
-                readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(providedSearchRole, readReferencingObjects.get(0)));
 
         graph.getGraphDatabaseService().shutdown();
     }
@@ -125,14 +133,15 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
-        final Repository testModel = this.testModelBuilder.getRepository();
-        final Interface payInterface = this.testModelBuilder.getPayInterface();
-        final RepositoryComponent paymentComponent = this.testModelBuilder.getPaymentComponent();
+        final Interface payInterface = RepositoryModelDataFactory.findInterfaceByName(this.repository,
+                RepositoryModelDataFactory.PAYMENT_INTERFACE);
+        final RepositoryComponent paymentComponent = RepositoryModelDataFactory.findComponentByName(this.repository,
+                RepositoryModelDataFactory.PAYMENT_COMPONENT);
 
-        modelProvider.storeModelPartition(testModel);
+        modelProvider.storeModelPartition(this.testModel);
 
         // Update the model by renaming and replacing the payment method
-        testModel.setEntityName("MyVideoOnDemandService");
+        this.testModel.setEntityName("MyVideoOnDemandService");
 
         final OperationProvidedRole providedPayOperation = ((RepositoryFactory) this.factory)
                 .createOperationProvidedRole();
@@ -142,11 +151,11 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
 
-        modelProvider.updateObject(Repository.class, testModel);
+        modelProvider.updateObject(Repository.class, this.testModel);
 
         final Repository readModel = modelProvider.getModelRootNode(Repository.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
         graph.getGraphDatabaseService().shutdown();
     }

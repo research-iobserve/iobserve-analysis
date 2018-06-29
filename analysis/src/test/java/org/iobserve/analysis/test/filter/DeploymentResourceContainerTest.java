@@ -23,6 +23,7 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
@@ -30,7 +31,6 @@ import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
-import org.iobserve.model.test.data.ModelLevelData;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.iobserve.model.test.data.SystemDataFactory;
 import org.junit.Assert;
@@ -171,7 +171,7 @@ public class DeploymentResourceContainerTest {
     public void checkNoDeploymentNeeded() {
 
         /** input deployment event */
-        final PCMDeployedEvent deploymentEvent = ModelLevelData.PCM_DEPLOYED_EVENT;
+        final PCMDeployedEvent deploymentEvent = ModelLevelDataFactory.PCM_DEPLOYED_EVENT;
         final List<PCMDeployedEvent> inputEvents = new ArrayList<>();
         inputEvents.add(deploymentEvent);
 

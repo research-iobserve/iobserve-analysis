@@ -52,8 +52,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
-     * {@link ModelProvider#collectReferencingObjectsByTypeAndId(Class, String)} and asserts that it is
-     * equal to the referencing components from the original model.
+     * {@link ModelProvider#collectReferencingObjectsByTypeAndId(Class, String)} and asserts that it
+     * is equal to the referencing components from the original model.
      */
     @Test
     abstract void createThenReadReferencing();
@@ -85,7 +85,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final ModelGraph storeGraph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
+        final ModelGraph storeGraph = this
+                .prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
 
         final ModelProvider<T> storeModelProvider = new ModelProvider<>(storeGraph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
@@ -129,8 +130,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#getModelRootNode(Class)} and asserts that it is equal to the one written to
-     * the graph.
+     * {@link ModelProvider#getModelRootNode(Class)} and asserts that it is equal to the one written
+     * to the graph.
      */
     @Test
     public final void createThenReadRoot() {

@@ -13,40 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.test.data;
+package org.iobserve.analysis.test.data;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.test.data.ImplementationLevelDataFactory;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
  * @author Reiner Jung
  *
  */
-public final class ModelLevelData {
+public final class ModelLevelDataFactory {
 
-    public static final PCMDeployedEvent PCM_DEPLOYED_EVENT = ModelLevelData
-            .createPCMDeployedEvent(ISOCountryCode.EVIL_EMPIRE);
-    public static final PCMDeployedEvent PCM_DEPLOYED_DE_EVENT = ModelLevelData
-            .createPCMDeployedEvent(ISOCountryCode.GERMANY);
-
-    public static final PCMUndeployedEvent PCM_UNDEPLOYED_EVENT = ModelLevelData.createPCMUndeployedEvent();
-
-    private ModelLevelData() {
+    private ModelLevelDataFactory() {
         // private factory constructor
     }
 
-    private static PCMDeployedEvent createPCMDeployedEvent(final ISOCountryCode countryCode) { // NOPMD
+    public static PCMDeployedEvent createPCMDeployedEvent(final ISOCountryCode countryCode,
+            final AssemblyContext assemblyContext) { // NOPMD
         final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
 
-        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, AssemblyContextDataFactory.ASSEMBLY_CONTEXT,
-                url, countryCode);
+        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, url, countryCode);
     }
 
-    private static PCMUndeployedEvent createPCMUndeployedEvent() {
-        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, null);
+    public static PCMUndeployedEvent createPCMUndeployedEvent(final AssemblyContext assemblyContext) {
+        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, null);
     }
 
 }

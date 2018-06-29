@@ -17,19 +17,15 @@ package org.iobserve.model.test.provider.neo4j;
 
 import java.util.List;
 
-import de.uka.ipd.sdq.stoex.DoubleLiteral;
-
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.UsageModelDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
-import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -53,7 +49,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
-        this.testModel = this.testModelBuilder.getUsageModel();
+        this.testModel = this.usageModel;
         this.factory = UsagemodelFactory.eINSTANCE;
         this.clazz = UsageModel.class;
     }
@@ -123,11 +119,16 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         final List<EObject> readReferencingComponents = modelProvider
                 .collectReferencingObjectsByTypeAndId(UsageScenario.class, writtenScenario.getId());
 
+        final EObject buyABookBehavior = UsageModelDataFactory.findBehavior(this.usageModel,
+                UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
+        final EObject closedWorkload = UsageModelDataFactory
+                .findUsageScenario(this.usageModel, UsageModelDataFactory.USAGE_SCENARIO_GROUP_0)
+                .getWorkload_UsageScenario();
+
         // Only the scenario behavior and the closed workload reference the usage scenario
         for (final EObject readReferencingComponent : readReferencingComponents) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModelBuilder.getBuyBookScenarioBehaviour(),
-                    readReferencingComponent)
-                    || this.equalityHelper.equals(this.testModelBuilder.getClosedWorkload(), readReferencingComponent));
+            Assert.assertTrue(this.equalityHelper.equals(buyABookBehavior, readReferencingComponent)
+                    || this.equalityHelper.equals(closedWorkload, readReferencingComponent));
         }
 
         graph.getGraphDatabaseService().shutdown();
@@ -144,11 +145,16 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
                 ModelProvider.PCM_ID);
 
-        final UsageScenario writtenUsageScenarioGroup0 = this.testModelBuilder.getUsageScenarioGroup0();
-        final ScenarioBehaviour writtenBuyBookScenarioBehaviour = this.testModelBuilder.getBuyBookScenarioBehaviour();
-        final EntryLevelSystemCall writtenGetQueryCall = this.testModelBuilder.getGetQueryCall();
-        final EntryLevelSystemCall writtenGetPriceCall = this.testModelBuilder.getGetPriceCall();
-
+        final UsageScenario writtenUsageScenarioGroup0 = UsageModelDataFactory.findUsageScenario(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0);
+        final ScenarioBehaviour writtenBuyBookScenarioBehaviour = UsageModelDataFactory.findBehavior(this.usageModel,
+                UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
+        final EntryLevelSystemCall writtenGetQueryCall = UsageModelDataFactory.findSystemCallbyName(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0, UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR,
+                UsageModelDataFactory.QUERY_CALL);
+        final EntryLevelSystemCall writtenGetPriceCall = UsageModelDataFactory.findSystemCallbyName(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0, UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR,
+                UsageModelDataFactory.PRICE_CALL);
         modelProvider.storeModelPartition(this.testModel);
 
         // Update the model by adding a loop for choosing several books
@@ -203,14 +209,22 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         // Manually delete the root node (as it has no id), the double literal node (as it is not
         // contained anywhere) and the proxy nodes (as they are no containments in this graph)
-        try (final Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService().execute("MATCH (m:`" + UsageModel.class.getCanonicalName() + "`), (n:`"
-                    + DoubleLiteral.class.getCanonicalName() + "`), (o:`" + OperationSignature.class.getCanonicalName()
-                    + "`), (p:`" + OperationProvidedRole.class.getCanonicalName() + "`) DELETE n, m, o, p");
-            tx.success();
-        }
+        // try (final Transaction tx = graph.getGraphDatabaseService().beginTx()) {
+        // graph.getGraphDatabaseService().execute("MATCH (m:`" +
+        // UsageModel.class.getCanonicalName() + "`), (n:`"
+        // + DoubleLiteral.class.getCanonicalName() + "`), (o:`" +
+        // OperationSignature.class.getCanonicalName()
+        // + "`), (p:`" + OperationProvidedRole.class.getCanonicalName() + "`) DELETE n, m, o, p");
+        // tx.success();
+        // }
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        // Assert.assertTrue(this.isGraphEmpty(modelProvider));
+
+        final ModelProvider<UsageScenario> changedModelProvider = new ModelProvider<>(graph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final List<?> scenarios = changedModelProvider.collectAllObjectsByType(UsageScenario.class);
+
+        Assert.assertEquals("Usage scenario should all have been deleted.", scenarios.size(), 0);
 
         graph.getGraphDatabaseService().shutdown();
     }

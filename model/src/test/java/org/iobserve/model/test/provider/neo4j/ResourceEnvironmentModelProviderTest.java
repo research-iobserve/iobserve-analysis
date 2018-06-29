@@ -20,10 +20,12 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.resourceenvironment.CommunicationLinkResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -47,7 +49,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
-        this.testModel = this.testModelBuilder.getResourceEnvironment();
+        this.testModel = this.resourceEnvironment;
         this.factory = ResourceenvironmentFactory.eINSTANCE;
         this.clazz = ResourceEnvironment.class;
     }
@@ -122,15 +124,23 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final List<EObject> readReferencingComponents = modelProvider.collectReferencingObjectsByTypeAndId(
-                CommunicationLinkResourceType.class, this.testModelBuilder.getLan1Type().getId());
+        final LinkingResource linkingResource = ResourceEnvironmentDataFactory
+                .findLinkingResource(this.resourceEnvironment, ResourceEnvironmentDataFactory.LAN_1);
+
+        final CommunicationLinkResourceSpecification resourceSpecification = linkingResource
+                .getCommunicationLinkResourceSpecifications_LinkingResource();
+
+        final CommunicationLinkResourceType lanType = resourceSpecification
+                .getCommunicationLinkResourceType_CommunicationLinkResourceSpecification();
+
+        final List<EObject> readReferencingComponents = modelProvider
+                .collectReferencingObjectsByTypeAndId(CommunicationLinkResourceType.class, lanType.getId());
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModelBuilder.getLan1Specification(),
-                readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(resourceSpecification, readReferencingComponents.get(0)));
 
     }
 
@@ -147,8 +157,11 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         modelProvider.storeModelPartition(this.testModel);
 
-        final ResourceContainer orderServer = this.testModelBuilder.getOrderServer();
-        final LinkingResource writtenLan1 = this.testModelBuilder.getLan1();
+        final ResourceContainer orderServer = ResourceEnvironmentDataFactory.findContainer(this.resourceEnvironment,
+                ResourceEnvironmentDataFactory.BUSINESS_ORDER_CONTAINER);
+
+        final LinkingResource writtenLan1 = ResourceEnvironmentDataFactory.findLinkingResource(this.resourceEnvironment,
+                ResourceEnvironmentDataFactory.LAN_1);
 
         // Update the model by replacing the orderServer by two separated servers
         this.testModel.getResourceContainer_ResourceEnvironment().remove(orderServer);

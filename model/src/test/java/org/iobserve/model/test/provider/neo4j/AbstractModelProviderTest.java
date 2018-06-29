@@ -22,10 +22,20 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.ModelGraph;
 import org.iobserve.model.provider.neo4j.ModelGraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.test.data.AllocationDataFactory;
+import org.iobserve.model.test.data.RepositoryModelDataFactory;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
+import org.iobserve.model.test.data.SystemDataFactory;
+import org.iobserve.model.test.data.UsageModelDataFactory;
 import org.junit.Before;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * @author Reiner Jung
@@ -38,7 +48,11 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
 
     protected final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
-    protected final TestModelBuilder testModelBuilder = new TestModelBuilder();
+    protected Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
+    protected System system = SystemDataFactory.createSystem(this.repository);
+    protected ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
+    protected Allocation allocation = AllocationDataFactory.createAllocation(this.system, this.resourceEnvironment);
+    protected UsageModel usageModel = UsageModelDataFactory.createUsageModel();
 
     protected String prefix;
     protected T testModel;
@@ -66,6 +80,7 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
                     .iterator();
 
             isEmpty = !iterator.hasNext();
+
             tx.success();
         }
 
