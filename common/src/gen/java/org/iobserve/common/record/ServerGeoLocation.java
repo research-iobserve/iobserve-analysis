@@ -23,6 +23,9 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
+import org.iobserve.common.record.IEvent;
+import org.iobserve.common.record.GeoLocation;
+
 /**
  * @author Reiner Jung
  * API compatibility: Kieker 1.14.0
@@ -88,7 +91,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
@@ -107,7 +110,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -135,7 +138,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated to be removed in 1.15
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
 	@Deprecated
@@ -186,7 +189,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated to be rmeoved in 1.15
+	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated

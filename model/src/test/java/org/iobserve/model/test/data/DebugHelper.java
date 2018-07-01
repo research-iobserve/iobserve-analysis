@@ -19,6 +19,8 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +81,13 @@ public final class DebugHelper {
                     }
                 }
             }
+        }
+    }
+
+    public static void listAllocations(final String label, final Allocation allocation) {
+        for (final AllocationContext context : allocation.getAllocationContexts_Allocation()) {
+            java.lang.System.err.println(
+                    label + " " + context.getEntityName() + " " + context.getAssemblyContext_AllocationContext());
         }
     }
 }

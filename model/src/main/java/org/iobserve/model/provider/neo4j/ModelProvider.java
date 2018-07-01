@@ -842,18 +842,18 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.releaseLock(this);
     }
 
-    private Node updateNodes(final EObject component, final Node node, final Set<EObject> containmentsAndDatatypes,
-            final Set<EObject> updatedComponents) {
+    private Node updateNodes(final EObject object, final Node node, final Set<EObject> containmentsAndDatatypes,
+            final Set<EObject> updatedObjects) {
 
-        if (!updatedComponents.contains(component)) {
-            updatedComponents.add(component);
+        if (!updatedObjects.contains(object)) {
+            updatedObjects.add(object);
 
             // Update node properties
             final Map<String, Object> nodeProperties = node.getAllProperties();
 
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+            for (final EAttribute attr : object.eClass().getEAllAttributes()) {
                 final String key = attr.getName();
-                final Object value = component.eGet(attr);
+                final Object value = object.eGet(attr);
                 if (value != null) {
                     node.setProperty(key, value.toString());
                     nodeProperties.remove(key);
@@ -867,28 +867,28 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             }
 
             // Create a URI to enable proxy resolving
-            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
+            final URI uri = ((BasicEObjectImpl) object).eProxyURI();
             if (uri == null) {
-                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
+                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(object));
             } else {
                 node.setProperty(ModelProvider.EMF_URI, uri.toString());
             }
 
             // Outgoing references are only stored for containments and data types of the root,
             // otherwise we just store the blank node as a proxy
-            if (containmentsAndDatatypes.contains(component)) {
+            if (containmentsAndDatatypes.contains(object)) {
 
                 // Create list of node's outgoing relationships
                 final List<Relationship> outRels = new LinkedList<>();
                 node.getRelationships(Direction.OUTGOING).forEach(outRels::add);
 
-                for (final EReference ref : component.eClass().getEAllReferences()) {
-                    final Object refReprensation = component.eGet(ref);
+                for (final EReference ref : object.eClass().getEAllReferences()) {
+                    final Object refReprensation = object.eGet(ref);
 
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        final EList<?> refs = (EList<?>) object.eGet(ref);
                         for (int i = 0; i < refs.size(); i++) {
                             final Object o = refs.get(i);
 
@@ -906,7 +906,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                             }
 
-                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
+                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedObjects);
                         }
                     } else {
                         if (refReprensation != null) {
@@ -925,7 +925,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             }
 
                             this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
-                                    updatedComponents);
+                                    updatedObjects);
                         }
                     }
                 }

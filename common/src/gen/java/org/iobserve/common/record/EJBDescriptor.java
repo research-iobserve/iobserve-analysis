@@ -21,6 +21,8 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
+import org.iobserve.common.record.IEvent;
+
 /**
  * @author Reiner Jung
  * API compatibility: Kieker 1.14.0

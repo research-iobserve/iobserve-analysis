@@ -20,9 +20,11 @@ import java.nio.BufferOverflowException;
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
+
+import org.iobserve.common.record.ITraceHelper;
+import kieker.common.record.flow.IFlowRecord;
 
 /**
  * @author Reiner Jung
