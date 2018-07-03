@@ -48,6 +48,9 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     private String[] linkage;
     private DistanceFunction distanceFunction;
 
+    /**
+     * constructor.
+     */
     public HierarchicalClustering() {
         this.linkage = new String[] { "-L", "COMPLETE" };
         this.distanceFunction = new EuclideanDistance();
@@ -144,14 +147,24 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         return this.linkage;
     }
 
+    /**
+     *
+     * @param linkageType
+     *            type of likage used in hierarchical clustering
+     */
     public void setLinkage(final String linkageType) {
         switch (linkageType) {
         case "single":
             this.linkage = new String[] { "-L", "SINGLE" };
+            break;
         case "average":
             this.linkage = new String[] { "-L", "AVERAGE" };
+            break;
         case "complete":
             this.linkage = new String[] { "-L", "COMPLETE" };
+            break;
+        default:
+            this.linkage = new String[] { "-L", "SINGLE" }; // single linkage as default
         }
     }
 

@@ -57,7 +57,7 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
      *             on errors with the configuration
      */
     public HierarchicalBehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
-    	final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
+        final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
         final String representativeStrategyClassName = configuration
                 .getStringProperty(HierarchicalBehaviorCompositeStage.REPRESENTATIVE_STRATEGY);
         final IRepresentativeStrategy representativeStrategy = InstantiationFactory

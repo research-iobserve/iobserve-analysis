@@ -31,10 +31,8 @@ public class HierarchicalClusteringProcess extends CompositeStage {
     private final InputPort<Instances> inputPort;
     private final OutputPort<Instances> outputPort;
 
-    // TODO a Clustering Filter Interface may be useful
-
     /**
-     * constructor for EM clustering process.
+     * constructor
      *
      * @param clustering
      *            clustering algorithm
@@ -42,7 +40,7 @@ public class HierarchicalClusteringProcess extends CompositeStage {
     public HierarchicalClusteringProcess(final IHierarchicalClustering clustering) {
         final HierarchicalClusteringStage clusteringFilter = new HierarchicalClusteringStage(clustering);
         this.inputPort = clusteringFilter.getInputPort();
-        final ClusterMerger merger = new ClusterMerger();
+        final ClusterMerger merger = new ClusterMerger(); // reuse ClusterMerger
         this.outputPort = merger.getOutputPort();
 
         this.connectPorts(clusteringFilter.getOutputPort(), merger.getInputPort());
