@@ -18,12 +18,12 @@ package org.iobserve.analysis.behavior.clustering.em;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.data.UserSessionCollectionModel;
-import org.iobserve.analysis.session.data.UserSession;
-
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.data.UserSessionCollectionModel;
+import org.iobserve.analysis.session.data.UserSession;
 
 /**
  * This filter collects user sessions until a time trigger event. All events passed the sliding

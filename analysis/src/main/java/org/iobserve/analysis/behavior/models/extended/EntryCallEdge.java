@@ -120,6 +120,12 @@ public class EntryCallEdge {
         }
     }
 
+    @Override
+    public int hashCode() {
+        // TODO Auto-generated method stub
+        return super.hashCode();
+    }
+
     /**
      * add calls to the edge.
      *

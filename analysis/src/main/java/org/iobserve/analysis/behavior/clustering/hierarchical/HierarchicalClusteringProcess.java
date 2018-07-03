@@ -16,11 +16,12 @@
 
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
-import org.iobserve.analysis.behavior.filter.ClusterMerger;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.behavior.filter.ClusterMerger;
+
 import weka.core.Instances;
 
 /**

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 

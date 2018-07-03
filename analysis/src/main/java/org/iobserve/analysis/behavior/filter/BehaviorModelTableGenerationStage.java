@@ -17,6 +17,9 @@ package org.iobserve.analysis.behavior.filter;
 
 import java.util.List;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.behavior.models.data.BehaviorModelTable;
 import org.iobserve.analysis.behavior.models.data.DynamicBehaviorModelTable;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
@@ -25,9 +28,6 @@ import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * auxiliary filter to generate the base of the BehaviorModelTable.

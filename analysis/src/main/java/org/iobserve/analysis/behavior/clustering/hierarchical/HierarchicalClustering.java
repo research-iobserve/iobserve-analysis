@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import weka.clusterers.HierarchicalClusterer;
 import weka.core.DistanceFunction;
-import weka.core.EuclideanDistance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.ManhattanDistance;
 import weka.gui.hierarchyvisualizer.HierarchyVisualizer;
 
 /**
@@ -53,7 +53,8 @@ public class HierarchicalClustering implements IHierarchicalClustering {
      */
     public HierarchicalClustering() {
         this.linkage = new String[] { "-L", "COMPLETE" };
-        this.distanceFunction = new EuclideanDistance();
+        // this.distanceFunction = new EuclideanDistance();
+        this.distanceFunction = new ManhattanDistance();
     }
 
     @Override
@@ -81,9 +82,9 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
             // ##### TESTING
             // Print Newick
-            System.out.println("#### NEWICK ####");
+            HierarchicalClustering.LOGGER.info("#### NEWICK ####");
             HierarchicalClustering.hierarchicalClusterer.setPrintNewick(true);
-            System.out.println(HierarchicalClustering.hierarchicalClusterer.toString());
+            HierarchicalClustering.LOGGER.info(HierarchicalClustering.hierarchicalClusterer.toString());
 
             // Show clustered data
             final JFrame mainFrame = new JFrame("Weka Test");
@@ -108,19 +109,6 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
             // ##### END TESTING
 
-            /**
-             * Code used from org.iobserve.analysis.userbehavior.XMeansClustering to use
-             * org.iobserve.analysis.userbehavior.ClusteringResults
-             */
-
-            int[] clustersize = null;
-            final int[] assignments = new int[instances.numInstances()];
-            clustersize = new int[HierarchicalClustering.hierarchicalClusterer.getNumClusters()];
-            for (int s = 0; s < instances.numInstances(); s++) {
-                assignments[s] = HierarchicalClustering.hierarchicalClusterer.clusterInstance(instances.instance(s));
-                clustersize[HierarchicalClustering.hierarchicalClusterer.clusterInstance(instances.instance(s))]++;
-            }
-
             for (int i = 0; i < instances.numInstances(); i++) {
                 final Instance currentInstance = instances.instance(i);
                 final int cluster = HierarchicalClustering.hierarchicalClusterer.clusterInstance(currentInstance);
@@ -136,15 +124,11 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             // clusteringResults = Optional.of(new ClusteringResults("Hierarchical",
             // HierarchicalClustering.hierarchicalClusterer.getNumClusters(), assignments, null));
 
-        } catch (final Exception e) {
+        } catch (final Exception e) { // NOPMD NOCS api dependency
             HierarchicalClustering.LOGGER.error("Hierarchical clustering failed.", e);
         }
 
         return clusteringResults;
-    }
-
-    public String[] getLinkage() {
-        return this.linkage;
     }
 
     /**
@@ -165,6 +149,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             break;
         default:
             this.linkage = new String[] { "-L", "SINGLE" }; // single linkage as default
+            break;
         }
     }
 

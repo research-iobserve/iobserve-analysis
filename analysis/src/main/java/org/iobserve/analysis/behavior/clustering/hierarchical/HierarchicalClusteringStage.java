@@ -19,10 +19,11 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.net4j.util.collection.Pair;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.eclipse.net4j.util.collection.Pair;
+
 import weka.core.Instance;
 import weka.core.Instances;
 

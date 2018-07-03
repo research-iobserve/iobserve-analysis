@@ -15,6 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.xmeans;
 
+import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+
 import org.iobserve.analysis.behavior.clustering.em.UserSessionModelAggregator;
 import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratationStage;
 import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
@@ -27,11 +33,6 @@ import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
-
-import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
 
 /**
  * @author Reiner Jung

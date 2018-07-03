@@ -16,13 +16,14 @@
 
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.sink.AbstractBehaviorModelOutputSink;
 import org.iobserve.analysis.sink.BehaviorModelSink;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
 import weka.core.Instances;
 
 /**
