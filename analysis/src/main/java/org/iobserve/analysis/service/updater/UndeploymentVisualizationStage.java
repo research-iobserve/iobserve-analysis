@@ -27,7 +27,7 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 

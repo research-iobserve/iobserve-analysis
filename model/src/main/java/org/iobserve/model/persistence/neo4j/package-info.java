@@ -13,33 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.provider.file;
-
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.iobserve.adaptation.executionplan.ExecutionPlan;
-import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
-
-/**
- * Model handler to provide the {@link ExecutionPlan}.
- *
- * @author Lars Bluemke
- *
- */
-public class ExecutionPlanHandler extends AbstractModelHandler<ExecutionPlan> {
-
-    public ExecutionPlanHandler(final ResourceSet resourceSet) {
-		super(resourceSet);
-	}
-
-	@Override
-    protected EPackage getPackage() {
-        return ExecutionplanPackage.eINSTANCE;
-    }
-
-	@Override
-	protected String getSuffix() {
-		return "exp";
-	}
-
-}
+package org.iobserve.model.persistence.neo4j;

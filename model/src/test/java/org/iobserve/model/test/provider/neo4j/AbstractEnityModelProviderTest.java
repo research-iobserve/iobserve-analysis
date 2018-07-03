@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.ModelGraph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelGraph;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.Entity;

@@ -27,7 +27,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**

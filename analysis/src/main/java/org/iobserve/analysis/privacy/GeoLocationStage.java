@@ -22,13 +22,13 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelGraph;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.provider.neo4j.ModelGraph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**

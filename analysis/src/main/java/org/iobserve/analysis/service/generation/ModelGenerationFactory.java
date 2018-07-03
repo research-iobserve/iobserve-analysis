@@ -24,18 +24,20 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.iobserve.model.ModelImporter;
-import org.iobserve.model.provider.file.AllocationModelHandler;
-import org.iobserve.model.provider.file.RepositoryModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
-import org.iobserve.model.provider.file.SystemModelHandler;
+import org.iobserve.model.persistence.file.FileModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ToDo .
+ * TODO this class is not really working, missing implementation of central functions.
  *
  * @author unknown
  *
@@ -57,7 +59,8 @@ public final class ModelGenerationFactory {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelGenerationFactory.LOGGER.info("Copying repository model to new location.");
-        final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler(ModelGenerationFactory.RESOURCE_SET);
+        final FileModelHandler<Repository> repoModelProvider = new FileModelHandler<>(
+                ModelGenerationFactory.RESOURCE_SET, RepositoryPackage.eINSTANCE);
         repoModelProvider.load(repoLocation);
         ModelGenerationFactory.copyRepoToOutput(outputLocation, repoModelProvider);
 
@@ -77,7 +80,8 @@ public final class ModelGenerationFactory {
             final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModel());
             final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 
-            final SystemModelHandler systemModelProvider = new SystemModelHandler(ModelGenerationFactory.RESOURCE_SET);
+            final FileModelHandler<System> systemModelProvider = new FileModelHandler<>(
+                    ModelGenerationFactory.RESOURCE_SET, SystemPackage.eINSTANCE);
             final URI systemModelURI = URI.createFileURI(
                     outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
             systemModelProvider.save(systemModelURI, systemModel);
@@ -96,8 +100,8 @@ public final class ModelGenerationFactory {
         final ResourceEnvironment resEnvModel = resEnvGen
                 .craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
 
-        final ResourceEnvironmentModelHandler resEnvModelProvider = new ResourceEnvironmentModelHandler(
-                ModelGenerationFactory.RESOURCE_SET);
+        final FileModelHandler<ResourceEnvironment> resEnvModelProvider = new FileModelHandler<>(
+                ModelGenerationFactory.RESOURCE_SET, ResourceenvironmentPackage.eINSTANCE);
         final URI resEnvModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".resourceenvironment");
         resEnvModelProvider.save(resEnvModelURI, resEnvModel);
@@ -109,8 +113,8 @@ public final class ModelGenerationFactory {
         final AllocationGeneration allocationGen = new AllocationGeneration(systemModel, resEnvModel);
         final Allocation allocationModel = allocationGen.generateAllocation();
 
-        final AllocationModelHandler allocationModelProvider = new AllocationModelHandler(
-                ModelGenerationFactory.RESOURCE_SET);
+        final FileModelHandler<Allocation> allocationModelProvider = new FileModelHandler<>(
+                ModelGenerationFactory.RESOURCE_SET, AllocationPackage.eINSTANCE);
         final URI allocationModelURI = URI.createFileURI(
                 outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".allocation");
         allocationModelProvider.save(allocationModelURI, allocationModel);
@@ -118,8 +122,8 @@ public final class ModelGenerationFactory {
         return allocationModel;
     }
 
-    private static boolean copyRepoToOutput(final URI outputLocation, final RepositoryModelHandler repoModelProvider)
-            throws InitializationException, IOException {
+    private static boolean copyRepoToOutput(final URI outputLocation,
+            final FileModelHandler<Repository> repoModelProvider) throws InitializationException, IOException {
         // TODO implement
         return false;
     }

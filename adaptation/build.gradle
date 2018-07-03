@@ -38,10 +38,18 @@ clover {
 	
 }
 
+
+sourceSets.test.resources {
+    srcDirs = ["src/test/java"]
+    exclude "**/package-info.java"
+}
+
 test {
   println 'Starting unit tests.'
-  scanForTestClasses= false
+  scanForTestClasses=false
+
   include '**/service/suites/*'
+  exclude '**/package-info.java'
   exclude '**/service/services/*'
   exclude '**/service/updater/*'
   exclude '**/*ActionComputationTest$__CLR4*' // otherwise clover fails with initialization error

@@ -21,7 +21,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.iobserve.model.persistence.neo4j.ModelGraph;
 import org.neo4j.graphdb.Relationship;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;

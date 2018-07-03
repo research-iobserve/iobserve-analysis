@@ -63,8 +63,11 @@ public class ComposedActionComputationTest {
         // empty default constructor
     }
 
+    /**
+     * initialize models.
+     */
     @Before
-    public void initializePcmModels() throws CloneNotSupportedException {
+    public void initializePcmModels() {
         this.runtimeModel = new AdaptationTestModel();
         this.redeploymentModel = (AdaptationTestModel) this.runtimeModel.getCopyWithSameIds();
 
@@ -72,6 +75,12 @@ public class ComposedActionComputationTest {
                 this.redeploymentModel);
     }
 
+    /**
+     * test replication rule.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testReplicationRule() throws Exception {
         final AdaptationData adaptationData;
@@ -110,6 +119,12 @@ public class ComposedActionComputationTest {
                 Matchers.is(expectedAction.getSourceAllocationContext()));
     }
 
+    /**
+     * Test de-replication.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testDereplicationRule() throws Exception {
         final AdaptationData adaptationData;
@@ -143,6 +158,12 @@ public class ComposedActionComputationTest {
                 Matchers.is(expectedAction.getTargetRequiringAllocationContexts()));
     }
 
+    /**
+     * Test migration rule.
+     *
+     * @throws Exception
+     *             on internal error
+     */
     @Test
     public void testMigrationRule() throws Exception {
         final AdaptationData adaptationData;

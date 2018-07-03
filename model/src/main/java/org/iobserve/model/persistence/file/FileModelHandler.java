@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.provider.file;
+package org.iobserve.model.persistence.file;
 
 import java.io.IOException;
 import java.util.Map;
@@ -44,21 +44,25 @@ import org.slf4j.LoggerFactory;
  *            root class of metamodel
  *
  */
-public abstract class AbstractModelHandler<T extends EObject> {
+public class FileModelHandler<T extends EObject> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractModelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileModelHandler.class);
 
     private final Resource.Factory.Registry resourceRegistry;
 
     private final ResourceSet resourceSet;
 
+    private final EPackage ePackage;
+
     /**
-     * Create an abstract model handler.
+     * Create an generic model handler.
      *
      * @param resourceSet
      *            resource set for all models
+     * @param ePackage
+     *            package root for the model
      */
-    public AbstractModelHandler(final ResourceSet resourceSet) {
+    public FileModelHandler(final ResourceSet resourceSet, final EPackage ePackage) {
         this.resourceSet = resourceSet;
         this.resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = this.resourceRegistry.getExtensionToFactoryMap();
@@ -66,6 +70,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
 
         this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
+        this.ePackage = ePackage;
     }
 
     /**
@@ -79,21 +84,15 @@ public abstract class AbstractModelHandler<T extends EObject> {
     public final void save(final URI writeModelURI, final T model) {
         this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
 
-        final Resource resource = this.resourceSet.createResource(writeModelURI.appendFileExtension(this.getSuffix()));
+        final Resource resource = this.resourceSet
+                .createResource(writeModelURI.appendFileExtension(this.getPackage().getName()));
         resource.getContents().add(model);
         try {
             resource.save(null);
         } catch (final IOException e) {
-            AbstractModelHandler.LOGGER.error("Cannot save model at {}", writeModelURI.toString());
+            FileModelHandler.LOGGER.error("Cannot save model at {}", writeModelURI.toString());
         }
     }
-
-    /**
-     * Return the suffix associated with a specific type of model.
-     *
-     * @return the suffix
-     */
-    protected abstract String getSuffix();
 
     /**
      * Get an instance of the package where this model belongs to. <br>
@@ -108,7 +107,9 @@ public abstract class AbstractModelHandler<T extends EObject> {
      *
      * @return return the package of this model
      */
-    protected abstract EPackage getPackage();
+    protected EPackage getPackage() {
+        return this.ePackage;
+    }
 
     /**
      * Load the model.
@@ -125,7 +126,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
         try {
             resource.load(this.resourceSet.getLoadOptions());
         } catch (final IOException e) {
-            AbstractModelHandler.LOGGER.error("Cannot load model from {}", readModelURI.toString());
+            FileModelHandler.LOGGER.error("Cannot load model from {}", readModelURI.toString());
         }
         EcoreUtil.resolveAll(this.resourceSet);
         T model = null;
@@ -134,7 +135,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
         }
 
         if (model == null) {
-            AbstractModelHandler.LOGGER.debug("Model at {} could not be loaded!", readModelURI.toString());
+            FileModelHandler.LOGGER.debug("Model at {} could not be loaded!", readModelURI.toString());
         }
 
         return model;

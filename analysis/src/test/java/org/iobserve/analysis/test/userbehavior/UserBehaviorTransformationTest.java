@@ -21,10 +21,10 @@ import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
-import org.iobserve.model.provider.neo4j.ModelGraph;
-import org.iobserve.model.provider.neo4j.ModelGraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelGraph;
+import org.iobserve.model.persistence.neo4j.ModelGraphLoader;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.slf4j.Logger;

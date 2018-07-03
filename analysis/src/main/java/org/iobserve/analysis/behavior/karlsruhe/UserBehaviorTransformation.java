@@ -21,7 +21,7 @@ import java.util.List;
 import org.iobserve.analysis.behavior.karlsruhe.data.BranchModel;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**

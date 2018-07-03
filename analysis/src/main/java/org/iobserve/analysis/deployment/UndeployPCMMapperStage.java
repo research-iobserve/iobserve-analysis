@@ -25,7 +25,7 @@ import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 

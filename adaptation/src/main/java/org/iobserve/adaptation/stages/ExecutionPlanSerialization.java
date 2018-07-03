@@ -23,7 +23,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
-import org.iobserve.model.provider.file.ExecutionPlanHandler;
+import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
+import org.iobserve.model.persistence.file.FileModelHandler;
 
 /**
  * Serializes the execution plan in an xmi file format.
@@ -34,7 +35,7 @@ import org.iobserve.model.provider.file.ExecutionPlanHandler;
 public class ExecutionPlanSerialization extends AbstractTransformation<ExecutionPlan, File> {
 
     private final File executionPlanURI;
-	private final ResourceSet resourceSet;
+    private final ResourceSet resourceSet;
 
     /**
      * Creates an instance of this class.
@@ -49,7 +50,8 @@ public class ExecutionPlanSerialization extends AbstractTransformation<Execution
 
     @Override
     protected void execute(final ExecutionPlan executionPlan) throws Exception {
-        new ExecutionPlanHandler(resourceSet).save(URI.createFileURI(this.executionPlanURI.getAbsolutePath()), executionPlan);
+        new FileModelHandler<ExecutionPlan>(this.resourceSet, ExecutionplanPackage.eINSTANCE)
+                .save(URI.createFileURI(this.executionPlanURI.getAbsolutePath()), executionPlan);
 
         this.outputPort.send(this.executionPlanURI);
     }

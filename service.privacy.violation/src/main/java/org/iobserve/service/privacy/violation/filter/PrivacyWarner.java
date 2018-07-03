@@ -30,6 +30,8 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
@@ -37,8 +39,6 @@ import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;

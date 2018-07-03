@@ -19,9 +19,9 @@ import java.io.File;
 
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.ModelGraph;
-import org.iobserve.model.provider.neo4j.ModelGraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelGraph;
+import org.iobserve.model.persistence.neo4j.ModelGraphLoader;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;

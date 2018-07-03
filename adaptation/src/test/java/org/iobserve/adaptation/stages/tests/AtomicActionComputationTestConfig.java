@@ -34,6 +34,16 @@ import org.iobserve.planning.systemadaptation.SystemAdaptation;
  */
 public class AtomicActionComputationTestConfig extends Configuration {
 
+    /**
+     * Create configuration to produce atomic actions.
+     *
+     * @param producer
+     *            event producer
+     * @param atomicActionComputation
+     *            filter for atomic action computation
+     * @param collector
+     *            result sink
+     */
     public AtomicActionComputationTestConfig(final InitialElementProducer<SystemAdaptation> producer,
             final AtomicActionComputation atomicActionComputation, final CollectorSink<ExecutionPlan> collector) {
         this.connectPorts(producer.getOutputPort(), atomicActionComputation.getInputPort());

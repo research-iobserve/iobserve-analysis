@@ -21,7 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
 
 import teetime.stage.basic.AbstractFilter;
 
@@ -33,15 +35,12 @@ import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
-import org.iobserve.model.provider.file.AllocationModelHandler;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.DesignDecisionModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.utils.ModelHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
@@ -51,6 +50,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,13 +128,13 @@ public class ModelProcessing extends AbstractFilter<File> {
         for (final File nextFile : files) {
             final String filename = nextFile.getName();
             final String extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length());
-            if (AllocationModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
+            if (AllocationPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.allocationModelName = filename;
-            } else if (ResourceEnvironmentModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (ResourceenvironmentPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.resourceEnvironmentName = filename;
-            } else if (CostModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (costPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.costModelName = filename;
-            } else if (DesignDecisionModelHandler.SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (designdecisionPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.decisionSpaceName = filename;
             }
 

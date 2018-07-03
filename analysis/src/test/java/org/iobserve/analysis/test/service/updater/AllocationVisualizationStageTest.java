@@ -25,7 +25,7 @@ import teetime.framework.test.StageTester;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.test.service.suites.VisualizationHttpTestServer;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;

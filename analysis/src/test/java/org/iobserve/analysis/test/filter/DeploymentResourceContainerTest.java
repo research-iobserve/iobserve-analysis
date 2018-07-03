@@ -28,7 +28,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;

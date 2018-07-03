@@ -70,6 +70,7 @@ public class AtomicActionComputationTest {
     private ModelGraph runtimeModelGraph;
     private ModelGraph redeploymentModelGraph;
 
+    /** initialize models. */
     @Before
     public void initializePcmModels() {
         this.runtimeModel = new AdaptationTestModel();
@@ -83,6 +84,12 @@ public class AtomicActionComputationTest {
                 this.redeploymentModel.getRepository(), null, null, null, null));
     }
 
+    /**
+     * replicate action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testReplicateAction2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
@@ -115,6 +122,12 @@ public class AtomicActionComputationTest {
         Assert.assertTrue(executionPlan.getActions().get(2) instanceof ConnectComponentAction);
     }
 
+    /**
+     * dereplicate action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testDereplicateAction2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
@@ -145,6 +158,12 @@ public class AtomicActionComputationTest {
         Assert.assertTrue(executionPlan.getActions().get(3) instanceof UndeployComponentAction);
     }
 
+    /**
+     * migrate action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testMigrateAction2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
@@ -181,6 +200,12 @@ public class AtomicActionComputationTest {
         Assert.assertTrue(executionPlan.getActions().get(6) instanceof UndeployComponentAction);
     }
 
+    /**
+     * Replace component action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testChangeComponent2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
@@ -218,6 +243,12 @@ public class AtomicActionComputationTest {
         Assert.assertTrue(executionPlan.getActions().get(6) instanceof UndeployComponentAction);
     }
 
+    /**
+     * allocate action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testAllocateAction2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
@@ -246,6 +277,12 @@ public class AtomicActionComputationTest {
         Assert.assertTrue(executionPlan.getActions().get(1) instanceof ConnectNodeAction);
     }
 
+    /**
+     * deallocate action conversion to atomic actions.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testDeallocateAction2AtomicActions() throws Exception {
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();

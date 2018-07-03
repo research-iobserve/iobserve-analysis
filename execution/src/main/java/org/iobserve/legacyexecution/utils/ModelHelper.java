@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
@@ -31,8 +32,7 @@ import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentCloudFactory;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
+import org.iobserve.model.persistence.file.FileModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
@@ -44,6 +44,7 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Helper class for model related tasks, especially resource environment related.
@@ -265,10 +266,10 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler(ModelHelper.RESOURCE_SET)
-                .save(writeURI.appendFileExtension(ResourceEnvironmentModelHandler.SUFFIX), environment);
-        new CostModelHandler(ModelHelper.RESOURCE_SET).save(writeURI.appendFileExtension(CostModelHandler.SUFFIX),
-                costRepositoryModel);
+        new FileModelHandler<ResourceEnvironment>(ModelHelper.RESOURCE_SET, ResourceenvironmentPackage.eINSTANCE)
+                .save(writeURI.appendFileExtension(ResourceenvironmentPackage.eNAME), environment);
+        new FileModelHandler<CostRepository>(ModelHelper.RESOURCE_SET, costPackage.eINSTANCE)
+                .save(writeURI.appendFileExtension(costPackage.eNAME), costRepositoryModel);
     }
 
     /**

@@ -24,7 +24,7 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
