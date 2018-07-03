@@ -26,7 +26,6 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,8 +100,8 @@ public class DeploymentVisualizationStageTest { // NOCS test
         /** test events */
         final String urlContext = DeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + DeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
-        final PCMDeployedEvent deployedEvent = new PCMDeployedEvent(DeploymentVisualizationStageTest.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, url, ISOCountryCode.EVIL_EMPIRE);
+        final PCMDeployedEvent deployedEvent = new PCMDeployedEvent(DeploymentVisualizationStageTest.SERVICE, null, url,
+                ISOCountryCode.EVIL_EMPIRE);
 
         deployedEvent.setResourceContainer(testResourceContainer);
 
@@ -110,7 +109,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         this.inputEvents.add(deployedEvent);
 
         /** test assembly context */
-        final String asmContextName = AssemblyContextDataFactory.ASSEMBLY_CONTEXT.getEntityName() + " : "
+        final String asmContextName = "AssemblyContextDataFactory.ASSEMBLY_CONTEXT.getEntityName()" + " : "
                 + DeploymentVisualizationStageTest.SERVICE;
 
         final AssemblyContext testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();

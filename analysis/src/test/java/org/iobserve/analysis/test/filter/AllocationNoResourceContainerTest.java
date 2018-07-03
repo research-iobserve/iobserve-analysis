@@ -55,6 +55,7 @@ public class AllocationNoResourceContainerTest {
 
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
+    private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
     /** stage under test. */
     private AllocationStage allocationStage;
@@ -88,18 +89,19 @@ public class AllocationNoResourceContainerTest {
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .getModelRootNode(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .thenReturn(AllocationNoResourceContainerTest.resourceEnvironment);
 
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
-                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
+                AllocationNoResourceContainerTest.resourceEnvironment, ImplementationLevelDataFactory.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
         Mockito.when(ResourceEnvironmentModelFactory.createResourceContainer(
-                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER);
+                AllocationNoResourceContainerTest.resourceEnvironment, ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(AllocationNoResourceContainerTest.resourceEnvironment
+                        .getResourceContainer_ResourceEnvironment().get(0));
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateObject(ResourceEnvironment.class, ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .updateObject(ResourceEnvironment.class, AllocationNoResourceContainerTest.resourceEnvironment);
     }
 
     /**
@@ -121,7 +123,8 @@ public class AllocationNoResourceContainerTest {
         Assert.assertEquals("Wrong number of ResourceContainers relayed", 1, allocationFinishedEvents.size());
         Assert.assertEquals("Wrong number of create operations", 1, allocationEvents.size());
 
-        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
+        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(AllocationNoResourceContainerTest.resourceEnvironment
+                .getResourceContainer_ResourceEnvironment().get(0)));
         Assert.assertThat(allocationEvents.get(0), Is.is(ImplementationLevelDataFactory.CONTAINER_ALLOCATION_EVENT));
     }
 

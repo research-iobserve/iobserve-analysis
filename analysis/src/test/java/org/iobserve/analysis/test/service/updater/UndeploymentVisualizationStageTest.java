@@ -28,7 +28,6 @@ import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,7 +117,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
         final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT, this.testResourceContainer);
+                null /* AssemblyContextDataFactory.ASSEMBLY_CONTEXT */, this.testResourceContainer);
 
         /** input events */
         this.inputEvents.add(undeployedEvent);

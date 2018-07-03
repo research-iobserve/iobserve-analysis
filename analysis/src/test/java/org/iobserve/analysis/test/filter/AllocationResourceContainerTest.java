@@ -51,6 +51,8 @@ public class AllocationResourceContainerTest {
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
+    private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
+
     /** stage under test. */
     private AllocationStage allocationStage;
 
@@ -82,14 +84,13 @@ public class AllocationResourceContainerTest {
 
         Mockito.when(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .getModelRootNode(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .thenReturn(AllocationResourceContainerTest.resourceEnvironment);
 
-        Mockito.when(
-                ResourceEnvironmentModelFactory.getResourceContainerByName(
-                        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                                .getModelRootNode(ResourceEnvironment.class),
-                        ImplementationLevelDataFactory.SERVICE))
-                .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
+        Mockito.when(ResourceEnvironmentModelFactory
+                .getResourceContainerByName(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
+                        .getModelRootNode(ResourceEnvironment.class), ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(Optional.of(AllocationResourceContainerTest.resourceEnvironment
+                        .getResourceContainer_ResourceEnvironment().get(0)));
     }
 
     /**
