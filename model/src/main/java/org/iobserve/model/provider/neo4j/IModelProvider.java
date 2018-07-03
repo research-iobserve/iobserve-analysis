@@ -94,7 +94,7 @@ public interface IModelProvider<T extends EObject> {
      * Update a the specified object in the the provider's model serialization.
      *
      * @param clazz
-     *            Data type of component to be updated
+     *            Data type of object to be updated
      * @param object
      *            The changed object
      */

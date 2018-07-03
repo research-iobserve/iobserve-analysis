@@ -40,11 +40,13 @@ public class WarnSink extends AbstractFileSink<Warnings> {
 
     @Override
     protected void execute(final Warnings element) throws Exception {
-        AbstractFileSink.LOGGER.debug("Alarms");
+        AbstractFileSink.LOGGER.debug("Warnings");
+        this.output.printf("Warning %s\n", element.getDate());
         for (final String warning : element.getMessages()) {
             AbstractFileSink.LOGGER.debug("\t {}", warning);
-            this.output.println(warning);
+            this.output.printf("%s %s\n", element.getDate(), warning);
         }
+        this.output.flush();
     }
 
 }

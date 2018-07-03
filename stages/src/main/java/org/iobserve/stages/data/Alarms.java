@@ -16,6 +16,7 @@
 package org.iobserve.stages.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ import java.util.List;
  */
 public class Alarms implements IErrorMessages {
     private List<String> messages = new ArrayList<>();
+    private Date date;
 
     /**
      * Create an alarm result.
@@ -48,5 +50,15 @@ public class Alarms implements IErrorMessages {
     @Override
     public void addMessage(final String message) {
         this.messages.add(message);
+    }
+
+    @Override
+    public Date getDate() {
+        return this.date;
+    }
+
+    @Override
+    public void setDate(final Date date) {
+        this.date = date;
     }
 }

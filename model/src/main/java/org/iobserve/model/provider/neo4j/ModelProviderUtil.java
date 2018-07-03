@@ -54,34 +54,33 @@ public final class ModelProviderUtil {
     }
 
     /**
-     * Based on a certain component's URI and a list of references to nodes which possibly represent
-     * that component, this method returns the node which actually represents the component or null
-     * if there is none in the list. Relationships to matching nodes are removed from the list, so
-     * this method can also be used to reduce a list of references to those references which link to
+     * Based on a certain object-URI and a list of references to nodes which possibly represent that
+     * component, this method returns the node which actually represents the component or null if
+     * there is none in the list. Relationships to matching nodes are removed from the list, so this
+     * method can also be used to reduce a list of references to those references which link to
      * nodes whose component does not exist anymore.
      *
      * @param uri
-     *            The component's URI
-     * @param rels
+     *            The object-URI
+     * @param relationships
      *            The relationships to possibly matching nodes
      * @return The node representing the component or null if there is none
      */
-    public static Node findMatchingNode(final String uri, final List<Relationship> rels) {
-
+    public static Node findMatchingNode(final String uri, final List<Relationship> relationships) {
         if (uri != null) {
-            for (final Relationship r : rels) {
-                final Node node = r.getEndNode();
+            for (final Relationship relationship : relationships) {
+                final Node node = relationship.getEndNode();
                 try {
                     final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
                     if (uri.equals(nodeUri)) {
-                        rels.remove(r);
+                        relationships.remove(relationship);
                         return node;
                     }
                 } catch (final NotFoundException e) {
                     ModelProviderUtil.LOGGER.error(
                             "Tried to delete a relationship which has already been removed. id {} and exception {}",
-                            r.getId(), e);
+                            relationship.getId(), e);
                 }
             }
         }
@@ -168,15 +167,15 @@ public final class ModelProviderUtil {
     /**
      * Checks whether a referenced object is the referencer's data type.
      *
-     * @param ref
+     * @param reference
      *            The reference
-     * @param refObj
+     * @param referenceObject
      *            The referenced object
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
-    public static boolean isDatatype(final EReference ref, final Object refObj) {
-        return refObj instanceof DataType && !(ref.getName().equals("parentType_CompositeDataType")
-                || ref.getName().equals("compositeDataType_InnerDeclaration"));
+    public static boolean isDatatype(final EReference reference, final Object referenceObject) {
+        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
+                || reference.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
     /**

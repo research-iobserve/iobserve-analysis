@@ -15,10 +15,14 @@
  ***************************************************************************/
 package org.iobserve.model.test.data;
 
+import java.util.Map.Entry;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.iobserve.model.provider.neo4j.ModelGraph;
+import org.neo4j.graphdb.Relationship;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.slf4j.Logger;
@@ -85,9 +89,43 @@ public final class DebugHelper {
     }
 
     public static void listAllocations(final String label, final Allocation allocation) {
+        int i = 1;
         for (final AllocationContext context : allocation.getAllocationContexts_Allocation()) {
-            java.lang.System.err.println(
-                    label + " " + context.getEntityName() + " " + context.getAssemblyContext_AllocationContext());
+            java.lang.System.err.println(label + " " + i + " " + context.getEntityName() + " "
+                    + context.getAssemblyContext_AllocationContext());
+            i++;
         }
     }
+
+    public static void printList(final Iterable<Relationship> relationships) {
+        for (final Relationship relationship : relationships) {
+            System.err.println(String.format("rel %d %d->%d", relationship.getId(), relationship.getStartNode().getId(),
+                    relationship.getEndNode().getId()));
+            for (final Entry<String, Object> property : relationship.getAllProperties().entrySet()) {
+                System.err.println(String.format("\t %s %s", property.getKey(), property.getValue()));
+            }
+        }
+    }
+
+    public static void printObjectIdAndName(final EObject object) {
+        String entityName = "<none>";
+        String id = "<none>";
+        for (final EAttribute attribute : object.eClass().getEAllAttributes()) {
+            if ("entityName".equals(attribute.getName())) {
+                entityName = object.eGet(attribute).toString();
+            }
+            if ("id".equals(attribute.getName())) {
+                id = object.eGet(attribute).toString();
+            }
+        }
+        System.err.println(String.format("Object id: %s  name: %s", id, entityName));
+
+    }
+
+    public static void listAllRelationships(final ModelGraph graph) {
+        for (final Relationship r : graph.getGraphDatabaseService().getAllRelationships()) {
+            System.err.println("\t" + r.getStartNodeId() + " -- (" + r.getId() + ") --> " + r.getEndNodeId());
+        }
+    }
+
 }

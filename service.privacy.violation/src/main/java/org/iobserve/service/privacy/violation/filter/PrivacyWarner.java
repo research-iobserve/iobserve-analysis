@@ -17,6 +17,7 @@ package org.iobserve.service.privacy.violation.filter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.service.privacy.violation.DebugHelper;
+import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
@@ -173,6 +174,8 @@ public class PrivacyWarner extends AbstractStage {
         for (final Edge edge : edges) {
             warnings.addMessage(edge.getPrint() + " Interface: " + edge.getInterfaceName());
         }
+        warnings.setDate(new Date());
+
         return warnings;
     }
 
@@ -206,9 +209,11 @@ public class PrivacyWarner extends AbstractStage {
      **/
     private void loadRoots() {
         this.allocationRootElement = this.allocationModelProvider.getModelRootNode(Allocation.class);
+        DebugHelper.printModelPartition(this.allocationRootElement);
         this.systemRootElement = this.systemModelProvider.getModelRootNode(System.class);
         this.repositoryRootElement = this.repositoryModelProvider.getModelRootNode(Repository.class);
         this.privacyRootElement = this.privacyModelProvider.getModelRootNode(PrivacyModel.class);
+        DebugHelper.printModelPartition(this.privacyRootElement);
     }
 
     /**
@@ -227,7 +232,6 @@ public class PrivacyWarner extends AbstractStage {
             final IModelProvider<AssemblyContext> assemblyContextModelProvider,
             final IModelProvider<BasicComponent> repositoryComponentModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider) {
-        DebugHelper.printModelPartition(this.allocationRootElement);
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();

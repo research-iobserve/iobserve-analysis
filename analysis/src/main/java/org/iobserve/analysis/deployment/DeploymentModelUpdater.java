@@ -22,7 +22,6 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.test.data.DebugHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -78,30 +77,22 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        DebugHelper.listAllocations("entry", this.allocationModelGraphProvider.getModelRootNode(Allocation.class));
-
         final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
                 .getObjectsByTypeAndName(AllocationContext.class, allocationContextName);
         if (allocationContext.isEmpty()) {
             this.logger.debug("Create allocation context {}", event);
             final Allocation allocationModel = this.allocationModelGraphProvider.getModelRootNode(Allocation.class);
 
-            DebugHelper.listAllocations("allocationModel", allocationModel);
-
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
             newAllocationContext.setAssemblyContext_AllocationContext(event.getAssemblyContext());
             newAllocationContext.setResourceContainer_AllocationContext(event.getResourceContainer());
-            this.allocationContextModelGraphProvider.storeModelPartition(newAllocationContext);
-
-            DebugHelper.listAllocations("after store",
-                    this.allocationModelGraphProvider.getModelRootNode(Allocation.class));
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
 
+            // this.allocationContextModelGraphProvider.storeModelPartition(newAllocationContext);
+
             this.allocationModelGraphProvider.updateObject(Allocation.class, allocationModel);
-            DebugHelper.listAllocations("after update",
-                    this.allocationModelGraphProvider.getModelRootNode(Allocation.class));
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);

@@ -138,7 +138,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(rootElement,
+            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByObject(rootElement,
                     new HashSet<>());
 
             this.createNodes(rootElement, containmentsAndDatatypes, new HashMap<>());
@@ -152,30 +152,33 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Helper method for writing: Recursively returns all containments and data types of a given
      * component.
      *
-     * @param component
+     * @param object
      *            The component to start with
      * @param containmentsAndDatatypes
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private Set<EObject> getAllContainmentsAndDatatypes(final EObject component,
+    private Set<EObject> getAllContainmentsAndDatatypesByObject(final EObject component,
             final Set<EObject> containmentsAndDatatypes) {
         if (!containmentsAndDatatypes.contains(component)) {
             containmentsAndDatatypes.add(component);
 
-            for (final EReference ref : component.eClass().getEAllReferences()) {
-                final Object refObject = component.eGet(ref);
+            for (final EReference reference : component.eClass().getEAllReferences()) {
+                final Object referencedEntity = component.eGet(reference);
 
-                if (refObject instanceof EList<?>) {
-                    for (final Object o : (EList<?>) component.eGet(ref)) {
-                        if (ref.isContainment() || ModelProviderUtil.isDatatype(ref, o)) {
-                            this.getAllContainmentsAndDatatypes((EObject) o, containmentsAndDatatypes);
+                if (referencedEntity instanceof EList<?>) {
+                    for (final Object referencedElement : (EList<?>) component.eGet(reference)) {
+                        if (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedElement)) {
+                            this.getAllContainmentsAndDatatypesByObject((EObject) referencedElement,
+                                    containmentsAndDatatypes);
                         }
                     }
 
                 } else {
-                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
-                        this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
+                    if (referencedEntity != null && (reference.isContainment()
+                            || ModelProviderUtil.isDatatype(reference, referencedEntity))) {
+                        this.getAllContainmentsAndDatatypesByObject((EObject) referencedEntity,
+                                containmentsAndDatatypes);
                     }
                 }
             }
@@ -185,18 +188,41 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     }
 
     /**
-     * Helper method for writing: Writes the given component into the provider's {@link #graph}
+     * Helper method for reading: Recursively returns all containments and data types of a given
+     * node.
+     *
+     * @param node
+     *            The node to start with
+     * @param containmentsAndDatatypes
+     *            Initially empty set of all containments and data types
+     * @return The passed containmentsAndDatatypes set now filled with containments and data types
+     */
+    private Set<Node> getAllContainmentsAndDatatypesByNode(final Node node, final Set<Node> containmentsAndDatatypes) {
+        if (!containmentsAndDatatypes.contains(node)) {
+            containmentsAndDatatypes.add(node);
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                    EMFRelationshipType.IS_TYPE)) {
+                this.getAllContainmentsAndDatatypesByNode(rel.getEndNode(), containmentsAndDatatypes);
+            }
+        }
+
+        return containmentsAndDatatypes;
+    }
+
+    /**
+     * Helper method for writing: Writes the given object into the provider's {@link #graph}
      * recursively. Calls to this method have to be performed from inside a {@link Transaction}.
      *
      * @param storeableObject
-     *            Component to save
+     *            Object to save
      * @param containmentsAndDatatypes
      *            Set of EObjects contained in the root preferably created by
-     *            {@link #getAllContainmentsAndDatatypes(EObject, HashSet)}
+     *            {@link #getAllContainmentsAndDatatypesByObject(EObject, HashSet)}
      * @param objectsToCreatedNodes
      *            Initially empty map of EObjects to already created correspondent nodes to make
      *            sure nodes are written just once
-     * @return Root node of the component's graph
+     * @return Root node of the object graph
      */
     private Node createNodes(final EObject storeableObject, final Set<EObject> containmentsAndDatatypes,
             final Map<EObject, Node> objectsToCreatedNodes) {
@@ -290,9 +316,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     }
 
     /**
-     * Store references in the database as relationships.
+     * Store references and referenced objects in the database as relationships.
      *
-     * @param node
+     * @param parentNode
      *            the source node
      * @param storeableObject
      *            the related object
@@ -301,34 +327,50 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param objectsToCreatedNodes
      *            map of objects and nodes used for lookup
      */
-    private void storeReferences(final Node node, final EObject storeableObject,
+    private void storeReferences(final Node parentNode, final EObject storeableObject,
             final Set<EObject> containmentsAndDatatypes, final Map<EObject, Node> objectsToCreatedNodes) {
         for (final EReference reference : storeableObject.eClass().getEAllReferences()) {
-            final Object referenceInstance = storeableObject.eGet(reference);
+            final Object referencedEntity = storeableObject.eGet(reference);
 
-            if (referenceInstance != null) {
+            if (referencedEntity != null) {
                 /** 0..* refs are represented as a list and 1 refs are represented directly. */
-                if (referenceInstance instanceof EList<?>) {
-                    final EList<?> listReferenceInstance = (EList<?>) referenceInstance;
-                    for (int i = 0; i < listReferenceInstance.size(); i++) {
-                        final Object targetObject = listReferenceInstance.get(i);
-                        final Node targetObjectNode = this.createNodes((EObject) targetObject, containmentsAndDatatypes,
-                                objectsToCreatedNodes);
-                        final Relationship relationship = node.createRelationshipTo(targetObjectNode,
-                                ModelProviderUtil.getRelationshipType(reference, targetObject));
-                        relationship.setProperty(ModelProvider.REF_NAME, reference.getName());
-                        relationship.setProperty(ModelProvider.REF_POS, i);
+                if (referencedEntity instanceof EList<?>) {
+                    final EList<?> referencedObjects = (EList<?>) referencedEntity;
+                    for (int i = 0; i < referencedObjects.size(); i++) {
+                        this.createNodeAndReference(parentNode, reference, (EObject) referencedObjects.get(i), i,
+                                containmentsAndDatatypes, objectsToCreatedNodes);
                     }
                 } else {
-                    final Node targetObjectNode = this.createNodes((EObject) referenceInstance,
+                    this.createNodeAndReference(parentNode, reference, (EObject) referencedEntity, 0,
                             containmentsAndDatatypes, objectsToCreatedNodes);
-                    final Relationship relationship = node.createRelationshipTo(targetObjectNode,
-                            ModelProviderUtil.getRelationshipType(reference, referenceInstance));
-                    relationship.setProperty(ModelProvider.REF_NAME, reference.getName());
-                    relationship.setProperty(ModelProvider.REF_POS, 0);
                 }
             }
         }
+    }
+
+    /**
+     * Create a node for an object and link it to a parent node.
+     *
+     * @param parentNode
+     *            node of the containing object
+     * @param reference
+     *            reference used to contain the object.
+     * @param targetObject
+     *            the object to be stored
+     * @param i
+     *            position in the list for references with multiplicity
+     * @param containmentsAndDatatypes
+     *            containments
+     * @param objectsToCreatedNodes
+     *            map of objects and nodes
+     */
+    private void createNodeAndReference(final Node parentNode, final EReference reference, final EObject targetObject,
+            final int i, final Set<EObject> containmentsAndDatatypes, final Map<EObject, Node> objectsToCreatedNodes) {
+        final Node targetObjectNode = this.createNodes(targetObject, containmentsAndDatatypes, objectsToCreatedNodes);
+        final Relationship relationship = parentNode.createRelationshipTo(targetObjectNode,
+                ModelProviderUtil.getRelationshipType(reference, targetObject));
+        relationship.setProperty(ModelProvider.REF_NAME, reference.getName());
+        relationship.setProperty(ModelProvider.REF_POS, i);
     }
 
     /*
@@ -359,7 +401,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             if (node != null) {
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(node,
                         new HashSet<Node>());
                 return (T) this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
@@ -404,7 +446,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(node,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 nodes.add((T) component);
@@ -414,29 +456,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
 
         return nodes;
-    }
-
-    /**
-     * Helper method for reading: Recursively returns all containments and data types of a given
-     * node.
-     *
-     * @param node
-     *            The node to start with
-     * @param containmentsAndDatatypes
-     *            Initially empty set of all containments and data types
-     * @return The passed containmentsAndDatatypes set now filled with containments and data types
-     */
-    private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
-        if (!containmentsAndDatatypes.contains(node)) {
-            containmentsAndDatatypes.add(node);
-
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
-                    EMFRelationshipType.IS_TYPE)) {
-                this.getAllContainmentsAndDatatypes(rel.getEndNode(), containmentsAndDatatypes);
-            }
-        }
-
-        return containmentsAndDatatypes;
     }
 
     /**
@@ -641,6 +660,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @see org.iobserve.model.provider.neo4j#collectAllObjectsByType(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<T> collectAllObjectsByType(final Class<T> clazz) {
         final Label label = Label.label(clazz.getCanonicalName());
@@ -651,7 +671,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(node,
                         new HashSet<Node>());
                 final EObject object = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 nodes.add((T) object);
@@ -693,7 +713,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             if (nodes.hasNext()) {
                 final Node node = nodes.next();
 
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(node,
                         new HashSet<Node>());
                 object = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
@@ -740,7 +760,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
-                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(endNode,
                         new HashSet<Node>());
                 component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
@@ -786,7 +806,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 for (final Relationship inRel : node.getRelationships(Direction.INCOMING,
                         EMFRelationshipType.REFERENCES)) {
                     final Node startNode = inRel.getStartNode();
-                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
+                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByNode(startNode,
                             new HashSet<Node>());
                     final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                             new HashMap<Node, EObject>());
@@ -818,7 +838,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         if (idAttr != null) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, object.eGet(idAttr));
-                containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(object, new HashSet<>());
+                containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByObject(object, new HashSet<>());
                 this.updateNodes(object, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
@@ -829,7 +849,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         .findNodes(Label.label(clazz.getCanonicalName()));
                 if (nodes.hasNext()) {
                     node = nodes.next();
-                    containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(object, new HashSet<>());
+                    containmentsAndDatatypes = this.getAllContainmentsAndDatatypesByObject(object, new HashSet<>());
                     this.updateNodes(object, node, containmentsAndDatatypes, new HashSet<EObject>());
                 }
                 tx.success();
@@ -844,106 +864,102 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     private Node updateNodes(final EObject object, final Node node, final Set<EObject> containmentsAndDatatypes,
             final Set<EObject> updatedObjects) {
-
         if (!updatedObjects.contains(object)) {
             updatedObjects.add(object);
 
-            // Update node properties
-            final Map<String, Object> nodeProperties = node.getAllProperties();
-
-            for (final EAttribute attr : object.eClass().getEAllAttributes()) {
-                final String key = attr.getName();
-                final Object value = object.eGet(attr);
-                if (value != null) {
-                    node.setProperty(key, value.toString());
-                    nodeProperties.remove(key);
-                }
-            }
-
-            // Remove possibly removed properties
-            final Iterator<Entry<String, Object>> iter = nodeProperties.entrySet().iterator();
-            while (iter.hasNext()) {
-                node.removeProperty(iter.next().getKey());
-            }
-
-            // Create a URI to enable proxy resolving
-            final URI uri = ((BasicEObjectImpl) object).eProxyURI();
-            if (uri == null) {
-                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(object));
-            } else {
-                node.setProperty(ModelProvider.EMF_URI, uri.toString());
-            }
+            this.updateObjectAttributes(object, node);
 
             // Outgoing references are only stored for containments and data types of the root,
             // otherwise we just store the blank node as a proxy
             if (containmentsAndDatatypes.contains(object)) {
-
                 // Create list of node's outgoing relationships
-                final List<Relationship> outRels = new LinkedList<>();
-                node.getRelationships(Direction.OUTGOING).forEach(outRels::add);
+                final List<Relationship> outgoingRelationships = new LinkedList<>();
+                node.getRelationships(Direction.OUTGOING).forEach(outgoingRelationships::add);
 
-                for (final EReference ref : object.eClass().getEAllReferences()) {
-                    final Object refReprensation = object.eGet(ref);
+                for (final EReference reference : object.eClass().getEAllReferences()) {
+                    final Object referencedEntity = object.eGet(reference);
 
-                    // 0..* refs are represented as a list and 1 refs are represented directly
-                    if (refReprensation instanceof EList<?>) {
-
-                        final EList<?> refs = (EList<?>) object.eGet(ref);
-                        for (int i = 0; i < refs.size(); i++) {
-                            final Object o = refs.get(i);
-
-                            // Find node matching o
-                            Node endNode = ModelProviderUtil
-                                    .findMatchingNode(ModelProviderUtil.getUriString((EObject) o), outRels);
-
-                            if (endNode == null) {
-                                // Create a non existing node
-                                endNode = this.createNodes((EObject) o, containmentsAndDatatypes, new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(endNode,
-                                        ModelProviderUtil.getRelationshipType(ref, o));
-                                rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                                rel.setProperty(ModelProvider.REF_POS, i);
-
-                            }
-
-                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedObjects);
+                    // 0..* references are represented as a list and 0..1 references are represented
+                    // as objects
+                    if (referencedEntity instanceof EList<?>) {
+                        final EList<?> referencedObjects = (EList<?>) object.eGet(reference);
+                        for (int i = 0; i < referencedObjects.size(); i++) {
+                            this.updateOrCreate(node, reference, (EObject) referencedObjects.get(i), i,
+                                    outgoingRelationships, containmentsAndDatatypes, updatedObjects);
                         }
                     } else {
-                        if (refReprensation != null) {
-                            // Find node matching refRepresentation
-                            Node endNode = ModelProviderUtil.findMatchingNode(
-                                    ModelProviderUtil.getUriString((EObject) refReprensation), outRels);
-
-                            if (endNode == null) {
-                                // Create a non existing node
-                                endNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
-                                        new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(endNode,
-                                        ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                                rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                                rel.setProperty(ModelProvider.REF_POS, 0);
-                            }
-
-                            this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
-                                    updatedObjects);
+                        if (referencedEntity != null) {
+                            this.updateOrCreate(node, reference, (EObject) referencedEntity, 0, outgoingRelationships,
+                                    containmentsAndDatatypes, updatedObjects);
                         }
                     }
                 }
 
                 // Delete nodes that are not referenced anymore
-                for (final Relationship r : outRels) {
-                    try {
-                        final Node endNode = r.getEndNode();
-                        r.delete();
-                        this.deleteComponentAndDatatypeNodes(endNode, false);
-                    } catch (final NotFoundException e) {
-                        // relation has already been deleted
-                    }
-                }
+                // for (final Relationship outgoingRelationship : outgoingRelationships) {
+                // System.err.println("-->> " + outgoingRelationship.getId());
+                // try {
+                // final Node endNode = outgoingRelationship.getEndNode();
+                // System.err.println("-+>> " + endNode.getId());
+                // outgoingRelationship.delete();
+                // this.deleteComponentAndDatatypeNodes(endNode, false);
+                // } catch (final NotFoundException e) {
+                // // relation has already been deleted
+                // }
+                // }
             }
         }
 
         return node;
+    }
+
+    private void updateObjectAttributes(final EObject object, final Node node) {
+        for (final EAttribute attr : object.eClass().getEAllAttributes()) {
+            final String key = attr.getName();
+            final Object value = object.eGet(attr);
+            if (value != null) {
+                node.setProperty(key, value.toString());
+            } else {
+                node.removeProperty(key);
+            }
+        }
+    }
+
+    /**
+     * Update a node based on current object values or if node is missing create a new node and
+     * place a new reference.
+     *
+     * @param parentObjectNode
+     *            node corresponding to the parent object
+     * @param reference
+     *            reference definition of the parent object which refers to the referencedObject
+     * @param referencedObject
+     *            the object to be updated or initially stored
+     * @param i
+     *            position in the list
+     * @param outgoingRelationships
+     *            set of outgoingRelationships which have been checked.
+     * @param containmentsAndDatatypes
+     *            set of objects which are part of the current containment hierarchy
+     * @param updatedObjects
+     *            set of objects which have been updated
+     */
+    private void updateOrCreate(final Node parentObjectNode, final EReference reference, final EObject referencedObject,
+            final int i, final List<Relationship> outgoingRelationships, final Set<EObject> containmentsAndDatatypes,
+            final Set<EObject> updatedObjects) {
+        Node referencedObjectNode = ModelProviderUtil.findMatchingNode(ModelProviderUtil.getUriString(referencedObject),
+                outgoingRelationships);
+
+        if (referencedObjectNode == null) { // object has no corresponding node,
+                                            // create
+            referencedObjectNode = this.createNodes(referencedObject, containmentsAndDatatypes, new HashMap<>());
+            final Relationship relationship = parentObjectNode.createRelationshipTo(referencedObjectNode,
+                    ModelProviderUtil.getRelationshipType(reference, referencedObject));
+            relationship.setProperty(ModelProvider.REF_NAME, reference.getName());
+            relationship.setProperty(ModelProvider.REF_POS, i);
+        } else {
+            this.updateNodes(referencedObject, referencedObjectNode, containmentsAndDatatypes, updatedObjects);
+        }
     }
 
     /*
