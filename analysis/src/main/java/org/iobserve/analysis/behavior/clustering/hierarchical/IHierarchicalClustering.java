@@ -16,11 +16,13 @@
 
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.net4j.util.collection.Pair;
 import org.iobserve.analysis.behavior.IClustering;
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
 
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -32,12 +34,14 @@ import weka.core.Instances;
 
 public interface IHierarchicalClustering extends IClustering {
     /**
-     * get cluster centers of all clusters.
+     * Computes the clusters and the probabilities of the instances to belong to them. Returns a Map
+     * with the clusters, the belonging instances and their probability.
      *
      * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
+     *            The instances to be clustered.
+     * @return A Map with the clusters as key and lists of instances and their probability belonging
+     *         to each cluster. Every instance is only assigned to one cluster.
      */
     @Override
-    Optional<ClusteringResults> clusterInstances(Instances instances);
+    Map<Integer, List<Pair<Instance, Double>>> clusterInstances(Instances instances);
 }

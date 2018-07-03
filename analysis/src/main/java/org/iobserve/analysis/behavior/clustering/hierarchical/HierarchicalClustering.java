@@ -18,17 +18,21 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.awt.Container;
 import java.awt.GridLayout;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
+import org.eclipse.net4j.util.collection.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.clusterers.HierarchicalClusterer;
 import weka.core.DistanceFunction;
 import weka.core.EuclideanDistance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.gui.hierarchyvisualizer.HierarchyVisualizer;
 
@@ -50,8 +54,8 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     }
 
     @Override
-    public Optional<ClusteringResults> clusterInstances(final Instances instances) {
-        final Optional<ClusteringResults> clusteringResults = Optional.empty();
+    public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
+        final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
         HierarchicalClustering.hierarchicalClusterer = new HierarchicalClusterer();
         HierarchicalClustering.hierarchicalClusterer.setDistanceFunction(this.distanceFunction);
         HierarchicalClustering.hierarchicalClusterer.setDistanceIsBranchLength(false);
@@ -59,6 +63,18 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
         try {
             HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
+
+            // // Print Membership-Matrix
+            // double[] arr;
+            // for (int i = 0; i < instances.numInstances(); i++) {
+            //
+            // arr =
+            // HierarchicalClustering.hierarchicalClusterer.distributionForInstance(instances.instance(i));
+            // for (final double element : arr) {
+            // System.out.print(element + ",");
+            // }
+            // System.out.println();
+            // }
 
             // ##### TESTING
             // Print Newick
@@ -81,21 +97,47 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
             // // Evaluation
             // final ClusterEvaluation eval = new ClusterEvaluation();
-            // eval.setClusterer(HierarchicalClustering.hieraricalClusterer); // the cluster to
+            // eval.setClusterer(HierarchicalClustering.hierarchicalClusterer); // the cluster to
             // // evaluate
             // eval.evaluateClusterer(newInstances); // data to evaluate the clusterer on
             // System.out.println("# of clusters: " + eval.getNumClusters()); // output # of
-            // // clusters
+            // clusters
 
             // ##### END TESTING
 
-            return clusteringResults;
+            /**
+             * Code used from org.iobserve.analysis.userbehavior.XMeansClustering to use
+             * org.iobserve.analysis.userbehavior.ClusteringResults
+             */
+
+            int[] clustersize = null;
+            final int[] assignments = new int[instances.numInstances()];
+            clustersize = new int[HierarchicalClustering.hierarchicalClusterer.getNumClusters()];
+            for (int s = 0; s < instances.numInstances(); s++) {
+                assignments[s] = HierarchicalClustering.hierarchicalClusterer.clusterInstance(instances.instance(s));
+                clustersize[HierarchicalClustering.hierarchicalClusterer.clusterInstance(instances.instance(s))]++;
+            }
+
+            for (int i = 0; i < instances.numInstances(); i++) {
+                final Instance currentInstance = instances.instance(i);
+                final int cluster = HierarchicalClustering.hierarchicalClusterer.clusterInstance(currentInstance);
+                final double probability = HierarchicalClustering.hierarchicalClusterer
+                        .distributionForInstance(currentInstance)[cluster];
+                if (clusteringResults.get(cluster) == null) {
+                    clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
+                }
+                clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
+
+            }
+
+            // clusteringResults = Optional.of(new ClusteringResults("Hierarchical",
+            // HierarchicalClustering.hierarchicalClusterer.getNumClusters(), assignments, null));
 
         } catch (final Exception e) {
             HierarchicalClustering.LOGGER.error("Hierarchical clustering failed.", e);
         }
 
-        return Optional.empty();
+        return clusteringResults;
     }
 
     public String[] getLinkage() {

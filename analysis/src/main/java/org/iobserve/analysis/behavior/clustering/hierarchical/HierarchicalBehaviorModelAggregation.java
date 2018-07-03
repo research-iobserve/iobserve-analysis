@@ -30,7 +30,7 @@ import weka.core.Instances;
  *
  */
 public class HierarchicalBehaviorModelAggregation extends CompositeStage {
-    private final HierarchicalClusteringProcess clustering;
+    private final HierarchicalClusteringProcess hierClustering;
 
     /**
      * Constructor configuration of the aggregation filters.
@@ -46,11 +46,12 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
             final ISignatureCreationStrategy signatureCreationStrategy) {
         final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
-        this.clustering = new HierarchicalClusteringProcess(new HierarchicalClustering());
-        this.connectPorts(this.clustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
+        this.hierClustering = new HierarchicalClusteringProcess(new HierarchicalClustering());
+        this.connectPorts(this.hierClustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */
-        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
+        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl,
+                signatureCreationStrategy);
 
         this.connectPorts(behaviorModelCreationStage.getOutputPort(), tIObserveUBM.getInputPort());
     }
@@ -61,6 +62,6 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
      * @return input port
      */
     public InputPort<Instances> getInputPort() {
-        return this.clustering.getInputPort();
+        return this.hierClustering.getInputPort();
     }
 }
