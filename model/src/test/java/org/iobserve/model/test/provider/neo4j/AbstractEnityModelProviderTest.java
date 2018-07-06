@@ -15,8 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.Entity;
@@ -38,23 +37,21 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#getObjectByTypeAndId(Class, String)} and asserts that it is equal to the one
-     * written to the graph.
+     * {@link ModelProvider#findObjectByTypeAndId(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
      */
     @Test
     public final void createThenReadById() {
-        final ModelGraph graph = this.prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID);
+        final ModelResource resource = ModelProviderTestUtils
+                .prepareResource(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID, this.prefix, this.factory);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final T readModel = modelProvider.getObjectByTypeAndId(this.clazz, this.testModel.getId());
+        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.testModel.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -64,21 +61,18 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenDeleteComponentAndDatatypes() {
-        final ModelGraph graph = this
-                .prepareGraph(AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+                AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES, this.prefix, this.factory);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.deleteObjectByIdAndDatatype(this.clazz, this.testModel.getId(), true);
 
-        modelProvider.deleteObjectByIdAndDatatypes(this.clazz, this.testModel.getId(), true);
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
 }

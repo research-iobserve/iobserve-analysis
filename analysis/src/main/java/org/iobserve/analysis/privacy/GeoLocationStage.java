@@ -68,7 +68,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
             final String containerId = geoLocation.getResourceContainer().getId();
             if (event.getResourceContainer().getId().equals(containerId)) {
                 geoLocation.setIsocode(EISOCode.get(event.getCountryCode().getValue()));
-                this.geoLocationProvider.updateObject(GeoLocation.class, geoLocation);
+                this.geoLocationProvider.updatePartition(GeoLocation.class, geoLocation);
                 /** container has already a location: update the location. */
                 this.outputPort.send(event);
                 return;
@@ -79,7 +79,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         final PrivacyModel privacyModel = this.privacyModelProvider.getModelRootNode(PrivacyModel.class);
         privacyModel.getResourceContainerLocations()
                 .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
-        this.privacyModelProvider.updateObject(PrivacyModel.class, privacyModel);
+        this.privacyModelProvider.updatePartition(PrivacyModel.class, privacyModel);
 
         this.outputPort.send(event);
     }

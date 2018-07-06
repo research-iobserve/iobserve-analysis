@@ -108,6 +108,15 @@ public final class UsageModelDataFactory {
         return behavior;
     }
 
+    /**
+     * Find a {@link ScenarioBehaviour} in a {@UsageModel}.
+     *
+     * @param usageModel
+     *            the {@link UsageModel}
+     * @param behaviorName
+     *            the name of a {@link ScenarioBehaviour}
+     * @return returns the {@link ScenarioBehaviour} on success else null
+     */
     public static ScenarioBehaviour findBehavior(final UsageModel usageModel, final String behaviorName) {
         for (final UsageScenario usageScenario : usageModel.getUsageScenario_UsageModel()) {
             final ScenarioBehaviour behavior = usageScenario.getScenarioBehaviour_UsageScenario();
@@ -120,9 +129,18 @@ public final class UsageModelDataFactory {
 
     }
 
-    public static UsageScenario findUsageScenario(final UsageModel usageModel, final String usageName) {
+    /**
+     * Find a {@link UsageScenario} in a {@link UsageModel}.
+     *
+     * @param usageModel
+     *            the {@link UsageModel}
+     * @param usageScenarioName
+     *            the name of the {@link UsageScenario}
+     * @return returns the {@link UsageScenario}
+     */
+    public static UsageScenario findUsageScenario(final UsageModel usageModel, final String usageScenarioName) {
         for (final UsageScenario usageScenario : usageModel.getUsageScenario_UsageModel()) {
-            if (usageScenario.getEntityName().equals(usageName)) {
+            if (usageScenario.getEntityName().equals(usageScenarioName)) {
                 return usageScenario;
             }
         }
@@ -145,14 +163,19 @@ public final class UsageModelDataFactory {
         for (final UsageScenario usageScenario : usageModel.getUsageScenario_UsageModel()) {
             if (usageScenario.getEntityName().equals(usageScenarioName)
                     && usageScenario.getScenarioBehaviour_UsageScenario().getEntityName().equals(behaviorName)) {
-                for (final AbstractUserAction action : usageScenario.getScenarioBehaviour_UsageScenario()
-                        .getActions_ScenarioBehaviour()) {
-                    if (action.getEntityName().equals(actionName)) {
-                        if (action instanceof EntryLevelSystemCall) {
-                            return (EntryLevelSystemCall) action;
-                        }
-                    }
-                }
+                return UsageModelDataFactory.findCallInUserAction(usageScenario, actionName);
+            }
+        }
+        return null;
+    }
+
+    private static EntryLevelSystemCall findCallInUserAction(final UsageScenario usageScenario,
+            final String actionName) {
+        for (final AbstractUserAction action : usageScenario.getScenarioBehaviour_UsageScenario()
+                .getActions_ScenarioBehaviour()) {
+            if (action.getEntityName().equals(actionName) && action instanceof EntryLevelSystemCall) {
+                return (EntryLevelSystemCall) action;
+
             }
         }
         return null;

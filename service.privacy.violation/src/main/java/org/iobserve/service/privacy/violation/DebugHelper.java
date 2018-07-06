@@ -47,36 +47,46 @@ public final class DebugHelper {
 
     private static void printModelPartition(final EObject object, final String indent) {
         DebugHelper.LOGGER.debug("{}class {} : {}", indent, object.hashCode(), object.getClass().getCanonicalName());
+        DebugHelper.printAttributes(object, indent);
+        for (final EReference reference : object.eClass().getEAllReferences()) {
+            DebugHelper.LOGGER.debug("{} + {} : {}", indent, reference.getName(), reference.getEReferenceType());
+            if (reference.isContainment()) {
+                DebugHelper.printContainment(object.eGet(reference), indent);
+            } else {
+                DebugHelper.printReference(object.eGet(reference), indent);
+            }
+        }
+    }
+
+    private static void printReference(final Object contents, final String indent) {
+        if (contents != null) {
+            if (contents instanceof EList<?>) {
+                for (final Object content : (EList<?>) contents) {
+                    DebugHelper.LOGGER.debug("{}\tref {}", indent, content.hashCode());
+                }
+            } else {
+                DebugHelper.LOGGER.debug("{}\tref {}", indent, contents.hashCode());
+            }
+        }
+    }
+
+    private static void printContainment(final Object contents, final String indent) {
+        if (contents != null) {
+            if (contents instanceof EList<?>) {
+                for (final Object content : (EList<?>) contents) {
+                    DebugHelper.printModelPartition((EObject) content, indent + "\t");
+                }
+            } else {
+                DebugHelper.printModelPartition((EObject) contents, indent + "\t");
+            }
+        }
+    }
+
+    private static void printAttributes(final EObject object, final String indent) {
         for (final EAttribute attribute : object.eClass().getEAllAttributes()) {
             final Object value = object.eGet(attribute);
             DebugHelper.LOGGER.debug("{} - {} = {} : {}", indent, value.toString(), attribute.getName(),
                     attribute.getEType().getInstanceTypeName());
-        }
-        for (final EReference reference : object.eClass().getEAllReferences()) {
-            DebugHelper.LOGGER.debug("{} + {} : {}", indent, reference.getName(), reference.getEReferenceType());
-            if (reference.isContainment()) {
-                final Object contents = object.eGet(reference);
-                if (contents != null) {
-                    if (contents instanceof EList<?>) {
-                        for (final Object content : (EList<?>) contents) {
-                            DebugHelper.printModelPartition((EObject) content, indent + "\t");
-                        }
-                    } else {
-                        DebugHelper.printModelPartition((EObject) contents, indent + "\t");
-                    }
-                }
-            } else {
-                final Object contents = object.eGet(reference);
-                if (contents != null) {
-                    if (contents instanceof EList<?>) {
-                        for (final Object content : (EList<?>) contents) {
-                            DebugHelper.LOGGER.debug("{}\tref {}", indent, content.hashCode());
-                        }
-                    } else {
-                        DebugHelper.LOGGER.debug("{}\tref {}", indent, contents.hashCode());
-                    }
-                }
-            }
         }
     }
 }

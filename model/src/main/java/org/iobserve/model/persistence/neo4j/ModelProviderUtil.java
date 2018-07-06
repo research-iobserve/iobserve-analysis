@@ -15,10 +15,13 @@
  ***************************************************************************/
 package org.iobserve.model.persistence.neo4j;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
@@ -27,8 +30,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
@@ -47,56 +48,32 @@ import org.slf4j.LoggerFactory;
  */
 public final class ModelProviderUtil {
 
+    public static final String PCM_ENTITY_NAME = "entityName";
+    public static final String PCM_ID = "id";
+    public static final String IMPLEMENTATION_ID = "implementationId";
+
+    public static final String REF_NAME = ":refName";
+
+    public static final String REF_POS = ":refPos";
+
+    public static final String EMF_URI = ":emfUri";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderUtil.class);
+    private static final String VERSION_PREFIX = "v_";
 
     private ModelProviderUtil() {
         // private utility class
     }
 
     /**
-     * Based on a certain object-URI and a list of references to nodes which possibly represent that
-     * component, this method returns the node which actually represents the component or null if
-     * there is none in the list. Relationships to matching nodes are removed from the list, so this
-     * method can also be used to reduce a list of references to those references which link to
-     * nodes whose component does not exist anymore.
-     *
-     * @param uri
-     *            The object-URI
-     * @param relationships
-     *            The relationships to possibly matching nodes
-     * @return The node representing the component or null if there is none
-     */
-    public static Node findMatchingNode(final String uri, final List<Relationship> relationships) {
-        if (uri != null) {
-            for (final Relationship relationship : relationships) {
-                final Node node = relationship.getEndNode();
-                try {
-                    final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
-
-                    if (uri.equals(nodeUri)) {
-                        relationships.remove(relationship);
-                        return node;
-                    }
-                } catch (final NotFoundException e) {
-                    ModelProviderUtil.LOGGER.error(
-                            "Tried to delete a relationship which has already been removed. id {} and exception {}",
-                            relationship.getId(), e);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Returns a URI based on the components containing the passed component.
      *
-     * @param component
+     * @param object
      *            The component to compute a URI to
      * @return The URI
      */
-    public static String getUriString(final EObject component) {
-        EObject comp = component;
+    public static String getUriString(final EObject object) {
+        EObject comp = object;
         EObject container;
         String label;
         String uri = "";
@@ -145,6 +122,56 @@ public final class ModelProviderUtil {
     }
 
     /**
+     * Initializes the newest version of a model graph with the given model. Overwrites a potential
+     * existing graph in the database directory of this loader.
+     *
+     * @param factory
+     *            the factory for the particular metamodel (partition)
+     * @param model
+     *            the model to use for initialization
+     * @param nameLabel
+     *            label for the name attribute in the DB and model
+     * @param idLabel
+     *            label for the id attribute in the DB and model
+     * @param baseDirectory
+     *            base directory for the database
+     *
+     * @param <V>
+     *            the type of the root element
+     */
+    public <V extends EObject> void initializeModelGraph(final EFactory factory, final V model, final String nameLabel,
+            final String idLabel, final File baseDirectory) {
+        final ModelResource resource = ModelProviderUtil.createModelResource(factory, baseDirectory);
+        resource.clearResource();
+        resource.storeModelPartition(model);
+        resource.getGraphDatabaseService().shutdown();
+    }
+
+    /**
+     * Helper method for getting graphs: Returns the newest version of the model graph.
+     *
+     * @param factory
+     *            the factory for the particular metamodel (partition)
+     * @param baseDirectory
+     *            base directory for the model database
+     * @return The model graph
+     */
+    public static ModelResource createModelResource(final EFactory factory, final File baseDirectory) {
+        final String graphTypeDirName = ModelProviderUtil.fullyQualifiedPackageName(factory.getEPackage());
+        final File graphTypeDir = new File(baseDirectory, graphTypeDirName);
+        int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(graphTypeDir.listFiles());
+
+        if (maxVersionNumber == -1) { // no previous version exists.
+            maxVersionNumber = 0;
+        }
+
+        final File newGraphDir = ModelProviderUtil.createResourceDatabaseFile(graphTypeDir, graphTypeDirName,
+                maxVersionNumber);
+
+        return new ModelResource(factory, newGraphDir);
+    }
+
+    /**
      * Returns a {@link #PcmRelationshipType} for a given reference and the referenced object.
      *
      * @param ref
@@ -176,6 +203,59 @@ public final class ModelProviderUtil {
     public static boolean isDatatype(final EReference reference, final Object referenceObject) {
         return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
                 || reference.getName().equals("compositeDataType_InnerDeclaration"));
+    }
+
+    /**
+     * Clones and returns a new version from the current newest version of the model graph. If there
+     * is none yet an empty graph is returned.
+     *
+     * @param factory
+     *            metamodel factory class
+     * @param resource
+     *            resource to be cloned
+     *
+     * @return The cloned graph
+     */
+    public static ModelResource createNewModelResourceVersion(final EFactory factory, final ModelResource resource) {
+        final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
+
+        return ModelProviderUtil.cloneNewModelGraphVersion(factory, baseDirectory);
+    }
+
+    /**
+     * Helper method for cloning: Clones and returns a new version from the current newest version
+     * of the model graph.
+     *
+     * @param factory
+     *            the factory for the particular metamodel (partition)
+     * @param <T>
+     *            graph type
+     * @return The the model graph
+     */
+    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EFactory factory,
+            final File baseDirectory) {
+        final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(factory.getEPackage());
+        final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
+        final int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(resourceBaseDirectory.listFiles());
+
+        final File newGraphDir = ModelProviderUtil.createResourceDatabaseFile(resourceBaseDirectory,
+                resourceRootTypeName, maxVersionNumber + 1);
+
+        // Copy old graph files
+        if (maxVersionNumber >= 0) {
+            final File currentGraphDir = ModelProviderUtil.createResourceDatabaseFile(resourceBaseDirectory,
+                    resourceRootTypeName, maxVersionNumber);
+
+            try {
+                FileUtils.copyDirectory(currentGraphDir, newGraphDir);
+            } catch (final IOException e) {
+                ModelProviderUtil.LOGGER.error("Could not copy old graph version.");
+            }
+        } else {
+            throw new InternalError("No such model available for cloning.");
+        }
+
+        return new ModelResource(factory, newGraphDir);
     }
 
     /**
@@ -259,24 +339,25 @@ public final class ModelProviderUtil {
     }
 
     /**
-     * Instantiates a pcm model component from a given type name.
+     * Instantiates a pcm model object from a given type name.
      *
      * @param factories
      *            factories for this particular metamodel
-     * @param name
-     *            The component's data type name
+     * @param fqnClassName
+     *            The data type name
      * @return New object of the given data type
      */
-    public static EObject instantiateEObject(final List<EFactory> factories, final String name) {
+    @SuppressWarnings("unchecked")
+    public static <T> T instantiateEObject(final List<EFactory> factories, final String fqnClassName) {
 
-        final int separationPoint = name.lastIndexOf('.');
-        final String className = name.substring(separationPoint + 1);
+        final int separationPoint = fqnClassName.lastIndexOf('.');
+        final String className = fqnClassName.substring(separationPoint + 1);
 
         for (final EFactory factory : factories) {
             final EPackage ePackage = factory.getEPackage();
             final EClass eClass = (EClass) ePackage.getEClassifier(className);
             if (eClass != null) {
-                return factory.create(eClass);
+                return (T) factory.create(eClass);
             }
         }
         return null;
@@ -301,5 +382,64 @@ public final class ModelProviderUtil {
         Collections.sort(sortedRels, new RelationshipComparator());
 
         return sortedRels;
+    }
+
+    private static String fullyQualifiedPackageName(final EPackage ePackage) {
+        if (ePackage == null) {
+            return "default";
+        } else if (ePackage.getESuperPackage() != null) {
+            return ModelProviderUtil.fullyQualifiedPackageName(ePackage.getESuperPackage()) + "." + ePackage.getName();
+        } else {
+            return ePackage.getName();
+        }
+    }
+
+    private static File createResourceDatabaseFile(final File graphTypeDir, final String graphTypeDirName,
+            final int versionNumber) {
+        return new File(graphTypeDir, graphTypeDirName + ModelProviderUtil.VERSION_PREFIX + versionNumber);
+    }
+
+    /**
+     * Returns the highest version number from all passed graph database directories.
+     *
+     * @param files
+     *            The graph database directories
+     * @return The highest version number
+     */
+    private static int getLastVersionNumber(final File[] files) {
+        if (files != null) {
+            int max = 0;
+
+            for (final File file : files) {
+                final int version = ModelProviderUtil.getVersionNumber(file);
+
+                if (max < version) {
+                    max = version;
+                }
+            }
+            return max;
+        } else {
+            return -1;
+        }
+
+    }
+
+    /**
+     * Returns the version number of a given graph database directory.
+     *
+     * @param file
+     *            The graph database directory
+     * @return The version number
+     */
+    private static int getVersionNumber(final File file) {
+        final int versionNumberIndex = file.getName().lastIndexOf(ModelProviderUtil.VERSION_PREFIX);
+
+        if (versionNumberIndex == -1) {
+            throw new InternalError(
+                    "Missing version number in " + file + "  Every database path must have a version number.");
+        } else {
+            return Integer
+                    .valueOf(file.getName().substring(versionNumberIndex + ModelProviderUtil.VERSION_PREFIX.length()));
+        }
     }
 }

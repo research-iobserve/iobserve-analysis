@@ -118,7 +118,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.getObjectsByTypeAndName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
                 DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         // does this make sense?
@@ -126,7 +126,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
         Mockito.when(
-                this.mockedAssemblyContextModelProvider.getObjectsByTypeAndName(AssemblyContext.class, asmContextName))
+                this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class, asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 
         this.deploymentVisualizationStage = new DeploymentVisualizationStage(changelogURL,

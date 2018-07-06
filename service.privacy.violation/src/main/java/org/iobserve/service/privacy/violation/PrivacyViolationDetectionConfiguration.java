@@ -113,9 +113,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final File warningFile, final File alarmFile) throws IOException, ConfigurationException {
 
         final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                systemModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                resourceEnvironmentModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -165,8 +165,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
             final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
             final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceGraph,
-                    repositoryModelProvider.getGraph(), systemModelProvider.getGraph(),
-                    allocationModelProvider.getGraph());
+                    repositoryModelProvider.getResource(), systemModelProvider.getResource(),
+                    allocationModelProvider.getResource());
             final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
                     systemModelProvider, resourceEnvironmentModelProvider);
             final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();

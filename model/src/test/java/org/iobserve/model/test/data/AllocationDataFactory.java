@@ -29,13 +29,15 @@ import org.palladiosimulator.pcm.system.System;
  */
 public final class AllocationDataFactory {
 
-    public static final String QUERY_ALLOCATION_1 = "Allocation1_" + SystemDataFactory.QUERY_ASSEMBLY_CONTEXT;
-    public static final String QUERY_ALLOCATION_2 = "Allocation2_" + SystemDataFactory.QUERY_ASSEMBLY_CONTEXT;
-    public static final String BUSINESS_ORDER_ALLOCATION = "Allocation1_"
+    public static final String QUERY_ALLOCATION_CONTEXT_1 = "Allocation1_" + SystemDataFactory.QUERY_ASSEMBLY_CONTEXT;
+    public static final String QUERY_ALLOCATION_CONTEXT_2 = "Allocation2_" + SystemDataFactory.QUERY_ASSEMBLY_CONTEXT;
+    public static final String BUSINESS_ORDER_ALLOCATION_CONTEXT = "Allocation1_"
             + SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT;
-    public static final String PRIVATE_ORDER_ALLOCATION = "Allocation2_"
+    public static final String PRIVATE_ORDER_ALLOCATION_CONTEXT = "Allocation2_"
             + SystemDataFactory.PRIVATE_ORDER_ASSMEBLY_CONTEXT;
-    public static final String PAYMENT_ALLOCATION = "Allocation_" + SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT;
+    public static final String PAYMENT_ALLOCATION_CONTEXT = "Allocation_" + SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT;
+
+    public static final String QUERY_ALLOCATION_CONTEXT_3 = "Allocation3_" + SystemDataFactory.QUERY_ASSEMBLY_CONTEXT;
 
     /**
      * Empty factory.
@@ -46,8 +48,8 @@ public final class AllocationDataFactory {
 
     /**
      * Create a new allocation model and link it with {@code system} and {@code resourceEnvironment}
-     * model
-     * 
+     * model.
+     *
      * @param system
      *            system model
      * @param resourceEnvironment
@@ -63,25 +65,25 @@ public final class AllocationDataFactory {
 
         // Allocation contexts
         final AllocationContext client1AllocationContext = AllocationDataFactory.createAllocationContext(system,
-                resourceEnvironment, AllocationDataFactory.QUERY_ALLOCATION_1, SystemDataFactory.QUERY_ASSEMBLY_CONTEXT,
-                ResourceEnvironmentDataFactory.QUERY_CONTAINER_1);
+                resourceEnvironment, AllocationDataFactory.QUERY_ALLOCATION_CONTEXT_1,
+                SystemDataFactory.QUERY_ASSEMBLY_CONTEXT, ResourceEnvironmentDataFactory.QUERY_CONTAINER_1);
 
         final AllocationContext client2AllocationContext = AllocationDataFactory.createAllocationContext(system,
-                resourceEnvironment, AllocationDataFactory.QUERY_ALLOCATION_2, SystemDataFactory.QUERY_ASSEMBLY_CONTEXT,
-                ResourceEnvironmentDataFactory.QUERY_CONTAINER_2);
+                resourceEnvironment, AllocationDataFactory.QUERY_ALLOCATION_CONTEXT_2,
+                SystemDataFactory.QUERY_ASSEMBLY_CONTEXT, ResourceEnvironmentDataFactory.QUERY_CONTAINER_2);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory.createAllocationContext(
-                system, resourceEnvironment, AllocationDataFactory.BUSINESS_ORDER_ALLOCATION,
+                system, resourceEnvironment, AllocationDataFactory.BUSINESS_ORDER_ALLOCATION_CONTEXT,
                 SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT,
                 ResourceEnvironmentDataFactory.BUSINESS_ORDER_CONTAINER);
 
         final AllocationContext privateOrderServerAllocationContext = AllocationDataFactory.createAllocationContext(
-                system, resourceEnvironment, AllocationDataFactory.PRIVATE_ORDER_ALLOCATION,
+                system, resourceEnvironment, AllocationDataFactory.PRIVATE_ORDER_ALLOCATION_CONTEXT,
                 SystemDataFactory.PRIVATE_ORDER_ASSMEBLY_CONTEXT,
                 ResourceEnvironmentDataFactory.PRIVATE_ORDER_CONTAINER);
 
         final AllocationContext paymentServerAllocationContext = AllocationDataFactory.createAllocationContext(system,
-                resourceEnvironment, AllocationDataFactory.PAYMENT_ALLOCATION,
+                resourceEnvironment, AllocationDataFactory.PAYMENT_ALLOCATION_CONTEXT,
                 SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT, ResourceEnvironmentDataFactory.PAYMENT_CONTAINER);
 
         allocation.getAllocationContexts_Allocation().add(client1AllocationContext);
@@ -109,6 +111,15 @@ public final class AllocationDataFactory {
         return context;
     }
 
+    /**
+     * Find an {@link AllocationContext} in an {@Allocation} model by name.
+     *
+     * @param allocation
+     *            the allocation model
+     * @param allocationName
+     *            the name of the context
+     * @return returns on success the {@link AllocationContext}, else null
+     */
     public static AllocationContext findAllocationContext(final Allocation allocation, final String allocationName) {
         for (final AllocationContext context : allocation.getAllocationContexts_Allocation()) {
             if (context.getEntityName().equals(allocationName)) {

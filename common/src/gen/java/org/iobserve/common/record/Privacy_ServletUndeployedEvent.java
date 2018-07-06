@@ -86,7 +86,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_ServletUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public Privacy_ServletUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -102,7 +102,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_ServletUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected Privacy_ServletUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -125,7 +125,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -178,7 +178,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

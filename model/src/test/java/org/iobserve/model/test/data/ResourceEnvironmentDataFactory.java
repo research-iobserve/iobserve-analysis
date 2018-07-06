@@ -130,6 +130,13 @@ public final class ResourceEnvironmentDataFactory {
         return resourceEnvironment;
     }
 
+    /**
+     * Create a {@link ProcessingResourceSpecification}.
+     *
+     * @param type
+     *            the for the {@link ProcessingResourceSpecification}
+     * @return returns a {@link ProcessingResourceSpecification}
+     */
     public static ProcessingResourceSpecification createProcessingResourceSpecification(
             final ProcessingResourceType type) {
         final ProcessingResourceSpecification specification = ResourceenvironmentFactory.eINSTANCE
@@ -141,6 +148,13 @@ public final class ResourceEnvironmentDataFactory {
         return specification;
     }
 
+    /**
+     * Create a {@link ProcessingResourceType}.
+     *
+     * @param name
+     *            the name of the type
+     * @return returns a {@link ProcessingResourceType}
+     */
     private static ProcessingResourceType createProcessionResourceType(final String name) {
         final ProcessingResourceType type = ResourcetypeFactory.eINSTANCE.createProcessingResourceType();
 
@@ -149,6 +163,15 @@ public final class ResourceEnvironmentDataFactory {
         return type;
     }
 
+    /**
+     * Create a resource container {@link ResourceContainer}.
+     *
+     * @param name
+     *            container name
+     * @param specification
+     *            the {@link ProcessingResourceSpecification} for the container
+     * @return returns a {@link ResourceContainer}
+     */
     public static ResourceContainer createResourceContainer(final String name,
             final ProcessingResourceSpecification specification) {
         /** optional test resource container with value */
@@ -160,6 +183,15 @@ public final class ResourceEnvironmentDataFactory {
         return container;
     }
 
+    /**
+     * Find a {@link ResourceContainer} in a {@link ResourceEnvironment} model.
+     *
+     * @param resourceEnvironment
+     *            the {@link ResourceEnvironment} model
+     * @param containerName
+     *            the container name
+     * @return returns the found {@link ResourceContainer} or null
+     */
     public static ResourceContainer findContainer(final ResourceEnvironment resourceEnvironment,
             final String containerName) {
         for (final ResourceContainer container : resourceEnvironment.getResourceContainer_ResourceEnvironment()) {
@@ -170,6 +202,17 @@ public final class ResourceEnvironmentDataFactory {
         return null;
     }
 
+    /**
+     * Clone a {@link ResourceContainer} in a {@link ResourceEnvironment} model.
+     *
+     * @param resourceEnvironment
+     *            the {@link ResourceEnvironment} model
+     * @param existingContainerName
+     *            the name of the existing container
+     * @param newContainerName
+     *            the name of the cloned container
+     * @return returns the cloned {@link ResourceContainer}
+     */
     public static ResourceContainer cloneContainer(final ResourceEnvironment resourceEnvironment,
             final String existingContainerName, final String newContainerName) {
         final ResourceContainer existingContainer = ResourceEnvironmentDataFactory.findContainer(resourceEnvironment,
@@ -180,6 +223,15 @@ public final class ResourceEnvironmentDataFactory {
         return ResourceEnvironmentDataFactory.createResourceContainer(newContainerName, specification);
     }
 
+    /**
+     * Find a {@link LinkingResource} in a {@link ResourceEnvironment} model.
+     *
+     * @param resourceEnvironment
+     *            the {@link ResourceEnvironment} model
+     * @param linkName
+     *            name of the linking resource
+     * @return returns a {@link LinkingResource} on success or null
+     */
     public static LinkingResource findLinkingResource(final ResourceEnvironment resourceEnvironment,
             final String linkName) {
         for (final LinkingResource linkingResource : resourceEnvironment.getLinkingResources__ResourceEnvironment()) {

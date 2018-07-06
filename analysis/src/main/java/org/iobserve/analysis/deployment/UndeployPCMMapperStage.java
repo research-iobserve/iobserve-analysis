@@ -92,15 +92,15 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     private void performMapping(final String service, final String context) {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .getObjectsByTypeAndName(AssemblyEntry.class, context);
+                .findObjectsByTypeAndName(AssemblyEntry.class, context);
 
         final List<ResourceContainer> resourceContainers = this.resourceContainerModelProvider
-                .getObjectsByTypeAndName(ResourceContainer.class, service);
+                .findObjectsByTypeAndName(ResourceContainer.class, service);
 
         if (assemblyEntry.size() == 1) {
             final ResourceContainer resourceContainer = resourceContainers.get(0);
             final AssemblyContext assemblyContext = this.assemblyContextModelProvider
-                    .getObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
+                    .findObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
             this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer));
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,

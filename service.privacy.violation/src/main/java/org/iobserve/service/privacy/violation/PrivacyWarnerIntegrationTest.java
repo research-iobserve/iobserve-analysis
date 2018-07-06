@@ -29,7 +29,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.persistence.neo4j.IModelProvider;
 import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelGraphLoader;
+import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
 import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
@@ -115,7 +115,7 @@ public class PrivacyWarnerIntegrationTest {
 
         try {
             final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
-            final ModelGraphLoader graphLoader = new ModelGraphLoader(this.modelDatabaseDirectory);
+            final ModelResourceLoader graphLoader = new ModelResourceLoader(this.modelDatabaseDirectory);
 
             /** graphs. */
             graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
@@ -130,12 +130,12 @@ public class PrivacyWarnerIntegrationTest {
                     ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
             /** load neo4j graphs. */
-            final ModelGraph repositoryGraph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-            final ModelGraph systemGraph = graphLoader.createModelGraph(SystemFactory.eINSTANCE);
+            final ModelGraph repositoryGraph = graphLoader.createModelResource(RepositoryFactory.eINSTANCE);
+            final ModelGraph systemGraph = graphLoader.createModelResource(SystemFactory.eINSTANCE);
             final ModelGraph resourceEnvironmentGraph = graphLoader
-                    .createModelGraph(ResourceenvironmentFactory.eINSTANCE);
-            final ModelGraph allocationModelGraph = graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
-            final ModelGraph privacyModelGraph = graphLoader.createModelGraph(PrivacyFactory.eINSTANCE);
+                    .createModelResource(ResourceenvironmentFactory.eINSTANCE);
+            final ModelGraph allocationModelGraph = graphLoader.createModelResource(AllocationFactory.eINSTANCE);
+            final ModelGraph privacyModelGraph = graphLoader.createModelResource(PrivacyFactory.eINSTANCE);
 
             /** model provider. */
             final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,

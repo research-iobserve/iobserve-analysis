@@ -89,15 +89,15 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        final ComponentEntry componentEntry = this.componentEntryProvider.getObjectByTypeAndId(ComponentEntry.class,
+        final ComponentEntry componentEntry = this.componentEntryProvider.findObjectByTypeAndId(ComponentEntry.class,
                 event.getClassSignature());
         if (componentEntry != null) {
             final OperationEntry operationEntry = this.operationSignatureEntryProvider
-                    .getObjectByTypeAndId(OperationEntry.class, event.getOperationSignature());
+                    .findObjectByTypeAndId(OperationEntry.class, event.getOperationSignature());
 
             if (operationEntry != null) {
                 final AllocationEntry allocationEntry = this.allocationEntryProvider
-                        .getObjectByTypeAndId(AllocationEntry.class, event.getHostname());
+                        .findObjectByTypeAndId(AllocationEntry.class, event.getHostname());
                 if (allocationEntry != null) {
                     this.computePcmEntryCallEvent(componentEntry, operationEntry, allocationEntry, event);
                 } else {
@@ -115,14 +115,14 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
             final AllocationEntry allocationEntry, final EntryCallEvent event) {
         /** retrieve PCM model elements from mapping. */
         final AllocationContext allocationContext = this.allocationContextProvider
-                .getObjectByTypeAndId(AllocationContext.class, allocationEntry.getAllocation().getId());
+                .findObjectByTypeAndId(AllocationContext.class, allocationEntry.getAllocation().getId());
         final OperationSignature operationSignature = this.operationSignatureProvider
                 .findAndLockObjectById(OperationSignature.class, operationEntry.getOperation().getId());
-        final RepositoryComponent component = this.componentProvider.getObjectByTypeAndId(RepositoryComponent.class,
+        final RepositoryComponent component = this.componentProvider.findObjectByTypeAndId(RepositoryComponent.class,
                 componentEntry.getComponent().getId());
 
         /** assembly is inferred from allocation. */
-        final AssemblyContext assemblyContext = this.assemblyContextProvider.getObjectByTypeAndId(AssemblyContext.class,
+        final AssemblyContext assemblyContext = this.assemblyContextProvider.findObjectByTypeAndId(AssemblyContext.class,
                 allocationContext.getAssemblyContext_AllocationContext().getId());
 
         /** assemble event. */

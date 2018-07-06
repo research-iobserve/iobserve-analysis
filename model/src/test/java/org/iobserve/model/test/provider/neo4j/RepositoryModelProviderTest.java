@@ -18,8 +18,7 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,21 +54,20 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelGraph graph = this.prepareGraph("createThenReadContaining");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
+                this.factory);
 
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final OperationInterface writtenInterface = (OperationInterface) this.testModel.getInterfaces__Repository()
                 .get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final Repository readModel = (Repository) modelProvider
-                .readOnlyContainingComponentById(OperationInterface.class, writtenInterface.getId());
+        final Repository readModel = (Repository) resource.readOnlyContainingObjectById(OperationInterface.class,
+                writtenInterface.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -80,31 +78,27 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public final void createThenReadByType() {
-        final ModelGraph graph = this.prepareGraph("createThenReadByType");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
+                this.factory);
 
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<String> collectedIds = modelProvider.collectAllObjectIdsByType(this.clazz);
+        final List<String> collectedIds = resource.collectAllObjectIdsByType(this.clazz);
 
         for (final String id : collectedIds) {
             Assert.assertTrue(this.testModel.getId().equals(id));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
+                this.factory);
 
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         final RepositoryComponent component = RepositoryModelDataFactory.findComponentByName(this.repository,
                 RepositoryModelDataFactory.SEARCH_COMPONENT);
@@ -114,31 +108,29 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         final String id = component.getId();
 
-        final List<EObject> readReferencingObjects = modelProvider
-                .collectReferencingObjectsByTypeAndId(BasicComponent.class, id);
+        final List<EObject> readReferencingObjects = resource.collectReferencingObjectsByTypeAndId(BasicComponent.class,
+                id);
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingObjects.size() == 1);
 
         Assert.assertTrue(this.equalityHelper.equals(providedSearchRole, readReferencingObjects.get(0)));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
-
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
+                this.prefix, this.factory);
 
         final Interface payInterface = RepositoryModelDataFactory.findInterfaceByName(this.repository,
                 RepositoryModelDataFactory.PAYMENT_INTERFACE);
         final RepositoryComponent paymentComponent = RepositoryModelDataFactory.findComponentByName(this.repository,
                 RepositoryModelDataFactory.PAYMENT_COMPONENT);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         // Update the model by renaming and replacing the payment method
         this.testModel.setEntityName("MyVideoOnDemandService");
@@ -151,13 +143,13 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
 
-        modelProvider.updateObject(Repository.class, this.testModel);
+        resource.updatePartition(Repository.class, this.testModel);
 
-        final Repository readModel = modelProvider.getModelRootNode(Repository.class);
+        final Repository readModel = resource.getModelRootNode(Repository.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -168,44 +160,40 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public final void createThenDeleteObject() {
-        final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
+                this.factory);
 
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.deleteObjectByTypeAndId(this.clazz, this.testModel.getId());
 
-        modelProvider.deleteObjectByTypeAndId(this.clazz, this.testModel.getId());
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#getObjectsByTypeAndName(Class, String)} and asserts that it is equal to
+     * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
      * the one written to the graph.
      */
     @Test
     public final void createThenReadByName() {
-        final ModelGraph graph = this.prepareGraph("createThenReadByName");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByName", this.prefix,
+                this.factory);
 
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<Repository> readModels = modelProvider.getObjectsByTypeAndName(this.clazz,
+        final List<Repository> readModels = resource.findObjectsByTypeAndName(this.clazz, "entityName",
                 this.testModel.getEntityName());
 
         for (final Repository readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override

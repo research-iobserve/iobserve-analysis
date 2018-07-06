@@ -3,30 +3,48 @@
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/model/src/gen/java" modelPluginID="model" modelName="TestNeo4J"
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
-  <foreignModel>../../../../../../TestNeo4J.ecore</foreignModel>
+  <foreignModel>TestNeo4J.ecore</foreignModel>
   <genPackages prefix="Storage" basePackage="org.iobserve.model.test" disposableProviderFactory="true"
       ecorePackage="TestNeo4J.ecore#/">
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="TestNeo4J.ecore#//EnumValueExample">
-      <genEnumLiterals ecoreEnumLiteral="TestNeo4J.ecore#//EnumValueExample/A"/>
-      <genEnumLiterals ecoreEnumLiteral="TestNeo4J.ecore#//EnumValueExample/B"/>
-    </genEnums>
-    <genClasses ecoreClass="TestNeo4J.ecore#//Root">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//Root/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//Root/labels"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//Root/fixed"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//Root/enumerate"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//Root/others"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//Root/ifaceOthers"/>
-    </genClasses>
-    <genClasses ecoreClass="TestNeo4J.ecore#//Other">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//Other/name"/>
-    </genClasses>
-    <genClasses ecoreClass="TestNeo4J.ecore#//OtherSubType">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//OtherSubType/label"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//OtherSubType/other"/>
-    </genClasses>
-    <genClasses image="false" ecoreClass="TestNeo4J.ecore#//OtherInterface"/>
-    <genClasses ecoreClass="TestNeo4J.ecore#//SpecialA"/>
-    <genClasses ecoreClass="TestNeo4J.ecore#//SpecialB"/>
+    <nestedGenPackages prefix="Two" basePackage="org.iobserve.model.test.storage"
+        disposableProviderFactory="true" ecorePackage="TestNeo4J.ecore#//two">
+      <genClasses ecoreClass="TestNeo4J.ecore#//two/Two">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//two/Two/links"/>
+      </genClasses>
+      <genClasses ecoreClass="TestNeo4J.ecore#//two/Link">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference TestNeo4J.ecore#//two/Link/reference"/>
+      </genClasses>
+    </nestedGenPackages>
+    <nestedGenPackages prefix="One" basePackage="org.iobserve.model.test.storage"
+        disposableProviderFactory="true" ecorePackage="TestNeo4J.ecore#//one">
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="TestNeo4J.ecore#//one/EnumValueExample">
+        <genEnumLiterals ecoreEnumLiteral="TestNeo4J.ecore#//one/EnumValueExample/A"/>
+        <genEnumLiterals ecoreEnumLiteral="TestNeo4J.ecore#//one/EnumValueExample/B"/>
+      </genEnums>
+      <genClasses ecoreClass="TestNeo4J.ecore#//one/Root">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/Root/name"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/Root/labels"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/Root/fixed"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/Root/enumerate"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//one/Root/others"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//one/Root/ifaceOthers"/>
+      </genClasses>
+      <genClasses ecoreClass="TestNeo4J.ecore#//one/Other">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/Other/name"/>
+      </genClasses>
+      <genClasses ecoreClass="TestNeo4J.ecore#//one/OtherSubType">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TestNeo4J.ecore#//one/OtherSubType/label"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//one/OtherSubType/other"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="TestNeo4J.ecore#//one/OtherInterface">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TestNeo4J.ecore#//one/OtherInterface/next"/>
+      </genClasses>
+      <genClasses ecoreClass="TestNeo4J.ecore#//one/SpecialA">
+        <genFeatures notify="false" createChild="false" propertySortChoices="true"
+            ecoreFeature="ecore:EReference TestNeo4J.ecore#//one/SpecialA/relate"/>
+      </genClasses>
+      <genClasses ecoreClass="TestNeo4J.ecore#//one/SpecialB"/>
+    </nestedGenPackages>
   </genPackages>
 </genmodel:GenModel>

@@ -206,6 +206,12 @@ public class ComposedActionComputationTest {
                 Matchers.is(expectedAction.getSourceRequiringAllocationContexts()));
     }
 
+    /**
+     * Test change repository rule.
+     *
+     * @throws Exception
+     *             on internal errors.
+     */
     @Test
     public void testChangeRepositoryRule() throws Exception {
         final AdaptationData adaptationData;
@@ -245,6 +251,12 @@ public class ComposedActionComputationTest {
                 Matchers.is(expectedAction.getSourceAllocationContext()));
     }
 
+    /**
+     * Test whether the allocation rule succeeds.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testAllocateRule() throws Exception {
         final AdaptationData adaptationData;
@@ -276,6 +288,12 @@ public class ComposedActionComputationTest {
                 Matchers.is(expectedAction.getTargetLinkingResources()));
     }
 
+    /**
+     * Test whether the de-allocation rule succeeds.
+     *
+     * @throws Exception
+     *             on internal errors
+     */
     @Test
     public void testDeallocateRule() throws Exception {
         final AdaptationData adaptationData;

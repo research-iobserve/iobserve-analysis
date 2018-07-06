@@ -101,7 +101,7 @@ public class AllocationNoResourceContainerTest {
                         .getResourceContainer_ResourceEnvironment().get(0));
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateObject(ResourceEnvironment.class, AllocationNoResourceContainerTest.resourceEnvironment);
+                .updatePartition(ResourceEnvironment.class, AllocationNoResourceContainerTest.resourceEnvironment);
     }
 
     /**

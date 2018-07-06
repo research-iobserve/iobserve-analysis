@@ -29,7 +29,9 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentP
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class ResourceEnvironmentGeneration {
 
     private static final ResourceenvironmentFactory RES_ENV_FACTORY = ResourceenvironmentFactory.eINSTANCE;

@@ -71,7 +71,7 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelProvider
                     .getModelRootNode(ResourceEnvironment.class);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().remove(resourceContainer.get());
-            this.resourceEnvironmentModelProvider.updateObject(ResourceEnvironment.class,
+            this.resourceEnvironmentModelProvider.updatePartition(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             /** signal allocation update. */

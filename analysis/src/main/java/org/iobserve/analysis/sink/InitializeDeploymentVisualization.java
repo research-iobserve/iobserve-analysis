@@ -121,7 +121,7 @@ public final class InitializeDeploymentVisualization {
         final List<String> allocationIds = this.allocationModelGraphProvider.collectAllObjectIdsByType(Allocation.class);
         // an allocation model contains exactly one allocation, therefore .get(0)
         final String allocationId = allocationIds.get(0);
-        final Allocation allocation = this.allocationModelGraphProvider.getObjectByTypeAndId(Allocation.class,
+        final Allocation allocation = this.allocationModelGraphProvider.findObjectByTypeAndId(Allocation.class,
                 allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 

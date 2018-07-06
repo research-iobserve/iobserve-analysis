@@ -66,7 +66,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
-                .getObjectsByTypeAndName(AllocationContext.class, allocationContextName);
+                .findObjectsByTypeAndName(AllocationContext.class, allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);

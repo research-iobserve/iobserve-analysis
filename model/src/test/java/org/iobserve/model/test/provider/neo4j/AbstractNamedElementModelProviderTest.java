@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.NamedElement;
@@ -39,16 +39,14 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
      * one written to the graph.
      */
-    @Test
-    abstract void createThenReadByType();
+    protected abstract void createThenReadByType();
 
     /**
      * Writes a model to the graph, reads the container of a certain model component from the graph
-     * using {@link ModelProvider#readOnlyContainingComponentById(Class, String)} and asserts that
-     * it is equal to the container from the original model.
+     * using {@link ModelProvider#readOnlyContainingObjectById(Class, String)} and asserts that it
+     * is equal to the container from the original model.
      */
-    @Test
-    abstract void createThenReadContaining();
+    protected abstract void createThenReadContaining();
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
@@ -60,8 +58,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, modifies the original model, updates it in the graph using
-     * {@link ModelProvider#updateObject(Class, org.eclipse.emf.ecore.EObject)}, reads the updated
-     * model from the graph and asserts that it is equal to the modified original model.
+     * {@link ModelProvider#updatePartition(Class, org.eclipse.emf.ecore.EObject)}, reads the
+     * updated model from the graph and asserts that it is equal to the modified original model.
      */
     @Test
     abstract void createThenUpdateThenReadUpdated();
@@ -85,47 +83,40 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final ModelGraph storeGraph = this
-                .prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ);
+        final ModelResource storeResource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.factory);
 
-        final ModelProvider<T> storeModelProvider = new ModelProvider<>(storeGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        storeResource.storeModelPartition(this.testModel);
 
-        storeModelProvider.storeModelPartition(this.testModel);
+        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.factory,
+                storeResource);
 
-        final ModelGraph cloneGraph = storeModelProvider.cloneNewGraphVersion(this.factory);
-
-        final ModelProvider<T> cloneModelProvider = new ModelProvider<>(cloneGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        final T clonedModel = cloneModelProvider.getModelRootNode(this.clazz);
-        cloneGraph.getGraphDatabaseService().shutdown();
+        final T clonedModel = newRevisionResource.getModelRootNode(this.clazz);
+        newRevisionResource.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
 
-        storeGraph.getGraphDatabaseService().shutdown();
+        storeResource.getGraphDatabaseService().shutdown();
     }
 
     /**
-     * Writes a model to the graph, clears the graph using {@link ModelProvider#clearGraph()} and
+     * Writes a model to the graph, clears the graph using {@link ModelProvider#clearResource()} and
      * asserts that the graph is empty afterwards.
      */
     @Test
-    public final void createThenClearGraph() {
-        final ModelGraph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH);
+    public final void createThenClearResource() {
+        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.factory);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.clearResource();
 
-        modelProvider.clearGraph();
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -135,18 +126,16 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() {
-        final ModelGraph graph = this.prepareGraph(AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.factory);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final T readModel = modelProvider.getModelRootNode(this.clazz);
+        final T readModel = resource.getModelRootNode(this.clazz);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
 }

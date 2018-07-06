@@ -22,6 +22,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.test.data.DebugHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -78,7 +79,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
                 + event.getResourceContainer().getEntityName();
 
         final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
-                .getObjectsByTypeAndName(AllocationContext.class, allocationContextName);
+                .findObjectsByTypeAndName(AllocationContext.class, allocationContextName);
         if (allocationContext.isEmpty()) {
             this.logger.debug("Create allocation context {}", event);
             final Allocation allocationModel = this.allocationModelGraphProvider.getModelRootNode(Allocation.class);
@@ -90,9 +91,15 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
 
-            // this.allocationContextModelGraphProvider.storeModelPartition(newAllocationContext);
+            this.allocationModelGraphProvider.updatePartition(Allocation.class, allocationModel);
 
-            this.allocationModelGraphProvider.updateObject(Allocation.class, allocationModel);
+            DebugHelper.printModelPartition(this.allocationModelGraphProvider.getModelRootNode(Allocation.class));
+
+            for (final AllocationContext context : this.allocationContextModelGraphProvider
+                    .collectAllObjectsByType(AllocationContext.class)) {
+                DebugHelper.printModelPartition(context);
+            }
+
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);

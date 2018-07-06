@@ -93,7 +93,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     private void performMapping(final IDeployedEvent event, final String service, final String context) {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .getObjectsByTypeAndName(AssemblyEntry.class, context);
+                .findObjectsByTypeAndName(AssemblyEntry.class, context);
 
         // build the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
@@ -101,7 +101,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
         if (assemblyEntry.size() == 1) {
             final AssemblyContext assemblyContext = this.assemblyContextModelProvider
-                    .getObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
+                    .findObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
             if (event instanceof Privacy) {
                 this.logger.debug("privacy {}", event);
                 this.outputPort

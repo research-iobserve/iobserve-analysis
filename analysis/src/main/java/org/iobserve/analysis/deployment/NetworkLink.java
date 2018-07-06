@@ -102,7 +102,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        this.resourceEnvironmentModelProvider.updateObject(ResourceEnvironment.class, resourceEnvironment);
+        this.resourceEnvironmentModelProvider.updatePartition(ResourceEnvironment.class, resourceEnvironment);
     }
 
     /**

@@ -15,9 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.test.data;
 
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.CorrespondentFactory;
-
 /**
  * @author Reiner Jung
  *
@@ -29,15 +26,7 @@ public final class CorrespondenceModelDataFactory {
     public static final String PCM_OPERATION_NAME = "testPcmOperationName";
     public static final String PCM_OPERATION_ID = "testPcmOperationId";
 
-    public static final Correspondent CORRESPONDENT = CorrespondenceModelDataFactory.createCorrespondent();
-    
     private CorrespondenceModelDataFactory() {
-		// empty private constructor 
-	}
-
-    private static Correspondent createCorrespondent() {
-        return CorrespondentFactory.newInstance(CorrespondenceModelDataFactory.PCM_ENTITY_NAME,
-                CorrespondenceModelDataFactory.PCM_ENTITY_ID, CorrespondenceModelDataFactory.PCM_OPERATION_NAME,
-                CorrespondenceModelDataFactory.PCM_OPERATION_ID);
+        // empty private constructor
     }
 }

@@ -154,7 +154,7 @@ public class DeploymentResourceContainerTest {
                 DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0));
 
         Mockito.doNothing().when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updateObject(Allocation.class, DeploymentResourceContainerTest.allocation);
+                .updatePartition(Allocation.class, DeploymentResourceContainerTest.allocation);
     }
 
     /**

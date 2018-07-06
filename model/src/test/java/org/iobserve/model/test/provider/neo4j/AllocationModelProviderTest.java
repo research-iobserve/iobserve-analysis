@@ -18,8 +18,7 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.iobserve.model.test.data.SystemDataFactory;
@@ -62,81 +61,72 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE);
+        final ModelResource resource = ModelProviderTestUtils
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.factory);
 
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<String> collectedIds = modelProvider.collectAllObjectIdsByType(Allocation.class);
+        final List<String> collectedIds = resource.collectAllObjectIdsByType(Allocation.class);
 
         for (final String id : collectedIds) {
             Assert.assertTrue(this.testModel.getId().equals(id));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING);
-
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final ModelResource resource = ModelProviderTestUtils
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.factory);
 
         final AllocationContext writtenContext = this.testModel.getAllocationContexts_Allocation().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final Allocation readModel = (Allocation) modelProvider.readOnlyContainingComponentById(AllocationContext.class,
+        final Allocation readModel = (Allocation) resource.readOnlyContainingObjectById(AllocationContext.class,
                 writtenContext.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING);
+        final ModelResource resource = ModelProviderTestUtils
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.factory);
 
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         final String id = SystemDataFactory.findAssemblyContext(this.system, SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT)
                 .getId();
-        final List<EObject> readReferencingComponents = modelProvider
+        final List<EObject> readReferencingComponents = resource
                 .collectReferencingObjectsByTypeAndId(AssemblyContext.class, id);
 
         // Only the payment server allocation context is referencing the payment assembly context
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(
-                AllocationDataFactory.findAllocationContext(this.testModel, AllocationDataFactory.PAYMENT_ALLOCATION),
-                readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(AllocationDataFactory.findAllocationContext(this.testModel,
+                AllocationDataFactory.PAYMENT_ALLOCATION_CONTEXT), readReferencingComponents.get(0)));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED);
-
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+                AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.factory);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory
-                .findAllocationContext(this.testModel, AllocationDataFactory.BUSINESS_ORDER_ALLOCATION);
+                .findAllocationContext(this.testModel, AllocationDataFactory.BUSINESS_ORDER_ALLOCATION_CONTEXT);
         final AllocationContext privateOrderServerAllocationContext = AllocationDataFactory
-                .findAllocationContext(this.testModel, AllocationDataFactory.PRIVATE_ORDER_ALLOCATION);
+                .findAllocationContext(this.testModel, AllocationDataFactory.PRIVATE_ORDER_ALLOCATION_CONTEXT);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         // Update the model by allocating new separate servers for business and private orders
         final ResourceContainer businessOrderServer = ResourceEnvironmentDataFactory.cloneContainer(
@@ -153,37 +143,35 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
         businessOrderServerAllocationContext.setResourceContainer_AllocationContext(businessOrderServer);
         privateOrderServerAllocationContext.setResourceContainer_AllocationContext(privateOrderServer);
 
-        modelProvider.updateObject(Allocation.class, this.testModel);
+        resource.updatePartition(Allocation.class, this.testModel);
 
-        final Allocation readModel = modelProvider.getModelRootNode(Allocation.class);
+        final Allocation readModel = resource.getModelRootNode(Allocation.class);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#getObjectsByTypeAndName(Class, String)} and asserts that it is equal to
+     * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
      * the one written to the graph.
      */
     @Test
     public final void createThenReadByName() {
-        final ModelGraph graph = this.prepareGraph(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME);
+        final ModelResource resource = ModelProviderTestUtils
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.factory);
 
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<Allocation> readModels = modelProvider.getObjectsByTypeAndName(this.clazz,
+        final List<Allocation> readModels = resource.findObjectsByTypeAndName(this.clazz, "entityName",
                 this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override

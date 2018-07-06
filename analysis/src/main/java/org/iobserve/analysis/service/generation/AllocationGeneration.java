@@ -31,7 +31,9 @@ import org.palladiosimulator.pcm.system.System;
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class AllocationGeneration {
 
     private static final AllocationFactory ALLOCATION_FACTORY = AllocationFactory.eINSTANCE;
@@ -88,7 +90,7 @@ public class AllocationGeneration {
 
     /**
      *
-     * @return
+     * @return an allocation
      */
     public Allocation generateAllocation() {
         for (final AssemblyContext assemblyContext : this.systemModel.getAssemblyContexts__ComposedStructure()) {
@@ -103,8 +105,9 @@ public class AllocationGeneration {
     /**
      *
      * @param newAssemblyContexts
+     *            new assembly context
      * @param prefix
-     * @return
+     * @return an allocation
      */
     public Allocation generateAllocation(final List<AssemblyContext> newAssemblyContexts, final String prefix) {
 

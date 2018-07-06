@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class ResourceEnvironmentModification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelModificationFactory.class);

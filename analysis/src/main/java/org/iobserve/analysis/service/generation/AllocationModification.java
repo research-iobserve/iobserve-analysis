@@ -36,7 +36,9 @@ import org.palladiosimulator.pcm.system.System;
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class AllocationModification {
 
     private final Allocation allocationModel;

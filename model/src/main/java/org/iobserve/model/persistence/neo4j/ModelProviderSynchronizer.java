@@ -27,32 +27,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lars Bluemke
  *
+ *         TODO: Locking is broken, as the locking should be based on the resource and not on the
+ *         provider
  */
 public final class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
 
-    private static ConcurrentHashMap<ModelGraph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<ModelResource, Object> locks = new ConcurrentHashMap<>();
 
     private ModelProviderSynchronizer() {
         // private constructor, utility class
     }
 
-    /**
-     * Gets the lock for the graph database of the calling {@link ModelProvider}. Blocks if the lock
-     * is currently hold by another provider.
-     *
-     * @param modelProvider
-     *            The model provider trying for the lock
-     */
-    public static void getLock(final ModelProvider<?> modelProvider) {
-        final ModelGraph graph = modelProvider.getGraph();
-
-        synchronized (graph) {
-            while (ModelProviderSynchronizer.locks.get(graph) != null
-                    && ModelProviderSynchronizer.locks.get(graph) != modelProvider) {
+    public static void getLock(final ModelResource resource) {
+        synchronized (resource) {
+            while (ModelProviderSynchronizer.locks.get(resource) != null) {
                 try {
-                    graph.wait();
+                    resource.wait();
                 } catch (final InterruptedException e) {
                     if (ModelProviderSynchronizer.LOGGER.isErrorEnabled()) {
                         ModelProviderSynchronizer.LOGGER
@@ -61,23 +53,15 @@ public final class ModelProviderSynchronizer {
                     }
                 }
             }
-            ModelProviderSynchronizer.locks.put(graph, modelProvider);
+            ModelProviderSynchronizer.locks.put(resource, resource);
         }
     }
 
-    /**
-     * Releases the lock for the graph database of the calling {@link ModelProvider}.
-     *
-     * @param modelProvider
-     *            The model provider trying to release the lock
-     */
-    public static void releaseLock(final ModelProvider<?> modelProvider) {
-        final ModelGraph graph = modelProvider.getGraph();
-
-        synchronized (graph) {
-            if (ModelProviderSynchronizer.locks.get(graph) == modelProvider) {
-                ModelProviderSynchronizer.locks.remove(graph);
-                graph.notify();
+    public static void releaseLock(final ModelResource resource) {
+        synchronized (resource) {
+            if (ModelProviderSynchronizer.locks.get(resource) == resource) {
+                ModelProviderSynchronizer.locks.remove(resource);
+                resource.notifyAll();
             } else {
                 ModelProviderSynchronizer.LOGGER.warn("Cannot release the lock - you are not holding it.");
             }

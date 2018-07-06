@@ -134,7 +134,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.getObjectsByTypeAndName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
                 UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
@@ -143,7 +143,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
                 + UndeploymentVisualizationStageTest.SERVICE;
         Mockito.when(
-                this.mockedAssemblyContextModelProvider.getObjectsByTypeAndName(AssemblyContext.class, asmContextName))
+                this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class, asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 
     }

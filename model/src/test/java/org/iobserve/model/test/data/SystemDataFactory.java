@@ -54,6 +54,13 @@ public final class SystemDataFactory {
         // private empty constructor for factory
     }
 
+    /**
+     * Create a {@link System} model based on the given {@link Repository} model.
+     *
+     * @param repository
+     *            the repository model
+     * @return returns a {@link System} model
+     */
     public static System createSystem(final Repository repository) {
         final System system = SystemFactory.eINSTANCE.createSystem();
         system.setEntityName("MyBookstore");
@@ -92,6 +99,17 @@ public final class SystemDataFactory {
         return system;
     }
 
+    /**
+     * Create an {@link AssemblyConnector} which links two {@link AssemblyContext}.
+     *
+     * @param name
+     *            name of the connector
+     * @param providingContext
+     *            providing {@link AssemblyContext}
+     * @param requiringContext
+     *            requiring {@link AssemblyContext}
+     * @return returns a new {@link AssemblyConnector}
+     */
     public static AssemblyConnector createAssemblyConnector(final String name, final AssemblyContext providingContext,
             final AssemblyContext requiringContext) {
         final AssemblyConnector connector = CompositionFactory.eINSTANCE.createAssemblyConnector();
@@ -121,6 +139,15 @@ public final class SystemDataFactory {
         return assemblyContext;
     }
 
+    /**
+     * Find an {@link AssemblyContext} in a {@link System} model.
+     *
+     * @param system
+     *            the {@link System} model
+     * @param assemblyContextName
+     *            the name of the {@link AssemblyContext}
+     * @return returns an {@link AssemblyContext}
+     */
     public static AssemblyContext findAssemblyContext(final System system, final String assemblyContextName) {
         for (final AssemblyContext context : system.getAssemblyContexts__ComposedStructure()) {
             if (context.getEntityName().equals(assemblyContextName)) {
@@ -130,6 +157,15 @@ public final class SystemDataFactory {
         return null;
     }
 
+    /**
+     * Find a {@link Connector} in a {@link System} model.
+     *
+     * @param system
+     *            the {@link System} model
+     * @param connectorName
+     *            the {@link Connector} name
+     * @return returns an {@link Connector} on success or null
+     */
     public static Connector findConnector(final System system, final String connectorName) {
         for (final Connector connector : system.getConnectors__ComposedStructure()) {
             if (connector.getEntityName().equals(connectorName)) {

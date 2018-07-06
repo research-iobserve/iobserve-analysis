@@ -18,8 +18,8 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,20 +60,16 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelGraph graph = this.prepareGraph("createThenReadByType");
-
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final ModelProvider<ResourceContainer> modelProviderContainer = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
+                this.factory);
 
         final List<ResourceContainer> writtenContainers = this.testModel.getResourceContainer_ResourceEnvironment();
 
         // Create complete model but only read ResourceContainers because ResourceEnvironment itself
         // has no id
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final List<String> collectedIds = modelProviderContainer.collectAllObjectIdsByType(ResourceContainer.class);
+        final List<String> collectedIds = resource.collectAllObjectIdsByType(ResourceContainer.class);
 
         Assert.assertTrue(collectedIds.size() == writtenContainers.size());
 
@@ -96,16 +92,14 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelGraph graph = this.prepareGraph("createThenReadContaining");
-
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
+                this.factory);
 
         final ResourceContainer writtenContainer = this.testModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceEnvironment readModel;
 
-        modelProvider.storeModelPartition(this.testModel);
-        readModel = (ResourceEnvironment) modelProvider.readOnlyContainingComponentById(ResourceContainer.class,
+        resource.storeModelPartition(this.testModel);
+        readModel = (ResourceEnvironment) resource.readOnlyContainingObjectById(ResourceContainer.class,
                 writtenContainer.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
@@ -117,12 +111,10 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelGraph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
+                this.factory);
 
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         final LinkingResource linkingResource = ResourceEnvironmentDataFactory
                 .findLinkingResource(this.resourceEnvironment, ResourceEnvironmentDataFactory.LAN_1);
@@ -133,7 +125,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         final CommunicationLinkResourceType lanType = resourceSpecification
                 .getCommunicationLinkResourceType_CommunicationLinkResourceSpecification();
 
-        final List<EObject> readReferencingComponents = modelProvider
+        final List<EObject> readReferencingComponents = resource
                 .collectReferencingObjectsByTypeAndId(CommunicationLinkResourceType.class, lanType.getId());
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
@@ -150,12 +142,10 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelGraph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
+                this.prefix, this.factory);
 
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         final ResourceContainer orderServer = ResourceEnvironmentDataFactory.findContainer(this.resourceEnvironment,
                 ResourceEnvironmentDataFactory.BUSINESS_ORDER_CONTAINER);
@@ -196,9 +186,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
 
-        modelProvider.updateObject(ResourceEnvironment.class, this.testModel);
+        resource.updatePartition(ResourceEnvironment.class, this.testModel);
 
-        final ResourceEnvironment readModel = modelProvider.getModelRootNode(ResourceEnvironment.class);
+        final ResourceEnvironment readModel = resource.getModelRootNode(ResourceEnvironment.class);
+
+        DebugHelper.printModelPartition(this.testModel);
+        DebugHelper.printModelPartition(readModel);
 
         Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
     }
@@ -209,36 +202,32 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObject() {
-        final ModelGraph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
+                this.factory);
 
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectByTypeAndId(LinkingResource.class, lr.getId());
+            resource.deleteObjectByTypeAndId(LinkingResource.class, lr.getId());
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectByTypeAndId(ResourceContainer.class, rc.getId());
+            resource.deleteObjectByTypeAndId(ResourceContainer.class, rc.getId());
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
         // no containments anywhere)
-        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService()
+        try (Transaction tx = resource.getGraphDatabaseService().beginTx()) {
+            resource.getGraphDatabaseService()
                     .execute("MATCH (m:`" + ResourceEnvironment.class.getCanonicalName() + "`), (n:`"
                             + ProcessingResourceType.class.getCanonicalName() + "`), (o:`"
                             + CommunicationLinkResourceType.class.getCanonicalName() + "`) DELETE n, m, o");
             tx.success();
         }
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
     }
 
     /**
@@ -247,26 +236,22 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final ModelGraph graph = this.prepareGraph("createThenDeleteComponentAndDatatypes");
+        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteComponentAndDatatypes",
+                this.prefix, this.factory);
 
-        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectByIdAndDatatypes(LinkingResource.class, lr.getId(), true);
+            resource.deleteObjectByIdAndDatatype(LinkingResource.class, lr.getId(), true);
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                    .deleteObjectByIdAndDatatypes(ResourceContainer.class, rc.getId(), true);
+            resource.deleteObjectByIdAndDatatype(ResourceContainer.class, rc.getId(), true);
         }
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
     }
 
 }

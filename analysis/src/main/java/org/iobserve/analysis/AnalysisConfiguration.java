@@ -154,9 +154,9 @@ public class AnalysisConfiguration extends Configuration {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                    systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                    systemModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
             final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                    resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                    resourceEnvironmentModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
             /** allocation. */
             this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);

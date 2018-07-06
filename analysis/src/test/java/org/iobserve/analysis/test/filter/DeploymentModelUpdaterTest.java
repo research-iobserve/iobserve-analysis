@@ -27,7 +27,7 @@ import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.persistence.neo4j.IModelProvider;
 import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelGraphLoader;
+import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
 import org.iobserve.model.persistence.neo4j.ModelProvider;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -124,8 +124,8 @@ public class DeploymentModelUpdaterTest {
 
         this.removeDirectory(graphBaseDir);
 
-        final ModelGraphLoader graphLoader = new ModelGraphLoader(graphBaseDir);
-        return graphLoader.createModelGraph(AllocationFactory.eINSTANCE);
+        final ModelResourceLoader graphLoader = new ModelResourceLoader(graphBaseDir);
+        return graphLoader.createModelResource(AllocationFactory.eINSTANCE);
     }
 
     /**

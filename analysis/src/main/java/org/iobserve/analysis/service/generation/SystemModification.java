@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class SystemModification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);

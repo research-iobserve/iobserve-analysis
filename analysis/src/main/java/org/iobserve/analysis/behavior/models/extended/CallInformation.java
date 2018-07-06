@@ -26,12 +26,30 @@ public class CallInformation {
     private String informationParameter;
     private int count;
 
+    /**
+     * Create {@link CallInformation}.
+     *
+     * @param informationSignature
+     *            signature
+     * @param informationParameter
+     *            parameter
+     * @param count
+     *            number of count
+     */
     public CallInformation(final String informationSignature, final String informationParameter, final int count) {
         this.informationSignature = informationSignature;
         this.informationParameter = informationParameter;
         this.count = count;
     }
 
+    /**
+     * Create {@link CallInformation}.
+     *
+     * @param informationSignature
+     *            signature
+     * @param informationParameter
+     *            parameter
+     */
     public CallInformation(final String informationSignature, final String informationParameter) {
         this(informationSignature, informationParameter, 1);
     }
@@ -60,10 +78,23 @@ public class CallInformation {
         this.count = count;
     }
 
+    /**
+     * Increase count.
+     *
+     * @param increase
+     *            amount to add
+     */
     public void addCount(final int increase) {
         this.count += increase;
     }
 
+    /**
+     * Check whether the given call information refers to the same signature and parameters.
+     *
+     * @param c
+     *            the given call information
+     * @return returns true if they match
+     */
     public boolean hasSameParameters(final CallInformation c) {
         return this.informationSignature == c.informationSignature
                 && this.informationParameter == c.informationParameter;

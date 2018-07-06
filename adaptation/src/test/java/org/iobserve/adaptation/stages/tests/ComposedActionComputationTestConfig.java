@@ -35,6 +35,19 @@ import org.iobserve.planning.systemadaptation.SystemAdaptation;
  */
 public class ComposedActionComputationTestConfig extends Configuration {
 
+    /**
+     * Create configuration for composed actions.
+     *
+     * @param producer
+     *            event producer
+     * @param actionFactoryInitializer
+     *            action factory
+     * @param composedActionComputation
+     *            stage to process composed actions
+     * @param collector
+     *            result sink
+     */
+
     public ComposedActionComputationTestConfig(final InitialElementProducer<AdaptationData> producer,
             final ComposedActionFactoryInitialization actionFactoryInitializer,
             final ComposedActionComputation composedActionComputation,

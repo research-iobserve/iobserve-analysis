@@ -186,13 +186,13 @@ public class PrivacyWarner extends AbstractStage {
 
         /** AssemblyContext View **/
         final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                this.systemModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                this.systemModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** RepositoryComponent View **/
         final IModelProvider<BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
-                this.repositoryModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                this.repositoryModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         /** ResourceContainer View **/
         final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                this.resourceEnvironmentModelProvider.getGraph(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                this.resourceEnvironmentModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         // Fill the hashmaps
         this.clearAndFillQueryMaps();
 
@@ -236,11 +236,11 @@ public class PrivacyWarner extends AbstractStage {
                 .getAllocationContexts_Allocation()) {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
-                    .getObjectByTypeAndId(AssemblyContext.class, assemblyContext.getId());
+                    .findObjectByTypeAndId(AssemblyContext.class, assemblyContext.getId());
             final RepositoryComponent repositoryComponent = queryAssemblyContext
                     .getEncapsulatedComponent__AssemblyContext();
             final BasicComponent basicComponent = repositoryComponentModelProvider
-                    .getObjectByTypeAndId(BasicComponent.class, repositoryComponent.getId());
+                    .findObjectByTypeAndId(BasicComponent.class, repositoryComponent.getId());
 
             /** Creating component vertices. **/
             final Vertex v = new Vertex(basicComponent.getEntityName(),
@@ -251,7 +251,7 @@ public class PrivacyWarner extends AbstractStage {
             graph.addVertex(v);
             this.vertices.put(basicComponent.getId(), v);
 
-            final ResourceContainer queryResource = resourceContainerModelProvider.getObjectByTypeAndId(
+            final ResourceContainer queryResource = resourceContainerModelProvider.findObjectByTypeAndId(
                     ResourceContainer.class, allocationContext.getResourceContainer_AllocationContext().getId());
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);

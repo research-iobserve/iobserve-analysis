@@ -70,6 +70,8 @@ clover {
 	report {
 		html = true
 	}
+	excludes = [ "**/package-info.java" ]
+	testExcludes = [ "**/package-info.java" ]
 }
 
 subprojects {
@@ -107,10 +109,11 @@ subprojects {
 
     clover {
     	excludes = [ '**/package-info.java' ]
-    	
+	testExcludes = [ '**/package-info.java' ]
+	
     	debug = true
     	
-		targetPercentage = cloverCoverage
+	targetPercentage = cloverCoverage
         report {
            html=true
         }

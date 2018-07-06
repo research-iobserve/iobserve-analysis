@@ -47,7 +47,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author unknown
  *
+ * @deprecated
  */
+@Deprecated
 public class SystemGeneration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemGeneration.class);

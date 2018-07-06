@@ -110,7 +110,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironment, service);
             resourceEnvironment.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
-            this.resourceEnvironmentModelGraphProvider.updateObject(ResourceEnvironment.class, resourceEnvironment);
+            this.resourceEnvironmentModelGraphProvider.updatePartition(ResourceEnvironment.class, resourceEnvironment);
 
             /** signal allocation update. */
             this.allocationNotifyOutputPort.send(newResourceContainer);

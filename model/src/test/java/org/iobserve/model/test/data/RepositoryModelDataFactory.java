@@ -195,6 +195,15 @@ public final class RepositoryModelDataFactory {
         return providedRole;
     }
 
+    /**
+     * Find a provided role in a component by name.
+     *
+     * @param component
+     *            the component
+     * @param roleName
+     *            the role name
+     * @return either the {@link OperationProvidedRole} on success or null
+     */
     public static OperationProvidedRole findProvidedRole(final RepositoryComponent component, final String roleName) {
         for (final ProvidedRole role : component.getProvidedRoles_InterfaceProvidingEntity()) {
             if (role.getEntityName().equals(roleName)) {
@@ -204,6 +213,15 @@ public final class RepositoryModelDataFactory {
         return null;
     }
 
+    /**
+     * Find a required role in a component by name.
+     *
+     * @param component
+     *            the component
+     * @param roleName
+     *            the role name
+     * @return either the {@link OperationRequiredRole} on success or null
+     */
     public static OperationRequiredRole findRequiredRole(final RepositoryComponent component, final String roleName) {
         for (final RequiredRole role : component.getRequiredRoles_InterfaceRequiringEntity()) {
             if (role.getEntityName().equals(roleName)) {
@@ -213,6 +231,15 @@ public final class RepositoryModelDataFactory {
         return null;
     }
 
+    /**
+     * Find an interface in the given {@link Repository}.
+     *
+     * @param repository
+     *            the repository
+     * @param interfaceName
+     *            the interface name
+     * @return either the {@link Interface} on success or null
+     */
     public static Interface findInterfaceByName(final Repository repository, final String interfaceName) {
         for (final Interface iface : repository.getInterfaces__Repository()) {
             if (iface.getEntityName().equals(interfaceName)) {
