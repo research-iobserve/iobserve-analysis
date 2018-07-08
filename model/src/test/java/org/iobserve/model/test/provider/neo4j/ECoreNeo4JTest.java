@@ -201,7 +201,7 @@ public class ECoreNeo4JTest {
     }
 
     @Test
-    public void createWithReferenceThenUpdate() {
+    public void createWithReferenceThenUpdate() throws Exception {
         final ModelResource oneResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-one",
                 this.prefix, this.oneFactory);
         final ModelResource twoResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-two",
@@ -218,9 +218,13 @@ public class ECoreNeo4JTest {
 
         Assert.assertThat("Different number of links", two.getLinks().size(), Is.is(this.modelTwo.getLinks().size()));
         for (int i = 0; i < two.getLinks().size(); i++) {
-            final Link n = two.getLinks().get(i);
-            final Link o = this.modelTwo.getLinks().get(i);
-            Assert.assertThat("Links differ", n.getReference().getName(), Is.is(o.getReference().getName()));
+            final Link newLink = two.getLinks().get(i);
+            final Link oldLink = this.modelTwo.getLinks().get(i);
+
+            oneResource.resolve(newLink);
+
+            Assert.assertThat("Links differ", newLink.getReference().getName(),
+                    Is.is(oldLink.getReference().getName()));
         }
     }
 

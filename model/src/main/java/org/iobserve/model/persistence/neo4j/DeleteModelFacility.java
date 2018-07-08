@@ -36,9 +36,9 @@ public class DeleteModelFacility extends AbstractModelFacility {
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
-    public DeleteModelFacility(final GraphDatabaseService graphDatabaseService,
+    public DeleteModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
-        super(graphDatabaseService, objectNodeMap);
+        super(modelResource, graphDatabaseService, objectNodeMap);
     }
 
     /**

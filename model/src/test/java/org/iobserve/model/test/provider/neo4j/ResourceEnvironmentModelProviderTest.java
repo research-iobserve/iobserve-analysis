@@ -69,21 +69,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         // has no id
         resource.storeModelPartition(this.testModel);
 
-        final List<String> collectedIds = resource.collectAllObjectIdsByType(ResourceContainer.class);
+        // TODO add actual test
 
-        Assert.assertTrue(collectedIds.size() == writtenContainers.size());
-
-        for (int i = 0; i < collectedIds.size(); i++) {
-            boolean foundEqualElem = false;
-
-            for (int j = 0; j < collectedIds.size(); j++) {
-                if (writtenContainers.get(i).getId().equals(collectedIds.get(j))) {
-                    foundEqualElem = true;
-                }
-            }
-
-            Assert.assertTrue(foundEqualElem);
-        }
     }
 
     /**

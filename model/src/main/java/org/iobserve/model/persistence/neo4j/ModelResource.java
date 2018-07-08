@@ -18,19 +18,20 @@ package org.iobserve.model.persistence.neo4j;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -59,6 +60,7 @@ public class ModelResource {
     private final UpdateModelFacility updateModelFacility;
     private final QueryModelFacility queryModelFacility;
     private final DeleteModelFacility deleteModelFacility;
+    private long objectId = 0;
 
     /**
      * Creates a new {@link GraphDatabaseService} at the given location.
@@ -81,11 +83,11 @@ public class ModelResource {
 
         this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(this.graphDirectory);
 
-        this.storeModelFacility = new StoreModelFacility(this.graphDatabaseService, this.objectNodeMap);
-        this.queryModelFacility = new QueryModelFacility(this.graphDatabaseService, this.objectNodeMap,
+        this.storeModelFacility = new StoreModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
+        this.queryModelFacility = new QueryModelFacility(this, this.graphDatabaseService, this.objectNodeMap,
                 this.eFactories);
-        this.updateModelFacility = new UpdateModelFacility(this.graphDatabaseService, this.objectNodeMap);
-        this.deleteModelFacility = new DeleteModelFacility(this.graphDatabaseService, this.objectNodeMap);
+        this.updateModelFacility = new UpdateModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
+        this.deleteModelFacility = new DeleteModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
 
         this.registerShutdownHook(this.graphDatabaseService);
         this.eFactories.add(factory);
@@ -171,10 +173,7 @@ public class ModelResource {
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             ModelProviderSynchronizer.getLock(this);
 
-            final Set<EObject> containedObjects = this.queryModelFacility.getAllContainmentsByObject(object,
-                    new HashSet<>());
-
-            this.updateModelFacility.updateNodes(containedObjects);
+            this.updateModelFacility.updatePartition(object);
 
             tx.success();
         }
@@ -282,16 +281,21 @@ public class ModelResource {
      *            type definition
      * @return The read object
      */
+    @SuppressWarnings("unchecked")
     public <T extends EObject> T findObjectByTypeAndId(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getCanonicalName());
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
             if (node != null) {
-                final Set<Node> nodesForContainmentsAndDatatypes = this.queryModelFacility.getAllContainmentNodes(node,
-                        new HashSet<Node>());
-                return this.queryModelFacility.readNodes(node, nodesForContainmentsAndDatatypes,
-                        new HashMap<Node, EObject>());
+
+                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+
+                final EObject object = this.queryModelFacility.readNodes(node, nodeObjectMap,
+                        EMFRelationshipType.REFERENCES, EMFRelationshipType.CONTAINS);
+                this.queryModelFacility.resolveReferences(nodeObjectMap);
+
+                return (T) object;
             }
             tx.success();
         }
@@ -344,10 +348,13 @@ public class ModelResource {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
-                final Set<Node> containmentsAndDatatypes = this.queryModelFacility.getAllContainmentNodes(node,
-                        new HashSet<Node>());
-                final EObject object = this.queryModelFacility.readNodes(node, containmentsAndDatatypes,
-                        new HashMap<Node, EObject>());
+
+                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+
+                final EObject object = this.queryModelFacility.readNodes(node, nodeObjectMap,
+                        EMFRelationshipType.REFERENCES, EMFRelationshipType.CONTAINS);
+                this.queryModelFacility.resolveReferences(nodeObjectMap);
+
                 nodes.add((T) object);
 
             }
@@ -357,16 +364,23 @@ public class ModelResource {
         return nodes;
     }
 
-    public List<String> collectAllObjectIdsByType(final Class<?> clazz) {
+    /**
+     * Collect all object ids of objects of the given type
+     *
+     * @param clazz
+     *            the objects' type
+     * @return returns a list.
+     */
+    public List<Long> collectAllObjectIdsByType(final Class<?> clazz) {
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final ResourceIterator<Node> nodes = this.graphDatabaseService
                     .findNodes(Label.label(clazz.getCanonicalName()));
 
-            final List<String> ids = new LinkedList<>();
+            final List<Long> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add(n.getProperty(ModelResource.INTERNAL_ID).toString());
+                ids.add((Long) n.getProperty(ModelResource.INTERNAL_ID));
             }
 
             tx.success();
@@ -533,9 +547,11 @@ public class ModelResource {
             if (nodes.hasNext()) {
                 final Node node = nodes.next();
 
-                final Set<Node> containmentNodes = this.queryModelFacility.getAllContainmentNodes(node,
-                        new HashSet<Node>());
-                object = this.queryModelFacility.readNodes(node, containmentNodes, new HashMap<Node, EObject>());
+                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+
+                object = this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
+                        EMFRelationshipType.CONTAINS);
+                this.queryModelFacility.resolveReferences(nodeObjectMap);
             }
 
             tx.success();
@@ -564,4 +580,36 @@ public class ModelResource {
         }
     }
 
+    long getNextId() {
+        return this.objectId++;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends EObject> void resolve(final T proxyObject) throws Exception {
+        if (proxyObject == null) {
+            throw new Exception("Object reference is null, cannot resolve.");
+        }
+        if (proxyObject.eIsProxy()) {
+            final Node realNode = this.queryModelFacility.getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());
+
+            final Map<Node, EObject> nodesToCreatedObjects = new HashMap<>();
+            this.queryModelFacility.readNodes(realNode, nodesToCreatedObjects, EMFRelationshipType.CONTAINS);
+            this.queryModelFacility.resolveReferences(nodesToCreatedObjects);
+            final EObject realObject = nodesToCreatedObjects.get(realNode);
+
+            for (final EAttribute attribute : proxyObject.eClass().getEAllAttributes()) {
+                proxyObject.eSet(attribute, realObject.eGet(attribute));
+            }
+
+            for (final EReference reference : proxyObject.eClass().getEAllReferences()) {
+                if (reference.isMany()) {
+                    final EList<EObject> manyReference = (EList<EObject>) proxyObject.eGet(reference);
+                    ((EList<EObject>) proxyObject.eGet(reference)).addAll(manyReference);
+                } else {
+                    final EObject singleReference = (EObject) proxyObject.eGet(reference);
+                    ((EObject) proxyObject).eSet(reference, singleReference);
+                }
+            }
+        }
+    }
 }

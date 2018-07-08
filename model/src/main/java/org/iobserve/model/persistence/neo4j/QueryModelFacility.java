@@ -15,27 +15,26 @@
  ***************************************************************************/
 package org.iobserve.model.persistence.neo4j;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 
 /**
@@ -49,6 +48,8 @@ public class QueryModelFacility extends AbstractModelFacility {
     /**
      * Create a query model facility.
      *
+     * @param modelResource
+     *
      * @param graphDatabaseService
      *            data base service
      * @param objectNodeMap
@@ -56,9 +57,9 @@ public class QueryModelFacility extends AbstractModelFacility {
      * @param eFactories
      *            used factories
      */
-    public QueryModelFacility(final GraphDatabaseService graphDatabaseService, final Map<EObject, Node> objectNodeMap,
-            final List<EFactory> eFactories) {
-        super(graphDatabaseService, objectNodeMap);
+    public QueryModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
+            final Map<EObject, Node> objectNodeMap, final List<EFactory> eFactories) {
+        super(modelResource, graphDatabaseService, objectNodeMap);
         this.eFactories = eFactories;
     }
 
@@ -67,10 +68,10 @@ public class QueryModelFacility extends AbstractModelFacility {
      * contained successor nodes and instantiates the correspondent EObjects. Calls to this method
      * have to be performed from inside a {@link Transaction}.
      *
-     * @param node
+     * @param parentNode
      *            The node to start with
-     * @param containmentsAndDatatypes
-     *            Set of all containments and data types of the root node
+     * @param relationshipType
+     *            this is either CONTAINS or REFERENCES
      * @param nodesToCreatedObjects
      *            Initially empty map of nodes to already created objects to make sure that objects
      *            are instantiated just once
@@ -79,163 +80,85 @@ public class QueryModelFacility extends AbstractModelFacility {
      * @return The root
      */
     @SuppressWarnings("unchecked")
-    public <T extends EObject> T readNodes(final Node node, final Set<Node> containmentsAndDatatypes,
-            final Map<Node, EObject> nodesToCreatedObjects) {
-        final T object;
-
-        if (!nodesToCreatedObjects.containsKey(node)) {
-            // Get node's data type label and instantiate a new empty object of this data type
-            final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
-            object = (T) ModelProviderUtil.instantiateEObject(this.eFactories, label.name());
-
-            this.loadAttributes(object, node.getAllProperties());
+    public <T extends EObject> T readNodes(final Node parentNode, final Map<Node, EObject> nodesToCreatedObjects,
+            final EMFRelationshipType... relationshipType) {
+        if (!nodesToCreatedObjects.containsKey(parentNode)) {
+            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.eFactories);
 
             // Already register unfinished components because there might be circles
-            nodesToCreatedObjects.putIfAbsent(node, object);
+            nodesToCreatedObjects.putIfAbsent(parentNode, parentObject);
 
-            this.loadRelatedNodes(object, node, containmentsAndDatatypes, nodesToCreatedObjects);
+            this.loadRelatedNodes(parentObject, parentNode, relationshipType, nodesToCreatedObjects);
+
+            return parentObject;
         } else {
-            object = (T) nodesToCreatedObjects.get(node);
-        }
-
-        return object;
-    }
-
-    /**
-     * Load attribute values from the node.
-     *
-     * @param object
-     *            component where the attributes are attached to
-     * @param properties
-     *            the attributes to scan for values
-     */
-    private <T extends EObject> void loadAttributes(final T object, final Map<String, Object> properties) {
-        for (final Entry<String, Object> property : properties.entrySet()) {
-            final EAttribute attr = (EAttribute) object.eClass().getEStructuralFeature(property.getKey());
-
-            // attr == null for the emfUri property stored in the graph
-            if (attr != null) {
-                if (attr.isMany()) {
-                    this.createManyValuesAttribute(object, attr, property);
-                } else {
-                    this.createSingleValueAttribute(object, attr, property);
-                }
-
-            }
-        }
-    }
-
-    private void createManyValuesAttribute(final EObject component, final EAttribute attr,
-            final Entry<String, Object> property) {
-        @SuppressWarnings("unchecked")
-        final List<Object> attribute = (List<Object>) component.eGet(attr);
-
-        final String valueString = property.getValue().toString();
-
-        final String[] values = valueString.substring(1, valueString.length() - 1).split(", ");
-        for (final String value : values) {
-            final Object convertedValue = this.convertValue(attr.getEAttributeType(), value);
-
-            attribute.add(convertedValue);
-        }
-    }
-
-    private void createSingleValueAttribute(final EObject component, final EAttribute attr,
-            final Entry<String, Object> property) {
-        component.eSet(attr, this.convertValue(attr.getEAttributeType(), property.getValue().toString()));
-    }
-
-    private Object convertValue(final EDataType type, final String input) {
-        Object value = ModelProviderUtil.instantiateAttribute(type, input);
-
-        if (value == null) {
-            for (final EFactory factory : this.eFactories) {
-                value = factory.createFromString(type, input);
-
-                if (value != null) {
-                    return value;
-                }
-            }
-
-            throw new InternalError("Type " + type.getInstanceClassName() + " is not supported.");
-        } else {
-            return value;
+            return (T) nodesToCreatedObjects.get(parentNode);
         }
     }
 
     /**
-     * Load related nodes representing referenced components.
+     * Load related nodes representing referenced objects.
      *
-     * @param component
-     *            component the other components are related to
-     * @param node
+     * @param sourceObject
+     *            object the other objects are related to
+     * @param sourceNode
      *            the corresponding node to the component
-     * @param containmentsAndDatatypes
-     *            datatypes
      * @param nodesToCreatedObjects
      *            additional nodes
      */
-    @SuppressWarnings("unchecked")
-    private void loadRelatedNodes(final EObject component, final Node node, final Set<Node> containmentsAndDatatypes,
-            final Map<Node, EObject> nodesToCreatedObjects) {
-        for (final Relationship rel : ModelProviderUtil.sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
-            final Node endNode = rel.getEndNode();
-            final String relName = (String) rel.getProperty(ModelProviderUtil.REF_NAME);
-            final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
-            Object refReprensation = component.eGet(ref);
+    private void loadRelatedNodes(final EObject sourceObject, final Node sourceNode,
+            final EMFRelationshipType[] relationshipType, final Map<Node, EObject> nodesToCreatedObjects) {
+        for (final Relationship relationship : ModelProviderUtil
+                .sortRelsByPosition(sourceNode.getRelationships(Direction.OUTGOING, relationshipType))) {
+            final Node targetNode = relationship.getEndNode();
 
-            // For partial reading: Only load containments and data types of the root
-            if (containmentsAndDatatypes.contains(endNode)) {
-
-                if (refReprensation instanceof EList<?>) {
-                    final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
-                            nodesToCreatedObjects);
-                    ((EList<EObject>) refReprensation).add(endComponent);
-
+            if (!nodesToCreatedObjects.containsKey(targetNode)) {
+                final EObject targetObject;
+                if (ModelGraphFactory.isProxyNode(targetNode)) {
+                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.eFactories);
                 } else {
-                    refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
-                    component.eSet(ref, refReprensation);
+                    targetObject = ModelObjectFactory.createObject(targetNode, this.eFactories);
                 }
-
-            } else {
-                // Create proxy EObject here...
-                final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
-                final EObject endComponent = ModelProviderUtil.instantiateEObject(this.eFactories, endLabel.name());
-
-                if (endComponent != null) {
-                    final URI endUri = URI.createURI(endNode.getProperty(ModelProviderUtil.EMF_URI).toString());
-                    ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
-                    // TODO here to set the unique identifier
-
-                    // Load attribute values from the node
-                    final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
-                    while (i2.hasNext()) {
-                        final Entry<String, Object> property = i2.next();
-                        final EAttribute attr = (EAttribute) endComponent.eClass()
-                                .getEStructuralFeature(property.getKey());
-
-                        // attr == null for the emfUri property stored in the graph
-                        if (attr != null) {
-                            final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType(),
-                                    property.getValue().toString());
-
-                            if (value != null) {
-                                endComponent.eSet(attr, value);
-                            }
-                        }
-                    }
-
-                    if (refReprensation instanceof EList<?>) {
-                        ((EList<EObject>) refReprensation).add(endComponent);
-                    } else {
-                        if (ref.isChangeable()) { // TODO what to do with unchangeable elements
-                            component.eSet(ref, endComponent);
-                        }
-                    }
-                }
+                nodesToCreatedObjects.put(targetNode, targetObject);
             }
         }
+    }
 
+    /**
+     * Resolve all references for all objects stored in the map.
+     *
+     * @param nodeObjectMap
+     *            node object map
+     */
+    public void resolveReferences(final Map<Node, EObject> nodeObjectMap) {
+        for (final Entry<Node, EObject> entry : nodeObjectMap.entrySet()) {
+            final EObject object = entry.getValue();
+            for (final EReference reference : object.eClass().getEAllReferences()) {
+                final Stream<Relationship> sortedRelationships = StreamSupport
+                        .stream(entry.getKey().getRelationships(Direction.OUTGOING).spliterator(), false)
+                        .filter(r -> r.getProperty(ModelProviderUtil.REF_NAME).equals(reference.getName()))
+                        .sorted(new Comparator<Relationship>() {
+
+                            @Override
+                            public int compare(final Relationship a, final Relationship b) {
+                                return (Integer) a.getProperty(ModelProviderUtil.REF_POS)
+                                        - (Integer) b.getProperty(ModelProviderUtil.REF_POS);
+                            }
+
+                        });
+                sortedRelationships
+                        .forEach(r -> this.updateReference(object, reference, nodeObjectMap.get(r.getEndNode())));
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateReference(final EObject sourceObject, final EReference reference, final EObject targetObject) {
+        if (reference.isMany()) {
+            ((EList<EObject>) sourceObject.eGet(reference)).add(targetObject);
+        } else {
+            sourceObject.eSet(reference, targetObject);
+        }
     }
 
     /**
@@ -254,10 +177,10 @@ public class QueryModelFacility extends AbstractModelFacility {
 
             for (final EReference reference : object.eClass().getEAllReferences()) {
                 final Object referencedEntity = object.eGet(reference);
-                if (referencedEntity instanceof EList<?>) {
-                    this.checkMultipleReferences(reference, referencedEntity, containmentsAndDatatypes);
+                if (reference.isMany()) {
+                    this.checkMultipleReferences(reference, (EList<?>) referencedEntity, containmentsAndDatatypes);
                 } else {
-                    this.checkSingleReferences(reference, referencedEntity, containmentsAndDatatypes);
+                    this.checkSingleReferences(reference, (EObject) referencedEntity, containmentsAndDatatypes);
                 }
             }
         }
@@ -265,20 +188,20 @@ public class QueryModelFacility extends AbstractModelFacility {
         return containmentsAndDatatypes;
     }
 
-    private void checkMultipleReferences(final EReference reference, final Object referencedEntity,
+    private void checkMultipleReferences(final EReference reference, final EList<?> referencedEntities,
             final Set<EObject> containmentsAndDatatypes) {
-        for (final Object referencedElement : (EList<?>) referencedEntity) {
+        for (final Object referencedElement : referencedEntities) {
             if (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedElement)) {
                 this.getAllContainmentsByObject((EObject) referencedElement, containmentsAndDatatypes);
             }
         }
     }
 
-    private void checkSingleReferences(final EReference reference, final Object referencedEntity,
+    private void checkSingleReferences(final EReference reference, final EObject referencedEntity,
             final Set<EObject> containmentsAndDatatypes) {
-        if (referencedEntity != null
+        if ((referencedEntity != null)
                 && (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedEntity))) {
-            this.getAllContainmentsByObject((EObject) referencedEntity, containmentsAndDatatypes);
+            this.getAllContainmentsByObject(referencedEntity, containmentsAndDatatypes);
         }
     }
 
@@ -317,8 +240,56 @@ public class QueryModelFacility extends AbstractModelFacility {
      */
     @SuppressWarnings("unchecked")
     public <T> T readContainedNodes(final Node node) {
-        final Set<Node> containmentsAndDatatypes = this.getAllContainmentNodes(node, new HashSet<Node>());
-        return (T) this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+        return (T) this.readNodes(node, new HashMap<Node, EObject>(), EMFRelationshipType.CONTAINS);
+    }
+
+    /**
+     * Find the corresponding node.
+     *
+     * @param uri
+     * @return the corresponding node
+     * @throws Exception
+     *             on unresolvable uri
+     */
+    public Node getNodeByUri(final URI uri) throws Exception {
+        final String[] segments = uri.fragment().split("/");
+
+        final Label rootLabel = Label.label(segments[0]);
+        final ResourceIterator<Node> nodes = this.graphDatabaseService.findNodes(rootLabel);
+
+        if (nodes.hasNext()) {
+            Node node = nodes.next();
+            if (segments.length > 1) {
+                for (final String segment : segments) {
+                    String segmentName;
+                    long segmentIndex;
+                    final int index = segment.indexOf('[');
+                    if (index == -1) {
+                        segmentName = segment;
+                        segmentIndex = 0;
+                    } else {
+                        segmentName = segment.substring(0, index);
+                        segmentIndex = Long.parseLong(segment.substring(index + 1, segment.length() - 1));
+                    }
+                    boolean next = false;
+                    for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
+                        if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
+                                && (segmentIndex == (Long) relationship.getProperty(ModelProviderUtil.REF_POS))) {
+                            node = relationship.getEndNode();
+                            next = true;
+                            break;
+                        }
+                    }
+                    if (!next) {
+                        throw new Exception("Reference not found " + segment);
+                    }
+                }
+            }
+
+            return node;
+        } else {
+            throw new Exception("URI does not specify a node " + uri.toString());
+        }
     }
 
 }

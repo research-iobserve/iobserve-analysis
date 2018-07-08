@@ -22,14 +22,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
@@ -56,69 +53,11 @@ public final class ModelProviderUtil {
 
     public static final String REF_POS = ":refPos";
 
-    public static final String EMF_URI = ":emfUri";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderUtil.class);
     private static final String VERSION_PREFIX = "v_";
 
     private ModelProviderUtil() {
         // private utility class
-    }
-
-    /**
-     * Returns a URI based on the components containing the passed component.
-     *
-     * @param object
-     *            The component to compute a URI to
-     * @return The URI
-     */
-    public static String getUriString(final EObject object) {
-        EObject comp = object;
-        EObject container;
-        String label;
-        String uri = "";
-        EAttribute idAttr;
-
-        do {
-            container = comp.eContainer();
-            label = comp.eClass().getInstanceTypeName();
-
-            idAttr = comp.eClass().getEIDAttribute();
-
-            if (uri.isEmpty()) {
-                if (idAttr != null) {
-                    uri = label + "#" + comp.eGet(idAttr);
-                } else {
-                    uri = label;
-                }
-            } else {
-                if (idAttr != null) {
-                    uri = label + "#" + comp.eGet(idAttr) + "." + uri;
-                } else {
-                    uri = label + "." + uri;
-                }
-            }
-
-            comp = container;
-
-        } while (container != null);
-
-        return uri;
-    }
-
-    /**
-     * Returns the first of several labels.
-     *
-     * @param labels
-     *            Several labels
-     * @return The first label
-     */
-    public static Label getFirstLabel(final Iterable<Label> labels) {
-        if (labels.iterator().hasNext()) {
-            return labels.iterator().next();
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -201,7 +140,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference reference, final Object referenceObject) {
-        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
+        return (referenceObject instanceof DataType) && !(reference.getName().equals("parentType_CompositeDataType")
                 || reference.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
@@ -336,32 +275,6 @@ public final class ModelProviderUtil {
         }
 
         return null;
-    }
-
-    /**
-     * Instantiates a pcm model object from a given type name.
-     *
-     * @param factories
-     *            factories for this particular metamodel
-     * @param fqnClassName
-     *            The data type name
-     * @return New object of the given data type
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T instantiateEObject(final List<EFactory> factories, final String fqnClassName) {
-
-        final int separationPoint = fqnClassName.lastIndexOf('.');
-        final String className = fqnClassName.substring(separationPoint + 1);
-
-        for (final EFactory factory : factories) {
-            final EPackage ePackage = factory.getEPackage();
-            final EClass eClass = (EClass) ePackage.getEClassifier(className);
-            if (eClass != null) {
-                return (T) factory.create(eClass);
-            }
-        }
-        return null;
-
     }
 
     /**

@@ -66,7 +66,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
         resource.storeModelPartition(this.testModel);
 
-        final List<String> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class);
+        final List<Long> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class);
 
         // There is only one usage scenario in the test model
         Assert.assertTrue(collectedIds.size() == 1);

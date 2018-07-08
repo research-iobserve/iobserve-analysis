@@ -57,7 +57,7 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated to be removed 1.15
+	 * @deprecated since 1.13. Use {@link #AbstractContainerEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
 	protected AbstractContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -80,7 +80,7 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated to be rmeoved in 1.15
+	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated
