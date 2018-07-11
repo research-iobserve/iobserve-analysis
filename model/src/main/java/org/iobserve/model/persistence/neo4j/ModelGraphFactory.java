@@ -37,35 +37,45 @@ import org.slf4j.LoggerFactory;
  */
 public final class ModelGraphFactory {
 
+    public static final String INTERNAL_ID = ":internalId";
+    public static final String PROXY_OBJECT = ":proxyObject";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelGraphFactory.class);
 
     private static final String EMF_URI = ":emfUri";
 
+    /** Utility class, prevent instantiation. */
+    private ModelGraphFactory() {
+        // nothing to do here
+    }
+
     /**
      * Create a single node without resolved references.
      *
-     * @param storeableObject
-     *            object to be mapped to a node
+     * @param graphDatabaseService
+     *            the graph database handle
      * @param storeableObject
      *            the object to be placed as proxy
      * @param id
      *            db id
-     * @return returns the created node.
+     * @return returns the created node
      */
     public static Node createNode(final GraphDatabaseService graphDatabaseService, final EObject storeableObject,
             final long id) {
         final Label typeName = Label.label(storeableObject.eClass().getInstanceTypeName());
 
         final Node node = graphDatabaseService.createNode(typeName);
-        node.setProperty(ModelResource.INTERNAL_ID, id);
+        node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
 
         /** set object uri. */
         ModelGraphFactory.setNodeObjectUri(node, storeableObject);
 
-        node.setProperty(ModelResource.PROXY_OBJECT, false);
+        node.setProperty(ModelGraphFactory.PROXY_OBJECT, false);
 
         /** attributes. */
         ModelGraphFactory.storeAttributes(node, storeableObject);
+
+        System.err.println("create node " + storeableObject + " " + node.getId());
 
         return node;
     }
@@ -86,11 +96,13 @@ public final class ModelGraphFactory {
         final Label typeName = Label.label(storeableObject.eClass().getInstanceTypeName());
 
         final Node node = graphDatabaseService.createNode(typeName);
-        node.setProperty(ModelResource.INTERNAL_ID, id);
+        node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
 
         ModelGraphFactory.setNodeObjectUri(node, storeableObject);
 
-        node.setProperty(ModelResource.PROXY_OBJECT, true);
+        node.setProperty(ModelGraphFactory.PROXY_OBJECT, true);
+
+        System.err.println("create proxy " + storeableObject + " " + node.getId());
 
         return node;
     }
@@ -273,6 +285,6 @@ public final class ModelGraphFactory {
      * @return returns true if the node is a proxy node
      */
     public static boolean isProxyNode(final Node node) {
-        return (Boolean) node.getProperty(ModelResource.PROXY_OBJECT);
+        return (Boolean) node.getProperty(ModelGraphFactory.PROXY_OBJECT);
     }
 }

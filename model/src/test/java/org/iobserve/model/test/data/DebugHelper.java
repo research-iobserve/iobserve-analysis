@@ -15,13 +15,19 @@
  ***************************************************************************/
 package org.iobserve.model.test.data;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.iobserve.model.persistence.neo4j.EMFRelationshipType;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
+import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -122,7 +128,7 @@ public final class DebugHelper {
      * @param relationships
      *            the list of relationships
      */
-    public static void printList(final Iterable<Relationship> relationships) {
+    public static void printRelationshipList(final Iterable<Relationship> relationships) {
         for (final Relationship relationship : relationships) {
             System.err.println(String.format("rel %d %d->%d", relationship.getId(), // NOPMD
                     relationship.getStartNode().getId(), relationship.getEndNode().getId()));
@@ -162,6 +168,55 @@ public final class DebugHelper {
     public static void listAllRelationships(final ModelResource resource) {
         for (final Relationship r : resource.getGraphDatabaseService().getAllRelationships()) {
             System.err.println("\t" + r.getStartNodeId() + " -- (" + r.getId() + ") --> " + r.getEndNodeId()); // NOPMD
+        }
+    }
+
+    /**
+     * Print a map.
+     *
+     * @param label
+     *            header label
+     * @param map
+     *            map to be printed
+     */
+    public static void printMap(final String label, final Map<EObject, Node> map) {
+        System.err.println("Map " + label);
+        for (final Entry<EObject, Node> entry : map.entrySet()) {
+            System.err.println("\t" + entry.getKey() + " = " + entry.getValue().getId() + " "
+                    + ModelGraphFactory.isProxyNode(entry.getValue()));
+        }
+    }
+
+    public static void printList(final String label, final EList<?> list) {
+        System.err.println("List " + label);
+        for (final Object entry : list) {
+            System.err.println("\t" + entry);
+        }
+    }
+
+    public static <T extends EObject> void printNodeModel(final Map<EObject, Node> objectNodeMap, final T object) {
+        System.err.println(">> " + object);
+        DebugHelper.printNodeModel("", objectNodeMap.get(object));
+    }
+
+    private static <T extends EObject> void printNodeModel(final String indent, final Node node) {
+        if (node == null) {
+            System.err.println(indent + "no node for object");
+            return;
+        }
+        System.err.println(indent + node.getLabels().iterator().next().name() + " : " + node.getId());
+        for (final Entry<String, Object> entry : node.getAllProperties().entrySet()) {
+            System.err.println(indent + " - " + entry.getKey() + " = " + entry.getValue());
+        }
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+            if (rel.isType(EMFRelationshipType.CONTAINS)) {
+                System.err.println(indent + " + " + rel.getProperty(ModelProviderUtil.REF_NAME));
+                DebugHelper.printNodeModel(indent + "   \t", rel.getEndNode());
+            } else {
+                final Node endNode = rel.getEndNode();
+                System.err.println(indent + " + " + rel.getProperty(ModelProviderUtil.REF_NAME) + " -> "
+                        + endNode.getLabels().iterator().next().name() + " : " + endNode.getId());
+            }
         }
     }
 

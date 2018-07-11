@@ -83,7 +83,6 @@ public final class SystemDataFactory {
         /** connectors. */
         final AssemblyConnector businessQueryInputConnector = SystemDataFactory.createAssemblyConnector(
                 SystemDataFactory.BUSINESS_QUERY_CONNECTOR, businessOrderAssemblyContext, queryInputAssemblyContext);
-
         final AssemblyConnector privateQueryInputConnector = SystemDataFactory.createAssemblyConnector(
                 SystemDataFactory.PRIVATE_QUERY_CONNECTOR, privateOrderAssemblyContext, queryInputAssemblyContext);
         final AssemblyConnector businessPayConnector = SystemDataFactory.createAssemblyConnector(

@@ -23,7 +23,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
     /** usage model provider. */
-    private final ModelProvider<UsageModel> usageModelProvider;
+    private final ModelResource usageModelProvider;
 
     private final int varianceOfUserGroups;
 
@@ -78,8 +78,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
      * @param closedWorkload
      *            type of workload
      */
-    public TEntryEventSequence(final ICorrespondence correspondenceModel,
-            final ModelProvider<UsageModel> usageModelProvider,
+    public TEntryEventSequence(final ICorrespondence correspondenceModel, final ModelResource usageModelProvider,
             final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
             final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;

@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -38,7 +38,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public abstract class AbstractModelProviderTest<T extends EObject> {
 
-    protected final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+    protected final CompareModelPartitions equalityHelper = new CompareModelPartitions();
 
     protected Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
     protected System system = SystemDataFactory.createSystem(this.repository);
@@ -47,8 +47,8 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
     protected UsageModel usageModel = UsageModelDataFactory.createUsageModel();
 
     protected String prefix;
+    protected EPackage ePackage;
     protected T testModel;
-    protected EFactory factory;
     protected Class<T> clazz;
 
     /**

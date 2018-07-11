@@ -24,7 +24,7 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelResource mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 
@@ -93,7 +93,8 @@ public class ServiceInstanceServiceTest { // NOCS test
 
         // stubbing
         Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
-                this.testAssemblyContext.getId())).thenReturn(this.noAssemblyConnectors);
+                this.mockedSystemModelGraphProvider.getInternalId(this.testAssemblyContext)))
+                .thenReturn(this.noAssemblyConnectors);
     }
 
     /**

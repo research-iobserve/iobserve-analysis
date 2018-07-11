@@ -21,7 +21,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
@@ -37,7 +37,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to system model provider. */
-    private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private final ModelResource allocationModelResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -45,11 +45,11 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param allocationContextModelGraphProvider
+     * @param allocationModelResource
      *            system model access
      */
-    public UndeploymentModelUpdater(final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
-        this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
+    public UndeploymentModelUpdater(final ModelResource allocationModelResource) {
+        this.allocationModelResource = allocationModelResource;
     }
 
     /**
@@ -65,13 +65,12 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
-                .findObjectsByTypeAndName(AllocationContext.class, allocationContextName);
+        final List<AllocationContext> allocationContexts = this.allocationModelResource
+                .findObjectsByTypeAndName(AllocationContext.class, "entityName", allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
-            this.allocationContextModelGraphProvider.deleteObjectByTypeAndId(AllocationContext.class,
-                    allocationContext.getId());
+            this.allocationModelResource.deleteObject(allocationContext);
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",

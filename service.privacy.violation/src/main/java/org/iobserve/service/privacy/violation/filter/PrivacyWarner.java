@@ -24,8 +24,7 @@ import java.util.Map;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
@@ -57,7 +56,6 @@ import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
 import kieker.common.configuration.Configuration;
@@ -74,11 +72,11 @@ import teetime.framework.OutputPort;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    private final IModelProvider<Allocation> allocationModelProvider;
-    private final IModelProvider<System> systemModelProvider;
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
-    private final IModelProvider<Repository> repositoryModelProvider;
-    private final IModelProvider<PrivacyModel> privacyModelProvider;
+    private final ModelResource allocationModelResource;
+    private final ModelResource systemModelResource;
+    private final ModelResource resourceEnvironmentResource;
+    private final ModelResource repositoryResource;
+    private final ModelResource privacyModelResource;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -107,33 +105,31 @@ public class PrivacyWarner extends AbstractStage {
      *
      * @param configuration
      *            configuration object
-     * @param allocationModelProvider
+     * @param allocationModelResource
      *            allocation model provider
-     * @param systemModelProvider
+     * @param systemModelResource
      *            system model provider
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentResource
      *            resource environment model provider
-     * @param repositoryModelProvider
+     * @param repositoryResource
      *            repository model provider
-     * @param privacyModelProvider
+     * @param privacyModelResource
      *            privacy model provider
      * @param assemblyView2
      */
-    public PrivacyWarner(final Configuration configuration, final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<System> systemModelProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Repository> repositoryModelProvider,
-            final IModelProvider<PrivacyModel> privacyModelProvider) {
+    public PrivacyWarner(final Configuration configuration, final ModelResource repositoryResource,
+            final ModelResource resourceEnvironmentResource, final ModelResource systemModelResource,
+            final ModelResource allocationModelResource, final ModelResource privacyModelResource) {
 
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
         this.policyList = configuration.getStringArrayProperty(PrivacyConfigurationsKeys.POLICY_LIST);
 
-        this.allocationModelProvider = allocationModelProvider;
-        this.systemModelProvider = systemModelProvider;
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
-        this.repositoryModelProvider = repositoryModelProvider;
-        this.privacyModelProvider = privacyModelProvider;
+        this.allocationModelResource = allocationModelResource;
+        this.systemModelResource = systemModelResource;
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
+        this.repositoryResource = repositoryResource;
+        this.privacyModelResource = privacyModelResource;
     }
 
     @Override
@@ -180,68 +176,50 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private PrivacyGraph createAnalysisGraph() {
-        final PrivacyGraph graph = new PrivacyGraph("PrivacyWarner");
+        final PrivacyGraph privacyGraph = new PrivacyGraph("PrivacyWarner");
 
         this.loadRoots();
 
         /** AssemblyContext View **/
-        final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                this.systemModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        /** RepositoryComponent View **/
-        final IModelProvider<BasicComponent> repositoryComponentModelProvider = new ModelProvider<>(
-                this.repositoryModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        /** ResourceContainer View **/
-        final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                this.resourceEnvironmentModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+
         // Fill the hashmaps
         this.clearAndFillQueryMaps();
 
-        this.addDeployedComponents(graph, assemblyContextModelProvider, repositoryComponentModelProvider,
-                resourceContainerModelProvider);
+        this.addDeployedComponents(privacyGraph);
 
-        this.addConnectors(graph);
+        this.addConnectors(privacyGraph);
 
-        return graph;
+        return privacyGraph;
     }
 
     /**
      * Loads the root element for each model.
      **/
     private void loadRoots() {
-        this.allocationRootElement = this.allocationModelProvider.getModelRootNode(Allocation.class);
+        this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class);
         DebugHelper.printModelPartition(this.allocationRootElement);
-        this.systemRootElement = this.systemModelProvider.getModelRootNode(System.class);
-        this.repositoryRootElement = this.repositoryModelProvider.getModelRootNode(Repository.class);
-        this.privacyRootElement = this.privacyModelProvider.getModelRootNode(PrivacyModel.class);
+        this.systemRootElement = this.systemModelResource.getModelRootNode(System.class);
+        this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class);
+        this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class);
         DebugHelper.printModelPartition(this.privacyRootElement);
     }
 
     /**
      * Adding deployment info.
      *
-     * @param graph
-     *            the graph
-     * @param assemblyContextModelProvider
-     *            assembly model view on assembly contexts
-     * @param repositoryComponentModelProvider
-     *            repository model view on components
-     * @param resourceContainerModelProvider
-     *            resource environment model view on resource container
+     * @param privacyGraph
+     *            the graph containing privacy information
      */
-    private void addDeployedComponents(final PrivacyGraph graph,
-            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
-            final IModelProvider<BasicComponent> repositoryComponentModelProvider,
-            final IModelProvider<ResourceContainer> resourceContainerModelProvider) {
+    private void addDeployedComponents(final PrivacyGraph privacyGraph) {
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
-            final AssemblyContext queryAssemblyContext = assemblyContextModelProvider
-                    .findObjectByTypeAndId(AssemblyContext.class, assemblyContext.getId());
+            final AssemblyContext queryAssemblyContext = this.systemModelResource.findObjectByTypeAndId(
+                    AssemblyContext.class, this.systemModelResource.getInternalId(assemblyContext));
             final RepositoryComponent repositoryComponent = queryAssemblyContext
                     .getEncapsulatedComponent__AssemblyContext();
-            final BasicComponent basicComponent = repositoryComponentModelProvider
-                    .findObjectByTypeAndId(BasicComponent.class, repositoryComponent.getId());
+            final BasicComponent basicComponent = this.repositoryResource.findObjectByTypeAndId(BasicComponent.class,
+                    this.repositoryResource.getInternalId(repositoryComponent));
 
             /** Creating component vertices. **/
             final Vertex v = new Vertex(basicComponent.getEntityName(),
@@ -249,20 +227,23 @@ public class PrivacyWarner extends AbstractStage {
                             ? this.stereotypes.get(basicComponent.getId()).isDataSource() ? EStereoType.DATASOURCE
                                     : EStereoType.COMPUTING_NODE
                             : EStereoType.COMPUTING_NODE);
+
             v.setAllocation(allocationContext.getAllocation_AllocationContext());
-            graph.addVertex(v);
+            privacyGraph.addVertex(v);
+
             this.vertices.put(basicComponent.getId(), v);
 
-            final ResourceContainer queryResource = resourceContainerModelProvider.findObjectByTypeAndId(
-                    ResourceContainer.class, allocationContext.getResourceContainer_AllocationContext().getId());
+            final ResourceContainer queryResource = this.resourceEnvironmentResource
+                    .findObjectByTypeAndId(ResourceContainer.class, this.resourceEnvironmentResource
+                            .getInternalId(allocationContext.getResourceContainer_AllocationContext()));
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
-                graph.addVertex(vGeo);
-                graph.addEdge(vGeo, v);
+                privacyGraph.addVertex(vGeo);
+                privacyGraph.addEdge(vGeo, v);
                 this.vertices.put(geo.getIsocode().getName(), vGeo);
             } else { // Existing Geolocation
-                graph.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
+                privacyGraph.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
 
             }
         }

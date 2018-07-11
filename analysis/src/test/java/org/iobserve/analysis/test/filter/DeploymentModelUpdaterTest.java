@@ -25,10 +25,7 @@ import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -37,7 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -60,20 +57,11 @@ public class DeploymentModelUpdaterTest {
      */
     @Test
     public void testExecutePCMDeployedEvent() {
-        final ModelGraph graph = this.prepareGraph(DeploymentModelUpdaterTest.class + "testExecutePCMDeployedEvent");
+        final ModelResource allocationModelResource = this.initializationDatabase();
 
-        this.initializationDatabase(graph);
+        final Allocation initDbAllocation = allocationModelResource.getModelRootNode(Allocation.class);
 
-        final IModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final Allocation initDbAllocation = allocationModelGraphProvider.getModelRootNode(Allocation.class);
-
-        final ModelProvider<AllocationContext> allocationContextModelGraphProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-
-        final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(allocationModelGraphProvider,
-                allocationContextModelGraphProvider);
+        final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(allocationModelResource);
 
         /** input deployment event */
         final AssemblyContext assemblyContext = SystemDataFactory.findAssemblyContext(this.system,
@@ -92,23 +80,23 @@ public class DeploymentModelUpdaterTest {
         Assert.assertThat(deploymentModelUpdater.getDeployedNotifyOutputPort(), StageTester.produces(deploymentEvent));
 
         // TODO check is DB contains a deployment
-        final Allocation dbAllocation = allocationModelGraphProvider.getModelRootNode(Allocation.class);
+        final Allocation dbAllocation = allocationModelResource.getModelRootNode(Allocation.class);
         for (final AllocationContext context : dbAllocation.getAllocationContexts_Allocation()) {
             Assert.assertNotEquals("No assembly context for " + context.getEntityName(),
                     context.getAssemblyContext_AllocationContext(), null);
         }
     }
 
-    private void initializationDatabase(final ModelGraph graph) {
-        new ModelProvider<>(this.prepareGraph("testExecutePCMDeployedEvent-repository"), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID).storeModelPartition(this.repository);
-        new ModelProvider<>(this.prepareGraph("testExecutePCMDeployedEvent-system"), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID).storeModelPartition(this.system);
-        new ModelProvider<>(this.prepareGraph("testExecutePCMDeployedEvent-resource"), ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID).storeModelPartition(this.resourceEnvironment);
+    private ModelResource initializationDatabase() {
+        this.prepareGraph("testExecutePCMDeployedEvent-repository").storeModelPartition(this.repository);
+        this.prepareGraph("testExecutePCMDeployedEvent-system").storeModelPartition(this.system);
+        this.prepareGraph("testExecutePCMDeployedEvent-resource").storeModelPartition(this.resourceEnvironment);
 
-        new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                .storeModelPartition(this.allocation);
+        final ModelResource resource = this
+                .prepareGraph(DeploymentModelUpdaterTest.class + "testExecutePCMDeployedEvent");
+        resource.storeModelPartition(this.allocation);
+
+        return resource;
     }
 
     /**
@@ -119,13 +107,12 @@ public class DeploymentModelUpdaterTest {
      *
      * @return the prepared graph
      */
-    protected ModelGraph prepareGraph(final String name) {
+    protected ModelResource prepareGraph(final String name) {
         final File graphBaseDir = new File("./testdb/" + this.getClass().getCanonicalName() + "." + name);
 
         this.removeDirectory(graphBaseDir);
 
-        final ModelResourceLoader graphLoader = new ModelResourceLoader(graphBaseDir);
-        return graphLoader.createModelResource(AllocationFactory.eINSTANCE);
+        return new ModelResource(AllocationPackage.eINSTANCE, graphBaseDir);
     }
 
     /**

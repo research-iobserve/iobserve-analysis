@@ -26,7 +26,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -43,7 +44,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public final class AllocationStage extends AbstractConsumerStage<IAllocationEvent> {
 
     /** reference to {@link ResourceEnvironment} provider. */
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelResource resourceEnvironmentResource;
 
     /** Relay allocation event. */
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
@@ -54,11 +55,11 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentResource
      *            the resource environment model
      */
-    public AllocationStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public AllocationStage(final ModelResource resourceEnvironmentResource) {
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 
     /**
@@ -84,9 +85,12 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      *             malformed url exception
      * @throws UnknownObjectException
      *             in case the allocation event is of an unknown type
+     * @throws NodeLookupException
+     *             node lookup exception
      */
     @Override
-    protected void execute(final IAllocationEvent event) throws MalformedURLException, UnknownObjectException {
+    protected void execute(final IAllocationEvent event)
+            throws MalformedURLException, UnknownObjectException, NodeLookupException {
         final String service;
         if (event instanceof ContainerAllocationEvent) {
             service = ((ContainerAllocationEvent) event).getService();
@@ -99,18 +103,17 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
-                        this.resourceEnvironmentModelGraphProvider.getModelRootNode(ResourceEnvironment.class),
-                        service);
+                        this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class), service);
 
         if (!resourceContainer.isPresent()) {
             this.logger.debug("ResourceContainer {} is created.", service);
             /** new provider: update the resource environment graph. */
-            final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelGraphProvider
+            final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentResource
                     .getModelRootNode(ResourceEnvironment.class);
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironment, service);
             resourceEnvironment.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
-            this.resourceEnvironmentModelGraphProvider.updatePartition(ResourceEnvironment.class, resourceEnvironment);
+            this.resourceEnvironmentResource.updatePartition(resourceEnvironment);
 
             /** signal allocation update. */
             this.allocationNotifyOutputPort.send(newResourceContainer);

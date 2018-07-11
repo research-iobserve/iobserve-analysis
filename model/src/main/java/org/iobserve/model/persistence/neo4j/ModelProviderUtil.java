@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -78,9 +77,9 @@ public final class ModelProviderUtil {
      * @param <V>
      *            the type of the root element
      */
-    public <V extends EObject> void initializeModelGraph(final EFactory factory, final V model, final String nameLabel,
+    public <V extends EObject> void initializeModelGraph(final EPackage ePackage, final V model, final String nameLabel,
             final String idLabel, final File baseDirectory) {
-        final ModelResource resource = ModelProviderUtil.createModelResource(factory, baseDirectory);
+        final ModelResource resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
         resource.clearResource();
         resource.storeModelPartition(model);
         resource.getGraphDatabaseService().shutdown();
@@ -95,8 +94,8 @@ public final class ModelProviderUtil {
      *            base directory for the model database
      * @return The model graph
      */
-    public static ModelResource createModelResource(final EFactory factory, final File baseDirectory) {
-        final String graphTypeDirName = ModelProviderUtil.fullyQualifiedPackageName(factory.getEPackage());
+    public static ModelResource createModelResource(final EPackage ePackage, final File baseDirectory) {
+        final String graphTypeDirName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File graphTypeDir = new File(baseDirectory, graphTypeDirName);
         int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(graphTypeDir.listFiles());
 
@@ -107,7 +106,7 @@ public final class ModelProviderUtil {
         final File newGraphDir = ModelProviderUtil.createResourceDatabaseFile(graphTypeDir, graphTypeDirName,
                 maxVersionNumber);
 
-        return new ModelResource(factory, newGraphDir);
+        return new ModelResource(ePackage, newGraphDir);
     }
 
     /**
@@ -140,7 +139,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference reference, final Object referenceObject) {
-        return (referenceObject instanceof DataType) && !(reference.getName().equals("parentType_CompositeDataType")
+        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
                 || reference.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
@@ -148,32 +147,32 @@ public final class ModelProviderUtil {
      * Clones and returns a new version from the current newest version of the model graph. If there
      * is none yet an empty graph is returned.
      *
-     * @param factory
+     * @param ePackage
      *            metamodel factory class
      * @param resource
      *            resource to be cloned
      *
      * @return The cloned graph
      */
-    public static ModelResource createNewModelResourceVersion(final EFactory factory, final ModelResource resource) {
+    public static ModelResource createNewModelResourceVersion(final EPackage ePackage, final ModelResource resource) {
         final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
 
-        return ModelProviderUtil.cloneNewModelGraphVersion(factory, baseDirectory);
+        return ModelProviderUtil.cloneNewModelGraphVersion(ePackage, baseDirectory);
     }
 
     /**
      * Helper method for cloning: Clones and returns a new version from the current newest version
      * of the model graph.
      *
-     * @param factory
+     * @param ePackage
      *            the factory for the particular metamodel (partition)
      * @param <T>
      *            graph type
      * @return The the model graph
      */
-    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EFactory factory,
+    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EPackage ePackage,
             final File baseDirectory) {
-        final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(factory.getEPackage());
+        final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
         final int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(resourceBaseDirectory.listFiles());
 
@@ -194,7 +193,7 @@ public final class ModelProviderUtil {
             throw new InternalError("No such model available for cloning.");
         }
 
-        return new ModelResource(factory, newGraphDir);
+        return new ModelResource(ePackage, newGraphDir);
     }
 
     /**

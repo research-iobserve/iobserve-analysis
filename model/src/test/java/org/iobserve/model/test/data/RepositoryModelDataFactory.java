@@ -50,7 +50,7 @@ public final class RepositoryModelDataFactory {
     public static final String SEARCH_INTERFACE = "ISearch";
     public static final String QUERY_INTERFACE = "IQueryInput";
 
-    public static final String QUERY_REQUIRED_ROLE = "input";
+    public static final String QUERY_REQUIRED_ROLE = "queryInput";
     public static final String PAYMENT_REQUIRED_ROLE = "payment";
     public static final String SEARCH_REQUIRED_ROLE = "search";
 
@@ -102,16 +102,16 @@ public final class RepositoryModelDataFactory {
         final OperationInterface queryInterface = RepositoryModelDataFactory.createInterface(
                 RepositoryModelDataFactory.QUERY_INTERFACE,
                 RepositoryModelDataFactory.createSignature("getQuery", stringDataType));
-        final OperationInterface searchInterface = RepositoryModelDataFactory.createInterface(
-                RepositoryModelDataFactory.SEARCH_INTERFACE,
-                RepositoryModelDataFactory.createSignature("getPrice", intDataType));
         final OperationInterface paymentInterface = RepositoryModelDataFactory.createInterface(
                 RepositoryModelDataFactory.PAYMENT_INTERFACE,
                 RepositoryModelDataFactory.createSignature("withdraw", intDataType));
+        final OperationInterface searchInterface = RepositoryModelDataFactory.createInterface(
+                RepositoryModelDataFactory.SEARCH_INTERFACE,
+                RepositoryModelDataFactory.createSignature("getPrice", intDataType));
 
         repository.getInterfaces__Repository().add(queryInterface);
-        repository.getInterfaces__Repository().add(searchInterface);
         repository.getInterfaces__Repository().add(paymentInterface);
+        repository.getInterfaces__Repository().add(searchInterface);
 
         /** roles. */
         final OperationProvidedRole providedInputRole = RepositoryModelDataFactory
@@ -121,7 +121,7 @@ public final class RepositoryModelDataFactory {
         final OperationProvidedRole providedSearchRole = RepositoryModelDataFactory
                 .createProvidedRole(RepositoryModelDataFactory.CATALOG_SEARCH_PROVIDED_ROLE, searchInterface);
 
-        final OperationRequiredRole requiredInputRole = RepositoryModelDataFactory
+        final OperationRequiredRole requiredQueryInputRole = RepositoryModelDataFactory
                 .createRequiredRole(RepositoryModelDataFactory.QUERY_REQUIRED_ROLE, queryInterface);
         final OperationRequiredRole requiredPayRole = RepositoryModelDataFactory
                 .createRequiredRole(RepositoryModelDataFactory.PAYMENT_REQUIRED_ROLE, paymentInterface);
@@ -130,7 +130,7 @@ public final class RepositoryModelDataFactory {
 
         /** components. */
         repository.getComponents__Repository().add(RepositoryModelDataFactory
-                .createBasicComponent(RepositoryModelDataFactory.QUERY_COMPONENT, requiredInputRole, null));
+                .createBasicComponent(RepositoryModelDataFactory.QUERY_COMPONENT, requiredQueryInputRole, null));
         repository.getComponents__Repository().add(RepositoryModelDataFactory
                 .createBasicComponent(RepositoryModelDataFactory.PROCESSING_COMPONENT, requiredSearchRole, null));
         repository.getComponents__Repository().add(RepositoryModelDataFactory

@@ -23,7 +23,8 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -55,11 +56,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final IModelProvider<Allocation> allocationModelProvider;
+    private final ModelResource allocationModelResource;
     /** reference to system model provider. */
-    private final IModelProvider<System> systemModelProvider;
+    private final ModelResource systemModelResource;
     /** reference to resource environment model provider. */
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final ModelResource resourceEnvironmentModelResource;
 
     /**
      * Create new TNetworkLink filter.
@@ -71,12 +72,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<System> systemModelProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
-        this.allocationModelProvider = allocationModelProvider;
-        this.systemModelProvider = systemModelProvider;
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    public NetworkLink(final ModelResource allocationModelProvider, final ModelResource systemModelProvider,
+            final ModelResource resourceEnvironmentModelProvider) {
+        this.allocationModelResource = allocationModelProvider;
+        this.systemModelResource = systemModelProvider;
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelProvider;
     }
 
     /**
@@ -84,14 +84,15 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      *
      * @param event
      *            event to use
+     * @throws NodeLookupException
      */
     @Override
-    protected void execute(final TraceMetadata event) {
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
+    protected void execute(final TraceMetadata event) throws NodeLookupException {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource
                 .getAndLockModelRootNode(ResourceEnvironment.class);
 
-        final System system = this.systemModelProvider.getModelRootNode(System.class);
-        final Allocation allocation = this.allocationModelProvider.getModelRootNode(Allocation.class);
+        final System system = this.systemModelResource.getModelRootNode(System.class);
+        final Allocation allocation = this.allocationModelResource.getModelRootNode(Allocation.class);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
@@ -102,7 +103,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        this.resourceEnvironmentModelProvider.updatePartition(ResourceEnvironment.class, resourceEnvironment);
+        this.resourceEnvironmentModelResource.updatePartition(resourceEnvironment);
     }
 
     /**

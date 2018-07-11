@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record;
+package org.iobserve.model.persistence.neo4j;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
- * 
- * @since 0.0.3
+ *
  */
-public enum ISOCountryCode {
-	GERMANY(276),
-	USA(840),
-	EVIL_EMPIRE(1);
-	
-	private int value;
-		
-	private ISOCountryCode(final int value) {
-		this.value = value;
-	}
-		
-	public int getValue() {
-		return this.value;
-	}
-	
-	public static ISOCountryCode getEnum(final int value) {
-		for (final ISOCountryCode type : ISOCountryCode.values()) {
-			if (type.getValue() == value)
-				return type;
-		}
-		throw new RuntimeException("Illegal value for ISOCountryCode enumeration.");
-	}
+public class NodeLookupException extends Exception {
+
+    /**
+    *
+    */
+    private static final long serialVersionUID = -4339798211784592177L;
+
+    /**
+     * Exception constructor.
+     *
+     * @param message
+     *            error message
+     */
+    public NodeLookupException(final String message) {
+        super(message);
+    }
+
 }

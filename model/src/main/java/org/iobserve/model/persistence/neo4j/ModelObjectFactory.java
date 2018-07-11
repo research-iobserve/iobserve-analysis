@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
@@ -45,11 +44,13 @@ public final class ModelObjectFactory {
      *
      * @param node
      *            the node
+     * @param packages
+     *            collection of factories
      * @return returns the proxy object
      */
-    public static EObject createProxyObject(final Node node, final List<EFactory> factories) {
+    public static EObject createProxyObject(final Node node, final List<EPackage> packages) {
         final Label label = ModelObjectFactory.getEMFTypeLabel(node.getLabels());
-        final EObject object = ModelObjectFactory.instantiateEObject(factories, label.name());
+        final EObject object = ModelObjectFactory.instantiateEObject(packages, label.name());
         ((BasicEObjectImpl) object).eSetProxyURI(ModelGraphFactory.getUri(node));
 
         return object;
@@ -60,13 +61,15 @@ public final class ModelObjectFactory {
      *
      * @param node
      *            the node
+     * @param factories
+     *            collection of factories
      * @return returns the object
      */
-    public static EObject createObject(final Node node, final List<EFactory> factories) {
+    public static EObject createObject(final Node node, final List<EPackage> packages) {
         final Label label = ModelObjectFactory.getEMFTypeLabel(node.getLabels());
-        final EObject object = ModelObjectFactory.instantiateEObject(factories, label.name());
+        final EObject object = ModelObjectFactory.instantiateEObject(packages, label.name());
 
-        ModelObjectFactory.loadAttributes(object, node.getAllProperties(), factories);
+        ModelObjectFactory.loadAttributes(object, node.getAllProperties(), packages);
 
         return object;
     }
@@ -82,17 +85,17 @@ public final class ModelObjectFactory {
      *            factories for object instantiation
      */
     private static <T extends EObject> void loadAttributes(final T object, final Map<String, Object> properties,
-            final List<EFactory> factories) {
+            final List<EPackage> packages) {
         for (final Entry<String, Object> property : properties.entrySet()) {
             final EAttribute attr = (EAttribute) object.eClass().getEStructuralFeature(property.getKey());
 
             // attr == null for the emfUri property stored in the graph
             if (attr != null) {
                 if (attr.isMany()) {
-                    ModelObjectFactory.createManyValuesAttribute(object, attr, property, factories);
+                    ModelObjectFactory.createManyValuesAttribute(object, attr, property, packages);
                 } else {
                     object.eSet(attr, ModelObjectFactory.convertValue(attr.getEAttributeType(),
-                            property.getValue().toString(), factories));
+                            property.getValue().toString(), packages));
                 }
 
             }
@@ -100,7 +103,7 @@ public final class ModelObjectFactory {
     }
 
     private static void createManyValuesAttribute(final EObject component, final EAttribute attr,
-            final Entry<String, Object> property, final List<EFactory> factories) {
+            final Entry<String, Object> property, final List<EPackage> packages) {
         @SuppressWarnings("unchecked")
         final List<Object> attribute = (List<Object>) component.eGet(attr);
 
@@ -108,19 +111,19 @@ public final class ModelObjectFactory {
 
         final String[] values = valueString.substring(1, valueString.length() - 1).split(", ");
         for (final String value : values) {
-            final Object convertedValue = ModelObjectFactory.convertValue(attr.getEAttributeType(), value, factories);
+            final Object convertedValue = ModelObjectFactory.convertValue(attr.getEAttributeType(), value, packages);
 
             attribute.add(convertedValue);
         }
     }
 
-    private static Object convertValue(final EDataType type, final String input, final List<EFactory> factories) {
+    private static Object convertValue(final EDataType type, final String input, final List<EPackage> packages) {
         Object value = ModelProviderUtil.instantiateAttribute(type, input);
 
         if (value == null) {
-            // TODO ending up here is strange
-            for (final EFactory factory : factories) {
-                value = factory.createFromString(type, input);
+            // TODO ending up here is strange, check whether this is necessary
+            for (final EPackage ePackage : packages) {
+                value = ePackage.getEFactoryInstance().createFromString(type, input);
 
                 if (value != null) {
                     return value;
@@ -143,16 +146,15 @@ public final class ModelObjectFactory {
      * @return New object of the given data type
      */
     @SuppressWarnings("unchecked")
-    private static <T> T instantiateEObject(final List<EFactory> factories, final String fqnClassName) {
+    private static <T> T instantiateEObject(final List<EPackage> packages, final String fqnClassName) {
 
         final int separationPoint = fqnClassName.lastIndexOf('.');
         final String className = fqnClassName.substring(separationPoint + 1);
 
-        for (final EFactory factory : factories) {
-            final EPackage ePackage = factory.getEPackage();
+        for (final EPackage ePackage : packages) {
             final EClass eClass = (EClass) ePackage.getEClassifier(className);
             if (eClass != null) {
-                return (T) factory.create(eClass);
+                return (T) ePackage.getEFactoryInstance().create(eClass);
             }
         }
 

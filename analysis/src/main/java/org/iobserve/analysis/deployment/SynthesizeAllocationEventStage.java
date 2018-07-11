@@ -24,7 +24,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -47,7 +47,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to resource environment model provider. */
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelResource resourceEnvironmentModelResource;
 
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
@@ -56,12 +56,11 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     /**
      * Create an allocation event synthesizer stage.
      *
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentModelResource
      *            the resource environment which is tested for a proper allocation
      */
-    public SynthesizeAllocationEventStage(
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public SynthesizeAllocationEventStage(final ModelResource resourceEnvironmentModelResource) {
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
     }
 
     @Override
@@ -70,7 +69,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(), event.getResourceContainer(),
                 event.getService(), event.getUrl());
 
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelGraphProvider
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource
                 .getModelRootNode(ResourceEnvironment.class);
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(resourceEnvironment, event.getService());

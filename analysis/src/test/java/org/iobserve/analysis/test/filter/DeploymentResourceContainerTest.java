@@ -25,10 +25,10 @@ import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -65,13 +65,11 @@ public class DeploymentResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private static ModelResource mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource mockedAllocationModelGraphProvider;
     @Mock
-    private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
-    @Mock
-    private static ModelProvider<CorrespondenceModel> mockedCorrespondence;
+    private static ModelResource mockedCorrespondence;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
     private static Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
@@ -90,20 +88,21 @@ public class DeploymentResourceContainerTest {
     public static void setUp() {
 
         /** mocks for model graph provider */
-        DeploymentResourceContainerTest.allocationContextModelGraphProvider = Mockito.mock(ModelProvider.class);
-        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
-        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelProvider.class);
+        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
+        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelResource.class);
 
         /** mock for correspondence model */
-        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ModelProvider.class);
+        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ModelResource.class);
     }
 
     /**
      * Define the test situation in which the needed {@link ResourceContainer} exists in the given
      * {@link ResourceEnvironment} model.
+     *
+     * @throws NodeLookupException
      */
     @Before
-    public void stubMocksResourceContainer() {
+    public void stubMocksResourceContainer() throws NodeLookupException {
 
         /** mock for ModelBuilder */
         // use PowerMockito for calling static methods of these final classes
@@ -111,8 +110,7 @@ public class DeploymentResourceContainerTest {
         PowerMockito.mockStatic(SystemModelFactory.class);
 
         this.deploymentModelUpdater = new DeploymentModelUpdater(
-                DeploymentResourceContainerTest.mockedAllocationModelGraphProvider,
-                DeploymentResourceContainerTest.allocationContextModelGraphProvider);
+                DeploymentResourceContainerTest.mockedAllocationModelGraphProvider);
 
         /** get models */
         // this makes no sense anymore
@@ -154,7 +152,7 @@ public class DeploymentResourceContainerTest {
                 DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0));
 
         Mockito.doNothing().when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updatePartition(Allocation.class, DeploymentResourceContainerTest.allocation);
+                .updatePartition(DeploymentResourceContainerTest.allocation);
     }
 
     /**

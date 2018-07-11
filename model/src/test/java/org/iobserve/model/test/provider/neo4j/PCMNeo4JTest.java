@@ -16,6 +16,7 @@
 package org.iobserve.model.test.provider.neo4j;
 
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -26,12 +27,15 @@ import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * @author Reiner Jung
@@ -47,13 +51,13 @@ public class PCMNeo4JTest {
     private Allocation allocation;
 
     private final ModelResource repositoryResource = ModelProviderTestUtils.prepareResource("repository",
-            PCMNeo4JTest.PREFIX, RepositoryFactory.eINSTANCE);
+            PCMNeo4JTest.PREFIX, RepositoryPackage.eINSTANCE);
     private final ModelResource resourceEnvironmentResource = ModelProviderTestUtils
-            .prepareResource("resource-environment", PCMNeo4JTest.PREFIX, RepositoryFactory.eINSTANCE);
+            .prepareResource("resource-environment", PCMNeo4JTest.PREFIX, ResourceenvironmentPackage.eINSTANCE);
     private final ModelResource systemResource = ModelProviderTestUtils.prepareResource("system", PCMNeo4JTest.PREFIX,
-            RepositoryFactory.eINSTANCE);
+            SystemPackage.eINSTANCE);
     private final ModelResource allocationResource = ModelProviderTestUtils.prepareResource("allocation",
-            PCMNeo4JTest.PREFIX, RepositoryFactory.eINSTANCE);
+            PCMNeo4JTest.PREFIX, AllocationPackage.eINSTANCE);
 
     /**
      * Initialize models.
@@ -69,9 +73,12 @@ public class PCMNeo4JTest {
 
     /**
      * Test whether updates work as suggested.
+     *
+     * @throws NodeLookupException
+     *             on node lookup errors
      */
     @Test
-    public void testUpdate() {
+    public void testUpdate() throws NodeLookupException {
         /** store model in database. */
         this.repositoryResource.storeModelPartition(this.repository);
         this.resourceEnvironmentResource.storeModelPartition(this.resourceEnvironment);
@@ -92,11 +99,12 @@ public class PCMNeo4JTest {
 
         allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
 
-        this.allocationResource.updatePartition(Allocation.class, allocationModel);
+        this.allocationResource.updatePartition(allocationModel);
 
         DebugHelper.printModelPartition(this.allocationResource.getModelRootNode(Allocation.class));
 
-        for (final AllocationContext context : this.allocationResource.collectAllObjectsByType(AllocationContext.class)) {
+        for (final AllocationContext context : this.allocationResource
+                .collectAllObjectsByType(AllocationContext.class)) {
             DebugHelper.printModelPartition(context);
         }
     }

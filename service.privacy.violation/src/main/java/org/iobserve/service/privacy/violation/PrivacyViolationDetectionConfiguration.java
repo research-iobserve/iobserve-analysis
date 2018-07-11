@@ -37,10 +37,7 @@ import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
@@ -60,13 +57,6 @@ import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 
 /**
  * Configuration for the log replayer.
@@ -81,19 +71,17 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *
      * @param configuration
      *            configuration object
-     * @param correspondenceGraph
+     * @param correspondenceResource
      *            correspondence model graph
-     * @param repositoryModelProvider
+     * @param repositoryResource
      *            repository model provider
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentResource
      *            resource environment model provider
-     * @param allocationModelProvider
+     * @param allocationResource
      *            allocation model provider
-     * @param allocationContextModelProvider
-     *            allocation context model provider (view)
-     * @param systemModelProvider
+     * @param systemModelResource
      *            system model provider
-     * @param privacyModelGraph
+     * @param privacyModelResource
      *            graph for the privacy model
      * @param warningFile
      *            warnings
@@ -105,17 +93,10 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             on configuration errors
      */
     public PrivacyViolationDetectionConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelGraph correspondenceGraph, final IModelProvider<Repository> repositoryModelProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<System> systemModelProvider, final ModelGraph privacyModelGraph,
-            final File warningFile, final File alarmFile) throws IOException, ConfigurationException {
-
-        final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(
-                systemModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-        final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
-                resourceEnvironmentModelProvider.getResource(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final ModelResource correspondenceResource, final ModelResource repositoryResource,
+            final ModelResource resourceEnvironmentResource, final ModelResource systemModelResource,
+            final ModelResource allocationResource, final ModelResource privacyModelResource, final File warningFile,
+            final File alarmFile) throws IOException, ConfigurationException {
 
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -139,24 +120,20 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
 
             /** allocation. */
-            final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
-            final DeallocationStage deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
+            final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentResource);
+            final DeallocationStage deallocationStage = new DeallocationStage(resourceEnvironmentResource);
 
             /** deployment. */
-            final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(
-                    resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider,
-                    assemblyContextModelProvider, correspondenceGraph);
+            final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentResource,
+                    allocationResource, systemModelResource, correspondenceResource);
             final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
-                    allocationContextModelProvider, assemblyContextModelProvider, resourceContainerModelProvider,
-                    correspondenceGraph);
+                    resourceEnvironmentResource, systemModelResource, allocationResource, correspondenceResource);
 
             /** geo location. */
-            final GeoLocationStage geoLocationStage = new GeoLocationStage(privacyModelGraph);
+            final GeoLocationStage geoLocationStage = new GeoLocationStage(privacyModelResource);
 
-            final PrivacyWarner privacyWarner = new PrivacyWarner(configuration, allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelProvider, repositoryModelProvider,
-                    new ModelProvider<PrivacyModel>(privacyModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                            ModelProvider.PCM_ID));
+            final PrivacyWarner privacyWarner = new PrivacyWarner(configuration, repositoryResource,
+                    resourceEnvironmentResource, systemModelResource, allocationResource, privacyModelResource);
             privacyWarner.declareActive();
 
             final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
@@ -164,16 +141,15 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 
             final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
-            final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceGraph,
-                    repositoryModelProvider.getResource(), systemModelProvider.getResource(),
-                    allocationModelProvider.getResource());
-            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelProvider);
+            final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceResource,
+                    repositoryResource, systemModelResource, allocationResource);
+            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationResource,
+                    systemModelResource, resourceEnvironmentResource);
             final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
-            final ModelProbeController modelProbeController = new ModelProbeController(allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelProvider);
-            final ProbeMapper probeMapper = new ProbeMapper(correspondenceGraph);
+            final ModelProbeController modelProbeController = new ModelProbeController(allocationResource,
+                    systemModelResource, resourceEnvironmentResource);
+            final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
 
             final ProbeController probeController = new ProbeController(this.createProbeConnections(
                     configuration.getStringArrayProperty(PrivacyConfigurationsKeys.PROBE_CONNECTIONS_OUTPUTS)));

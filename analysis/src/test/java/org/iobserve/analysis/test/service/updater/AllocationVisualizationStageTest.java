@@ -25,7 +25,7 @@ import teetime.framework.test.StageTester;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.test.service.suites.VisualizationHttpTestServer;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -56,7 +56,7 @@ public class AllocationVisualizationStageTest {
 
     /** test parameters for stage under test. */
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelResource mockedResourceContainerModelProvider;
 
     /** input events. */
     private final List<ResourceContainer> inputEvents = new ArrayList<>();
@@ -93,7 +93,7 @@ public class AllocationVisualizationStageTest {
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
+                "entityName", AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
 
     }
 

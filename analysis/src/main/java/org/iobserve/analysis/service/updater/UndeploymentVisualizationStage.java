@@ -27,7 +27,7 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -44,9 +44,9 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
     private final URL outputURL;
     private final String systemId;
-    private final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider;
-    private final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider;
-    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final ModelResource resourceContainerModelGraphProvider;
+    private final ModelResource assemblyContextModelGraphProvider;
+    private final ModelResource systemModelGraphProvider;
 
     /**
      * Output visualization configuration.
@@ -65,9 +65,8 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
      *            provider for system model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
-            final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final ModelResource resourceContainerModelGraphProvider,
+            final ModelResource assemblyContextModelGraphProvider, final ModelResource systemModelGraphProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceContainerModelGraphProvider = resourceContainerModelGraphProvider;
@@ -92,11 +91,11 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
         final String serverName = undeployment.getService();
 
         final String nodeId = this.resourceContainerModelGraphProvider
-                .findObjectsByTypeAndName(ResourceContainer.class, serverName).get(0).getId();
+                .findObjectsByTypeAndName(ResourceContainer.class, "entityName", serverName).get(0).getId();
 
         final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
-                .findObjectsByTypeAndName(AssemblyContext.class, asmContextName).get(0);
+                .findObjectsByTypeAndName(AssemblyContext.class, "entityName", asmContextName).get(0);
 
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));

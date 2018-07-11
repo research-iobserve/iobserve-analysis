@@ -18,12 +18,9 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.IProbeManagement;
 import org.iobserve.stages.data.Warnings;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of
@@ -36,26 +33,25 @@ import org.palladiosimulator.pcm.system.System;
 public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     private final OutputPort<IProbeManagement> outputPort = this.createOutputPort(IProbeManagement.class);
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    private final IModelProvider<System> systemModelGraphProvider;
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelResource allocationModelResource;
+    private final ModelResource systemModelResource;
+    private final ModelResource resourceEnvironmentModelResource;
 
     /**
      * Create an initialize the model probe controller.
      *
-     * @param allocationModelGraphProvider
+     * @param allocationModelResource
      *            allocation model provider
-     * @param systemModelGraphProvider
+     * @param systemModelResource
      *            system model provider
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentModelResource
      *            resource environment model provider
      */
-    public ModelProbeController(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.systemModelGraphProvider = systemModelGraphProvider;
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public ModelProbeController(final ModelResource allocationModelResource, final ModelResource systemModelResource,
+            final ModelResource resourceEnvironmentModelResource) {
+        this.allocationModelResource = allocationModelResource;
+        this.systemModelResource = systemModelResource;
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
     }
 
     @Override

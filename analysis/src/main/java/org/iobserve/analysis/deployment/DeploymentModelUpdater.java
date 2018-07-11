@@ -21,7 +21,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.DebugHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -42,9 +43,7 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    /** reference to allocation model provider. */
-    private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private final ModelResource allocationModelResource;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
@@ -52,16 +51,11 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param allocationModelGraphProvider
+     * @param allocationModelResource
      *            allocation model provider
-     * @param allocationContextModelGraphProvider
-     *            model provider for a view on the allocation model only containing the allocation
-     *            contexts
      */
-    public DeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
+    public DeploymentModelUpdater(final ModelResource allocationModelResource) {
+        this.allocationModelResource = allocationModelResource;
     }
 
     /**
@@ -69,20 +63,22 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      *
      * @param event
      *            one deployment event to be processed
+     * @throws NodeLookupException
+     *             node lookup failed
      */
     @Override
-    protected void execute(final PCMDeployedEvent event) {
+    protected void execute(final PCMDeployedEvent event) throws NodeLookupException {
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
                 event.getAssemblyContext(), event.getResourceContainer(), event.getService());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
-                .findObjectsByTypeAndName(AllocationContext.class, allocationContextName);
+        final List<AllocationContext> allocationContext = this.allocationModelResource
+                .findObjectsByTypeAndName(AllocationContext.class, "entityName", allocationContextName);
         if (allocationContext.isEmpty()) {
             this.logger.debug("Create allocation context {}", event);
-            final Allocation allocationModel = this.allocationModelGraphProvider.getModelRootNode(Allocation.class);
+            final Allocation allocationModel = this.allocationModelResource.getModelRootNode(Allocation.class);
 
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
@@ -91,11 +87,11 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
 
-            this.allocationModelGraphProvider.updatePartition(Allocation.class, allocationModel);
+            this.allocationModelResource.updatePartition(allocationModel);
 
-            DebugHelper.printModelPartition(this.allocationModelGraphProvider.getModelRootNode(Allocation.class));
+            DebugHelper.printModelPartition(this.allocationModelResource.getModelRootNode(Allocation.class));
 
-            for (final AllocationContext context : this.allocationContextModelGraphProvider
+            for (final AllocationContext context : this.allocationModelResource
                     .collectAllObjectsByType(AllocationContext.class)) {
                 DebugHelper.printModelPartition(context);
             }

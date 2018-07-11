@@ -25,25 +25,18 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 
 import org.iobserve.model.ModelImporter;
-import org.iobserve.model.correspondence.CorrespondenceFactory;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
-import org.palladiosimulator.pcm.system.SystemFactory;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
-import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
+import org.palladiosimulator.pcm.system.SystemPackage;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * Main class for starting the iObserve application.
@@ -124,80 +117,59 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
     protected AnalysisConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
 
-        IModelProvider<Repository> repositoryModelProvider = null;
-        IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = null;
-        IModelProvider<Allocation> allocationModelProvider = null;
-        IModelProvider<AllocationContext> allocationContextModelProvider = null;
-        IModelProvider<System> systemModelProvider = null;
-        // IModelProvider<AssemblyContext> assemblyContextProvicer = null;
-        IModelProvider<UsageModel> usageModelProvider = null;
-
         /** Configure model handling. */
         if (this.pcmFeature) {
             try {
-                final ModelImporter modelFileHandler = new ModelImporter(this.modelInitDirectory);
+                final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
 
                 /** initialize neo4j graphs. */
-                final ModelResourceLoader graphLoader = new ModelResourceLoader(this.modelDatabaseDirectory);
+                final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-                graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelFileHandler.getRepositoryModel(),
-                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
-                        modelFileHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME,
-                        ModelProvider.PCM_ID);
-                graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelFileHandler.getAllocationModel(),
-                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelFileHandler.getSystemModel(),
-                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                // graphLoader.initializeModelGraph(UsageModel.class,
-                // modelFileHandler.getUsageModel(),
-                // ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE,
-                        modelFileHandler.getCorrespondenceModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+                final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-                /** load neo4j graphs. */
-                final ModelGraph repositoryModelGraph = graphLoader.createModelResource(RepositoryFactory.eINSTANCE);
-                final ModelGraph resourceEnvironmentGraph = graphLoader
-                        .createModelResource(ResourceenvironmentFactory.eINSTANCE);
-                final ModelGraph allocationModelGraph = graphLoader.createModelResource(AllocationFactory.eINSTANCE);
-                final ModelGraph systemModelGraph = graphLoader.createModelResource(SystemFactory.eINSTANCE);
-                final ModelGraph usageModelGraph = graphLoader.createModelResource(UsagemodelFactory.eINSTANCE);
-                final ModelGraph correspondenceModelGraph = graphLoader
-                        .createModelResource(CorrespondenceFactory.eINSTANCE);
+                final ModelResource resourceEnvironmentModelResource = new ModelResource(
+                        ResourceenvironmentPackage.eINSTANCE, this.modelDatabaseDirectory); // add
+                                                                                            // sub
+                                                                                            // dir
+                                                                                            // repository
+                                                                                            // +
+                                                                                            // versioning
+                resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-                /** new graphModelProvider. */
-                repositoryModelProvider = new ModelProvider<>(repositoryModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                        ModelProvider.PCM_ID);
-                resourceEnvironmentModelProvider = new ModelProvider<>(resourceEnvironmentGraph,
-                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                allocationModelProvider = new ModelProvider<>(allocationModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                        ModelProvider.PCM_ID);
-                allocationContextModelProvider = new ModelProvider<>(allocationModelGraph,
-                        ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-                systemModelProvider = new ModelProvider<>(systemModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                        ModelProvider.PCM_ID);
-                // assemblyContextProvicer = new ModelProvider<>(systemModelGraph,
-                // ModelProvider.PCM_ENTITY_NAME,
-                // ModelProvider.PCM_ID);
-                usageModelProvider = new ModelProvider<>(usageModelGraph, ModelProvider.PCM_ENTITY_NAME,
-                        ModelProvider.PCM_ID);
+                final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                systemModelResource.storeModelPartition(modelHandler.getSystemModel());
+
+                final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
+
+                final ModelResource usageModelResource = new ModelResource(UsagemodelPackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                usageModelResource.storeModelPartition(modelHandler.getUsageModel());
+
+                final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
+                        this.modelDatabaseDirectory); // add sub dir repository + versioning
+                privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
                 // get systemId
-                final System systemModel = systemModelProvider.getModelRootNode(System.class);
+                final System systemModel = systemModelResource.getModelRootNode(System.class);
 
                 configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
 
-                return new AnalysisConfiguration(configuration, repositoryModelProvider,
-                        resourceEnvironmentModelProvider, allocationModelProvider, allocationContextModelProvider,
-                        systemModelProvider, usageModelProvider, correspondenceModelGraph);
+                return new AnalysisConfiguration(configuration, repositoryModelResource,
+                        resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
+                        usageModelResource, correspondenceModelResource);
             } catch (final IOException e) {
                 java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
                 return null;
             }
         } else {
-            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    allocationModelProvider, allocationContextModelProvider, systemModelProvider, usageModelProvider,
-                    null);
+            return new AnalysisConfiguration(configuration);
         }
     }
 

@@ -27,11 +27,8 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.feature.IContainerManagementSinkStage;
 import org.iobserve.analysis.sink.InitializeDeploymentVisualization;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 
 /**
  * Send container management information to the visualization service.
@@ -42,9 +39,8 @@ import org.palladiosimulator.pcm.system.System;
 public class VisualizationContainerManagementSinkStage implements IContainerManagementSinkStage {
 
     public VisualizationContainerManagementSinkStage(final Configuration configuration,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider)
-            throws IOException {
+            final ModelResource resourceEnvironmentModelProvider, final ModelResource allocationModelProvider,
+            final ModelResource systemModelProvider) throws IOException {
         final URL url = new URL(configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL));
         final String systemId = configuration.getStringProperty(ConfigurationKeys.SYSTEM_ID);
         final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(url,

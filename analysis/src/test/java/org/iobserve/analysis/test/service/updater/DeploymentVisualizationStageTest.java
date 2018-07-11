@@ -25,7 +25,7 @@ import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,9 +63,9 @@ public class DeploymentVisualizationStageTest { // NOCS test
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelResource mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelResource mockedAssemblyContextModelProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -119,15 +119,14 @@ public class DeploymentVisualizationStageTest { // NOCS test
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
+                "entityName", DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         // does this make sense?
         // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
         // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
-        Mockito.when(
-                this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class, asmContextName))
-                .thenReturn(this.testAssemblyContexts);
+        Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
+                "entityName", asmContextName)).thenReturn(this.testAssemblyContexts);
 
         this.deploymentVisualizationStage = new DeploymentVisualizationStage(changelogURL,
                 DeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,

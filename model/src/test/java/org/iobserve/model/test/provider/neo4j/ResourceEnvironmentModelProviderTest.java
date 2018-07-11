@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
@@ -31,6 +32,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecifica
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.resourcetype.CommunicationLinkResourceType;
 import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
 import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
@@ -50,7 +52,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
         this.testModel = this.resourceEnvironment;
-        this.factory = ResourceenvironmentFactory.eINSTANCE;
+        this.ePackage = ResourceenvironmentPackage.eINSTANCE;
         this.clazz = ResourceEnvironment.class;
     }
 
@@ -61,7 +63,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Test
     public void createThenReadByType() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.factory);
+                this.ePackage);
 
         final List<ResourceContainer> writtenContainers = this.testModel.getResourceContainer_ResourceEnvironment();
 
@@ -80,16 +82,20 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Test
     public void createThenReadContaining() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.factory);
+                this.ePackage);
 
         final ResourceContainer writtenContainer = this.testModel.getResourceContainer_ResourceEnvironment().get(0);
-        final ResourceEnvironment readModel;
-
         resource.storeModelPartition(this.testModel);
-        readModel = (ResourceEnvironment) resource.readOnlyContainingObjectById(ResourceContainer.class,
-                writtenContainer.getId());
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        final long id = resource.getInternalId(writtenContainer);
+
+        final ResourceEnvironment readModel = (ResourceEnvironment) resource
+                .findContainingObjectById(ResourceContainer.class, id);
+
+        DebugHelper.printModelPartition(this.testModel);
+        DebugHelper.printModelPartition(readModel);
+
+        Assert.assertTrue(this.equalityHelper.compareObject(this.testModel, readModel));
     }
 
     /**
@@ -99,7 +105,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Test
     public void createThenReadReferencing() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -112,25 +118,27 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         final CommunicationLinkResourceType lanType = resourceSpecification
                 .getCommunicationLinkResourceType_CommunicationLinkResourceSpecification();
 
-        final List<EObject> readReferencingComponents = resource
-                .collectReferencingObjectsByTypeAndId(CommunicationLinkResourceType.class, lanType.getId());
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+                CommunicationLinkResourceType.class, resource.getInternalId(lanType));
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(resourceSpecification, readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.compareObject(resourceSpecification, readReferencingComponents.get(0)));
 
     }
 
     /**
      * Test whether update works correctly.
+     *
+     * @throws NodeLookupException
      */
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
-                this.prefix, this.factory);
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -173,14 +181,14 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
         writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
 
-        resource.updatePartition(ResourceEnvironment.class, this.testModel);
+        resource.updatePartition(this.testModel);
 
         final ResourceEnvironment readModel = resource.getModelRootNode(ResourceEnvironment.class);
 
         DebugHelper.printModelPartition(this.testModel);
         DebugHelper.printModelPartition(readModel);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
 
     /**
@@ -190,18 +198,18 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Test
     public void createThenDeleteObject() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
-            resource.deleteObjectByTypeAndId(LinkingResource.class, lr.getId());
+            resource.deleteObject(lr);
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
-            resource.deleteObjectByTypeAndId(ResourceContainer.class, rc.getId());
+            resource.deleteObject(rc);
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
@@ -224,18 +232,18 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Test
     public void createThenDeleteObjectAndDatatypes() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteComponentAndDatatypes",
-                this.prefix, this.factory);
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
-            resource.deleteObjectByIdAndDatatype(LinkingResource.class, lr.getId(), true);
+            resource.deleteObjectByIdAndDatatype(LinkingResource.class, resource.getInternalId(lr), true);
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
-            resource.deleteObjectByIdAndDatatype(ResourceContainer.class, rc.getId(), true);
+            resource.deleteObjectByIdAndDatatype(ResourceContainer.class, resource.getInternalId(rc), true);
         }
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
