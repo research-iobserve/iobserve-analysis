@@ -76,7 +76,11 @@ public final class DebugHelper {
         if (contents != null) {
             if (contents instanceof EList<?>) {
                 for (final Object content : (EList<?>) contents) {
-                    System.err.printf("%s\t%s %s\n", indent, refType, content.hashCode()); // NOPMD
+                    if (((EObject) content).eIsProxy()) {
+                        System.err.printf("%s\t%s proxy %s\n", indent, refType, content); // NOPMD
+                    } else {
+                        System.err.printf("%s\t%s %s\n", indent, refType, content.hashCode()); // NOPMD
+                    }
                 }
             } else {
                 System.err.printf("%s\t%s %s\n", indent, refType, contents.hashCode()); // NOPMD

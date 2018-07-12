@@ -150,12 +150,12 @@ public final class ModelImporter implements IModelImporter {
      *             on io errors
      */
     private <T extends EObject> T readRequiredModel(final File[] files, final EPackage ePackage) throws IOException {
-        final URI uri = this.getUriFileModelType(files, ePackage.getName(), false);
+        final URI uri = this.getUriFileModelType(files, ePackage.getName(), true);
 
         return new FileModelHandler<T>(this.resourceSet, ePackage).load(uri);
     }
 
-    private URI getUriFileModelType(final File[] files, final String suffix, final boolean optional)
+    private URI getUriFileModelType(final File[] files, final String suffix, final boolean required)
             throws IOException {
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
@@ -164,7 +164,7 @@ public final class ModelImporter implements IModelImporter {
                 return this.getUri(nextFile);
             }
         }
-        if (optional) {
+        if (!required) {
             return null;
         } else {
             throw new IOException("Missing " + suffix + " model.");
@@ -274,7 +274,8 @@ public final class ModelImporter implements IModelImporter {
                 this.allocationModel);
         new FileModelHandler<CloudProfile>(this.resourceSet, CloudprofilePackage.eINSTANCE).save(fileLocationURI,
                 this.cloudProfileModel);
-        new FileModelHandler<CostRepository>(this.resourceSet, costPackage.eINSTANCE).save(fileLocationURI, this.costModel);
+        new FileModelHandler<CostRepository>(this.resourceSet, costPackage.eINSTANCE).save(fileLocationURI,
+                this.costModel);
         new FileModelHandler<DecisionSpace>(this.resourceSet, designdecisionPackage.eINSTANCE).save(fileLocationURI,
                 this.designDecisionModel);
         new FileModelHandler<Repository>(this.resourceSet, RepositoryPackage.eINSTANCE).save(fileLocationURI,

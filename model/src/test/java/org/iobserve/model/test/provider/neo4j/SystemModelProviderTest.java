@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
@@ -54,6 +55,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         this.testModel = this.system;
         this.ePackage = SystemPackage.eINSTANCE;
         this.clazz = System.class;
+        this.eClass = SystemPackage.Literals.SYSTEM;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         resource.storeModelPartition(this.testModel);
 
         final System readModel = (System) resource.findContainingObjectById(AssemblyContext.class,
-                resource.getInternalId(ac));
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(ac));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
@@ -106,7 +108,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
                 SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT);
 
         readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
-                resource.getInternalId(context));
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
         // businessOrderContext
@@ -184,7 +186,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         resource.updatePartition(this.testModel);
 
-        final System readModel = resource.getModelRootNode(System.class);
+        final System readModel = resource.getModelRootNode(System.class, this.eClass);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
@@ -218,7 +220,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByIdAndDatatype(System.class, resource.getInternalId(this.testModel), true);
+        resource.deleteObjectByIdAndDatatype(System.class, SystemPackage.Literals.SYSTEM,
+                resource.getInternalId(this.testModel), true);
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
     }

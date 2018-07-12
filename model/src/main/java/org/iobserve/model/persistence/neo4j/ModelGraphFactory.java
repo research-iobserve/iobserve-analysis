@@ -20,7 +20,9 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -62,7 +64,7 @@ public final class ModelGraphFactory {
      */
     public static Node createNode(final GraphDatabaseService graphDatabaseService, final EObject storeableObject,
             final long id) {
-        final Label typeName = Label.label(storeableObject.eClass().getInstanceTypeName());
+        final Label typeName = Label.label(ModelGraphFactory.fqnClassName(storeableObject.eClass()));
 
         final Node node = graphDatabaseService.createNode(typeName);
         node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
@@ -93,7 +95,7 @@ public final class ModelGraphFactory {
      */
     public static Node createProxyNode(final GraphDatabaseService graphDatabaseService, final EObject storeableObject,
             final long id) {
-        final Label typeName = Label.label(storeableObject.eClass().getInstanceTypeName());
+        final Label typeName = Label.label(ModelGraphFactory.fqnClassName(storeableObject.eClass()));
 
         final Node node = graphDatabaseService.createNode(typeName);
         node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
@@ -105,6 +107,18 @@ public final class ModelGraphFactory {
         System.err.println("create proxy " + storeableObject + " " + node.getId());
 
         return node;
+    }
+
+    public static String fqnClassName(final EClass eClass) {
+        return ModelGraphFactory.fqnPackageName(eClass.getEPackage()) + "." + eClass.getName();
+    }
+
+    private static String fqnPackageName(final EPackage ePackage) {
+        if (ePackage.getESuperPackage() != null) {
+            return ModelGraphFactory.fqnPackageName(ePackage.getESuperPackage()) + "." + ePackage.getName();
+        } else {
+            return ePackage.getName();
+        }
     }
 
     /**

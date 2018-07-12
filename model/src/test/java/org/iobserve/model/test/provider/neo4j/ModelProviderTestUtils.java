@@ -94,4 +94,8 @@ public final class ModelProviderTestUtils {
             dir.delete();
         }
     }
+
+    public static String removePrefix(final String canonicalName) {
+        return canonicalName.substring("org.palladiosimulator.".length());
+    }
 }

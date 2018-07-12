@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.test.data.AllocationDataFactory;
@@ -50,6 +51,7 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
     protected EPackage ePackage;
     protected T testModel;
     protected Class<T> clazz;
+    protected EClass eClass;
 
     /**
      * Clears the graph db for the next test.

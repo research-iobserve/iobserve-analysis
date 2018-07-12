@@ -36,6 +36,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.resourcetype.CommunicationLinkResourceType;
 import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
 import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
+import org.palladiosimulator.pcm.resourcetype.ResourcetypePackage;
 
 /**
  * Test cases for the model provider using a resource environment model.
@@ -54,6 +55,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         this.testModel = this.resourceEnvironment;
         this.ePackage = ResourceenvironmentPackage.eINSTANCE;
         this.clazz = ResourceEnvironment.class;
+        this.eClass = ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT;
     }
 
     /**
@@ -89,8 +91,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         final long id = resource.getInternalId(writtenContainer);
 
-        final ResourceEnvironment readModel = (ResourceEnvironment) resource
-                .findContainingObjectById(ResourceContainer.class, id);
+        final ResourceEnvironment readModel = (ResourceEnvironment) resource.findContainingObjectById(
+                ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, id);
 
         DebugHelper.printModelPartition(this.testModel);
         DebugHelper.printModelPartition(readModel);
@@ -119,7 +121,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
                 .getCommunicationLinkResourceType_CommunicationLinkResourceSpecification();
 
         final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
-                CommunicationLinkResourceType.class, resource.getInternalId(lanType));
+                CommunicationLinkResourceType.class, ResourcetypePackage.Literals.COMMUNICATION_LINK_RESOURCE_TYPE,
+                resource.getInternalId(lanType));
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
@@ -183,7 +186,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         resource.updatePartition(this.testModel);
 
-        final ResourceEnvironment readModel = resource.getModelRootNode(ResourceEnvironment.class);
+        final ResourceEnvironment readModel = resource.getModelRootNode(ResourceEnvironment.class, this.eClass);
 
         DebugHelper.printModelPartition(this.testModel);
         DebugHelper.printModelPartition(readModel);
@@ -215,10 +218,11 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
         // no containments anywhere)
         try (Transaction tx = resource.getGraphDatabaseService().beginTx()) {
-            resource.getGraphDatabaseService()
-                    .execute("MATCH (m:`" + ResourceEnvironment.class.getCanonicalName() + "`), (n:`"
-                            + ProcessingResourceType.class.getCanonicalName() + "`), (o:`"
-                            + CommunicationLinkResourceType.class.getCanonicalName() + "`) DELETE n, m, o");
+            resource.getGraphDatabaseService().execute("MATCH (m:`"
+                    + ModelProviderTestUtils.removePrefix(ResourceEnvironment.class.getCanonicalName()) + "`), (n:`"
+                    + ModelProviderTestUtils.removePrefix(ProcessingResourceType.class.getCanonicalName()) + "`), (o:`"
+                    + ModelProviderTestUtils.removePrefix(CommunicationLinkResourceType.class.getCanonicalName())
+                    + "`) DELETE n, m, o");
             tx.success();
         }
 
@@ -239,11 +243,13 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
-            resource.deleteObjectByIdAndDatatype(LinkingResource.class, resource.getInternalId(lr), true);
+            resource.deleteObjectByIdAndDatatype(LinkingResource.class,
+                    ResourceenvironmentPackage.Literals.LINKING_RESOURCE, resource.getInternalId(lr), true);
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
-            resource.deleteObjectByIdAndDatatype(ResourceContainer.class, resource.getInternalId(rc), true);
+            resource.deleteObjectByIdAndDatatype(ResourceContainer.class,
+                    ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, resource.getInternalId(rc), true);
         }
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));

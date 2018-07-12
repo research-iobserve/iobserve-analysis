@@ -90,7 +90,8 @@ public class PCMNeo4JTest {
         final ResourceContainer container = ResourceEnvironmentDataFactory.findContainer(this.resourceEnvironment,
                 ResourceEnvironmentDataFactory.QUERY_CONTAINER_3);
 
-        final Allocation allocationModel = this.allocationResource.getModelRootNode(Allocation.class);
+        final Allocation allocationModel = this.allocationResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
 
         final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
         newAllocationContext.setEntityName(AllocationDataFactory.QUERY_ALLOCATION_CONTEXT_3);
@@ -101,7 +102,8 @@ public class PCMNeo4JTest {
 
         this.allocationResource.updatePartition(allocationModel);
 
-        DebugHelper.printModelPartition(this.allocationResource.getModelRootNode(Allocation.class));
+        DebugHelper.printModelPartition(
+                this.allocationResource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION));
 
         for (final AllocationContext context : this.allocationResource
                 .collectAllObjectsByType(AllocationContext.class)) {

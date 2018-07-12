@@ -200,10 +200,10 @@ public class ECoreNeo4JTest {
         storeResource.storeModelPartition(this.modelOne);
         storeResource.getGraphDatabaseService().shutdown();
 
-        final ModelResource newVersionResource = ModelProviderUtil.createNewModelResourceVersion(OnePackage.eINSTANCE,
-                storeResource);
+        final ModelResource newVersionResource = ModelProviderUtil
+                .createNewModelResourceVersion("org.palladiosimulator", OnePackage.eINSTANCE, storeResource);
 
-        final Root clonedModel = newVersionResource.getModelRootNode(Root.class);
+        final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
         newVersionResource.getGraphDatabaseService().shutdown();
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.modelOne, clonedModel, clonedModel.eClass()));
@@ -228,7 +228,7 @@ public class ECoreNeo4JTest {
 
         twoResource.updatePartition(this.modelTwo);
 
-        final Two two = twoResource.getModelRootNode(Two.class);
+        final Two two = twoResource.getModelRootNode(Two.class, TwoPackage.Literals.TWO);
 
         Assert.assertThat("Different number of links", two.getLinks().size(), Is.is(this.modelTwo.getLinks().size()));
         for (int i = 0; i < two.getLinks().size(); i++) {

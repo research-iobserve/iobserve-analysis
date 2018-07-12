@@ -53,6 +53,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         this.testModel = this.usageModel;
         this.ePackage = UsagemodelPackage.eINSTANCE;
         this.clazz = UsageModel.class;
+        this.eClass = UsagemodelPackage.Literals.USAGE_MODEL;
     }
 
     /**
@@ -93,7 +94,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         resource.storeModelPartition(this.testModel);
 
         final UsageModel readModel = (UsageModel) resource.findContainingObjectById(UsageScenario.class,
-                resource.getInternalId(writtenScenario));
+                UsagemodelPackage.Literals.USAGE_SCENARIO, resource.getInternalId(writtenScenario));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -113,8 +114,9 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         resource.storeModelPartition(this.testModel);
 
         // Using usage scenario because usage model does not have an id
-        final List<EObject> readReferencingComponents = resource
-                .collectReferencingObjectsByTypeAndId(UsageScenario.class, resource.getInternalId(writtenScenario));
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+                UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
+                resource.getInternalId(writtenScenario));
 
         final EObject buyABookBehavior = UsageModelDataFactory.findBehavior(this.usageModel,
                 UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
@@ -181,7 +183,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         resource.updatePartition(this.testModel);
 
-        final UsageModel readModel = resource.getModelRootNode(UsageModel.class);
+        final UsageModel readModel = resource.getModelRootNode(UsageModel.class, this.eClass);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -238,7 +240,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByIdAndDatatype(UsageScenario.class, resource.getInternalId(writtenScenario), true);
+        resource.deleteObjectByIdAndDatatype(UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
+                resource.getInternalId(writtenScenario), true);
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 

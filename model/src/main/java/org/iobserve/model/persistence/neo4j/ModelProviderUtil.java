@@ -63,7 +63,7 @@ public final class ModelProviderUtil {
      * Initializes the newest version of a model graph with the given model. Overwrites a potential
      * existing graph in the database directory of this loader.
      *
-     * @param factory
+     * @param ePackage
      *            the factory for the particular metamodel (partition)
      * @param model
      *            the model to use for initialization
@@ -88,7 +88,7 @@ public final class ModelProviderUtil {
     /**
      * Helper method for getting graphs: Returns the newest version of the model graph.
      *
-     * @param factory
+     * @param ePackage
      *            the factory for the particular metamodel (partition)
      * @param baseDirectory
      *            base directory for the model database
@@ -154,10 +154,11 @@ public final class ModelProviderUtil {
      *
      * @return The cloned graph
      */
-    public static ModelResource createNewModelResourceVersion(final EPackage ePackage, final ModelResource resource) {
+    public static ModelResource createNewModelResourceVersion(final String prefix, final EPackage ePackage,
+            final ModelResource resource) {
         final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
 
-        return ModelProviderUtil.cloneNewModelGraphVersion(ePackage, baseDirectory);
+        return ModelProviderUtil.cloneNewModelGraphVersion(prefix, ePackage, baseDirectory);
     }
 
     /**
@@ -170,8 +171,8 @@ public final class ModelProviderUtil {
      *            graph type
      * @return The the model graph
      */
-    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EPackage ePackage,
-            final File baseDirectory) {
+    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final String prefix,
+            final EPackage ePackage, final File baseDirectory) {
         final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
         final int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(resourceBaseDirectory.listFiles());

@@ -30,6 +30,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -57,6 +58,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
         this.testModel = this.allocation;
         this.ePackage = AllocationPackage.eINSTANCE;
         this.clazz = Allocation.class;
+        this.eClass = AllocationPackage.Literals.ALLOCATION;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
         resource.storeModelPartition(this.testModel);
 
         final Allocation readModel = (Allocation) resource.findContainingObjectById(AllocationContext.class,
-                resource.getInternalId(writtenContext));
+                AllocationPackage.Literals.ALLOCATION_CONTEXT, resource.getInternalId(writtenContext));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -100,8 +102,8 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         final AssemblyContext context = SystemDataFactory.findAssemblyContext(this.system,
                 SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT);
-        final List<EObject> readReferencingComponents = resource
-                .collectReferencingObjectsByTypeAndId(AssemblyContext.class, resource.getInternalId(context));
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
 
         // Only the payment server allocation context is referencing the payment assembly context
         Assert.assertTrue(readReferencingComponents.size() == 1);
@@ -144,7 +146,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.updatePartition(this.testModel);
 
-        final Allocation readModel = resource.getModelRootNode(Allocation.class);
+        final Allocation readModel = resource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 

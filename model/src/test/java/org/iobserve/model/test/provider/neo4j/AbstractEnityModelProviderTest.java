@@ -49,7 +49,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
         final long id = resource.getInternalId(this.testModel);
 
-        final T readModel = resource.findObjectByTypeAndId(this.clazz, id);
+        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -70,7 +70,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByIdAndDatatype(this.clazz, resource.getInternalId(this.testModel), true);
+        resource.deleteObjectByIdAndDatatype(this.clazz, this.eClass, resource.getInternalId(this.testModel), true);
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 

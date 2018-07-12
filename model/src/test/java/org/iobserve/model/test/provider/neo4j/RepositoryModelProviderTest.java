@@ -51,6 +51,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         this.testModel = this.repository;
         this.ePackage = RepositoryPackage.eINSTANCE;
         this.clazz = Repository.class;
+        this.eClass = RepositoryPackage.Literals.REPOSITORY;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         resource.storeModelPartition(this.testModel);
 
         final Repository readModel = (Repository) resource.findContainingObjectById(OperationInterface.class,
-                resource.getInternalId(writtenInterface));
+                RepositoryPackage.Literals.OPERATION_INTERFACE, resource.getInternalId(writtenInterface));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -106,7 +107,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         final Long id = resource.getInternalId(object);
 
         final List<EObject> readReferencingObjects = resource.collectReferencingObjectsByTypeAndId(BasicComponent.class,
-                id);
+                RepositoryPackage.Literals.BASIC_COMPONENT, id);
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingObjects.size() == 1);
@@ -143,7 +144,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.updatePartition(this.testModel);
 
-        final Repository readModel = resource.getModelRootNode(Repository.class);
+        final Repository readModel = resource.getModelRootNode(Repository.class, RepositoryPackage.Literals.REPOSITORY);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 

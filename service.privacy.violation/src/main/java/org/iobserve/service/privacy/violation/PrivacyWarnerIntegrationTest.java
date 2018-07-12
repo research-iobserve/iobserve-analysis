@@ -111,31 +111,27 @@ public class PrivacyWarnerIntegrationTest {
 
             /** graphs. */
             final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
-                    this.modelDatabaseDirectory); // add sub dir repository + versioning
+                    new File(this.modelDatabaseDirectory, "correspondence"));
             correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
             final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
-                    this.modelDatabaseDirectory); // add sub dir repository + versioning
+                    new File(this.modelDatabaseDirectory, "repository"));
             repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
             final ModelResource resourceEnvironmentModelResource = new ModelResource(
-                    ResourceenvironmentPackage.eINSTANCE, this.modelDatabaseDirectory); // add sub
-                                                                                        // dir
-                                                                                        // repository
-                                                                                        // +
-                                                                                        // versioning
+                    ResourceenvironmentPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "resourceenvironment"));
             resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
             final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
-                    this.modelDatabaseDirectory); // add sub dir repository + versioning
+                    new File(this.modelDatabaseDirectory, "system"));
             systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
             final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
-                    this.modelDatabaseDirectory); // add sub dir repository + versioning
+                    new File(this.modelDatabaseDirectory, "allocation"));
             allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
             final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
-                    this.modelDatabaseDirectory); // add sub dir repository + versioning
+                    new File(this.modelDatabaseDirectory, "privacy"));
             privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
             final Configuration configration = new Configuration();

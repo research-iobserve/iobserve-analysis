@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
@@ -32,7 +34,6 @@ import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
-import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
@@ -151,7 +152,7 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private void performPrivacyEvaluation() throws FileNotFoundException, InstantiationException,
-            IllegalAccessException, ClassNotFoundException, IOException {
+            IllegalAccessException, ClassNotFoundException, IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
 
         final Warnings warnings = this.checkGraph(graph);
@@ -175,7 +176,7 @@ public class PrivacyWarner extends AbstractStage {
         return warnings;
     }
 
-    private PrivacyGraph createAnalysisGraph() {
+    private PrivacyGraph createAnalysisGraph() throws InvocationException, DBException {
         final PrivacyGraph privacyGraph = new PrivacyGraph("PrivacyWarner");
 
         this.loadRoots();
@@ -196,12 +197,10 @@ public class PrivacyWarner extends AbstractStage {
      * Loads the root element for each model.
      **/
     private void loadRoots() {
-        this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class);
-        DebugHelper.printModelPartition(this.allocationRootElement);
-        this.systemRootElement = this.systemModelResource.getModelRootNode(System.class);
         this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class);
+        this.systemRootElement = this.systemModelResource.getModelRootNode(System.class);
+        this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class);
         this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class);
-        DebugHelper.printModelPartition(this.privacyRootElement);
     }
 
     /**
@@ -209,15 +208,15 @@ public class PrivacyWarner extends AbstractStage {
      *
      * @param privacyGraph
      *            the graph containing privacy information
+     * @throws DBException
+     * @throws InvocationException
      */
-    private void addDeployedComponents(final PrivacyGraph privacyGraph) {
+    private void addDeployedComponents(final PrivacyGraph privacyGraph) throws InvocationException, DBException {
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
-            final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
-            final AssemblyContext queryAssemblyContext = this.systemModelResource.findObjectByTypeAndId(
-                    AssemblyContext.class, this.systemModelResource.getInternalId(assemblyContext));
-            final RepositoryComponent repositoryComponent = queryAssemblyContext
-                    .getEncapsulatedComponent__AssemblyContext();
+            final AssemblyContext x = allocationContext.getAssemblyContext_AllocationContext();
+            final AssemblyContext assemblyContext = this.systemModelResource.resolve(x);
+            final RepositoryComponent repositoryComponent = assemblyContext.getEncapsulatedComponent__AssemblyContext();
             final BasicComponent basicComponent = this.repositoryResource.findObjectByTypeAndId(BasicComponent.class,
                     this.repositoryResource.getInternalId(repositoryComponent));
 

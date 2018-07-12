@@ -17,7 +17,6 @@ package org.iobserve.model.persistence.neo4j;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,8 +25,8 @@ import java.util.stream.StreamSupport;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -43,7 +42,7 @@ import org.neo4j.graphdb.Transaction;
  */
 public class QueryModelFacility extends GenericModelFacility {
 
-    private final List<EPackage> ePackages;
+    private final Set<EFactory> factories;
 
     /**
      * Create a query model facility.
@@ -55,13 +54,13 @@ public class QueryModelFacility extends GenericModelFacility {
      *            data base service
      * @param objectNodeMap
      *            object node map
-     * @param ePackages
-     *            used factories
+     * @param factories
+     *            factories of the metamodel or partition
      */
     public QueryModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
-            final Map<EObject, Node> objectNodeMap, final List<EPackage> ePackages) {
+            final Map<EObject, Node> objectNodeMap, final Set<EFactory> factories) {
         super(modelResource, graphDatabaseService, objectNodeMap);
-        this.ePackages = ePackages;
+        this.factories = factories;
     }
 
     /**
@@ -84,7 +83,7 @@ public class QueryModelFacility extends GenericModelFacility {
     public <T extends EObject> T readNodes(final Node parentNode, final Map<Node, EObject> nodesToCreatedObjects,
             final EMFRelationshipType... relationshipType) {
         if (!nodesToCreatedObjects.containsKey(parentNode)) {
-            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.ePackages);
+            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.factories);
 
             // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(parentNode, parentObject);
@@ -114,10 +113,10 @@ public class QueryModelFacility extends GenericModelFacility {
             if (!nodesToCreatedObjects.containsKey(targetNode)) {
                 final EObject targetObject;
                 if (ModelGraphFactory.isProxyNode(targetNode)) {
-                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.ePackages);
+                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.factories);
                     nodesToCreatedObjects.put(targetNode, targetObject);
                 } else {
-                    targetObject = ModelObjectFactory.createObject(targetNode, this.ePackages);
+                    targetObject = ModelObjectFactory.createObject(targetNode, this.factories);
                     nodesToCreatedObjects.put(targetNode, targetObject);
                     this.loadRelatedNodes(targetNode, relationshipType, nodesToCreatedObjects);
                 }
@@ -134,6 +133,7 @@ public class QueryModelFacility extends GenericModelFacility {
     public void resolveReferences(final Map<Node, EObject> nodeObjectMap) {
         for (final Entry<Node, EObject> entry : nodeObjectMap.entrySet()) {
             final EObject object = entry.getValue(); // TODO only non proxy objects
+            // if ()
             for (final EReference reference : object.eClass().getEAllReferences()) {
                 final Stream<Relationship> sortedRelationships = StreamSupport
                         .stream(entry.getKey().getRelationships(Direction.OUTGOING).spliterator(), false)
