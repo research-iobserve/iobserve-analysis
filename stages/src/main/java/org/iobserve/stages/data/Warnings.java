@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.IWarningEdge;
+
 /**
  * Collection of warnings.
  *
@@ -26,8 +29,9 @@ import java.util.List;
  *
  * @since 0.0.3
  */
-public class Warnings implements IErrorMessages {
+public class Warnings implements IErrorMessages, IWarningEdge {
     private List<String> messages = new ArrayList<>();
+    private List<Edge> warningEdges = new ArrayList<>();
     private Date date;
 
     /**
@@ -60,6 +64,23 @@ public class Warnings implements IErrorMessages {
     @Override
     public void setDate(final Date date) {
         this.date = date;
+    }
+
+    @Override
+    public List<Edge> getWarningEdges() {
+        return this.warningEdges;
+    }
+
+    @Override
+    public void setWarningEdges(final List<Edge> edges) {
+        this.warningEdges = edges;
+
+    }
+
+    @Override
+    public void addWarningEdge(final Edge edge) {
+        this.warningEdges.add(edge);
+
     }
 
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
+import org.palladiosimulator.pcm.allocation.Allocation;
 
 /**
  *
@@ -34,6 +35,8 @@ public class Vertex {
     public enum EStereoType {
         GEOLOCATION, COMPUTING_NODE, DATASOURCE
     };
+
+    private Allocation allocation;
 
     private final String name;
     private final EStereoType stereotype;
@@ -176,6 +179,14 @@ public class Vertex {
      **/
     public int degreeF() {
         return this.getAllEdges().size();
+    }
+
+    public Allocation getAllocation() {
+        return this.allocation;
+    }
+
+    public void setAllocation(final Allocation allocation) {
+        this.allocation = allocation;
     }
 
     @Override
