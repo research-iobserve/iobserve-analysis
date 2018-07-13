@@ -27,7 +27,7 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,11 +70,11 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelResource mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelResource mockedAssemblyContextModelProvider;
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelResource mockedSystemModelGraphProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -135,16 +135,15 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
+                "entityName", UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
                 .thenReturn(UndeploymentVisualizationStageTest.optTestCorrespondent);
 
         final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
                 + UndeploymentVisualizationStageTest.SERVICE;
-        Mockito.when(
-                this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class, asmContextName))
-                .thenReturn(this.testAssemblyContexts);
+        Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
+                "entityName", asmContextName)).thenReturn(this.testAssemblyContexts);
 
     }
 

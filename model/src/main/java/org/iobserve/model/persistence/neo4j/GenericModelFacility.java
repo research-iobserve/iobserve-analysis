@@ -25,7 +25,7 @@ import org.neo4j.graphdb.Node;
  * @author Reiner Jung
  *
  */
-public abstract class AbstractModelFacility {
+public class GenericModelFacility {
 
     protected final GraphDatabaseService graphDatabaseService;
 
@@ -36,12 +36,14 @@ public abstract class AbstractModelFacility {
     /**
      * Create an abstract model facility.
      *
+     * @param resource
+     *            the corresponding model resource
      * @param graphDatabaseService
      *            database for the model
      * @param objectNodeMap
      *            object to node map
      */
-    public AbstractModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
+    public GenericModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         this.resource = resource;
         this.graphDatabaseService = graphDatabaseService;

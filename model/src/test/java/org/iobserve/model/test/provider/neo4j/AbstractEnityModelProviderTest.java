@@ -43,13 +43,15 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
     @Test
     public final void createThenReadById() {
         final ModelResource resource = ModelProviderTestUtils
-                .prepareResource(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID, this.prefix, this.factory);
+                .prepareResource(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.testModel.getId());
+        final long id = resource.getInternalId(this.testModel);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
+
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -62,13 +64,13 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
     @Test
     public final void createThenDeleteComponentAndDatatypes() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource(
-                AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES, this.prefix, this.factory);
+                AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByIdAndDatatype(this.clazz, this.testModel.getId(), true);
+        resource.deleteObjectByIdAndDatatype(this.clazz, this.eClass, resource.getInternalId(this.testModel), true);
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 

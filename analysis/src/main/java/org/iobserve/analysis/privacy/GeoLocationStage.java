@@ -22,9 +22,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
@@ -42,19 +40,16 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
-    private final IModelProvider<GeoLocation> geoLocationProvider;
-
-    private final ModelProvider<PrivacyModel> privacyModelProvider;
+    private final ModelResource privacyModelResource;
 
     /**
      * Create a geo location filter.
      *
-     * @param privacyModelGraph
-     *            privacy model graph
+     * @param privacyModelResource
+     *            privacy model resource
      */
-    public GeoLocationStage(final ModelGraph privacyModelGraph) {
-        this.geoLocationProvider = new ModelProvider<>(privacyModelGraph, null, null);
-        this.privacyModelProvider = new ModelProvider<>(privacyModelGraph, null, null);
+    public GeoLocationStage(final ModelResource privacyModelResource) {
+        this.privacyModelResource = privacyModelResource;
     }
 
     @Override
@@ -62,13 +57,13 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(),
                 event.getResourceContainer().getEntityName(), event.getService(), event.getUrl());
-        final List<GeoLocation> geoLocations = this.geoLocationProvider.collectAllObjectsByType(GeoLocation.class);
+        final List<GeoLocation> geoLocations = this.privacyModelResource.collectAllObjectsByType(GeoLocation.class);
 
         for (final GeoLocation geoLocation : geoLocations) {
             final String containerId = geoLocation.getResourceContainer().getId();
             if (event.getResourceContainer().getId().equals(containerId)) {
                 geoLocation.setIsocode(EISOCode.get(event.getCountryCode().getValue()));
-                this.geoLocationProvider.updatePartition(GeoLocation.class, geoLocation);
+                this.privacyModelResource.updatePartition(geoLocation);
                 /** container has already a location: update the location. */
                 this.outputPort.send(event);
                 return;
@@ -76,10 +71,10 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         }
 
         /** container has no geolocation: create a location instance. */
-        final PrivacyModel privacyModel = this.privacyModelProvider.getModelRootNode(PrivacyModel.class);
+        final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class);
         privacyModel.getResourceContainerLocations()
                 .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
-        this.privacyModelProvider.updatePartition(PrivacyModel.class, privacyModel);
+        this.privacyModelResource.updatePartition(privacyModel);
 
         this.outputPort.send(event);
     }

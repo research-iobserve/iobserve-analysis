@@ -30,8 +30,23 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
-public class UpdateModelFacility extends AbstractModelFacility {
+/**
+ *
+ * @author Reiner Jung
+ *
+ */
+public class UpdateModelFacility extends GenericModelFacility {
 
+    /**
+     * Create an update model facility.
+     *
+     * @param resource
+     *            the corresponding resource
+     * @param graphDatabaseService
+     *            the database service
+     * @param objectNodeMap
+     *            the internal object map
+     */
     public UpdateModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         super(resource, graphDatabaseService, objectNodeMap);
@@ -43,9 +58,14 @@ public class UpdateModelFacility extends AbstractModelFacility {
      *
      * @param object
      *            the object to be updated
+     * @param <T>
+     *            the objects' type
+     * @throws NodeLookupException
+     *             on node lookup errors
      */
-    public <T extends EObject> void updatePartition(final T object) {
-        final Map<EObject, Node> updatedObjectNodesMap = this.updateNodes(object, new ConcurrentHashMap<>());
+    public <T extends EObject> void updatePartition(final T object) throws NodeLookupException {
+        final Map<EObject, Node> updatedObjectNodesMap = new ConcurrentHashMap<>();
+        this.updateNodes(object, updatedObjectNodesMap);
         this.updateAllReferences(updatedObjectNodesMap);
 
         /** remove objects from the objectNodeMap which do no longer exist in the model. */
@@ -54,7 +74,6 @@ public class UpdateModelFacility extends AbstractModelFacility {
             final EObject oldObject = objectList.get(i);
             if (!updatedObjectNodesMap.containsKey(oldObject)) {
                 this.deleteNode(this.objectNodeMap.get(oldObject));
-                i--;
             }
         }
 
@@ -79,107 +98,125 @@ public class UpdateModelFacility extends AbstractModelFacility {
         node.delete();
     }
 
-    private <T extends EObject> Map<EObject, Node> updateNodes(final T storeableObject,
-            final Map<EObject, Node> updatedNodes) {
+    private <T extends EObject> void updateNodes(final T storeableObject,
+            final Map<EObject, Node> updatedObjectNodeMap) {
         final Node node = this.updateNode(storeableObject);
-        updatedNodes.put(storeableObject, node);
+        updatedObjectNodeMap.put(storeableObject, node);
 
+        /** check contained objects. */
         for (final EReference reference : storeableObject.eClass().getEAllContainments()) {
             final Object referencedObject = storeableObject.eGet(reference);
-            if (referencedObject instanceof EList<?>) {
+            if (reference.isMany()) {
                 for (final Object object : (EList<?>) referencedObject) {
-                    this.updateNodes((EObject) object, updatedNodes);
+                    this.updateNodes((EObject) object, updatedObjectNodeMap);
                 }
-            } else if (referencedObject != null) {
-                this.updateNodes((EObject) referencedObject, updatedNodes);
+            } else {
+                if (referencedObject != null) {
+                    this.updateNodes((EObject) referencedObject, updatedObjectNodeMap);
+                }
             }
         }
 
-        return updatedNodes;
-    }
-
-    private void updateAllReferences(final Map<EObject, Node> updateNodes) {
-        for (final Entry<EObject, Node> entry : updateNodes.entrySet()) {
-            final EObject sourceObject = entry.getKey();
-            for (final EReference reference : sourceObject.eClass().getEAllReferences()) {
-                if (reference.isContainment()) {
-                    this.updateContainment(sourceObject, entry.getValue(), reference, updateNodes);
+        /** check all referenced objects. */
+        for (final EReference reference : storeableObject.eClass().getEAllReferences()) {
+            if (!reference.isContainment()) {
+                final Object referencedObject = storeableObject.eGet(reference);
+                if (reference.isMany()) {
+                    for (final Object object : (EList<?>) referencedObject) {
+                        if (updatedObjectNodeMap.get(object) == null) {
+                            this.updateAssociation(updatedObjectNodeMap, (EObject) object);
+                        }
+                    }
                 } else {
-                    this.updateAssociation(sourceObject, entry.getValue(), reference, updateNodes);
+                    if (referencedObject != null) {
+                        this.updateAssociation(updatedObjectNodeMap, (EObject) referencedObject);
+                    }
                 }
             }
         }
     }
 
-    private void updateAssociation(final EObject sourceObject, final Node sourceNode, final EReference reference,
-            final Map<EObject, Node> nodes) {
-        final Object referencedObject = sourceObject.eGet(reference);
-        if (referencedObject instanceof EList<?>) {
-            int i = 0;
-            for (final Object element : (EList<?>) referencedObject) {
-                Node targetNode = nodes.get(element);
-                if (targetNode == null) {
-                    targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, (EObject) element,
-                            this.resource.getNextId());
-                    nodes.put((EObject) element, targetNode);
+    private void updateAssociation(final Map<EObject, Node> updatedObjectNodeMap, final EObject referencedObject) {
+        if (updatedObjectNodeMap.get(referencedObject) == null) {
+            final Node node = this.objectNodeMap.get(referencedObject);
+            if (node != null) {
+                updatedObjectNodeMap.put(referencedObject, node);
+            }
+        }
+    }
+
+    private void updateAllReferences(final Map<EObject, Node> updatedObjectNodeMap) throws NodeLookupException {
+        for (final Entry<EObject, Node> entry : updatedObjectNodeMap.entrySet()) {
+            final EObject sourceObject = entry.getKey();
+            if (!ModelGraphFactory.isProxyNode(entry.getValue())) {
+                for (final EReference reference : sourceObject.eClass().getEAllReferences()) {
+                    this.updateReference(sourceObject, entry.getValue(), reference, updatedObjectNodeMap);
                 }
-                ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) element, reference, i++);
             }
-        } else if (referencedObject != null) {
-            Node targetNode = nodes.get(referencedObject);
-            if (targetNode == null) {
-                targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, (EObject) referencedObject,
-                        this.resource.getNextId());
-                nodes.put((EObject) referencedObject, targetNode);
-            }
-            ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) referencedObject, reference, 0);
         }
     }
 
     /**
-     * Update a containment reference.
+     * Update associations.
      *
      * @param sourceObject
-     *            source object
+     *            source object which references another object
      * @param sourceNode
-     *            source node
+     *            the node of the source object
      * @param reference
-     *            reference (type)
-     * @param updatedNodes
-     *            map of all updated nodes
+     *            the reference
+     * @param updatedObjectNodeMap
+     *            all existing updated nodes
+     * @throws NodeLookupException
      */
-    private void updateContainment(final EObject sourceObject, final Node sourceNode, final EReference reference,
-            final Map<EObject, Node> updatedNodes) {
+    private void updateReference(final EObject sourceObject, final Node sourceNode, final EReference reference,
+            final Map<EObject, Node> updatedObjectNodeMap) throws NodeLookupException {
         final Object referencedObject = sourceObject.eGet(reference);
-        if (referencedObject instanceof EList<?>) {
+        if (reference.isMany()) {
             int i = 0;
             for (final Object element : (EList<?>) referencedObject) {
-                final Node targetNode = updatedNodes.get(element);
-                if (targetNode == null) {
-                    throw new InternalError("Contained object has no node: " + element.toString());
-                }
-                final Iterable<Relationship> relationships = sourceNode.getRelationships(Direction.OUTGOING,
-                        EMFRelationshipType.CONTAINS);
-                final Relationship relationship = ModelGraphFactory.findRelationshipByEndNode(relationships,
-                        targetNode);
-                if (relationship == null) {
-                    ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) element, reference, i++);
-                } else {
-                    ModelGraphFactory.updateRelationship(relationship, i++);
-                }
+                this.updateOrCreateReferenceObject(updatedObjectNodeMap, sourceNode, reference, (EObject) element, i++);
             }
-        } else if (referencedObject != null) {
-            final Node targetNode = updatedNodes.get(referencedObject);
+        } else {
+            if (referencedObject != null) {
+                this.updateOrCreateReferenceObject(updatedObjectNodeMap, sourceNode, reference,
+                        (EObject) referencedObject, 0);
+            }
+        }
+    }
+
+    private void updateOrCreateReferenceObject(final Map<EObject, Node> updatedObjectNodeMap, final Node sourceNode,
+            final EReference reference, final EObject targetObject, final int index) {
+        Node targetNode = updatedObjectNodeMap.get(targetObject);
+        if (targetNode == null) {
+            targetNode = this.objectNodeMap.get(targetObject);
             if (targetNode == null) {
-                throw new InternalError("Contained object has no node: " + referencedObject.toString());
+                targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, targetObject,
+                        this.resource.getNextId());
             }
+        }
+        this.updateOrCreateRelationship(sourceNode, targetNode, reference, targetObject, index);
+    }
+
+    private void updateOrCreateRelationship(final Node sourceNode, final Node targetNode, final EReference reference,
+            final EObject targetObject, final int position) {
+        if (reference.isContainment()) {
             final Iterable<Relationship> relationships = sourceNode.getRelationships(Direction.OUTGOING,
                     EMFRelationshipType.CONTAINS);
             final Relationship relationship = ModelGraphFactory.findRelationshipByEndNode(relationships, targetNode);
             if (relationship == null) {
-                ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) referencedObject, reference, 0);
+                ModelGraphFactory.createRelationship(sourceNode, targetNode, targetObject, reference, position);
             } else {
-                ModelGraphFactory.updateRelationship(relationship, 0);
+                ModelGraphFactory.updateRelationship(relationship, position);
+            }
+        } else {
+            final Iterable<Relationship> relationships = sourceNode.getRelationships(Direction.OUTGOING,
+                    EMFRelationshipType.REFERENCES);
+            final Relationship relationship = ModelGraphFactory.findRelationshipByEndNode(relationships, targetNode);
+            if (relationship == null) {
+                ModelGraphFactory.createRelationship(sourceNode, targetNode, targetObject, reference, position);
+            } else {
+                ModelGraphFactory.updateRelationship(relationship, position);
             }
         }
     }
@@ -195,7 +232,9 @@ public class UpdateModelFacility extends AbstractModelFacility {
     private <T extends EObject> Node updateNode(final T storeableObject) {
         final Node existingNode = this.objectNodeMap.get(storeableObject);
         if (existingNode != null) {
-            this.updateAttributes(storeableObject, existingNode);
+            if (!ModelGraphFactory.isProxyNode(existingNode)) {
+                this.updateAttributes(storeableObject, existingNode);
+            }
             return existingNode;
         } else {
             return ModelGraphFactory.createNode(this.graphDatabaseService, storeableObject, this.resource.getNextId());

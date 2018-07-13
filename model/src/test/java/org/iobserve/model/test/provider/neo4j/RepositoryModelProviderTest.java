@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 /**
  * Test cases for the model provider using a repository model.
@@ -47,25 +49,26 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
         this.testModel = this.repository;
-        this.factory = RepositoryFactory.eINSTANCE;
+        this.ePackage = RepositoryPackage.eINSTANCE;
         this.clazz = Repository.class;
+        this.eClass = RepositoryPackage.Literals.REPOSITORY;
     }
 
     @Override
     @Test
     public void createThenReadContaining() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.factory);
+                this.ePackage);
 
         final OperationInterface writtenInterface = (OperationInterface) this.testModel.getInterfaces__Repository()
                 .get(0);
 
         resource.storeModelPartition(this.testModel);
 
-        final Repository readModel = (Repository) resource.readOnlyContainingObjectById(OperationInterface.class,
-                writtenInterface.getId());
+        final Repository readModel = (Repository) resource.findContainingObjectById(OperationInterface.class,
+                RepositoryPackage.Literals.OPERATION_INTERFACE, resource.getInternalId(writtenInterface));
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -79,7 +82,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public final void createThenReadByType() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -91,34 +94,35 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public void createThenReadReferencing() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final RepositoryComponent component = RepositoryModelDataFactory.findComponentByName(this.repository,
+        final RepositoryComponent object = RepositoryModelDataFactory.findComponentByName(this.repository,
                 RepositoryModelDataFactory.SEARCH_COMPONENT);
 
-        final OperationProvidedRole providedSearchRole = RepositoryModelDataFactory.findProvidedRole(component,
+        final OperationProvidedRole providedSearchRole = RepositoryModelDataFactory.findProvidedRole(object,
                 RepositoryModelDataFactory.CATALOG_SEARCH_PROVIDED_ROLE);
 
-        final String id = component.getId();
+        final Long id = resource.getInternalId(object);
 
         final List<EObject> readReferencingObjects = resource.collectReferencingObjectsByTypeAndId(BasicComponent.class,
-                id);
+                RepositoryPackage.Literals.BASIC_COMPONENT, id);
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingObjects.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(providedSearchRole, readReferencingObjects.get(0)));
+        Assert.assertTrue(this.equalityHelper.comparePartition(providedSearchRole, readReferencingObjects.get(0),
+                providedSearchRole.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
-                this.prefix, this.factory);
+                this.prefix, this.ePackage);
 
         final Interface payInterface = RepositoryModelDataFactory.findInterfaceByName(this.repository,
                 RepositoryModelDataFactory.PAYMENT_INTERFACE);
@@ -130,7 +134,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         // Update the model by renaming and replacing the payment method
         this.testModel.setEntityName("MyVideoOnDemandService");
 
-        final OperationProvidedRole providedPayOperation = ((RepositoryFactory) this.factory)
+        final OperationProvidedRole providedPayOperation = ((RepositoryFactory) this.ePackage.getEFactoryInstance())
                 .createOperationProvidedRole();
         providedPayOperation.setEntityName("payPalPayment");
         providedPayOperation.setProvidedInterface__OperationProvidedRole((OperationInterface) payInterface);
@@ -138,11 +142,11 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
 
-        resource.updatePartition(Repository.class, this.testModel);
+        resource.updatePartition(this.testModel);
 
-        final Repository readModel = resource.getModelRootNode(Repository.class);
+        final Repository readModel = resource.getModelRootNode(Repository.class, RepositoryPackage.Literals.REPOSITORY);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -156,13 +160,13 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public final void createThenDeleteObject() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByTypeAndId(this.clazz, this.testModel.getId());
+        resource.deleteObject(this.testModel);
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
@@ -177,7 +181,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public final void createThenReadByName() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByName", this.prefix,
-                this.factory);
+                this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -185,7 +189,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
                 this.testModel.getEntityName());
 
         for (final Repository readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+            Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
         }
 
         resource.getGraphDatabaseService().shutdown();

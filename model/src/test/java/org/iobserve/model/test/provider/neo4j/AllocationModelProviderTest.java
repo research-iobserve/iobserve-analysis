@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.iobserve.model.test.data.SystemDataFactory;
@@ -27,8 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -54,15 +56,16 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
         this.testModel = this.allocation;
-        this.factory = AllocationFactory.eINSTANCE;
+        this.ePackage = AllocationPackage.eINSTANCE;
         this.clazz = Allocation.class;
+        this.eClass = AllocationPackage.Literals.ALLOCATION;
     }
 
     @Override
     @Test
     public void createThenReadByType() {
         final ModelResource resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.factory);
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -75,16 +78,16 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public void createThenReadContaining() {
         final ModelResource resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.factory);
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.ePackage);
 
         final AllocationContext writtenContext = this.testModel.getAllocationContexts_Allocation().get(0);
 
         resource.storeModelPartition(this.testModel);
 
-        final Allocation readModel = (Allocation) resource.readOnlyContainingObjectById(AllocationContext.class,
-                writtenContext.getId());
+        final Allocation readModel = (Allocation) resource.findContainingObjectById(AllocationContext.class,
+                AllocationPackage.Literals.ALLOCATION_CONTEXT, resource.getInternalId(writtenContext));
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -93,29 +96,31 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public void createThenReadReferencing() {
         final ModelResource resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.factory);
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final String id = SystemDataFactory.findAssemblyContext(this.system, SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT)
-                .getId();
-        final List<EObject> readReferencingComponents = resource
-                .collectReferencingObjectsByTypeAndId(AssemblyContext.class, id);
+        final AssemblyContext context = SystemDataFactory.findAssemblyContext(this.system,
+                SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT);
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
 
         // Only the payment server allocation context is referencing the payment assembly context
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(AllocationDataFactory.findAllocationContext(this.testModel,
-                AllocationDataFactory.PAYMENT_ALLOCATION_CONTEXT), readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.comparePartition(
+                AllocationDataFactory.findAllocationContext(this.testModel,
+                        AllocationDataFactory.PAYMENT_ALLOCATION_CONTEXT),
+                readReferencingComponents.get(0), this.testModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
         final ModelResource resource = ModelProviderTestUtils.prepareResource(
-                AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.factory);
+                AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.ePackage);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory
                 .findAllocationContext(this.testModel, AllocationDataFactory.BUSINESS_ORDER_ALLOCATION_CONTEXT);
@@ -139,11 +144,11 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
         businessOrderServerAllocationContext.setResourceContainer_AllocationContext(businessOrderServer);
         privateOrderServerAllocationContext.setResourceContainer_AllocationContext(privateOrderServer);
 
-        resource.updatePartition(Allocation.class, this.testModel);
+        resource.updatePartition(this.testModel);
 
-        final Allocation readModel = resource.getModelRootNode(Allocation.class);
+        final Allocation readModel = resource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -156,7 +161,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Test
     public final void createThenReadByName() {
         final ModelResource resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.factory);
+                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -164,7 +169,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
                 this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+            Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
         }
 
         resource.getGraphDatabaseService().shutdown();

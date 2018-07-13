@@ -17,7 +17,6 @@ package org.iobserve.model.persistence.neo4j;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,26 +40,27 @@ import org.neo4j.graphdb.Transaction;
  * @author Reiner Jung
  *
  */
-public class QueryModelFacility extends AbstractModelFacility {
+public class QueryModelFacility extends GenericModelFacility {
 
-    private final List<EFactory> eFactories;
+    private final Set<EFactory> factories;
 
     /**
      * Create a query model facility.
      *
      * @param modelResource
+     *            parent object reference to the resource
      *
      * @param graphDatabaseService
      *            data base service
      * @param objectNodeMap
      *            object node map
-     * @param eFactories
-     *            used factories
+     * @param factories
+     *            factories of the metamodel or partition
      */
     public QueryModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
-            final Map<EObject, Node> objectNodeMap, final List<EFactory> eFactories) {
+            final Map<EObject, Node> objectNodeMap, final Set<EFactory> factories) {
         super(modelResource, graphDatabaseService, objectNodeMap);
-        this.eFactories = eFactories;
+        this.factories = factories;
     }
 
     /**
@@ -83,12 +83,12 @@ public class QueryModelFacility extends AbstractModelFacility {
     public <T extends EObject> T readNodes(final Node parentNode, final Map<Node, EObject> nodesToCreatedObjects,
             final EMFRelationshipType... relationshipType) {
         if (!nodesToCreatedObjects.containsKey(parentNode)) {
-            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.eFactories);
+            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.factories);
 
             // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(parentNode, parentObject);
 
-            this.loadRelatedNodes(parentObject, parentNode, relationshipType, nodesToCreatedObjects);
+            this.loadRelatedNodes(parentNode, relationshipType, nodesToCreatedObjects);
 
             return parentObject;
         } else {
@@ -99,15 +99,13 @@ public class QueryModelFacility extends AbstractModelFacility {
     /**
      * Load related nodes representing referenced objects.
      *
-     * @param sourceObject
-     *            object the other objects are related to
      * @param sourceNode
      *            the corresponding node to the component
      * @param nodesToCreatedObjects
      *            additional nodes
      */
-    private void loadRelatedNodes(final EObject sourceObject, final Node sourceNode,
-            final EMFRelationshipType[] relationshipType, final Map<Node, EObject> nodesToCreatedObjects) {
+    private void loadRelatedNodes(final Node sourceNode, final EMFRelationshipType[] relationshipType,
+            final Map<Node, EObject> nodesToCreatedObjects) {
         for (final Relationship relationship : ModelProviderUtil
                 .sortRelsByPosition(sourceNode.getRelationships(Direction.OUTGOING, relationshipType))) {
             final Node targetNode = relationship.getEndNode();
@@ -115,11 +113,13 @@ public class QueryModelFacility extends AbstractModelFacility {
             if (!nodesToCreatedObjects.containsKey(targetNode)) {
                 final EObject targetObject;
                 if (ModelGraphFactory.isProxyNode(targetNode)) {
-                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.eFactories);
+                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.factories);
+                    nodesToCreatedObjects.put(targetNode, targetObject);
                 } else {
-                    targetObject = ModelObjectFactory.createObject(targetNode, this.eFactories);
+                    targetObject = ModelObjectFactory.createObject(targetNode, this.factories);
+                    nodesToCreatedObjects.put(targetNode, targetObject);
+                    this.loadRelatedNodes(targetNode, relationshipType, nodesToCreatedObjects);
                 }
-                nodesToCreatedObjects.put(targetNode, targetObject);
             }
         }
     }
@@ -132,7 +132,8 @@ public class QueryModelFacility extends AbstractModelFacility {
      */
     public void resolveReferences(final Map<Node, EObject> nodeObjectMap) {
         for (final Entry<Node, EObject> entry : nodeObjectMap.entrySet()) {
-            final EObject object = entry.getValue();
+            final EObject object = entry.getValue(); // TODO only non proxy objects
+            // if ()
             for (final EReference reference : object.eClass().getEAllReferences()) {
                 final Stream<Relationship> sortedRelationships = StreamSupport
                         .stream(entry.getKey().getRelationships(Direction.OUTGOING).spliterator(), false)
@@ -157,13 +158,14 @@ public class QueryModelFacility extends AbstractModelFacility {
         if (reference.isMany()) {
             ((EList<EObject>) sourceObject.eGet(reference)).add(targetObject);
         } else {
-            sourceObject.eSet(reference, targetObject);
+            if (reference.isChangeable()) {
+                sourceObject.eSet(reference, targetObject);
+            }
         }
     }
 
     /**
-     * Helper method for writing: Recursively returns all containments and data types of a given
-     * component.
+     * Recursively returns all containments and data types of a given component.
      *
      * @param object
      *            The component to start with
@@ -171,7 +173,7 @@ public class QueryModelFacility extends AbstractModelFacility {
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    Set<EObject> getAllContainmentsByObject(final EObject object, final Set<EObject> containmentsAndDatatypes) {
+    private Set<EObject> getAllContainmentsByObject(final EObject object, final Set<EObject> containmentsAndDatatypes) {
         if (!containmentsAndDatatypes.contains(object)) {
             containmentsAndDatatypes.add(object);
 
@@ -199,7 +201,7 @@ public class QueryModelFacility extends AbstractModelFacility {
 
     private void checkSingleReferences(final EReference reference, final EObject referencedEntity,
             final Set<EObject> containmentsAndDatatypes) {
-        if ((referencedEntity != null)
+        if (referencedEntity != null
                 && (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedEntity))) {
             this.getAllContainmentsByObject(referencedEntity, containmentsAndDatatypes);
         }
@@ -247,22 +249,21 @@ public class QueryModelFacility extends AbstractModelFacility {
      * Find the corresponding node.
      *
      * @param uri
+     *            node uri
      * @return the corresponding node
-     * @throws Exception
+     * @throws DBException
      *             on unresolvable uri
      */
-    public Node getNodeByUri(final URI uri) throws Exception {
-        final String[] segments = uri.fragment().split("/");
-
-        final Label rootLabel = Label.label(segments[0]);
+    public Node getNodeByUri(final URI uri) throws DBException {
+        final Label rootLabel = Label.label(uri.authority());
         final ResourceIterator<Node> nodes = this.graphDatabaseService.findNodes(rootLabel);
 
         if (nodes.hasNext()) {
             Node node = nodes.next();
-            if (segments.length > 1) {
-                for (final String segment : segments) {
-                    String segmentName;
-                    long segmentIndex;
+            if (uri.segments().length > 0) {
+                for (final String segment : uri.segments()) {
+                    final String segmentName;
+                    final long segmentIndex;
                     final int index = segment.indexOf('[');
                     if (index == -1) {
                         segmentName = segment;
@@ -274,21 +275,21 @@ public class QueryModelFacility extends AbstractModelFacility {
                     boolean next = false;
                     for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
                         if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
-                                && (segmentIndex == (Long) relationship.getProperty(ModelProviderUtil.REF_POS))) {
+                                && segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS)) {
                             node = relationship.getEndNode();
                             next = true;
                             break;
                         }
                     }
                     if (!next) {
-                        throw new Exception("Reference not found " + segment);
+                        throw new DBException("Reference not found " + segment);
                     }
                 }
             }
 
             return node;
         } else {
-            throw new Exception("URI does not specify a node " + uri.toString());
+            throw new DBException("URI does not specify a node " + uri.toString());
         }
     }
 

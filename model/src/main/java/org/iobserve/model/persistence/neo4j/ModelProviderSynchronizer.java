@@ -26,9 +26,6 @@ import org.slf4j.LoggerFactory;
  * the database ignoring the possible changes made by the other thread.
  *
  * @author Lars Bluemke
- *
- *         TODO: Locking is broken, as the locking should be based on the resource and not on the
- *         provider
  */
 public final class ModelProviderSynchronizer {
 
@@ -40,6 +37,12 @@ public final class ModelProviderSynchronizer {
         // private constructor, utility class
     }
 
+    /**
+     * Set a lock.
+     *
+     * @param resource
+     *            lock the specific resource
+     */
     public static void getLock(final ModelResource resource) {
         synchronized (resource) {
             while (ModelProviderSynchronizer.locks.get(resource) != null) {
@@ -57,6 +60,12 @@ public final class ModelProviderSynchronizer {
         }
     }
 
+    /**
+     * Release a previously set lock.
+     *
+     * @param resource
+     *            the resource to be locked
+     */
     public static void releaseLock(final ModelResource resource) {
         synchronized (resource) {
             if (ModelProviderSynchronizer.locks.get(resource) == resource) {

@@ -25,24 +25,16 @@ import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.model.ModelImporter;
-import org.iobserve.model.correspondence.CorrespondenceFactory;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
-import org.iobserve.model.privacy.PrivacyFactory;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
-import org.palladiosimulator.pcm.system.System;
-import org.palladiosimulator.pcm.system.SystemFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * Collector main class.
@@ -51,6 +43,8 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  */
 public final class PrivacyViolationDetectionServiceMain
         extends AbstractServiceMain<PrivacyViolationDetectionConfiguration> {
+
+    private static final String PALLADIO_PREFIX = "org.palladiosimulator";
 
     @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
     private File configurationFile;
@@ -87,50 +81,35 @@ public final class PrivacyViolationDetectionServiceMain
         /** load models. */
         try {
             final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
-            final ModelResourceLoader graphLoader = new ModelResourceLoader(this.modelDatabaseDirectory);
 
             /** initialize database. */
-            graphLoader.initializeModelGraph(RepositoryFactory.eINSTANCE, modelHandler.getRepositoryModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(ResourceenvironmentFactory.eINSTANCE,
-                    modelHandler.getResourceEnvironmentModel(), ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(AllocationFactory.eINSTANCE, modelHandler.getAllocationModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(SystemFactory.eINSTANCE, modelHandler.getSystemModel(),
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            graphLoader.initializeModelGraph(CorrespondenceFactory.eINSTANCE, modelHandler.getCorrespondenceModel(),
-                    null, ModelProvider.IMPLEMENTATION_ID);
-            graphLoader.initializeModelGraph(PrivacyFactory.eINSTANCE, modelHandler.getPrivacyModel(), null,
-                    ModelProvider.PCM_ID);
+            final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
+                    new File(this.modelDatabaseDirectory, "correspondence"));
+            correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-            /** load neo4j graphs. */
-            final ModelGraph repositoryGraph = graphLoader.createModelResource(RepositoryFactory.eINSTANCE);
-            final ModelGraph resourceEnvironmentGraph = graphLoader
-                    .createModelResource(ResourceenvironmentFactory.eINSTANCE);
-            final ModelGraph allocationModelGraph = graphLoader.createModelResource(AllocationFactory.eINSTANCE);
-            final ModelGraph systemModelGraph = graphLoader.createModelResource(SystemFactory.eINSTANCE);
-            final ModelGraph correspondenceModelGraph = graphLoader.createModelResource(CorrespondenceFactory.eINSTANCE);
-            final ModelGraph privacyModelGraph = graphLoader.createModelResource(PrivacyFactory.eINSTANCE);
+            final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
+                    new File(this.modelDatabaseDirectory, "repository"));
+            repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-            /** model provider. */
-            final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryGraph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final ModelResource resourceEnvironmentModelResource = new ModelResource(
+                    ResourceenvironmentPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "resourceenvironment"));
+            resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-            final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
-            final IModelProvider<AllocationContext> allocationContextModelProvider = new ModelProvider<>(
-                    allocationModelGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
+                    new File(this.modelDatabaseDirectory, "system"));
+            systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                    resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
+                    new File(this.modelDatabaseDirectory, "allocation"));
+            allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-            final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemModelGraph,
-                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+            final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
+                    new File(this.modelDatabaseDirectory, "privacy"));
+            privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
-            return new PrivacyViolationDetectionConfiguration(configuration, correspondenceModelGraph,
-                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    allocationContextModelProvider, systemModelProvider, privacyModelGraph, this.warningFile,
-                    this.alarmsFile);
+            return new PrivacyViolationDetectionConfiguration(configuration, correspondenceModelResource,
+                    repositoryModelResource, resourceEnvironmentModelResource, systemModelResource,
+                    allocationModelResource, privacyModelResource, this.warningFile, this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

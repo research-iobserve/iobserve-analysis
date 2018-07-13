@@ -17,7 +17,7 @@ package org.iobserve.model.test.provider.neo4j;
 
 import java.io.File;
 
-import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.neo4j.graphdb.Node;
@@ -49,12 +49,12 @@ public final class ModelProviderTestUtils {
      *
      * @return the prepared graph
      */
-    public static ModelResource prepareResource(final String name, final String prefix, final EFactory factory) {
-        final File graphBaseDir = new File("./testdb/" + prefix + "." + factory.eClass().getName() + "." + name);
+    public static ModelResource prepareResource(final String name, final String prefix, final EPackage ePackage) {
+        final File graphBaseDir = new File("./testdb/" + prefix + "." + ePackage.eClass().getName() + "." + name);
 
         ModelProviderTestUtils.removeDirectory(graphBaseDir);
 
-        return ModelProviderUtil.createModelResource(factory, graphBaseDir);
+        return ModelProviderUtil.createModelResource(ePackage, graphBaseDir);
     }
 
     /**
@@ -93,5 +93,9 @@ public final class ModelProviderTestUtils {
         } else {
             dir.delete();
         }
+    }
+
+    public static String removePrefix(final String canonicalName) {
+        return canonicalName.substring("org.palladiosimulator.".length());
     }
 }

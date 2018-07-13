@@ -29,7 +29,7 @@ import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -47,8 +47,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     private final URL outputURL;
     private final String systemId;
-    private final IModelProvider<ResourceContainer> resourceContainerModelProvider;
-    private final IModelProvider<AssemblyContext> allocationModelProvider;
+    private final ModelResource resourceEnvironmentModelResource;
+    private final ModelResource allocationModelProvider;
 
     /**
      * Output visualization configuration.
@@ -64,11 +64,10 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      *            model provider for the allocation model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
-            final IModelProvider<AssemblyContext> allocationModelProvider) {
+            final ModelResource resourceContainerModelProvider, final ModelResource allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
-        this.resourceContainerModelProvider = resourceContainerModelProvider;
+        this.resourceEnvironmentModelResource = resourceContainerModelProvider;
         this.allocationModelProvider = allocationModelProvider;
     }
 
@@ -88,13 +87,13 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      */
     private JsonArray createData(final PCMDeployedEvent deployment) {
         final String serverName = deployment.getService();
-        final String nodeId = this.resourceContainerModelProvider
-                .findObjectsByTypeAndName(ResourceContainer.class, serverName).get(0).getId();
+        final String nodeId = this.resourceEnvironmentModelResource
+                .findObjectsByTypeAndName(ResourceContainer.class, "entityName", serverName).get(0).getId();
 
         final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
         final List<AssemblyContext> contexts = this.allocationModelProvider
-                .findObjectsByTypeAndName(AssemblyContext.class, asmContextName);
+                .findObjectsByTypeAndName(AssemblyContext.class, "entityName", asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
         final JsonObject serviceObject = Changelog

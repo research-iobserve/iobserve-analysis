@@ -17,6 +17,7 @@ package org.iobserve.model.test.provider.neo4j;
 
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.NamedElement;
@@ -33,6 +34,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     public static final String CREATE_THEN_CLONE_THEN_READ = "createThenCloneThenRead";
     public static final String CREATE_THEN_CLEAR_GRAPH = "createThenClearGraph";
     public static final String CREATE_THEN_READ_ROOT = "createThenReadRoot";
+    public static final String PALLADIO_PREFIX = "org.palladiosimulator";
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -43,8 +45,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
     /**
      * Writes a model to the graph, reads the container of a certain model component from the graph
-     * using {@link ModelProvider#readOnlyContainingObjectById(Class, String)} and asserts that it
-     * is equal to the container from the original model.
+     * using {@link ModelProvider#readContainingObjectById(Class, String)} and asserts that it is
+     * equal to the container from the original model.
      */
     protected abstract void createThenReadContaining();
 
@@ -60,9 +62,11 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      * Writes a model to the graph, modifies the original model, updates it in the graph using
      * {@link ModelProvider#updatePartition(Class, org.eclipse.emf.ecore.EObject)}, reads the
      * updated model from the graph and asserts that it is equal to the modified original model.
+     *
+     * @throws NodeLookupException
      */
     @Test
-    abstract void createThenUpdateThenReadUpdated();
+    abstract void createThenUpdateThenReadUpdated() throws NodeLookupException;
 
     /**
      * Create, store and delete objects.
@@ -84,17 +88,17 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     @Test
     public final void createThenCloneThenRead() {
         final ModelResource storeResource = ModelProviderTestUtils.prepareResource(
-                AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.factory);
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.ePackage);
 
         storeResource.storeModelPartition(this.testModel);
 
-        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.factory,
-                storeResource);
+        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(
+                AbstractNamedElementModelProviderTest.PALLADIO_PREFIX, this.ePackage, storeResource);
 
-        final T clonedModel = newRevisionResource.getModelRootNode(this.clazz);
+        final T clonedModel = newRevisionResource.getModelRootNode(this.clazz, this.eClass);
         newRevisionResource.getGraphDatabaseService().shutdown();
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, clonedModel, clonedModel.eClass()));
 
         storeResource.getGraphDatabaseService().shutdown();
     }
@@ -106,7 +110,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     @Test
     public final void createThenClearResource() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource(
-                AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.factory);
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -127,13 +131,13 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     @Test
     public final void createThenReadRoot() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource(
-                AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.factory);
+                AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final T readModel = resource.getModelRootNode(this.clazz);
+        final T readModel = resource.getModelRootNode(this.clazz, this.eClass);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }

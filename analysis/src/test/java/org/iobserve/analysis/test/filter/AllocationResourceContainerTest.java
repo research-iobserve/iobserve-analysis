@@ -26,7 +26,7 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
@@ -49,7 +49,7 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource mockedResourceEnvironmentModelGraphProvider;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
@@ -77,7 +77,7 @@ public class AllocationResourceContainerTest {
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         /** mock for new graph provider */
-        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
+        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
 
         this.allocationStage = new AllocationStage(
                 AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);

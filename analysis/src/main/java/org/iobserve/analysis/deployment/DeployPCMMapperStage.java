@@ -27,7 +27,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
@@ -38,8 +38,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  */
 public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> {
 
-    private final IModelProvider<AssemblyEntry> correspondenceModelProvider;
-    private final IModelProvider<AssemblyContext> assemblyContextModelProvider;
+    private final ModelResource correspondenceModelResource;
+    private final ModelResource systemModelResource;
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
@@ -51,10 +51,10 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
      * @param assemblyContextModelProvider
      *            assembly context model provider
      */
-    public DeployPCMMapperStage(final IModelProvider<AssemblyEntry> correspondenceModelProvider,
-            final IModelProvider<AssemblyContext> assemblyContextModelProvider) {
-        this.correspondenceModelProvider = correspondenceModelProvider;
-        this.assemblyContextModelProvider = assemblyContextModelProvider;
+    public DeployPCMMapperStage(final ModelResource correspondenceModelProvider,
+            final ModelResource assemblyContextModelProvider) {
+        this.correspondenceModelResource = correspondenceModelProvider;
+        this.systemModelResource = assemblyContextModelProvider;
     }
 
     /**
@@ -92,16 +92,16 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
     }
 
     private void performMapping(final IDeployedEvent event, final String service, final String context) {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelProvider
-                .findObjectsByTypeAndName(AssemblyEntry.class, context);
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource
+                .findObjectsByTypeAndName(AssemblyEntry.class, "entityName", context);
 
         // build the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
         if (assemblyEntry.size() == 1) {
-            final AssemblyContext assemblyContext = this.assemblyContextModelProvider
-                    .findObjectByTypeAndId(AssemblyContext.class, assemblyEntry.get(0).getAssembly().getId());
+            final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
+                    AssemblyContext.class, this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
             if (event instanceof Privacy) {
                 this.logger.debug("privacy {}", event);
                 this.outputPort

@@ -21,9 +21,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.OperationEntry;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -41,63 +39,48 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
 
     private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
-    private final IModelProvider<ComponentEntry> componentEntryProvider;
+    private final ModelResource correspondenceResource;
 
-    private final ModelProvider<OperationEntry> operationSignatureEntryProvider;
+    private final ModelResource allocationResource;
 
-    private final ModelProvider<AllocationEntry> allocationEntryProvider;
+    private final ModelResource assemblyResource;
 
-    private final ModelProvider<AllocationContext> allocationContextProvider;
-
-    private final ModelProvider<RepositoryComponent> componentProvider;
-
-    private final ModelProvider<OperationSignature> operationSignatureProvider;
-
-    private final ModelProvider<AssemblyContext> assemblyContextProvider;
+    private final ModelResource repositoryResource;
 
     /**
      * Entry event mapper.
      *
-     * @param correspondenceModelGraph
+     * @param correspondenceResource
      *            correspondence model graph
-     * @param repositoryGraph
+     * @param repositoryResource
      *            repository model graph
-     * @param assemblyGraph
+     * @param assemblyResource
      *            assembly model graph
-     * @param allocationGraph
+     * @param allocationResource
      *            allocation model graph
      */
-    public EntryEventMapperStage(final ModelGraph correspondenceModelGraph, final ModelGraph repositoryGraph,
-            final ModelGraph assemblyGraph, final ModelGraph allocationGraph) {
-        this.componentEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-        this.operationSignatureEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-        this.allocationEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-
-        this.componentProvider = new ModelProvider<>(repositoryGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.operationSignatureProvider = new ModelProvider<>(repositoryGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.assemblyContextProvider = new ModelProvider<>(assemblyGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.allocationContextProvider = new ModelProvider<>(allocationGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+    public EntryEventMapperStage(final ModelResource correspondenceResource, final ModelResource repositoryResource,
+            final ModelResource assemblyResource, final ModelResource allocationResource) {
+        this.correspondenceResource = correspondenceResource;
+        this.repositoryResource = repositoryResource;
+        this.assemblyResource = assemblyResource;
+        this.allocationResource = allocationResource;
     }
 
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        final ComponentEntry componentEntry = this.componentEntryProvider.findObjectByTypeAndId(ComponentEntry.class,
-                event.getClassSignature());
+        // TODO add correct key names
+        final ComponentEntry componentEntry = this.correspondenceResource
+                .findObjectsByTypeAndName(ComponentEntry.class, "", event.getClassSignature()).get(0);
         if (componentEntry != null) {
-            final OperationEntry operationEntry = this.operationSignatureEntryProvider
-                    .findObjectByTypeAndId(OperationEntry.class, event.getOperationSignature());
+            final OperationEntry operationEntry = this.correspondenceResource
+                    .findObjectsByTypeAndName(OperationEntry.class, "", event.getOperationSignature()).get(0);
 
             if (operationEntry != null) {
-                final AllocationEntry allocationEntry = this.allocationEntryProvider
-                        .findObjectByTypeAndId(AllocationEntry.class, event.getHostname());
+                final AllocationEntry allocationEntry = this.correspondenceResource
+                        .findObjectsByTypeAndName(AllocationEntry.class, "implementationId", event.getHostname())
+                        .get(0);
                 if (allocationEntry != null) {
                     this.computePcmEntryCallEvent(componentEntry, operationEntry, allocationEntry, event);
                 } else {
@@ -114,16 +97,16 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     private void computePcmEntryCallEvent(final ComponentEntry componentEntry, final OperationEntry operationEntry,
             final AllocationEntry allocationEntry, final EntryCallEvent event) {
         /** retrieve PCM model elements from mapping. */
-        final AllocationContext allocationContext = this.allocationContextProvider
-                .findObjectByTypeAndId(AllocationContext.class, allocationEntry.getAllocation().getId());
-        final OperationSignature operationSignature = this.operationSignatureProvider
-                .findAndLockObjectById(OperationSignature.class, operationEntry.getOperation().getId());
-        final RepositoryComponent component = this.componentProvider.findObjectByTypeAndId(RepositoryComponent.class,
-                componentEntry.getComponent().getId());
+        final AllocationContext allocationContext = this.allocationResource.findObjectByTypeAndId(
+                AllocationContext.class, this.allocationResource.getInternalId(allocationEntry.getAllocation()));
+        final OperationSignature operationSignature = this.repositoryResource.findAndLockObjectById(
+                OperationSignature.class, this.repositoryResource.getInternalId(operationEntry.getOperation()));
+        final RepositoryComponent component = this.repositoryResource.findObjectByTypeAndId(RepositoryComponent.class,
+                this.repositoryResource.getInternalId(componentEntry.getComponent()));
 
         /** assembly is inferred from allocation. */
-        final AssemblyContext assemblyContext = this.assemblyContextProvider.findObjectByTypeAndId(AssemblyContext.class,
-                allocationContext.getAssemblyContext_AllocationContext().getId());
+        final AssemblyContext assemblyContext = this.assemblyResource.findObjectByTypeAndId(AssemblyContext.class,
+                this.assemblyResource.getInternalId(allocationContext.getAssemblyContext_AllocationContext()));
 
         /** assemble event. */
         final PCMEntryCallEvent mappedEvent = new PCMEntryCallEvent(event.getEntryTime(), event.getExitTime(),

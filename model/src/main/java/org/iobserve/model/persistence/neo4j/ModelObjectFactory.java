@@ -18,6 +18,7 @@ package org.iobserve.model.persistence.neo4j;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -45,9 +46,11 @@ public final class ModelObjectFactory {
      *
      * @param node
      *            the node
+     * @param factories
+     *            collection of classes which belong to the partition or metamodel
      * @return returns the proxy object
      */
-    public static EObject createProxyObject(final Node node, final List<EFactory> factories) {
+    public static EObject createProxyObject(final Node node, final Set<EFactory> factories) {
         final Label label = ModelObjectFactory.getEMFTypeLabel(node.getLabels());
         final EObject object = ModelObjectFactory.instantiateEObject(factories, label.name());
         ((BasicEObjectImpl) object).eSetProxyURI(ModelGraphFactory.getUri(node));
@@ -60,9 +63,11 @@ public final class ModelObjectFactory {
      *
      * @param node
      *            the node
+     * @param factories
+     *            collection of factories
      * @return returns the object
      */
-    public static EObject createObject(final Node node, final List<EFactory> factories) {
+    public static EObject createObject(final Node node, final Set<EFactory> factories) {
         final Label label = ModelObjectFactory.getEMFTypeLabel(node.getLabels());
         final EObject object = ModelObjectFactory.instantiateEObject(factories, label.name());
 
@@ -82,7 +87,10 @@ public final class ModelObjectFactory {
      *            factories for object instantiation
      */
     private static <T extends EObject> void loadAttributes(final T object, final Map<String, Object> properties,
-            final List<EFactory> factories) {
+            final Set<EFactory> factories) {
+        if (object == null) {
+            System.err.println("object is null");
+        }
         for (final Entry<String, Object> property : properties.entrySet()) {
             final EAttribute attr = (EAttribute) object.eClass().getEStructuralFeature(property.getKey());
 
@@ -100,7 +108,7 @@ public final class ModelObjectFactory {
     }
 
     private static void createManyValuesAttribute(final EObject component, final EAttribute attr,
-            final Entry<String, Object> property, final List<EFactory> factories) {
+            final Entry<String, Object> property, final Set<EFactory> factories) {
         @SuppressWarnings("unchecked")
         final List<Object> attribute = (List<Object>) component.eGet(attr);
 
@@ -114,11 +122,11 @@ public final class ModelObjectFactory {
         }
     }
 
-    private static Object convertValue(final EDataType type, final String input, final List<EFactory> factories) {
+    private static Object convertValue(final EDataType type, final String input, final Set<EFactory> factories) {
         Object value = ModelProviderUtil.instantiateAttribute(type, input);
 
         if (value == null) {
-            // TODO ending up here is strange
+            // TODO ending up here is strange, check whether this is necessary
             for (final EFactory factory : factories) {
                 value = factory.createFromString(type, input);
 
@@ -143,20 +151,28 @@ public final class ModelObjectFactory {
      * @return New object of the given data type
      */
     @SuppressWarnings("unchecked")
-    private static <T> T instantiateEObject(final List<EFactory> factories, final String fqnClassName) {
-
-        final int separationPoint = fqnClassName.lastIndexOf('.');
-        final String className = fqnClassName.substring(separationPoint + 1);
-
+    private static <T> T instantiateEObject(final Set<EFactory> factories, final String fqnClassName) {
+        final int position = fqnClassName.lastIndexOf('.');
+        final String prefix = fqnClassName.substring(0, position);
+        final String className = fqnClassName.substring(position + 1);
         for (final EFactory factory : factories) {
-            final EPackage ePackage = factory.getEPackage();
-            final EClass eClass = (EClass) ePackage.getEClassifier(className);
-            if (eClass != null) {
-                return (T) factory.create(eClass);
+            if (ModelObjectFactory.fqnPackageName(factory.getEPackage()).equals(prefix)) {
+                final EClass clazz = (EClass) factory.getEPackage().getEClassifier(className);
+                if (clazz != null) {
+                    return (T) factory.create(clazz);
+                }
             }
         }
 
-        return null;
+        throw new UnsupportedOperationException("Class " + fqnClassName + " not found.");
+    }
+
+    private static String fqnPackageName(final EPackage ePackage) {
+        if (ePackage.getESuperPackage() != null) {
+            return ModelObjectFactory.fqnPackageName(ePackage.getESuperPackage()) + "." + ePackage.getName();
+        } else {
+            return ePackage.getName();
+        }
     }
 
     /**

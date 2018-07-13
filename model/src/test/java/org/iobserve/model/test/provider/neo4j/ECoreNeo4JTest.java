@@ -28,8 +28,10 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.hamcrest.core.Is;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.model.test.storage.one.EnumValueExample;
 import org.iobserve.model.test.storage.one.OneFactory;
+import org.iobserve.model.test.storage.one.OnePackage;
 import org.iobserve.model.test.storage.one.Other;
 import org.iobserve.model.test.storage.one.OtherInterface;
 import org.iobserve.model.test.storage.one.Root;
@@ -38,6 +40,7 @@ import org.iobserve.model.test.storage.one.SpecialB;
 import org.iobserve.model.test.storage.two.Link;
 import org.iobserve.model.test.storage.two.Two;
 import org.iobserve.model.test.storage.two.TwoFactory;
+import org.iobserve.model.test.storage.two.TwoPackage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,10 +56,14 @@ public class ECoreNeo4JTest {
     private String prefix;
     private Root modelOne;
     private Two modelTwo;
+
+    private Other firstOther;
+    private Other secondOther;
+
     private OneFactory oneFactory;
     private TwoFactory twoFactory;
 
-    private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+    private final CompareModelPartitions equalityHelper = new CompareModelPartitions();
 
     /**
      * Setup test.
@@ -91,7 +98,7 @@ public class ECoreNeo4JTest {
 
         this.modelTwo = this.twoFactory.createTwo();
 
-        this.modelTwo.getLinks().add(this.createLink(this.modelOne.getOthers().get(0)));
+        this.modelTwo.getLinks().add(this.createLink(this.firstOther));
     }
 
     private Link createLink(final Other other) {
@@ -112,11 +119,12 @@ public class ECoreNeo4JTest {
         this.modelOne.getLabels().add("label 2");
         this.modelOne.getLabels().add("label 3");
 
-        final Other firstOther = this.createOther("first other");
-        this.modelOne.getOthers().add(firstOther);
-        this.modelOne.getOthers().add(this.createOther("second other"));
+        this.firstOther = this.createOther("first other");
+        this.secondOther = this.createOther("second other");
+        this.modelOne.getOthers().add(this.firstOther);
+        this.modelOne.getOthers().add(this.secondOther);
 
-        this.modelOne.getIfaceOthers().add(this.createSpecialA(firstOther));
+        this.modelOne.getIfaceOthers().add(this.createSpecialA(this.firstOther));
         this.modelOne.getIfaceOthers().add(this.createSpecialB());
     }
 
@@ -150,7 +158,7 @@ public class ECoreNeo4JTest {
     @Test
     public void testStoreResourceCreate() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
-                this.oneFactory);
+                TwoPackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
 
@@ -169,13 +177,14 @@ public class ECoreNeo4JTest {
     @Test
     public void testStoreResourceAndRead() {
         final ModelResource resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead", this.prefix,
-                this.oneFactory);
+                OnePackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
 
         final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, "name", this.modelOne.getName());
 
-        Assert.assertTrue(this.equalityHelper.equals(this.modelOne, readModel.get(0)));
+        Assert.assertTrue(
+                this.equalityHelper.comparePartition(this.modelOne, readModel.get(0), this.modelOne.eClass()));
 
         resource.getGraphDatabaseService().shutdown();
     }
@@ -186,42 +195,47 @@ public class ECoreNeo4JTest {
     @Test
     public void createThenCloneThenRead() {
         final ModelResource storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
-                this.prefix, this.oneFactory);
+                this.prefix, OnePackage.eINSTANCE);
 
         storeResource.storeModelPartition(this.modelOne);
         storeResource.getGraphDatabaseService().shutdown();
 
-        final ModelResource newVersionResource = ModelProviderUtil.createNewModelResourceVersion(OneFactory.eINSTANCE,
-                storeResource);
+        final ModelResource newVersionResource = ModelProviderUtil
+                .createNewModelResourceVersion("org.palladiosimulator", OnePackage.eINSTANCE, storeResource);
 
-        final Root clonedModel = newVersionResource.getModelRootNode(Root.class);
+        final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
         newVersionResource.getGraphDatabaseService().shutdown();
 
-        Assert.assertTrue(this.equalityHelper.equals(this.modelOne, clonedModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.modelOne, clonedModel, clonedModel.eClass()));
     }
 
     @Test
     public void createWithReferenceThenUpdate() throws Exception {
         final ModelResource oneResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-one",
-                this.prefix, this.oneFactory);
+                this.prefix, OnePackage.eINSTANCE);
         final ModelResource twoResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-two",
-                this.prefix, this.twoFactory);
+                this.prefix, TwoPackage.eINSTANCE);
+
+        DebugHelper.printModelPartition(this.modelOne);
+        DebugHelper.printModelPartition(this.modelTwo);
 
         oneResource.storeModelPartition(this.modelOne);
         twoResource.storeModelPartition(this.modelTwo);
 
-        this.modelTwo.getLinks().add(this.createLink(this.modelOne.getOthers().get(1)));
+        this.modelTwo.getLinks().add(this.createLink(this.secondOther));
 
-        twoResource.updatePartition(Two.class, this.modelTwo);
+        DebugHelper.printModelPartition(this.modelTwo);
 
-        final Two two = twoResource.getModelRootNode(Two.class);
+        twoResource.updatePartition(this.modelTwo);
+
+        final Two two = twoResource.getModelRootNode(Two.class, TwoPackage.Literals.TWO);
 
         Assert.assertThat("Different number of links", two.getLinks().size(), Is.is(this.modelTwo.getLinks().size()));
         for (int i = 0; i < two.getLinks().size(); i++) {
             final Link newLink = two.getLinks().get(i);
             final Link oldLink = this.modelTwo.getLinks().get(i);
 
-            oneResource.resolve(newLink);
+            oneResource.resolve(newLink.getReference());
 
             Assert.assertThat("Links differ", newLink.getReference().getName(),
                     Is.is(oldLink.getReference().getName()));

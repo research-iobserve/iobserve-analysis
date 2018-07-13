@@ -22,16 +22,9 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
-import org.iobserve.model.correspondence.AssemblyEntry;
-import org.iobserve.model.persistence.neo4j.IModelProvider;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.stages.general.AggregateEventStage;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
@@ -49,38 +42,30 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
     /**
      * Create a composite stage for deployment handling.
      *
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentResource
      *            model provider for the resource environment
-     * @param allocationModelProvider
+     * @param allocationResource
      *            model provider for the allocation model (deployment model)
-     * @param allocationContextModelProvider
-     *            model provider for the system model
-     * @param assemblyContextModelProvider
+     * @param systemModelResource
      *            assembly context model provider
-     * @param correspondenceModelGraph
+     * @param correspondenceResource
      *            the correspondence model graph
      */
-    public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<AllocationContext> allocationContextModelProvider,
-            final IModelProvider<AssemblyContext> assemblyContextModelProvider,
-            final ModelGraph correspondenceModelGraph) {
+    public DeploymentCompositeStage(final ModelResource resourceEnvironmentResource,
+            final ModelResource systemModelResource, final ModelResource allocationResource,
+            final ModelResource correspondenceResource) {
 
-        final IModelProvider<AssemblyEntry> correspondenceModelProvider = new ModelProvider<>(correspondenceModelGraph,
-                ModelProvider.IMPLEMENTATION_ID, null);
-        this.deployPCMMapper = new DeployPCMMapperStage(correspondenceModelProvider, assemblyContextModelProvider);
+        this.deployPCMMapper = new DeployPCMMapperStage(correspondenceResource, systemModelResource);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
-                resourceEnvironmentModelProvider);
+                resourceEnvironmentResource);
 
-        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationModelProvider,
-                allocationContextModelProvider);
+        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationResource);
 
-        this.syntehticAllocation = new AllocationStage(resourceEnvironmentModelProvider);
+        this.syntehticAllocation = new AllocationStage(resourceEnvironmentResource);
         final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
         allocationFinished.declareActive();
 
-        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationModelProvider,
-                allocationContextModelProvider);
+        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationResource);
 
         this.relayDeployedEventStage = new AggregateEventStage<>(2);
         this.relayDeployedEventStage.declareActive();

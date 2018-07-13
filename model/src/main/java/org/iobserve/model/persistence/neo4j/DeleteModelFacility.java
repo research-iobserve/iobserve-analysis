@@ -30,21 +30,63 @@ import org.neo4j.graphdb.Transaction;
  * @author Reiner Jung
  *
  */
-public class DeleteModelFacility extends AbstractModelFacility {
+public class DeleteModelFacility extends GenericModelFacility {
 
     private static final String ACCESSIBLE = "accessible";
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
+    /**
+     * Create a delete model facility.
+     *
+     * @param modelResource
+     *            the resource
+     * @param graphDatabaseService
+     *            the database
+     * @param objectNodeMap
+     *            the internal object node map
+     */
     public DeleteModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         super(modelResource, graphDatabaseService, objectNodeMap);
     }
 
     /**
-     * Helper method for deleting: Combines {@link #markAccessibleNodes(Node)},
-     * {@link #markDeletableNodes(Node, boolean)} and {@link #deleteMarkedNodes(Node)} in one
-     * method.
+     * Delete an object specified by type and node id.
+     *
+     * @param object
+     *            object
+     */
+    public void deleteObject(final EObject object) {
+        final Node node = this.objectNodeMap.get(object);
+        if (node != null) {
+            this.deletePartitionRecursively(node);
+        }
+    }
+
+    /**
+     * Starting with a given node this method recursively traverses down through all nodes
+     * accessible via {@link EMFRelationshipType#CONTAINS} edges and then deletes them from bottom
+     * to the top.
+     *
+     * @param node
+     *            The node to start with
+     */
+    private void deletePartitionRecursively(final Node node) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS)) {
+            this.deletePartitionRecursively(rel.getEndNode());
+        }
+
+        for (final Relationship rel : node.getRelationships()) {
+            rel.delete();
+        }
+
+        node.delete();
+    }
+
+    /**
+     * Combines {@link #markAccessibleNodes(Node)}, {@link #markDeletableNodes(Node, boolean)} and
+     * {@link #deleteMarkedNodes(Node)} in one method.
      *
      * @param node
      *            The node to start with
@@ -52,7 +94,7 @@ public class DeleteModelFacility extends AbstractModelFacility {
      *            Force method to delete the specified node even if it is referenced with an is_type
      *            or contains edge
      */
-    public void deleteComponentAndDatatypeNodes(final Node node, final boolean forceDelete) {
+    public void deleteObjectNodesRecursively(final Node node, final boolean forceDelete) {
         this.markAccessibleNodes(node);
         this.markDeletableNodes(node, true, forceDelete);
         this.deleteMarkedNodes(node);

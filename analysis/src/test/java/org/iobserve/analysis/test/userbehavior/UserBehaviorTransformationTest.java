@@ -15,18 +15,17 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.userbehavior;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
-import org.iobserve.model.persistence.neo4j.ModelGraph;
-import org.iobserve.model.persistence.neo4j.ModelResourceLoader;
-import org.iobserve.model.persistence.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +70,7 @@ public final class UserBehaviorTransformationTest {
     // @Test
     public void testBranchWithinLoop() throws IOException {
 
-        final ModelResourceLoader graphLoader = new ModelResourceLoader(null); // TODO fix location
-        final ModelGraph graph = graphLoader.createModelResource(RepositoryFactory.eINSTANCE);
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelResource repositoryModelProvider = new ModelResource(RepositoryPackage.eINSTANCE, new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.getAndLockModelRootNode(Repository.class));
 

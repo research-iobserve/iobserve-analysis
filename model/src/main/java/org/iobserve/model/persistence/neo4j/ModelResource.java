@@ -16,12 +16,13 @@
 package org.iobserve.model.persistence.neo4j;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.emf.common.util.EList;
@@ -30,8 +31,10 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
+import org.iobserve.model.test.data.DebugHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -47,30 +50,29 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
  */
 public class ModelResource {
 
-    static final String INTERNAL_ID = ":internalId";
-    static final String PROXY_OBJECT = ":proxyObject";
-
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;
-    private final List<EFactory> eFactories = new ArrayList<>();
-    private final List<EClass> classes = new ArrayList<>();
+    private final Set<EFactory> factories = new HashSet<>();
 
     private final Map<EObject, Node> objectNodeMap = new ConcurrentHashMap<>();
     private final StoreModelFacility storeModelFacility;
     private final UpdateModelFacility updateModelFacility;
     private final QueryModelFacility queryModelFacility;
     private final DeleteModelFacility deleteModelFacility;
-    private long objectId = 0;
+
+    private long objectId;
 
     /**
      * Creates a new {@link GraphDatabaseService} at the given location.
      *
-     * @param factory
-     *            factory for the particular metamodel
+     * @param prefix
+     *            java code package prefix
+     * @param ePackage
+     *            ePackage for the particular metamodel
      * @param graphDirectory
      *            Directory where the graph database shall be located
      */
-    public ModelResource(final EFactory factory, final File graphDirectory) {
+    public ModelResource(final EPackage ePackage, final File graphDirectory) {
         this.graphDirectory = graphDirectory.getAbsoluteFile();
         if (!this.graphDirectory.exists()) {
             if (!this.graphDirectory.mkdirs()) {
@@ -85,18 +87,13 @@ public class ModelResource {
 
         this.storeModelFacility = new StoreModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
         this.queryModelFacility = new QueryModelFacility(this, this.graphDatabaseService, this.objectNodeMap,
-                this.eFactories);
+                this.factories);
         this.updateModelFacility = new UpdateModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
         this.deleteModelFacility = new DeleteModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
 
         this.registerShutdownHook(this.graphDatabaseService);
-        this.eFactories.add(factory);
-        if (factory.getEPackage() != null) {
-            for (final EClassifier classifier : factory.getEPackage().getEClassifiers()) {
-                if (classifier instanceof EClass) {
-                    this.checkClassForContainmentReferences((EClass) classifier);
-                }
-            }
+        if (ePackage != null) {
+            this.checkPackage(ePackage);
         }
     }
 
@@ -118,10 +115,6 @@ public class ModelResource {
 
     public GraphDatabaseService getGraphDatabaseService() {
         return this.graphDatabaseService;
-    }
-
-    public List<EFactory> getEFactories() {
-        return this.eFactories;
     }
 
     public File getGraphDirectory() {
@@ -152,7 +145,7 @@ public class ModelResource {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            this.storeModelFacility.createNodes(rootElement);
+            this.storeModelFacility.storeAllNodesAndReferences(rootElement);
             tx.success();
         }
 
@@ -162,16 +155,21 @@ public class ModelResource {
     /**
      * Update an partition.
      *
-     * @param clazz
-     *            type of the object
      * @param object
      *            partition root
      * @param <T>
      *            type
+     * @throws NodeLookupException
+     *             on node lookup errors
      */
-    public <T extends EObject> void updatePartition(final Class<T> clazz, final T object) {
+    public <T extends EObject> void updatePartition(final T object) throws NodeLookupException {
+
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
+            DebugHelper.printMap("ObjectNodeMap", this.objectNodeMap);
+
             ModelProviderSynchronizer.getLock(this);
+
+            DebugHelper.printNodeModel(this.objectNodeMap, object);
 
             this.updateModelFacility.updatePartition(object);
 
@@ -184,47 +182,20 @@ public class ModelResource {
     /**
      * Delete an object by id and type.
      *
-     * @param clazz
-     *            type of the object
-     * @param id
-     *            unique id of the object
+     * @param object
+     *            the object
      * @param <T>
      *            type of the object
      */
-    public <T> void deleteObjectByTypeAndId(final Class<T> clazz, final String id) {
+    public <T> void deleteObject(final EObject object) {
         ModelProviderSynchronizer.getLock(this);
 
-        final Label label = Label.label(clazz.getCanonicalName());
-
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
-            if (node != null) {
-                this.deletePartitionRecursively(node);
-            }
+            this.deleteModelFacility.deleteObject(object);
             tx.success();
         }
 
         ModelProviderSynchronizer.releaseLock(this);
-    }
-
-    /**
-     * Starting with a given node this method recursively traverses down through all nodes
-     * accessible via {@link EMFRelationshipType#CONTAINS} edges and then deletes them from bottom
-     * to the top.
-     *
-     * @param node
-     *            The node to start with
-     */
-    private void deletePartitionRecursively(final Node node) {
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS)) {
-            this.deletePartitionRecursively(rel.getEndNode());
-        }
-
-        for (final Relationship rel : node.getRelationships()) {
-            rel.delete();
-        }
-
-        node.delete();
     }
 
     /**
@@ -239,14 +210,15 @@ public class ModelResource {
      * @param <T>
      *            type definition
      */
-    public <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final String id, final boolean forceDelete) {
+    public <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final EClass eClass, final Long id,
+            final boolean forceDelete) {
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             ModelProviderSynchronizer.getLock(this);
 
-            final Label label = Label.label(clazz.getCanonicalName());
+            final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
-            final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
-            this.deleteModelFacility.deleteComponentAndDatatypeNodes(node, forceDelete);
+            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.INTERNAL_ID, id);
+            this.deleteModelFacility.deleteObjectNodesRecursively(node, forceDelete);
 
             tx.success();
             ModelProviderSynchronizer.releaseLock(this);
@@ -265,9 +237,9 @@ public class ModelResource {
      *            type definition
      * @return returns the object identified by the id and locks the database
      */
-    public <T extends EObject> T findAndLockObjectById(final Class<T> clazz, final String id) {
+    public <T extends EObject> T findAndLockObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
         ModelProviderSynchronizer.getLock(this);
-        return this.findObjectByTypeAndId(clazz, id);
+        return this.findObjectByTypeAndId(clazz, eClass, id);
     }
 
     /**
@@ -282,14 +254,14 @@ public class ModelResource {
      * @return The read object
      */
     @SuppressWarnings("unchecked")
-    public <T extends EObject> T findObjectByTypeAndId(final Class<T> clazz, final String id) {
-        final Label label = Label.label(clazz.getCanonicalName());
+    public <T extends EObject> T findObjectByTypeAndId(final Class<T> clazz, final EClass eClass, final Long id) {
+        final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
+            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.INTERNAL_ID, id);
             if (node != null) {
 
-                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+                final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 
                 final EObject object = this.queryModelFacility.readNodes(node, nodeObjectMap,
                         EMFRelationshipType.REFERENCES, EMFRelationshipType.CONTAINS);
@@ -349,7 +321,7 @@ public class ModelResource {
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
 
-                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+                final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 
                 final EObject object = this.queryModelFacility.readNodes(node, nodeObjectMap,
                         EMFRelationshipType.REFERENCES, EMFRelationshipType.CONTAINS);
@@ -365,7 +337,7 @@ public class ModelResource {
     }
 
     /**
-     * Collect all object ids of objects of the given type
+     * Collect all object ids of objects of the given type.
      *
      * @param clazz
      *            the objects' type
@@ -380,7 +352,7 @@ public class ModelResource {
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add((Long) n.getProperty(ModelResource.INTERNAL_ID));
+                ids.add((Long) n.getProperty(ModelGraphFactory.INTERNAL_ID));
             }
 
             tx.success();
@@ -430,9 +402,9 @@ public class ModelResource {
      *
      * @return The containing object
      */
-    public <T> T readContainingObjectById(final Class<T> clazz, final String id) {
+    public <T> T findAndLockContainingObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
         ModelProviderSynchronizer.getLock(this);
-        return this.readOnlyContainingObjectById(clazz, id);
+        return this.findContainingObjectById(clazz, eClass, id);
     }
 
     /**
@@ -449,13 +421,13 @@ public class ModelResource {
      *
      * @return The containing object
      */
-    public <T> T readOnlyContainingObjectById(final Class<T> clazz, final String id) {
-        final Label label = Label.label(clazz.getCanonicalName());
+    public <T> T findContainingObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
+        final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
         T object = null;
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
+            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.INTERNAL_ID, id);
             final Iterator<Relationship> inRels = node
                     .getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS).iterator();
 
@@ -478,9 +450,9 @@ public class ModelResource {
      *            Id of the referenced component
      * @return The referencing components
      */
-    public List<EObject> readReferencingObjectsById(final Class<?> clazz, final String id) {
+    public List<EObject> readReferencingObjectsById(final Class<?> clazz, final EClass eClass, final Long id) {
         ModelProviderSynchronizer.getLock(this);
-        return this.collectReferencingObjectsByTypeAndId(clazz, id);
+        return this.collectReferencingObjectsByTypeAndId(clazz, eClass, id);
     }
 
     /**
@@ -493,12 +465,14 @@ public class ModelResource {
      *            Id of the referenced object
      * @return List of all objects which reference the specified object
      */
-    public List<EObject> collectReferencingObjectsByTypeAndId(final Class<?> clazz, final String id) {
+    public List<EObject> collectReferencingObjectsByTypeAndId(final Class<?> clazz, final EClass eClass,
+            final Long id) {
         final List<EObject> referencingObjects = new LinkedList<>();
-        final Label label = Label.label(clazz.getCanonicalName());
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final Node node = this.graphDatabaseService.findNode(label, ModelResource.INTERNAL_ID, id);
+            final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
+
+            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.INTERNAL_ID, id);
             if (node != null) {
                 for (final Relationship inRel : node.getRelationships(Direction.INCOMING,
                         EMFRelationshipType.REFERENCES)) {
@@ -522,9 +496,9 @@ public class ModelResource {
      *            type definition
      * @return returns the object
      */
-    public <T extends EObject> T getAndLockModelRootNode(final Class<T> clazz) {
+    public <T extends EObject> T getAndLockModelRootNode(final Class<T> clazz, final EClass eClass) {
         ModelProviderSynchronizer.getLock(this);
-        return this.getModelRootNode(clazz);
+        return this.getModelRootNode(clazz, eClass);
     }
 
     /**
@@ -537,17 +511,17 @@ public class ModelResource {
      *            type definition
      * @return The read object
      */
-    public <T extends EObject> T getModelRootNode(final Class<T> clazz) {
+    public <T extends EObject> T getModelRootNode(final Class<T> clazz, final EClass eClass) {
         T object = null;
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
 
             final ResourceIterator<Node> nodes = this.graphDatabaseService
-                    .findNodes(Label.label(clazz.getCanonicalName()));
+                    .findNodes(Label.label(ModelGraphFactory.fqnClassName(eClass)));
 
             if (nodes.hasNext()) {
                 final Node node = nodes.next();
 
-                final HashMap<Node, EObject> nodeObjectMap = new HashMap<Node, EObject>();
+                final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 
                 object = this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
                         EMFRelationshipType.CONTAINS);
@@ -560,56 +534,99 @@ public class ModelResource {
         return object;
     }
 
-    private void checkClassForContainmentReferences(final EClass clazz) {
-        if (!this.classes.contains(clazz)) {
-            this.classes.add(clazz);
-            for (final EReference reference : clazz.getEAllReferences()) {
-                final EClass type = reference.getEReferenceType();
-                this.addFactoryToCollection(type);
-                if (reference.isContainment()) {
-                    this.checkClassForContainmentReferences(type);
+    private void checkPackage(final EPackage ePackage) {
+        if (!this.factories.contains(ePackage.getEFactoryInstance())) {
+            this.factories.add(ePackage.getEFactoryInstance());
+            for (final EClassifier classifier : ePackage.getEClassifiers()) {
+                if (classifier instanceof EClass) {
+                    final EClass clazz = (EClass) classifier;
+                    for (final EReference reference : clazz.getEAllReferences()) {
+                        this.checkPackage(reference.getEReferenceType().getEPackage());
+                    }
                 }
             }
         }
     }
 
-    private void addFactoryToCollection(final EClass clazz) {
-        final EFactory subFactory = clazz.getEPackage().getEFactoryInstance();
-        if (!this.eFactories.contains(subFactory)) {
-            this.eFactories.add(subFactory);
-        }
-    }
-
-    long getNextId() {
+    /**
+     * Id generator to be used in all sub-parts of the model resource.
+     *
+     * @return the next valid id
+     */
+    long getNextId() { // NOPMD should be package private
         return this.objectId++;
     }
 
+    /**
+     * Resolve proxy object.
+     *
+     * @param proxyObject
+     *            resolve proxy object
+     * @param <T>
+     *            type
+     * @throws InvocationException
+     *             when called with a null object
+     * @throws DBException
+     *             on database issues
+     *
+     * @return returns the resulved objects
+     */
     @SuppressWarnings("unchecked")
-    public <T extends EObject> void resolve(final T proxyObject) throws Exception {
+    public <T extends EObject> T resolve(final T proxyObject) throws InvocationException, DBException {
         if (proxyObject == null) {
-            throw new Exception("Object reference is null, cannot resolve.");
+            throw new InvocationException("Object reference is null, cannot resolve.");
         }
         if (proxyObject.eIsProxy()) {
-            final Node realNode = this.queryModelFacility.getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());
+            try (Transaction tx = this.graphDatabaseService.beginTx()) {
+                final Node realNode = this.queryModelFacility
+                        .getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());
 
-            final Map<Node, EObject> nodesToCreatedObjects = new HashMap<>();
-            this.queryModelFacility.readNodes(realNode, nodesToCreatedObjects, EMFRelationshipType.CONTAINS);
-            this.queryModelFacility.resolveReferences(nodesToCreatedObjects);
-            final EObject realObject = nodesToCreatedObjects.get(realNode);
+                final Map<Node, EObject> nodesToCreatedObjects = new HashMap<>();
+                this.queryModelFacility.readNodes(realNode, nodesToCreatedObjects, EMFRelationshipType.CONTAINS);
+                this.queryModelFacility.resolveReferences(nodesToCreatedObjects);
+                final EObject realObject = nodesToCreatedObjects.get(realNode);
 
-            for (final EAttribute attribute : proxyObject.eClass().getEAllAttributes()) {
-                proxyObject.eSet(attribute, realObject.eGet(attribute));
-            }
-
-            for (final EReference reference : proxyObject.eClass().getEAllReferences()) {
-                if (reference.isMany()) {
-                    final EList<EObject> manyReference = (EList<EObject>) proxyObject.eGet(reference);
-                    ((EList<EObject>) proxyObject.eGet(reference)).addAll(manyReference);
-                } else {
-                    final EObject singleReference = (EObject) proxyObject.eGet(reference);
-                    ((EObject) proxyObject).eSet(reference, singleReference);
+                for (final EAttribute attribute : proxyObject.eClass().getEAllAttributes()) {
+                    proxyObject.eSet(attribute, realObject.eGet(attribute));
                 }
+
+                for (final EReference reference : proxyObject.eClass().getEAllReferences()) {
+                    if (reference.isMany()) {
+                        final EList<EObject> manyReference = (EList<EObject>) realObject.eGet(reference);
+                        ((EList<EObject>) proxyObject.eGet(reference)).addAll(manyReference);
+                    } else {
+                        final EObject singleReference = (EObject) realObject.eGet(reference);
+                        ((EObject) proxyObject).eSet(reference, singleReference);
+                    }
+                }
+
+                tx.success();
             }
+            return proxyObject;
+        } else {
+            return proxyObject;
         }
     }
+
+    /**
+     * Get the internal database id for the given object.
+     *
+     * @param object
+     *            the object
+     * @return returns the id or -1 if no node exists in the database
+     */
+    public long getInternalId(final EObject object) {
+        try (Transaction tx = this.graphDatabaseService.beginTx()) {
+            final Node node = this.objectNodeMap.get(object);
+            final long result;
+            if (node != null) {
+                result = (long) node.getProperty(ModelGraphFactory.INTERNAL_ID);
+            } else {
+                result = -1;
+            }
+            tx.success();
+            return result;
+        }
+    }
+
 }
