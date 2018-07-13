@@ -45,7 +45,6 @@ import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
 import org.iobserve.service.privacy.violation.filter.EntryEventMapperStage;
 import org.iobserve.service.privacy.violation.filter.ModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
-import org.iobserve.service.privacy.violation.filter.ProbeController;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.source.ISourceCompositeStage;
@@ -57,6 +56,7 @@ import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
+import org.iobserve.stages.tcp.ProbeControlFilter;
 
 /**
  * Configuration for the log replayer.
@@ -151,8 +151,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     systemModelResource, resourceEnvironmentResource);
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
 
-            final ProbeController probeController = new ProbeController(this.createProbeConnections(
-                    configuration.getStringArrayProperty(PrivacyConfigurationsKeys.PROBE_CONNECTIONS_OUTPUTS)));
+            final ProbeControlFilter probeController = new ProbeControlFilter();
 
             final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(200);
 
@@ -177,9 +176,10 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                             privacyWarner.getUndeployedInputPort());
 
                     this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
+                    this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
+
                     this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
                     this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
-                    this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
 
                     this.connectPorts(flowMatcher.getOutputPort(), traceReconstructionFilter.getInputPort());
                     this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(),
