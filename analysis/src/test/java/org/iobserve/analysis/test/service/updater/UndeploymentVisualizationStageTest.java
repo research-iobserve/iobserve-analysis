@@ -37,8 +37,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Tests for {@link UndeploymentVisualizationStage}.
@@ -135,7 +137,8 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                "entityName", UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
+                ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
+                UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
                 .thenReturn(UndeploymentVisualizationStageTest.optTestCorrespondent);
@@ -143,7 +146,8 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
                 + UndeploymentVisualizationStageTest.SERVICE;
         Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
-                "entityName", asmContextName)).thenReturn(this.testAssemblyContexts);
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
+                .thenReturn(this.testAssemblyContexts);
 
     }
 

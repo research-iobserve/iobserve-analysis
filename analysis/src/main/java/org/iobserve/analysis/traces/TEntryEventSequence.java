@@ -26,6 +26,7 @@ import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     @Override
     protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
         // Resets the current usage model
-        final UsageModel model = this.usageModelProvider.getAndLockModelRootNode(UsageModel.class);
+        final UsageModel model = this.usageModelProvider.getAndLockModelRootNode(UsageModel.class,
+                UsagemodelPackage.Literals.USAGE_MODEL);
         int numberOfUserGroups = model.getUsageScenario_UsageModel().size();
         TEntryEventSequence.LOGGER.debug("EntryEventSequence found: numberOfUserGroups before: {}", numberOfUserGroups);
 

@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.powermock.api.mockito.PowerMockito;
 
 /**
@@ -91,7 +92,7 @@ public class AllocationNoResourceContainerTest {
                 AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .getModelRootNode(ResourceEnvironment.class))
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT))
                 .thenReturn(AllocationNoResourceContainerTest.resourceEnvironment);
 
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(

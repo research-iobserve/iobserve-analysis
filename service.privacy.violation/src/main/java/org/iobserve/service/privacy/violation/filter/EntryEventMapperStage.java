@@ -20,14 +20,18 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
+import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 /**
  * Transforms {@link EntryCallEvent}s to model level {@link PCMEntryCallEvent}s.
@@ -71,16 +75,18 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
         // TODO add correct key names
-        final ComponentEntry componentEntry = this.correspondenceResource
-                .findObjectsByTypeAndName(ComponentEntry.class, "", event.getClassSignature()).get(0);
+        final ComponentEntry componentEntry = this.correspondenceResource.findObjectsByTypeAndName(ComponentEntry.class,
+                CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId", event.getClassSignature()).get(0);
         if (componentEntry != null) {
             final OperationEntry operationEntry = this.correspondenceResource
-                    .findObjectsByTypeAndName(OperationEntry.class, "", event.getOperationSignature()).get(0);
+                    .findObjectsByTypeAndName(OperationEntry.class, CorrespondencePackage.Literals.OPERATION_ENTRY,
+                            "implementationId", event.getOperationSignature())
+                    .get(0);
 
             if (operationEntry != null) {
-                final AllocationEntry allocationEntry = this.correspondenceResource
-                        .findObjectsByTypeAndName(AllocationEntry.class, "implementationId", event.getHostname())
-                        .get(0);
+                final AllocationEntry allocationEntry = this.correspondenceResource.findObjectsByTypeAndName(
+                        AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY, "implementationId",
+                        event.getHostname()).get(0);
                 if (allocationEntry != null) {
                     this.computePcmEntryCallEvent(componentEntry, operationEntry, allocationEntry, event);
                 } else {
@@ -98,14 +104,18 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
             final AllocationEntry allocationEntry, final EntryCallEvent event) {
         /** retrieve PCM model elements from mapping. */
         final AllocationContext allocationContext = this.allocationResource.findObjectByTypeAndId(
-                AllocationContext.class, this.allocationResource.getInternalId(allocationEntry.getAllocation()));
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT,
+                this.allocationResource.getInternalId(allocationEntry.getAllocation()));
         final OperationSignature operationSignature = this.repositoryResource.findAndLockObjectById(
-                OperationSignature.class, this.repositoryResource.getInternalId(operationEntry.getOperation()));
+                OperationSignature.class, RepositoryPackage.Literals.OPERATION_SIGNATURE,
+                this.repositoryResource.getInternalId(operationEntry.getOperation()));
         final RepositoryComponent component = this.repositoryResource.findObjectByTypeAndId(RepositoryComponent.class,
+                RepositoryPackage.Literals.REPOSITORY_COMPONENT,
                 this.repositoryResource.getInternalId(componentEntry.getComponent()));
 
         /** assembly is inferred from allocation. */
         final AssemblyContext assemblyContext = this.assemblyResource.findObjectByTypeAndId(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                 this.assemblyResource.getInternalId(allocationContext.getAssemblyContext_AllocationContext()));
 
         /** assemble event. */

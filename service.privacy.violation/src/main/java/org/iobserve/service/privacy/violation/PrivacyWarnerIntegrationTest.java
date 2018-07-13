@@ -30,8 +30,8 @@ import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
-import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
@@ -49,11 +49,6 @@ import org.slf4j.LoggerFactory;
 public class PrivacyWarnerIntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PrivacyWarnerIntegrationTest.class);
-    // pcm "/home/reiner/Projects/iObserve/jpetstore-6/pcm/5.2";
-    // db "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db";
-
-    // pcm "D:/Experiment/distributed-jpetstore-experiment/pcm/JPetStore";
-    // db "D:/Experiment/distributed-jpetstore-experiment/db";
 
     private final File pcmDirectory;
     private final File modelDatabaseDirectory;

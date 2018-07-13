@@ -25,9 +25,12 @@ import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.
@@ -90,16 +93,17 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
     }
 
     private void performMapping(final String service, final String context) {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource
-                .findObjectsByTypeAndName(AssemblyEntry.class, "entityName", context);
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
+                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
 
-        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource
-                .findObjectsByTypeAndName(ResourceContainer.class, "entityName", service);
+        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndName(
+                ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
 
         if (assemblyEntry.size() == 1) {
             final ResourceContainer resourceContainer = resourceContainers.get(0);
             final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
-                    AssemblyContext.class, this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
+                    AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                    this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
             this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer));
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,

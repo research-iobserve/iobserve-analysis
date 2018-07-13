@@ -23,6 +23,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -65,8 +66,9 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContexts = this.allocationModelResource
-                .findObjectsByTypeAndName(AllocationContext.class, "entityName", allocationContextName);
+        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndName(
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
+                allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);

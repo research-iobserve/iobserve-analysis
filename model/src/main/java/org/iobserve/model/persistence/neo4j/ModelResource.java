@@ -288,10 +288,10 @@ public class ModelResource {
      *            type definition
      * @return list of objects with the given type and attribute value
      */
-    public <T extends EObject> List<T> collectAllObjectsByTypeAndName(final Class<T> clazz, final String name,
-            final String value) {
+    public <T extends EObject> List<T> collectAllObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
+            final String name, final String value) {
         ModelProviderSynchronizer.getLock(this);
-        return this.findObjectsByTypeAndName(clazz, name, value);
+        return this.findObjectsByTypeAndName(clazz, eClass, name, value);
     }
 
     /**
@@ -302,6 +302,8 @@ public class ModelResource {
      *
      * @param clazz
      *            Data type of component(s) to be read
+     * @param eClass
+     *            EMF class
      * @param key
      *            key name
      * @param value
@@ -311,8 +313,9 @@ public class ModelResource {
      * @return List of the read component(s)
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> findObjectsByTypeAndName(final Class<T> clazz, final String key, final String value) {
-        final Label label = Label.label(clazz.getCanonicalName());
+    public <T extends EObject> List<T> findObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
+            final String key, final String value) {
+        final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
         final List<T> nodes = new LinkedList<>();
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -343,10 +346,10 @@ public class ModelResource {
      *            the objects' type
      * @return returns a list.
      */
-    public List<Long> collectAllObjectIdsByType(final Class<?> clazz) {
+    public List<Long> collectAllObjectIdsByType(final Class<?> clazz, final EClass eClass) {
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final ResourceIterator<Node> nodes = this.graphDatabaseService
-                    .findNodes(Label.label(clazz.getCanonicalName()));
+                    .findNodes(Label.label(ModelGraphFactory.fqnClassName(eClass)));
 
             final List<Long> ids = new LinkedList<>();
 
@@ -371,8 +374,8 @@ public class ModelResource {
      *
      * @return returns a list of objects
      */
-    public <T> List<T> collectAllObjectsByType(final Class<T> clazz) {
-        final Label label = Label.label(clazz.getCanonicalName());
+    public <T> List<T> collectAllObjectsByType(final Class<T> clazz, final EClass eClass) {
+        final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
         final List<T> nodes = new LinkedList<>();
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -582,7 +585,8 @@ public class ModelResource {
                         .getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());
 
                 final Map<Node, EObject> nodesToCreatedObjects = new HashMap<>();
-                this.queryModelFacility.readNodes(realNode, nodesToCreatedObjects, EMFRelationshipType.CONTAINS);
+                this.queryModelFacility.readNodes(realNode, nodesToCreatedObjects, EMFRelationshipType.REFERENCES,
+                        EMFRelationshipType.CONTAINS);
                 this.queryModelFacility.resolveReferences(nodesToCreatedObjects);
                 final EObject realObject = nodesToCreatedObjects.get(realNode);
 

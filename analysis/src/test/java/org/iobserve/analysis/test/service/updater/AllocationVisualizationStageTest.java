@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Tests for {@link AllocationVisualizationStage}.
@@ -93,7 +94,8 @@ public class AllocationVisualizationStageTest {
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                "entityName", AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
+                ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
+                AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
 
     }
 

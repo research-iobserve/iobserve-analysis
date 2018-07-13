@@ -156,7 +156,8 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
                 // get systemId
-                final System systemModel = systemModelResource.getModelRootNode(System.class);
+                final System systemModel = systemModelResource.getModelRootNode(System.class,
+                        SystemPackage.Literals.SYSTEM);
 
                 configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
 

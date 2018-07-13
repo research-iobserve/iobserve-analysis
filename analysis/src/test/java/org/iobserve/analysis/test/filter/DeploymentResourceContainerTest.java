@@ -42,10 +42,12 @@ import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
 import org.powermock.api.mockito.PowerMockito;
 
@@ -118,12 +120,12 @@ public class DeploymentResourceContainerTest {
         // .getCorrespondent(ImplementationLevelDataFactory.CONTEXT))
         // .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
-        Mockito.when(
-                DeploymentResourceContainerTest.mockedAllocationModelGraphProvider.getModelRootNode(Allocation.class))
+        Mockito.when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider
+                .getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION))
                 .thenReturn(DeploymentResourceContainerTest.allocation);
 
         Mockito.when(DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .getModelRootNode(ResourceEnvironment.class))
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT))
                 .thenReturn(DeploymentResourceContainerTest.resourceEnvironment);
 
         // TODO fix this

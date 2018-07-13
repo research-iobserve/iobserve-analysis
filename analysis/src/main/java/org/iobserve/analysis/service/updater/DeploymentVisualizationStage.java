@@ -31,7 +31,9 @@ import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * This stage is triggered by an analysis deployment update.
@@ -88,12 +90,14 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
     private JsonArray createData(final PCMDeployedEvent deployment) {
         final String serverName = deployment.getService();
         final String nodeId = this.resourceEnvironmentModelResource
-                .findObjectsByTypeAndName(ResourceContainer.class, "entityName", serverName).get(0).getId();
+                .findObjectsByTypeAndName(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
+                .get(0).getId();
 
         final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
-        final List<AssemblyContext> contexts = this.allocationModelProvider
-                .findObjectsByTypeAndName(AssemblyContext.class, "entityName", asmContextName);
+        final List<AssemblyContext> contexts = this.allocationModelProvider.findObjectsByTypeAndName(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
         final JsonObject serviceObject = Changelog

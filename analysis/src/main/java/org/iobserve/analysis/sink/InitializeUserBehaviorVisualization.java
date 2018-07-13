@@ -23,8 +23,10 @@ import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * @author Josefine Wegert -- initial contribution
@@ -70,8 +72,8 @@ public class InitializeUserBehaviorVisualization {
             final Long providedRoleId = this.systemModelProvider
                     .getInternalId(userStep.getProvidedRole_EntryLevelSystemCall());
 
-            final List<EObject> usergroupConnectors = this.systemModelProvider
-                    .collectReferencingObjectsByTypeAndId(OperationProvidedRole.class, providedRoleId);
+            final List<EObject> usergroupConnectors = this.systemModelProvider.collectReferencingObjectsByTypeAndId(
+                    OperationProvidedRole.class, RepositoryPackage.Literals.OPERATION_PROVIDED_ROLE, providedRoleId);
             final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
                     .get(0);
 
@@ -82,7 +84,7 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.findAndLockObjectById(UsageModel.class, 0L);
+            this.usageModelProvider.findAndLockObjectById(UsageModel.class, UsagemodelPackage.Literals.USAGE_MODEL, 0L);
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

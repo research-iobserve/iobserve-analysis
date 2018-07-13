@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 
 /**
  * Tests for {@link ServiceInstanceService}.
@@ -93,6 +94,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
         // stubbing
         Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                 this.mockedSystemModelGraphProvider.getInternalId(this.testAssemblyContext)))
                 .thenReturn(this.noAssemblyConnectors);
     }

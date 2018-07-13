@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.stages.data;
+package org.iobserve.service.privacy.violation.data;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.IWarningEdge;
+import org.iobserve.stages.data.IErrorMessages;
 
 /**
  * Collection of warnings.

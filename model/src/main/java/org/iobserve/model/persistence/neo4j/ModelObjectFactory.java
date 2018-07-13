@@ -128,10 +128,12 @@ public final class ModelObjectFactory {
         if (value == null) {
             // TODO ending up here is strange, check whether this is necessary
             for (final EFactory factory : factories) {
-                value = factory.createFromString(type, input);
+                if (type.getEPackage().getEFactoryInstance().equals(factory)) {
+                    value = factory.createFromString(type, input);
 
-                if (value != null) {
-                    return value;
+                    if (value != null) {
+                        return value;
+                    }
                 }
             }
 

@@ -22,6 +22,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import kieker.common.configuration.Configuration;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.persistence.neo4j.DBException;
@@ -33,17 +39,19 @@ import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.IPrivacyAnnotation;
 import org.iobserve.model.privacy.ParameterPrivacy;
 import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.model.privacy.ReturnTypePrivacy;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
+import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.PrivacyChecker;
-import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
@@ -56,13 +64,10 @@ import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.system.System;
-
-import kieker.common.configuration.Configuration;
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
+import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * Privacy warner.
@@ -197,10 +202,13 @@ public class PrivacyWarner extends AbstractStage {
      * Loads the root element for each model.
      **/
     private void loadRoots() {
-        this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class);
-        this.systemRootElement = this.systemModelResource.getModelRootNode(System.class);
-        this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class);
-        this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class);
+        this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class,
+                RepositoryPackage.Literals.REPOSITORY);
+        this.systemRootElement = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);
+        this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
+        this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
+                PrivacyPackage.Literals.PRIVACY_MODEL);
     }
 
     /**
@@ -214,37 +222,43 @@ public class PrivacyWarner extends AbstractStage {
     private void addDeployedComponents(final PrivacyGraph privacyGraph) throws InvocationException, DBException {
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
-            final AssemblyContext x = allocationContext.getAssemblyContext_AllocationContext();
-            final AssemblyContext assemblyContext = this.systemModelResource.resolve(x);
-            final RepositoryComponent repositoryComponent = assemblyContext.getEncapsulatedComponent__AssemblyContext();
-            final BasicComponent basicComponent = this.repositoryResource.findObjectByTypeAndId(BasicComponent.class,
-                    this.repositoryResource.getInternalId(repositoryComponent));
+            final AssemblyContext proxyAssemblyContext = allocationContext.getAssemblyContext_AllocationContext();
+            final AssemblyContext assemblyContext = this.systemModelResource.resolve(proxyAssemblyContext);
+            final RepositoryComponent proxyComponent = assemblyContext.getEncapsulatedComponent__AssemblyContext();
+            final BasicComponent basicComponent = (BasicComponent) this.repositoryResource.resolve(proxyComponent);
 
             /** Creating component vertices. **/
-            final Vertex v = new Vertex(basicComponent.getEntityName(),
-                    this.stereotypes.get(basicComponent.getId()) != null
-                            ? this.stereotypes.get(basicComponent.getId()).isDataSource() ? EStereoType.DATASOURCE
-                                    : EStereoType.COMPUTING_NODE
-                            : EStereoType.COMPUTING_NODE);
+            final Vertex vertex = new Vertex(basicComponent.getEntityName(), this.computeStereotype(basicComponent));
 
-            v.setAllocation(allocationContext.getAllocation_AllocationContext());
-            privacyGraph.addVertex(v);
+            vertex.setAllocation(allocationContext.getAllocation_AllocationContext());
+            privacyGraph.addVertex(vertex);
 
-            this.vertices.put(basicComponent.getId(), v);
+            this.vertices.put(basicComponent.getId(), vertex);
 
             final ResourceContainer queryResource = this.resourceEnvironmentResource
-                    .findObjectByTypeAndId(ResourceContainer.class, this.resourceEnvironmentResource
-                            .getInternalId(allocationContext.getResourceContainer_AllocationContext()));
+                    .resolve(allocationContext.getResourceContainer_AllocationContext());
             final GeoLocation geo = this.geolocations.get(queryResource.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
                 privacyGraph.addVertex(vGeo);
-                privacyGraph.addEdge(vGeo, v);
+                privacyGraph.addEdge(vGeo, vertex);
                 this.vertices.put(geo.getIsocode().getName(), vGeo);
             } else { // Existing Geolocation
-                privacyGraph.addEdge(this.vertices.get(geo.getIsocode().getName()), v);
+                privacyGraph.addEdge(this.vertices.get(geo.getIsocode().getName()), vertex);
 
             }
+        }
+    }
+
+    private EStereoType computeStereotype(final BasicComponent basicComponent) {
+        if (this.stereotypes.get(basicComponent.getId()) != null) {
+            if (this.stereotypes.get(basicComponent.getId()).isDataSource()) {
+                return EStereoType.DATASOURCE;
+            } else {
+                return EStereoType.COMPUTING_NODE;
+            }
+        } else {
+            return EStereoType.COMPUTING_NODE;
         }
     }
 
@@ -356,8 +370,11 @@ public class PrivacyWarner extends AbstractStage {
 
     /**
      * Fills the hash maps used for queries.
+     *
+     * @throws DBException
+     * @throws InvocationException
      **/
-    private void clearAndFillQueryMaps() {
+    private void clearAndFillQueryMaps() throws InvocationException, DBException {
         this.vertices.clear();
         this.geolocations.clear();
         this.stereotypes.clear();
@@ -366,10 +383,11 @@ public class PrivacyWarner extends AbstractStage {
         this.interfaces.clear();
 
         for (final GeoLocation location : this.privacyRootElement.getResourceContainerLocations()) {
-            this.geolocations.put(location.getResourceContainer().getId(), location);
+            this.geolocations.put(this.resourceEnvironmentResource.resolve(location.getResourceContainer()).getId(),
+                    location);
         }
         for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
-            this.stereotypes.put(stereotype.getComponent().getId(), stereotype);
+            this.stereotypes.put(this.repositoryResource.resolve(stereotype.getComponent()).getId(), stereotype);
         }
         for (final IPrivacyAnnotation privacyAnnocation : this.privacyRootElement.getPrivacyLevels()) {
             if (privacyAnnocation instanceof ParameterPrivacy) {
@@ -378,7 +396,9 @@ public class PrivacyWarner extends AbstractStage {
             }
             if (privacyAnnocation instanceof ReturnTypePrivacy) {
                 final ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy) privacyAnnocation;
-                this.returntypeprivacy.put(returnTypePrivacy.getOperationSignature().getId(), returnTypePrivacy);
+                this.returntypeprivacy.put(
+                        this.repositoryResource.resolve(returnTypePrivacy.getOperationSignature()).getId(),
+                        returnTypePrivacy);
             }
         }
 

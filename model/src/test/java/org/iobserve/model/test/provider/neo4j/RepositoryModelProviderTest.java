@@ -185,7 +185,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.storeModelPartition(this.testModel);
 
-        final List<Repository> readModels = resource.findObjectsByTypeAndName(this.clazz, "entityName",
+        final List<Repository> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
                 this.testModel.getEntityName());
 
         for (final Repository readModel : readModels) {

@@ -181,7 +181,8 @@ public class ECoreNeo4JTest {
 
         resource.storeModelPartition(this.modelOne);
 
-        final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, "name", this.modelOne.getName());
+        final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, OnePackage.Literals.ROOT, "name",
+                this.modelOne.getName());
 
         Assert.assertTrue(
                 this.equalityHelper.comparePartition(this.modelOne, readModel.get(0), this.modelOne.eClass()));

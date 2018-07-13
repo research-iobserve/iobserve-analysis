@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import java.io.File;
 import java.io.IOException;
 
-import org.iobserve.stages.data.Warnings;
+import org.iobserve.service.privacy.violation.data.Warnings;
 
 /**
  * @author Reiner Jung

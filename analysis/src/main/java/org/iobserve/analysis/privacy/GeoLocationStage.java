@@ -27,6 +27,7 @@ import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -57,7 +58,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(),
                 event.getResourceContainer().getEntityName(), event.getService(), event.getUrl());
-        final List<GeoLocation> geoLocations = this.privacyModelResource.collectAllObjectsByType(GeoLocation.class);
+        final List<GeoLocation> geoLocations = this.privacyModelResource.collectAllObjectsByType(GeoLocation.class,
+                PrivacyPackage.Literals.GEO_LOCATION);
 
         for (final GeoLocation geoLocation : geoLocations) {
             final String containerId = geoLocation.getResourceContainer().getId();
@@ -71,7 +73,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         }
 
         /** container has no geolocation: create a location instance. */
-        final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class);
+        final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
+                PrivacyPackage.Literals.PRIVACY_MODEL);
         privacyModel.getResourceContainerLocations()
                 .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
         this.privacyModelResource.updatePartition(privacyModel);

@@ -27,6 +27,7 @@ import org.iobserve.model.test.data.DebugHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -74,11 +75,13 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContext = this.allocationModelResource
-                .findObjectsByTypeAndName(AllocationContext.class, "entityName", allocationContextName);
+        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndName(
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
+                allocationContextName);
         if (allocationContext.isEmpty()) {
             this.logger.debug("Create allocation context {}", event);
-            final Allocation allocationModel = this.allocationModelResource.getModelRootNode(Allocation.class);
+            final Allocation allocationModel = this.allocationModelResource.getModelRootNode(Allocation.class,
+                    AllocationPackage.Literals.ALLOCATION);
 
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
@@ -89,10 +92,11 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
             this.allocationModelResource.updatePartition(allocationModel);
 
-            DebugHelper.printModelPartition(this.allocationModelResource.getModelRootNode(Allocation.class));
+            DebugHelper.printModelPartition(this.allocationModelResource.getModelRootNode(Allocation.class,
+                    AllocationPackage.Literals.ALLOCATION));
 
             for (final AllocationContext context : this.allocationModelResource
-                    .collectAllObjectsByType(AllocationContext.class)) {
+                    .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT)) {
                 DebugHelper.printModelPartition(context);
             }
 

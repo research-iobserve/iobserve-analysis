@@ -105,8 +105,8 @@ public class PCMNeo4JTest {
         DebugHelper.printModelPartition(
                 this.allocationResource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION));
 
-        for (final AllocationContext context : this.allocationResource
-                .collectAllObjectsByType(AllocationContext.class)) {
+        for (final AllocationContext context : this.allocationResource.collectAllObjectsByType(AllocationContext.class,
+                AllocationPackage.Literals.ALLOCATION_CONTEXT)) {
             DebugHelper.printModelPartition(context);
         }
     }

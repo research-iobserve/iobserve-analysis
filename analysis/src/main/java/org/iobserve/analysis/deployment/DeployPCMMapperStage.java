@@ -27,8 +27,10 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.
@@ -92,8 +94,8 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
     }
 
     private void performMapping(final IDeployedEvent event, final String service, final String context) {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource
-                .findObjectsByTypeAndName(AssemblyEntry.class, "entityName", context);
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
+                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
 
         // build the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
@@ -101,7 +103,8 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
         if (assemblyEntry.size() == 1) {
             final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
-                    AssemblyContext.class, this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
+                    AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                    this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
             if (event instanceof Privacy) {
                 this.logger.debug("privacy {}", event);
                 this.outputPort

@@ -25,6 +25,7 @@ import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 
 /**
  * This class prepares data such that the visualization element serviceInstance is created. It has
@@ -89,7 +90,8 @@ public class ServiceInstanceService {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
         final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndId(
-                AssemblyContext.class, systemModelGraphProvider.getInternalId(assemblyContext));
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                systemModelGraphProvider.getInternalId(assemblyContext));
         // if so, delete all communicationInstances
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {

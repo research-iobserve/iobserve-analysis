@@ -35,8 +35,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Tests for {@link DeploymentVisualizationStage}.
@@ -119,14 +121,16 @@ public class DeploymentVisualizationStageTest { // NOCS test
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
-                "entityName", DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
+                ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
+                DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
         // does this make sense?
         // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
         // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
         Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
-                "entityName", asmContextName)).thenReturn(this.testAssemblyContexts);
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
+                .thenReturn(this.testAssemblyContexts);
 
         this.deploymentVisualizationStage = new DeploymentVisualizationStage(changelogURL,
                 DeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,

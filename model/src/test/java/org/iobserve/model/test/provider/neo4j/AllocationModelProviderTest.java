@@ -165,7 +165,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.storeModelPartition(this.testModel);
 
-        final List<Allocation> readModels = resource.findObjectsByTypeAndName(this.clazz, "entityName",
+        final List<Allocation> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
                 this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {

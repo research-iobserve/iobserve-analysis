@@ -205,7 +205,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         resource.deleteObject(writtenModel);
 
-        final List<Long> collection = resource.collectAllObjectIdsByType(System.class);
+        final List<Long> collection = resource.collectAllObjectIdsByType(System.class, SystemPackage.Literals.SYSTEM);
 
         Assert.assertEquals("The system should be deleted.", 0, collection.size());
     }
@@ -238,7 +238,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         resource.storeModelPartition(this.testModel);
 
-        final List<System> readModels = resource.findObjectsByTypeAndName(this.clazz, "entityName",
+        final List<System> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
                 this.testModel.getEntityName());
 
         for (final System readModel : readModels) {

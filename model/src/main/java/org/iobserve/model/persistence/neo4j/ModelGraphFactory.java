@@ -265,7 +265,7 @@ public final class ModelGraphFactory {
         if (object.eContainer() != null) {
             return ModelGraphFactory.createUri(object.eContainer()) + "/" + ModelGraphFactory.createUriFragment(object);
         } else {
-            return "neo4j://" + object.eClass().getInstanceTypeName();
+            return "neo4j://" + ModelGraphFactory.fqnClassName(object.eClass());
         }
     }
 

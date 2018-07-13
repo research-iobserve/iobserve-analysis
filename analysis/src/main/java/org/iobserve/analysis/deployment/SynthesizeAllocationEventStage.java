@@ -27,6 +27,7 @@ import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * The filter checks if there exists an ResourceContainer for the deployment specified in the
@@ -70,7 +71,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
                 event.getService(), event.getUrl());
 
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource
-                .getModelRootNode(ResourceEnvironment.class);
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(resourceEnvironment, event.getService());
 

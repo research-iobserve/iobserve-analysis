@@ -26,13 +26,16 @@ import teetime.framework.AbstractConsumerStage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,11 +91,12 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     @Override
     protected void execute(final TraceMetadata event) throws NodeLookupException {
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource
-                .getAndLockModelRootNode(ResourceEnvironment.class);
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource.getAndLockModelRootNode(
+                ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
 
-        final System system = this.systemModelResource.getModelRootNode(System.class);
-        final Allocation allocation = this.allocationModelResource.getModelRootNode(Allocation.class);
+        final System system = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);
+        final Allocation allocation = this.allocationModelResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))

@@ -59,7 +59,8 @@ public class DeploymentModelUpdaterTest {
     public void testExecutePCMDeployedEvent() {
         final ModelResource allocationModelResource = this.initializationDatabase();
 
-        final Allocation initDbAllocation = allocationModelResource.getModelRootNode(Allocation.class);
+        final Allocation initDbAllocation = allocationModelResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
 
         final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(allocationModelResource);
 
@@ -80,7 +81,8 @@ public class DeploymentModelUpdaterTest {
         Assert.assertThat(deploymentModelUpdater.getDeployedNotifyOutputPort(), StageTester.produces(deploymentEvent));
 
         // TODO check is DB contains a deployment
-        final Allocation dbAllocation = allocationModelResource.getModelRootNode(Allocation.class);
+        final Allocation dbAllocation = allocationModelResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
         for (final AllocationContext context : dbAllocation.getAllocationContexts_Allocation()) {
             Assert.assertNotEquals("No assembly context for " + context.getEntityName(),
                     context.getAssemblyContext_AllocationContext(), null);

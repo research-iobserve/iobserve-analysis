@@ -29,7 +29,9 @@ import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * This stage is triggered by an analysis undeployment update.
@@ -91,11 +93,15 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
         final String serverName = undeployment.getService();
 
         final String nodeId = this.resourceContainerModelGraphProvider
-                .findObjectsByTypeAndName(ResourceContainer.class, "entityName", serverName).get(0).getId();
+                .findObjectsByTypeAndName(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
+                .get(0).getId();
 
         final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
-                .findObjectsByTypeAndName(AssemblyContext.class, "entityName", asmContextName).get(0);
+                .findObjectsByTypeAndName(AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                        "entityName", asmContextName)
+                .get(0);
 
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));

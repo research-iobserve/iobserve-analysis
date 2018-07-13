@@ -31,6 +31,7 @@ import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * This class processes allocation events. TAllocation creates a new {@link ResourceContainer} if
@@ -102,14 +103,14 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
         }
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
-                .getResourceContainerByName(
-                        this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class), service);
+                .getResourceContainerByName(this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT), service);
 
         if (!resourceContainer.isPresent()) {
             this.logger.debug("ResourceContainer {} is created.", service);
             /** new provider: update the resource environment graph. */
-            final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentResource
-                    .getModelRootNode(ResourceEnvironment.class);
+            final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentResource.getModelRootNode(
+                    ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironment, service);
             resourceEnvironment.getResourceContainer_ResourceEnvironment().add(newResourceContainer);

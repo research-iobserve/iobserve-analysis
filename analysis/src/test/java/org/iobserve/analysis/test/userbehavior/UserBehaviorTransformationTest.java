@@ -72,7 +72,8 @@ public final class UserBehaviorTransformationTest {
 
         final ModelResource repositoryModelProvider = new ModelResource(RepositoryPackage.eINSTANCE, new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
-                repositoryModelProvider.getAndLockModelRootNode(Repository.class));
+                repositoryModelProvider.getAndLockModelRootNode(Repository.class,
+                        RepositoryPackage.Literals.REPOSITORY));
 
         final int numberOfIterations = 500;
         final int stepSize = 1;

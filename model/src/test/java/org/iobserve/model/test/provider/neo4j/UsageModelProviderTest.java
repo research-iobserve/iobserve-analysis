@@ -69,7 +69,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
         resource.storeModelPartition(this.testModel);
 
-        final List<Long> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class);
+        final List<Long> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class,
+                UsagemodelPackage.Literals.USAGE_SCENARIO);
 
         final long id = resource.getInternalId(writtenScenario);
 
@@ -219,7 +220,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
         // Assert.assertTrue(this.isGraphEmpty(modelProvider));
 
-        final List<?> scenarios = resource.collectAllObjectsByType(UsageScenario.class);
+        final List<?> scenarios = resource.collectAllObjectsByType(UsageScenario.class,
+                UsagemodelPackage.Literals.USAGE_SCENARIO);
 
         Assert.assertEquals("Usage scenario should all have been deleted.", scenarios.size(), 0);
 

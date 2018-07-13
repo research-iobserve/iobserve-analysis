@@ -147,7 +147,7 @@ public class QueryModelFacility extends GenericModelFacility {
                             }
 
                         });
-                sortedRelationships
+                sortedRelationships // TODO here we would also need referenced objects.
                         .forEach(r -> this.updateReference(object, reference, nodeObjectMap.get(r.getEndNode())));
             }
         }
@@ -201,7 +201,7 @@ public class QueryModelFacility extends GenericModelFacility {
 
     private void checkSingleReferences(final EReference reference, final EObject referencedEntity,
             final Set<EObject> containmentsAndDatatypes) {
-        if (referencedEntity != null
+        if ((referencedEntity != null)
                 && (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedEntity))) {
             this.getAllContainmentsByObject(referencedEntity, containmentsAndDatatypes);
         }
@@ -275,7 +275,7 @@ public class QueryModelFacility extends GenericModelFacility {
                     boolean next = false;
                     for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
                         if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
-                                && segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS)) {
+                                && (segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS))) {
                             node = relationship.getEndNode();
                             next = true;
                             break;

@@ -27,6 +27,7 @@ import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * @author Reiner Jung
@@ -62,13 +63,13 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
             throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
         }
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
-                .getResourceContainerByName(
-                        this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class), service);
+                .getResourceContainerByName(this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT), service);
 
         if (resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
-            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentResource
-                    .getModelRootNode(ResourceEnvironment.class);
+            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentResource.getModelRootNode(
+                    ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().remove(resourceContainer.get());
             this.resourceEnvironmentResource.updatePartition(resourceEnvironmentModelGraph);
 
