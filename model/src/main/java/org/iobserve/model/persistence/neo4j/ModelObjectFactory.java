@@ -29,12 +29,16 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
  *
  */
 public final class ModelObjectFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelObjectFactory.class);
 
     /** factory constructor, prevent instantiation. */
     private ModelObjectFactory() {
@@ -89,7 +93,7 @@ public final class ModelObjectFactory {
     private static <T extends EObject> void loadAttributes(final T object, final Map<String, Object> properties,
             final Set<EFactory> factories) {
         if (object == null) {
-            System.err.println("object is null");
+            ModelObjectFactory.LOGGER.error("loadAttributes, object is null");
         }
         for (final Entry<String, Object> property : properties.entrySet()) {
             final EAttribute attr = (EAttribute) object.eClass().getEStructuralFeature(property.getKey());

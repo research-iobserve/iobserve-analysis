@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
+import org.iobserve.model.DebugHelper;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
-import org.iobserve.model.test.data.DebugHelper;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.iobserve.model.test.data.SystemDataFactory;

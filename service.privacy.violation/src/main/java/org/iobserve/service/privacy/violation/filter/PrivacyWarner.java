@@ -267,8 +267,12 @@ public class PrivacyWarner extends AbstractStage {
      *
      * @param graph
      *            graph
+     * @throws DBException
+     *             on db errors during resolving objects
+     * @throws InvocationException
+     *             on other errors during resolving objects
      */
-    private void addConnectors(final PrivacyGraph graph) {
+    private void addConnectors(final PrivacyGraph graph) throws InvocationException, DBException {
         for (final Connector connector : this.systemRootElement.getConnectors__ComposedStructure()) {
             if (connector instanceof AssemblyConnector) {
                 final AssemblyConnector assemblyConnector = (AssemblyConnector) connector;
@@ -276,17 +280,18 @@ public class PrivacyWarner extends AbstractStage {
                 // Providing Component
                 final AssemblyContext provididingAssemblyContext = assemblyConnector
                         .getProvidingAssemblyContext_AssemblyConnector();
-                final RepositoryComponent providingComponent = provididingAssemblyContext
-                        .getEncapsulatedComponent__AssemblyContext();
+                final RepositoryComponent providingComponent = this.repositoryResource
+                        .resolve(provididingAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
                 // Requiring Component
                 final AssemblyContext requiringAssemblyContext = assemblyConnector
                         .getRequiringAssemblyContext_AssemblyConnector();
-                final RepositoryComponent requiringComponent = requiringAssemblyContext
-                        .getEncapsulatedComponent__AssemblyContext();
+                final RepositoryComponent requiringComponent = this.repositoryResource
+                        .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
                 if ((providingComponent != null) && (requiringComponent != null)) {
-                    final OperationProvidedRole providedRole = assemblyConnector.getProvidedRole_AssemblyConnector();
+                    final OperationProvidedRole providedRole = this.repositoryResource
+                            .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
 
                     // Check Interface Name in Repository and add Edge
@@ -301,7 +306,8 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private void computePrivacyLevelsAndAddEdge(final PrivacyGraph graph, final OperationInterface operationInterface,
-            final RepositoryComponent providingComponent, final RepositoryComponent requiringComponent) {
+            final RepositoryComponent providingComponent, final RepositoryComponent requiringComponent)
+            throws InvocationException, DBException {
         for (final OperationSignature operationSignature : operationInterface.getSignatures__OperationInterface()) {
             final IPrivacyAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
                     .get(operationSignature.getId());
@@ -309,11 +315,13 @@ public class PrivacyWarner extends AbstractStage {
             EDataPrivacyLevel outEdgePrivacyLevel = null;
 
             /** Check parameter. */
-            for (final Parameter parameter : operationSignature.getParameters__OperationSignature()) {
+            for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
+                final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
                 if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                    final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
-                            this.parameterprivacy.get(parameter.getParameterName()).getLevel());
+                            this.parameterprivacy.get(parameterName).getLevel());
                 }
                 if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
@@ -392,7 +400,8 @@ public class PrivacyWarner extends AbstractStage {
         for (final IPrivacyAnnotation privacyAnnocation : this.privacyRootElement.getPrivacyLevels()) {
             if (privacyAnnocation instanceof ParameterPrivacy) {
                 final ParameterPrivacy parameterPrivacy = (ParameterPrivacy) privacyAnnocation;
-                this.parameterprivacy.put(parameterPrivacy.getParameter().getParameterName(), parameterPrivacy);
+                final Parameter parameter = this.repositoryResource.resolve(parameterPrivacy.getParameter());
+                this.parameterprivacy.put(parameter.getParameterName(), parameterPrivacy);
             }
             if (privacyAnnocation instanceof ReturnTypePrivacy) {
                 final ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy) privacyAnnocation;

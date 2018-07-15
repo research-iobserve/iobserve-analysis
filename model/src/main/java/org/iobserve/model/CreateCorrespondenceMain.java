@@ -31,12 +31,16 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.Part;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
  *
  */
 public final class CreateCorrespondenceMain {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateCorrespondenceMain.class);
 
     private static final Map<String, String> NAME_MAPS = new HashMap<>();
 
@@ -85,7 +89,7 @@ public final class CreateCorrespondenceMain {
             final URI outputURI = URI.createFileURI("/home/reiner/correspondence.rac");
             CreateCorrespondenceMain.save(correspondenceModel, outputURI);
         } catch (final IOException e) {
-            java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+            CreateCorrespondenceMain.LOGGER.error("Canot load all models {}", e.getLocalizedMessage());
         }
     }
 
@@ -102,7 +106,7 @@ public final class CreateCorrespondenceMain {
         try {
             resource.save(null);
         } catch (final IOException e) {
-            e.printStackTrace();
+            CreateCorrespondenceMain.LOGGER.error("Saving failed {} {}", writeModelURI, e.getLocalizedMessage());
         }
     }
 

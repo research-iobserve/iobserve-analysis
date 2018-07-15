@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.test.data;
+package org.iobserve.model;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +31,8 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,6 +40,8 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  *
  */
 public final class DebugHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DebugHelper.class);
 
     private DebugHelper() {
         // helper class
@@ -54,14 +58,16 @@ public final class DebugHelper {
     }
 
     private static void printModelPartition(final EObject object, final String indent) {
-        System.err.printf("%sclass %s : %s\n", indent, object.hashCode(), object.getClass().getCanonicalName()); // NOPMD
+        DebugHelper.LOGGER.debug(
+                String.format("%sclass %s : %s", indent, object.hashCode(), object.getClass().getCanonicalName()));
         DebugHelper.printObjectAttributes(object, indent);
         DebugHelper.printObjectReferences(object, indent);
     }
 
     private static void printObjectReferences(final EObject object, final String indent) {
         for (final EReference reference : object.eClass().getEAllReferences()) {
-            System.err.printf("%s + %s : %s\n", indent, reference.getName(), reference.getEReferenceType().getName()); // NOPMD
+            DebugHelper.LOGGER.debug(String.format("%s + %s : %s", indent, reference.getName(),
+                    reference.getEReferenceType().getName()));
             if (reference.isContainment()) {
                 DebugHelper.printContainmentReferenceContent(object.eGet(reference), indent);
             } else {
@@ -77,13 +83,13 @@ public final class DebugHelper {
             if (contents instanceof EList<?>) {
                 for (final Object content : (EList<?>) contents) {
                     if (((EObject) content).eIsProxy()) {
-                        System.err.printf("%s\t%s proxy %s\n", indent, refType, content); // NOPMD
+                        DebugHelper.LOGGER.debug(String.format("%s\t%s proxy %s\n", indent, refType, content));
                     } else {
-                        System.err.printf("%s\t%s %s\n", indent, refType, content.hashCode()); // NOPMD
+                        DebugHelper.LOGGER.debug(String.format("%s\t%s %s", indent, refType, content.hashCode()));
                     }
                 }
             } else {
-                System.err.printf("%s\t%s %s\n", indent, refType, contents.hashCode()); // NOPMD
+                DebugHelper.LOGGER.debug(String.format("%s\t%s %s", indent, refType, contents.hashCode()));
             }
         }
     }
@@ -104,8 +110,8 @@ public final class DebugHelper {
     private static void printObjectAttributes(final EObject object, final String indent) {
         for (final EAttribute attribute : object.eClass().getEAllAttributes()) {
             final Object value = object.eGet(attribute);
-            System.err.printf("%s - %s = %s : %s\n", indent, value, attribute.getName(), // NOPMD
-                    attribute.getEType().getInstanceTypeName());
+            DebugHelper.LOGGER.debug(String.format("%s - %s = %s : %s", indent, value, attribute.getName(),
+                    attribute.getEType().getInstanceTypeName()));
         }
     }
 
@@ -120,8 +126,8 @@ public final class DebugHelper {
     public static void listAllocations(final String label, final Allocation allocation) {
         int i = 1;
         for (final AllocationContext context : allocation.getAllocationContexts_Allocation()) {
-            java.lang.System.err.printf("%s %d %s %s\n", label, i, context.getEntityName(), // NOPMD
-                    context.getAssemblyContext_AllocationContext());
+            DebugHelper.LOGGER.debug(String.format("%s %d %s %s", label, i, context.getEntityName(),
+                    context.getAssemblyContext_AllocationContext()));
             i++;
         }
     }
@@ -134,10 +140,10 @@ public final class DebugHelper {
      */
     public static void printRelationshipList(final Iterable<Relationship> relationships) {
         for (final Relationship relationship : relationships) {
-            System.err.println(String.format("rel %d %d->%d", relationship.getId(), // NOPMD
+            DebugHelper.LOGGER.debug(String.format("rel %d %d->%d", relationship.getId(),
                     relationship.getStartNode().getId(), relationship.getEndNode().getId()));
             for (final Entry<String, Object> property : relationship.getAllProperties().entrySet()) {
-                System.err.println(String.format("\t %s %s", property.getKey(), property.getValue())); // NOPMD
+                DebugHelper.LOGGER.debug(String.format("\t %s %s", property.getKey(), property.getValue()));
             }
         }
     }
@@ -159,7 +165,7 @@ public final class DebugHelper {
                 id = object.eGet(attribute).toString();
             }
         }
-        System.err.println(String.format("Object id: %s  name: %s", id, entityName)); // NOPMD
+        DebugHelper.LOGGER.debug(String.format("Object id: %s  name: %s", id, entityName));
 
     }
 
@@ -171,7 +177,8 @@ public final class DebugHelper {
      */
     public static void listAllRelationships(final ModelResource resource) {
         for (final Relationship r : resource.getGraphDatabaseService().getAllRelationships()) {
-            System.err.println("\t" + r.getStartNodeId() + " -- (" + r.getId() + ") --> " + r.getEndNodeId()); // NOPMD
+            DebugHelper.LOGGER
+                    .debug(String.format("\t%d -- (%d) --> %d", r.getStartNodeId(), r.getId(), r.getEndNodeId()));
         }
     }
 
@@ -184,42 +191,45 @@ public final class DebugHelper {
      *            map to be printed
      */
     public static void printMap(final String label, final Map<EObject, Node> map) {
-        System.err.println("Map " + label);
+        DebugHelper.LOGGER.debug(String.format("Map %s", label));
         for (final Entry<EObject, Node> entry : map.entrySet()) {
-            System.err.println("\t" + entry.getKey() + " = " + entry.getValue().getId() + " "
-                    + ModelGraphFactory.isProxyNode(entry.getValue()));
+            DebugHelper.LOGGER.debug(String.format("\t%s = %d %s", entry.getKey(), entry.getValue().getId(),
+                    String.valueOf(ModelGraphFactory.isProxyNode(entry.getValue()))));
         }
     }
 
     public static void printList(final String label, final EList<?> list) {
-        System.err.println("List " + label);
+        DebugHelper.LOGGER.debug(String.format("List %s", label));
         for (final Object entry : list) {
-            System.err.println("\t" + entry);
+            DebugHelper.LOGGER.debug(String.format("\t%s", entry));
         }
     }
 
     public static <T extends EObject> void printNodeModel(final Map<EObject, Node> objectNodeMap, final T object) {
-        System.err.println(">> " + object);
+        DebugHelper.LOGGER.debug(String.format(">> %s", object.toString()));
         DebugHelper.printNodeModel("", objectNodeMap.get(object));
     }
 
     private static <T extends EObject> void printNodeModel(final String indent, final Node node) {
         if (node == null) {
-            System.err.println(indent + "no node for object");
+            DebugHelper.LOGGER.debug(String.format("%sno node for object", indent));
             return;
         }
-        System.err.println(indent + node.getLabels().iterator().next().name() + " : " + node.getId());
+        DebugHelper.LOGGER
+                .debug(String.format("%s%s : %d", indent, node.getLabels().iterator().next().name(), node.getId()));
         for (final Entry<String, Object> entry : node.getAllProperties().entrySet()) {
-            System.err.println(indent + " - " + entry.getKey() + " = " + entry.getValue());
+            DebugHelper.LOGGER
+                    .debug(String.format("%s - %s = %s", indent, entry.getKey(), entry.getValue().toString()));
         }
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
             if (rel.isType(EMFRelationshipType.CONTAINS)) {
-                System.err.println(indent + " + " + rel.getProperty(ModelProviderUtil.REF_NAME));
+                DebugHelper.LOGGER.debug(String.format("%s + %s", indent, rel.getProperty(ModelProviderUtil.REF_NAME)));
                 DebugHelper.printNodeModel(indent + "   \t", rel.getEndNode());
             } else {
                 final Node endNode = rel.getEndNode();
-                System.err.println(indent + " + " + rel.getProperty(ModelProviderUtil.REF_NAME) + " -> "
-                        + endNode.getLabels().iterator().next().name() + " : " + endNode.getId());
+                DebugHelper.LOGGER
+                        .debug(String.format("%s + %s -> %s : %s", indent, rel.getProperty(ModelProviderUtil.REF_NAME),
+                                endNode.getLabels().iterator().next().name(), endNode.getId()));
             }
         }
     }

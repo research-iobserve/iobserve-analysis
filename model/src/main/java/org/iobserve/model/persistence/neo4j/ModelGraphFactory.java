@@ -77,7 +77,7 @@ public final class ModelGraphFactory {
         /** attributes. */
         ModelGraphFactory.storeAttributes(node, storeableObject);
 
-        System.err.println("create node " + storeableObject + " " + node.getId());
+        ModelGraphFactory.LOGGER.debug(String.format("create node %s %d", storeableObject.toString(), node.getId()));
 
         return node;
     }
@@ -104,7 +104,7 @@ public final class ModelGraphFactory {
 
         node.setProperty(ModelGraphFactory.PROXY_OBJECT, true);
 
-        System.err.println("create proxy " + storeableObject + " " + node.getId());
+        ModelGraphFactory.LOGGER.debug(String.format("create proxy %s %d", storeableObject.toString(), node.getId()));
 
         return node;
     }

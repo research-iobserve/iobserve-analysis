@@ -139,7 +139,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference reference, final Object referenceObject) {
-        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
+        return (referenceObject instanceof DataType) && !(reference.getName().equals("parentType_CompositeDataType")
                 || reference.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
@@ -154,11 +154,10 @@ public final class ModelProviderUtil {
      *
      * @return The cloned graph
      */
-    public static ModelResource createNewModelResourceVersion(final String prefix, final EPackage ePackage,
-            final ModelResource resource) {
+    public static ModelResource createNewModelResourceVersion(final EPackage ePackage, final ModelResource resource) {
         final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
 
-        return ModelProviderUtil.cloneNewModelGraphVersion(prefix, ePackage, baseDirectory);
+        return ModelProviderUtil.cloneNewModelGraphVersion(ePackage, baseDirectory);
     }
 
     /**
@@ -171,8 +170,8 @@ public final class ModelProviderUtil {
      *            graph type
      * @return The the model graph
      */
-    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final String prefix,
-            final EPackage ePackage, final File baseDirectory) {
+    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EPackage ePackage,
+            final File baseDirectory) {
         final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
         final int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(resourceBaseDirectory.listFiles());

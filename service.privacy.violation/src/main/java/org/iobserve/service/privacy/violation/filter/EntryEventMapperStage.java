@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.List;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -74,10 +76,11 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        // TODO add correct key names
-        final ComponentEntry componentEntry = this.correspondenceResource.findObjectsByTypeAndName(ComponentEntry.class,
-                CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId", event.getClassSignature()).get(0);
-        if (componentEntry != null) {
+        // TODO correct key names?
+        final List<ComponentEntry> entries = this.correspondenceResource.findObjectsByTypeAndName(ComponentEntry.class,
+                CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId", event.getClassSignature());
+        if (!entries.isEmpty()) {
+            final ComponentEntry componentEntry = entries.get(0);
             final OperationEntry operationEntry = this.correspondenceResource
                     .findObjectsByTypeAndName(OperationEntry.class, CorrespondencePackage.Literals.OPERATION_ENTRY,
                             "implementationId", event.getOperationSignature())

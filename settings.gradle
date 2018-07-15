@@ -9,4 +9,4 @@ include "common", "monitoring", "model", "stages", "service",
 	"service.privacy.violation"
 
 // Peropteryx integration with goomph
-include "peropteryx.rcp", "target.p2", "target.maven", "deploy"
+//include "peropteryx.rcp", "target.p2", "target.maven", "deploy"

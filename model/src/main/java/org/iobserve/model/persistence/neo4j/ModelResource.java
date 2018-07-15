@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +35,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
-import org.iobserve.model.test.data.DebugHelper;
+import org.iobserve.model.DebugHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -43,12 +44,16 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
  *
  */
 public class ModelResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelResource.class);
 
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;
@@ -323,6 +328,11 @@ public class ModelResource {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
+                ModelResource.LOGGER.debug("Node id {} type {}", node.getId(),
+                        node.getLabels().iterator().next().name());
+                for (final Entry<String, Object> v : node.getAllProperties().entrySet()) {
+                    ModelResource.LOGGER.debug("property {}={}", v.getKey(), v.getValue());
+                }
 
                 final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 

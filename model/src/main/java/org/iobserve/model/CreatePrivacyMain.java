@@ -39,12 +39,16 @@ import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
  *
  */
 public final class CreatePrivacyMain {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreatePrivacyMain.class);
 
     private static final Map<String, EISOCode> ISO_CODE_MAPS = new HashMap<>();
     private static final Map<String, Map<String, OperationSignaturePrivacy>> PRIVACY_LEVEL_MAPS = new HashMap<>();
@@ -77,7 +81,7 @@ public final class CreatePrivacyMain {
             final URI outputURI = URI.createFileURI("/home/reiner/privacyTestModel.privacy");
             CreatePrivacyMain.save(privacyModel, outputURI);
         } catch (final IOException e) {
-            java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+            CreatePrivacyMain.LOGGER.error("Canot load all models {}", e.getLocalizedMessage());
         }
     }
 
@@ -201,7 +205,7 @@ public final class CreatePrivacyMain {
 
     private static void addGeoLocations(final PrivacyModel privacyModel, final ResourceEnvironment environment) {
         for (final ResourceContainer container : environment.getResourceContainer_ResourceEnvironment()) {
-            java.lang.System.out.printf("have container %s\n", container.getEntityName());
+            CreatePrivacyMain.LOGGER.debug(String.format("have container %s\n", container.getEntityName()));
 
             final GeoLocation location = PrivacyFactory.eINSTANCE.createGeoLocation();
 
@@ -215,12 +219,12 @@ public final class CreatePrivacyMain {
     private static void addPrivacyAnnotations(final PrivacyModel privacyModel, final Repository repository) {
         for (final Interface iface : repository.getInterfaces__Repository()) {
             if (iface instanceof OperationInterface) {
-                java.lang.System.out.printf("interface %s\n", iface.getEntityName());
+                CreatePrivacyMain.LOGGER.debug(String.format("interface %s\n", iface.getEntityName()));
                 final OperationInterface operationInterface = (OperationInterface) iface;
                 final Map<String, OperationSignaturePrivacy> ifacePrivacy = CreatePrivacyMain.PRIVACY_LEVEL_MAPS
                         .get(iface.getEntityName());
                 for (final OperationSignature signature : operationInterface.getSignatures__OperationInterface()) {
-                    java.lang.System.out.printf("\tsignature %s\n", signature.getEntityName());
+                    CreatePrivacyMain.LOGGER.debug(String.format("\tsignature %s\n", signature.getEntityName()));
                     final OperationSignaturePrivacy signaturePrivacy = ifacePrivacy.get(signature.getEntityName());
 
                     if (signature.getReturnType__OperationSignature() != null) {
@@ -232,7 +236,8 @@ public final class CreatePrivacyMain {
                     }
 
                     for (final Parameter parameter : signature.getParameters__OperationSignature()) {
-                        java.lang.System.out.printf("\t\tparameter %s\n", parameter.getParameterName());
+                        CreatePrivacyMain.LOGGER
+                                .debug(String.format("\t\tparameter %s\n", parameter.getParameterName()));
 
                         final ParameterPrivacy parameterPrivacy = PrivacyFactory.eINSTANCE.createParameterPrivacy();
                         parameterPrivacy
@@ -259,7 +264,7 @@ public final class CreatePrivacyMain {
         try {
             resource.save(null);
         } catch (final IOException e) {
-            e.printStackTrace();
+            CreatePrivacyMain.LOGGER.error("Saving model failed {} {}", writeModelURI, e.getLocalizedMessage());
         }
     }
 

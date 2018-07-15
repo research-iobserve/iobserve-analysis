@@ -25,12 +25,16 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
  *
  */
 public class DeleteModelFacility extends GenericModelFacility {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteModelFacility.class);
 
     private static final String ACCESSIBLE = "accessible";
     private static final String DELETE = "delete";
@@ -137,34 +141,56 @@ public class DeleteModelFacility extends GenericModelFacility {
      *            Flag if predecessor may be deleted
      */
     private void markDeletableNodes(final Node node, final boolean reallyDeletePred, final boolean forceDelete) {
-        boolean reallyDelete = reallyDeletePred;
-
-        // Check if there are incoming IS_TYPE relations from outside
-        for (final Relationship rel : node.getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS,
-                EMFRelationshipType.IS_TYPE)) {
-            if (!rel.hasProperty(DeleteModelFacility.ACCESSIBLE) && !forceDelete) {
-                reallyDelete = false;
-            }
-        }
+        final boolean reallyDelete = this.checkIncomingIsType(node, reallyDeletePred, forceDelete);
 
         // Remove delete property if node must not be deleted
         if (node.hasProperty(DeleteModelFacility.DELETE) && !reallyDelete) {
             node.removeProperty(DeleteModelFacility.DELETE);
         }
 
-        // Recursively check successors and mark already visited edges to prevent call circles
+        this.recursivelyCheckSuccessors(node, reallyDelete);
+
+        // Remove edge marks when returned from successor node's calls
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
+            rel.removeProperty(DeleteModelFacility.VISITED);
+        }
+    }
+
+    /**
+     * Check if there are incoming IS_TYPE relations from outside.
+     *
+     * @param node
+     * @param defaultValue
+     * @param forceDelete
+     *
+     * @return returns false in defaultValue is false or no incoming IT_TYPE relation exists, else
+     *         true
+     */
+    private boolean checkIncomingIsType(final Node node, final boolean defaultValue, final boolean forceDelete) {
+        for (final Relationship rel : node.getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
+            if (!rel.hasProperty(DeleteModelFacility.ACCESSIBLE) && !forceDelete) {
+                return false;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * Recursively check successors and mark already visited edges to prevent call circles.
+     *
+     * @param node
+     * @param reallyDelete
+     */
+    private void recursivelyCheckSuccessors(final Node node, final boolean reallyDelete) {
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
                 EMFRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(DeleteModelFacility.VISITED)) {
                 rel.setProperty(DeleteModelFacility.VISITED, true);
                 this.markDeletableNodes(rel.getEndNode(), reallyDelete, false);
             }
-        }
-
-        // Remove edge marks when returned from successor node's calls
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
-                EMFRelationshipType.IS_TYPE)) {
-            rel.removeProperty(DeleteModelFacility.VISITED);
         }
     }
 
@@ -179,19 +205,7 @@ public class DeleteModelFacility extends GenericModelFacility {
      */
     private void deleteMarkedNodes(final Node node) {
         // Recursively go to the lowest node and mark already visited edges to prevent call circles
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
-                EMFRelationshipType.IS_TYPE)) {
-
-            try {
-                if (!rel.hasProperty(DeleteModelFacility.VISITED)) {
-                    rel.setProperty(DeleteModelFacility.VISITED, true);
-                    this.deleteMarkedNodes(rel.getEndNode());
-                }
-            } catch (final NotFoundException e) {
-                // relation has already been deleted on another path
-                e.printStackTrace();
-            }
-        }
+        this.markRelationsAndDeleteNodes(node);
 
         try {
             if (node.hasProperty(DeleteModelFacility.DELETE)) {
@@ -210,7 +224,22 @@ public class DeleteModelFacility extends GenericModelFacility {
             }
         } catch (final NotFoundException e) {
             // node has already been deleted on another path
-            e.printStackTrace();
+            DeleteModelFacility.LOGGER.warn("Node has already been deleted.");
+        }
+    }
+
+    private void markRelationsAndDeleteNodes(final Node node) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, EMFRelationshipType.CONTAINS,
+                EMFRelationshipType.IS_TYPE)) {
+            try {
+                if (!rel.hasProperty(DeleteModelFacility.VISITED)) {
+                    rel.setProperty(DeleteModelFacility.VISITED, true);
+                    this.deleteMarkedNodes(rel.getEndNode());
+                }
+            } catch (final NotFoundException e) {
+                // relation has already been deleted on another path
+                DeleteModelFacility.LOGGER.warn("Relation has already been deleted.");
+            }
         }
     }
 

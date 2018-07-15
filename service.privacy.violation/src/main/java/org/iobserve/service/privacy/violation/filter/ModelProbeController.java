@@ -25,9 +25,9 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.IProbeManagement;
+import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.iobserve.service.privacy.violation.data.Warnings;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of

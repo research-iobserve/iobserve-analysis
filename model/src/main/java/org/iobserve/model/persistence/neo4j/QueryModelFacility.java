@@ -255,41 +255,50 @@ public class QueryModelFacility extends GenericModelFacility {
      *             on unresolvable uri
      */
     public Node getNodeByUri(final URI uri) throws DBException {
-        final Label rootLabel = Label.label(uri.authority());
-        final ResourceIterator<Node> nodes = this.graphDatabaseService.findNodes(rootLabel);
+        if ("neo4j".equals(uri.scheme())) {
+            final Label rootLabel = Label.label(uri.authority());
+            final ResourceIterator<Node> nodes = this.graphDatabaseService.findNodes(rootLabel);
 
-        if (nodes.hasNext()) {
-            Node node = nodes.next();
-            if (uri.segments().length > 0) {
-                for (final String segment : uri.segments()) {
-                    final String segmentName;
-                    final long segmentIndex;
-                    final int index = segment.indexOf('[');
-                    if (index == -1) {
-                        segmentName = segment;
-                        segmentIndex = 0;
-                    } else {
-                        segmentName = segment.substring(0, index);
-                        segmentIndex = Long.parseLong(segment.substring(index + 1, segment.length() - 1));
-                    }
-                    boolean next = false;
-                    for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
-                        if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
-                                && (segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS))) {
-                            node = relationship.getEndNode();
-                            next = true;
-                            break;
-                        }
-                    }
-                    if (!next) {
-                        throw new DBException("Reference not found " + segment);
-                    }
+            if (nodes.hasNext()) {
+                final Node node = nodes.next();
+                if (uri.segments().length > 0) {
+                    this.searchNodeBySegments(node, uri.segments());
+                }
+
+                return node;
+            } else {
+                throw new DBException("URI does not specify a node " + uri.toString());
+            }
+        } else {
+            throw new DBException("URI is a non resolved file URI " + uri.toString());
+        }
+    }
+
+    private void searchNodeBySegments(final Node startNode, final String[] segments) throws DBException {
+        Node node = startNode;
+        for (final String segment : segments) {
+            final String segmentName;
+            final long segmentIndex;
+            final int index = segment.indexOf('[');
+            if (index == -1) {
+                segmentName = segment;
+                segmentIndex = 0;
+            } else {
+                segmentName = segment.substring(0, index);
+                segmentIndex = Long.parseLong(segment.substring(index + 1, segment.length() - 1));
+            }
+            boolean next = false;
+            for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
+                if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
+                        && (segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS))) {
+                    node = relationship.getEndNode();
+                    next = true;
+                    break;
                 }
             }
-
-            return node;
-        } else {
-            throw new DBException("URI does not specify a node " + uri.toString());
+            if (!next) {
+                throw new DBException("Reference not found " + segment);
+            }
         }
     }
 

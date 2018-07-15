@@ -34,7 +34,6 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     public static final String CREATE_THEN_CLONE_THEN_READ = "createThenCloneThenRead";
     public static final String CREATE_THEN_CLEAR_GRAPH = "createThenClearGraph";
     public static final String CREATE_THEN_READ_ROOT = "createThenReadRoot";
-    public static final String PALLADIO_PREFIX = "org.palladiosimulator";
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -92,8 +91,8 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
 
         storeResource.storeModelPartition(this.testModel);
 
-        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(
-                AbstractNamedElementModelProviderTest.PALLADIO_PREFIX, this.ePackage, storeResource);
+        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
+                storeResource);
 
         final T clonedModel = newRevisionResource.getModelRootNode(this.clazz, this.eClass);
         newRevisionResource.getGraphDatabaseService().shutdown();

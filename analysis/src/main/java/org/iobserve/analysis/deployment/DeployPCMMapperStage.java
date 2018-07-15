@@ -94,8 +94,11 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
     }
 
     private void performMapping(final IDeployedEvent event, final String service, final String context) {
+
+        org.iobserve.model.DBDebugHelper.printResource(this.correspondenceModelResource.getGraphDatabaseService());
+
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
-                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
+                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
         // build the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");

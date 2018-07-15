@@ -24,6 +24,7 @@ import com.beust.jcommander.Parameter;
 import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -43,8 +44,6 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public final class PrivacyViolationDetectionServiceMain
         extends AbstractServiceMain<PrivacyViolationDetectionConfiguration> {
-
-    private static final String PALLADIO_PREFIX = "org.palladiosimulator";
 
     @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
     private File configurationFile;
@@ -86,6 +85,8 @@ public final class PrivacyViolationDetectionServiceMain
             final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "correspondence"));
             correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
+
+            DBDebugHelper.printResource(correspondenceModelResource.getGraphDatabaseService());
 
             final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "repository"));

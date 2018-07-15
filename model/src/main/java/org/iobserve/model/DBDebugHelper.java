@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.privacy.violation;
+package org.iobserve.model;
+
+import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +34,11 @@ import org.slf4j.LoggerFactory;
  * @author Reiner Jung
  *
  */
-public final class DebugHelper {
+public final class DBDebugHelper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DebugHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBDebugHelper.class);
 
-    private DebugHelper() {
+    private DBDebugHelper() {
         // helper class
     }
 
@@ -42,18 +49,18 @@ public final class DebugHelper {
      *            root element of the partition
      */
     public static void printModelPartition(final EObject object) {
-        DebugHelper.printModelPartition(object, "");
+        DBDebugHelper.printModelPartition(object, "");
     }
 
     private static void printModelPartition(final EObject object, final String indent) {
-        DebugHelper.LOGGER.debug("{}class {} : {}", indent, object.hashCode(), object.getClass().getCanonicalName());
-        DebugHelper.printAttributes(object, indent);
+        DBDebugHelper.LOGGER.debug("{}class {} : {}", indent, object.hashCode(), object.getClass().getCanonicalName());
+        DBDebugHelper.printAttributes(object, indent);
         for (final EReference reference : object.eClass().getEAllReferences()) {
-            DebugHelper.LOGGER.debug("{} + {} : {}", indent, reference.getName(), reference.getEReferenceType());
+            DBDebugHelper.LOGGER.debug("{} + {} : {}", indent, reference.getName(), reference.getEReferenceType());
             if (reference.isContainment()) {
-                DebugHelper.printContainment(object.eGet(reference), indent);
+                DBDebugHelper.printContainment(object.eGet(reference), indent);
             } else {
-                DebugHelper.printReference(object.eGet(reference), indent);
+                DBDebugHelper.printReference(object.eGet(reference), indent);
             }
         }
     }
@@ -62,10 +69,10 @@ public final class DebugHelper {
         if (contents != null) {
             if (contents instanceof EList<?>) {
                 for (final Object content : (EList<?>) contents) {
-                    DebugHelper.LOGGER.debug("{}\tref {}", indent, content.hashCode());
+                    DBDebugHelper.LOGGER.debug("{}\tref {}", indent, content.hashCode());
                 }
             } else {
-                DebugHelper.LOGGER.debug("{}\tref {}", indent, contents.hashCode());
+                DBDebugHelper.LOGGER.debug("{}\tref {}", indent, contents.hashCode());
             }
         }
     }
@@ -74,10 +81,10 @@ public final class DebugHelper {
         if (contents != null) {
             if (contents instanceof EList<?>) {
                 for (final Object content : (EList<?>) contents) {
-                    DebugHelper.printModelPartition((EObject) content, indent + "\t");
+                    DBDebugHelper.printModelPartition((EObject) content, indent + "\t");
                 }
             } else {
-                DebugHelper.printModelPartition((EObject) contents, indent + "\t");
+                DBDebugHelper.printModelPartition((EObject) contents, indent + "\t");
             }
         }
     }
@@ -85,8 +92,26 @@ public final class DebugHelper {
     private static void printAttributes(final EObject object, final String indent) {
         for (final EAttribute attribute : object.eClass().getEAllAttributes()) {
             final Object value = object.eGet(attribute);
-            DebugHelper.LOGGER.debug("{} - {} = {} : {}", indent, value.toString(), attribute.getName(),
+            DBDebugHelper.LOGGER.debug("{} - {} = {} : {}", indent, value.toString(), attribute.getName(),
                     attribute.getEType().getInstanceTypeName());
+        }
+    }
+
+    public static void printResource(final GraphDatabaseService graphDatabaseService) {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            for (final Node node : graphDatabaseService.getAllNodes()) {
+                DBDebugHelper.LOGGER.debug("Node {} {}", node.getId(), node.getLabels().iterator().next().name());
+                for (final Entry<String, Object> p : node.getAllProperties().entrySet()) {
+                    DBDebugHelper.LOGGER.debug("\t p {}={}", p.getKey(), p.getValue());
+                }
+                for (final Relationship r : node.getRelationships(Direction.OUTGOING)) {
+                    DBDebugHelper.LOGGER.debug("\t r to {}", r.getEndNodeId());
+                    for (final Entry<String, Object> p : r.getAllProperties().entrySet()) {
+                        DBDebugHelper.LOGGER.debug("\t\t p {}={}", p.getKey(), p.getValue());
+                    }
+                }
+            }
+            tx.success();
         }
     }
 }

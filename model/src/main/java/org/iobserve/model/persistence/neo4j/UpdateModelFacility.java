@@ -117,7 +117,14 @@ public class UpdateModelFacility extends GenericModelFacility {
             }
         }
 
-        /** check all referenced objects. */
+        this.checkAllReferencedObject(storeableObject, updatedObjectNodeMap);
+    }
+
+    /**
+     * check all referenced objects.
+     */
+    private <T extends EObject> void checkAllReferencedObject(final T storeableObject,
+            final Map<EObject, Node> updatedObjectNodeMap) {
         for (final EReference reference : storeableObject.eClass().getEAllReferences()) {
             if (!reference.isContainment()) {
                 final Object referencedObject = storeableObject.eGet(reference);

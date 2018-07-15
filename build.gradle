@@ -52,8 +52,8 @@ apply plugin: 'com.bmuschko.clover'
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
-        memoryMaximumSize = '1g'
-        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+        memoryMaximumSize = '4g'
+        jvmArgs = ['-XX:MaxPermSize=2048m', '-Xms2048m', '-Xmx4g']
     }
 }
 
@@ -619,7 +619,7 @@ apply plugin: 'com.diffplug.gradle.equinoxlaunch'
 // Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
 equinoxLaunch {
 	codegenSetup {
-		source.addProject(project(':peropteryx.rcp'))
+		//source.addProject(project(':peropteryx.rcp'))
 		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
 	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
 	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')

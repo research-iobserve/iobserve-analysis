@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
-import org.iobserve.model.test.data.DebugHelper;
+import org.iobserve.model.DebugHelper;
 
 /**
  * Modified {@link EqualityHelper} which handles proxies differently. In the neo4j database a proxy
