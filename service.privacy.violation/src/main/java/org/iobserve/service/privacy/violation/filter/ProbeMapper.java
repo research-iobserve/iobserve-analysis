@@ -19,16 +19,18 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.service.privacy.violation.data.IProbeManagement;
+import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 
 /**
- * Translate model level {@link IProbeManagement} events to code level events.
+ * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
+ * information through model entries.
  *
- * @author Reiner Jung
+ *
+ * @author Marc Adolf
  *
  */
-public class ProbeMapper extends AbstractConsumerStage<IProbeManagement> {
+public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -42,7 +44,7 @@ public class ProbeMapper extends AbstractConsumerStage<IProbeManagement> {
     }
 
     @Override
-    protected void execute(final IProbeManagement element) throws Exception {
+    protected void execute(final ProbeManagementData element) throws Exception {
         // TODO Auto-generated method stub
 
     }

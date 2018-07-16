@@ -23,8 +23,7 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.service.privacy.violation.data.IProbeManagement;
+import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -34,36 +33,21 @@ import org.palladiosimulator.pcm.allocation.Allocation;
  * probe activation and deactivation. Therefore, it requires internal knowledge of previous probe
  * activations.
  *
+ * @author Marc Adolf -- first complete class
  * @author Reiner Jung -- initial
  *
  */
 public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
-    private final OutputPort<IProbeManagement> outputPort = this.createOutputPort(IProbeManagement.class);
-    private final ModelResource allocationModelResource;
-    private final ModelResource systemModelResource;
-    private final ModelResource resourceEnvironmentModelResource;
+    private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
 
     // Allocation and list of method names
-    private final Map<Allocation, Set<String>> currentWarnings = new HashMap<>();
-    private Map<Allocation, Set<String>> missingWarnings = new HashMap<>();
-    private Map<Allocation, Set<String>> addedWarnings = new HashMap<>();
+    private Map<Allocation, Set<String>> currentWarnings = new HashMap<>();
 
     /**
      * Create an initialize the model probe controller.
-     *
-     * @param allocationModelResource
-     *            allocation model provider
-     * @param systemModelResource
-     *            system model provider
-     * @param resourceEnvironmentModelResource
-     *            resource environment model provider
      */
-    public ModelProbeController(final ModelResource allocationModelResource, final ModelResource systemModelResource,
-            final ModelResource resourceEnvironmentModelResource) {
-        this.allocationModelResource = allocationModelResource;
-        this.systemModelResource = systemModelResource;
-        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
+    public ModelProbeController() {
     }
 
     @Override
@@ -80,16 +64,24 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             }
             // TODO get Methodsignature
             methodSignatures.add("TODO");
-        }
-        this.computeWarningDifferences(receivedWarnings);
+            // this way?
+            // methodSignatures.add(edge.getInterfaceName());
 
-        // TODO
-        this.computeNewWarningMap();
+        }
+        final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(receivedWarnings);
+
+        this.currentWarnings = this.computeNewWarningMap(probeMethodInformation.getMethodsToActivate(),
+                probeMethodInformation.getMethodsToDeactivate());
+
+        this.outputPort.send(probeMethodInformation);
     }
 
-    private void computeWarningDifferences(final Map<Allocation, Set<String>> receivedWarnings) {
-        this.missingWarnings = new HashMap<>(this.currentWarnings);
-        this.addedWarnings = new HashMap<>(this.currentWarnings);
+    private ProbeManagementData computeWarningDifferences(final Map<Allocation, Set<String>> receivedWarnings) {
+        Map<Allocation, Set<String>> missingWarnings = new HashMap<>();
+        Map<Allocation, Set<String>> addedWarnings = new HashMap<>();
+
+        missingWarnings = new HashMap<>();
+        addedWarnings = new HashMap<>();
         final Map<Allocation, Set<String>> newAllocationWarnings = new HashMap<>(receivedWarnings);
         // already existing allocations
         for (final Allocation allocation : this.currentWarnings.keySet()) {
@@ -97,7 +89,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             final Set<String> currentMethods = this.currentWarnings.get(allocation);
             // no new allocation -> all old methods have to be deactivated
             if (newMethodSet == null) {
-                this.missingWarnings.put(allocation, currentMethods);
+                missingWarnings.put(allocation, currentMethods);
             } else {
                 // current - new = missing methods = deactivate
                 final Set<String> missingMethods = new HashSet<>(currentMethods);
@@ -106,10 +98,10 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
                 final Set<String> addedMethods = new HashSet<>(newMethodSet);
                 addedMethods.removeAll(currentMethods);
                 if (!missingMethods.isEmpty()) {
-                    this.missingWarnings.put(allocation, missingMethods);
+                    missingWarnings.put(allocation, missingMethods);
                 }
                 if (!addedMethods.isEmpty()) {
-                    this.addedWarnings.put(allocation, addedMethods);
+                    addedWarnings.put(allocation, addedMethods);
                 }
             }
 
@@ -118,16 +110,37 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
         }
 
-        this.addedWarnings.putAll(newAllocationWarnings);
+        addedWarnings.putAll(newAllocationWarnings);
+
+        return new ProbeManagementData(addedWarnings, missingWarnings);
 
     }
 
-    private void computeNewWarningMap() {
-        // TODO Auto-generated method stub
-
+    private Map<Allocation, Set<String>> computeNewWarningMap(final Map<Allocation, Set<String>> addedWarnings,
+            final Map<Allocation, Set<String>> missingWarnings) {
+        final Map<Allocation, Set<String>> newWarningMap = new HashMap(this.currentWarnings);
+        for (final Allocation allocation : missingWarnings.keySet()) {
+            final Set<String> currentMethodSet = new HashSet<>(this.currentWarnings.get(allocation));
+            currentMethodSet.removeAll(missingWarnings.get(allocation));
+            if (currentMethodSet.isEmpty()) {
+                newWarningMap.remove(allocation);
+            } else {
+                newWarningMap.put(allocation, currentMethodSet);
+            }
+        }
+        for (final Allocation allocation : addedWarnings.keySet()) {
+            final Set<String> currentMethodSet = new HashSet<>(this.currentWarnings.get(allocation));
+            currentMethodSet.addAll(addedWarnings.get(allocation));
+            if (currentMethodSet.isEmpty()) {
+                newWarningMap.remove(allocation);
+            } else {
+                newWarningMap.put(allocation, currentMethodSet);
+            }
+        }
+        return newWarningMap;
     }
 
-    public OutputPort<IProbeManagement> getOutputPort() {
+    public OutputPort<ProbeManagementData> getOutputPort() {
         return this.outputPort;
     }
 
