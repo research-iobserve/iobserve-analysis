@@ -37,7 +37,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
  */
 public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent> {
 
-    private final ModelResource resourceEnvironmentResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /** Relay allocation event. */
     private final OutputPort<IDeallocationEvent> deallocationOutputPort = this.createOutputPort();
@@ -50,7 +50,7 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
      * @param resourceEnvironmentResource
      *            resource environment model
      */
-    public DeallocationStage(final ModelResource resourceEnvironmentResource) {
+    public DeallocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 

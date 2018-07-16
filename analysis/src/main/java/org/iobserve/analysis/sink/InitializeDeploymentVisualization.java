@@ -45,6 +45,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +62,9 @@ public final class InitializeDeploymentVisualization {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /** model provider for palladio models. */
-    private final ModelResource allocationModelGraphProvider;
-    private final ModelResource systemModelGraphProvider;
-    private final ModelResource resourceEnvironmentModelGraphProvider;
+    private final ModelResource<Allocation> allocationModelGraphProvider;
+    private final ModelResource<System> systemModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** services for visualization elements. */
     private final SystemService systemService = new SystemService();
@@ -95,8 +96,10 @@ public final class InitializeDeploymentVisualization {
      */
 
     public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
-            final ModelResource allocationModelGraphProvider, final ModelResource systemModelGraphProvider,
-            final ModelResource resourceEnvironmentModelGraphProvider) throws MalformedURLException {
+            final ModelResource<Allocation> allocationModelGraphProvider,
+            final ModelResource<System> systemModelGraphProvider,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelGraphProvider)
+            throws MalformedURLException {
         this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
         this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
@@ -235,7 +238,7 @@ public final class InitializeDeploymentVisualization {
         /** technology of communication */
         String technology = null;
 
-        if ((resourceSourceId != null) && (resourceTargetId != null)) {
+        if (resourceSourceId != null && resourceTargetId != null) {
             for (int l = 0; l < linkingResources.size(); l++) {
                 final LinkingResource linkingResource = linkingResources.get(l);
                 if (linkingResource instanceof LinkingResourceImpl) {

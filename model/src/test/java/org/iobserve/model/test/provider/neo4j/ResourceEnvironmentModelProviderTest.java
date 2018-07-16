@@ -140,8 +140,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
-                this.prefix, this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 

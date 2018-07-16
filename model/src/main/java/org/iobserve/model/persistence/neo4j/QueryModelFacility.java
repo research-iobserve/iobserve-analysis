@@ -39,8 +39,10 @@ import org.neo4j.graphdb.Transaction;
 /**
  * @author Reiner Jung
  *
+ * @param <R>
+ *            root class type
  */
-public class QueryModelFacility extends GenericModelFacility {
+public class QueryModelFacility<R extends EObject> extends GenericModelFacility<R> {
 
     private final Set<EFactory> factories;
 
@@ -57,7 +59,7 @@ public class QueryModelFacility extends GenericModelFacility {
      * @param factories
      *            factories of the metamodel or partition
      */
-    public QueryModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
+    public QueryModelFacility(final ModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap, final Set<EFactory> factories) {
         super(modelResource, graphDatabaseService, objectNodeMap);
         this.factories = factories;
@@ -201,7 +203,7 @@ public class QueryModelFacility extends GenericModelFacility {
 
     private void checkSingleReferences(final EReference reference, final EObject referencedEntity,
             final Set<EObject> containmentsAndDatatypes) {
-        if ((referencedEntity != null)
+        if (referencedEntity != null
                 && (reference.isContainment() || ModelProviderUtil.isDatatype(reference, referencedEntity))) {
             this.getAllContainmentsByObject(referencedEntity, containmentsAndDatatypes);
         }
@@ -241,7 +243,7 @@ public class QueryModelFacility extends GenericModelFacility {
      * @return the object for the node
      */
     @SuppressWarnings("unchecked")
-    public <T> T readContainedNodes(final Node node) {
+    public <T extends EObject> T readContainedNodes(final Node node) {
         return (T) this.readNodes(node, new HashMap<Node, EObject>(), EMFRelationshipType.CONTAINS);
     }
 
@@ -262,10 +264,10 @@ public class QueryModelFacility extends GenericModelFacility {
             if (nodes.hasNext()) {
                 final Node node = nodes.next();
                 if (uri.segments().length > 0) {
-                    this.searchNodeBySegments(node, uri.segments());
+                    return this.searchNodeBySegments(node, uri.segments());
+                } else {
+                    return node;
                 }
-
-                return node;
             } else {
                 throw new DBException("URI does not specify a node " + uri.toString());
             }
@@ -274,7 +276,7 @@ public class QueryModelFacility extends GenericModelFacility {
         }
     }
 
-    private void searchNodeBySegments(final Node startNode, final String[] segments) throws DBException {
+    private Node searchNodeBySegments(final Node startNode, final String[] segments) throws DBException {
         Node node = startNode;
         for (final String segment : segments) {
             final String segmentName;
@@ -290,7 +292,7 @@ public class QueryModelFacility extends GenericModelFacility {
             boolean next = false;
             for (final Relationship relationship : node.getRelationships(Direction.OUTGOING)) {
                 if (segmentName.equals(relationship.getProperty(ModelProviderUtil.REF_NAME))
-                        && (segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS))) {
+                        && segmentIndex == (Integer) relationship.getProperty(ModelProviderUtil.REF_POS)) {
                     node = relationship.getEndNode();
                     next = true;
                     break;
@@ -300,6 +302,8 @@ public class QueryModelFacility extends GenericModelFacility {
                 throw new DBException("Reference not found " + segment);
             }
         }
+
+        return node;
     }
 
 }

@@ -39,8 +39,10 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Tests for {@link UndeploymentVisualizationStage}.
@@ -72,11 +74,9 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelResource mockedResourceContainerModelProvider;
+    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
     @Mock
-    private ModelResource mockedAssemblyContextModelProvider;
-    @Mock
-    private ModelResource mockedSystemModelGraphProvider;
+    private ModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -106,7 +106,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
         this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(changelogURL,
                 UndeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
-                this.mockedAssemblyContextModelProvider, this.mockedSystemModelGraphProvider);
+                this.mockedSystemModelGraphProvider);
 
         /** test correspondent */
         UndeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
@@ -145,7 +145,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
         final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
                 + UndeploymentVisualizationStageTest.SERVICE;
-        Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
+        Mockito.when(this.mockedSystemModelGraphProvider.findObjectsByTypeAndName(AssemblyContext.class,
                 CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 

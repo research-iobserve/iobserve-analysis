@@ -31,7 +31,9 @@ import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This stage is triggered by an analysis undeployment update.
@@ -46,9 +48,8 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
     private final URL outputURL;
     private final String systemId;
-    private final ModelResource resourceContainerModelGraphProvider;
-    private final ModelResource assemblyContextModelGraphProvider;
-    private final ModelResource systemModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final ModelResource<System> systemModelGraphProvider;
 
     /**
      * Output visualization configuration.
@@ -60,19 +61,15 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
      * @param resourceContainerModelGraphProvider
      *            model provider for the part of the resource environment model about resource
      *            container
-     * @param assemblyContextModelGraphProvider
-     *            model provider for the part of the resource environment model about assembly
-     *            context
      * @param systemModelGraphProvider
      *            provider for system model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final ModelResource resourceContainerModelGraphProvider,
-            final ModelResource assemblyContextModelGraphProvider, final ModelResource systemModelGraphProvider) {
+            final ModelResource<ResourceEnvironment> resourceContainerModelGraphProvider,
+            final ModelResource<System> systemModelGraphProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
-        this.resourceContainerModelGraphProvider = resourceContainerModelGraphProvider;
-        this.assemblyContextModelGraphProvider = assemblyContextModelGraphProvider;
+        this.resourceEnvironmentModelResource = resourceContainerModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
     }
 
@@ -92,13 +89,13 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
         final String serverName = undeployment.getService();
 
-        final String nodeId = this.resourceContainerModelGraphProvider
+        final String nodeId = this.resourceEnvironmentModelResource
                 .findObjectsByTypeAndName(ResourceContainer.class,
                         ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
                 .get(0).getId();
 
         final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
-        final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
+        final AssemblyContext assemblyContext = this.systemModelGraphProvider
                 .findObjectsByTypeAndName(AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                         "entityName", asmContextName)
                 .get(0);

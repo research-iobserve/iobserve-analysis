@@ -22,6 +22,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
@@ -38,7 +39,7 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to system model provider. */
-    private final ModelResource allocationModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -49,7 +50,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * @param allocationModelResource
      *            system model access
      */
-    public UndeploymentModelUpdater(final ModelResource allocationModelResource) {
+    public UndeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
     }
 

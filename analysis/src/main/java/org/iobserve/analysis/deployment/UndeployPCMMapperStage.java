@@ -25,12 +25,15 @@ import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.
@@ -40,9 +43,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
  */
 public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEvent> {
 
-    private final ModelResource correspondenceModelResource;
-    private final ModelResource systemModelResource;
-    private final ModelResource resourceEnvironmentResource;
+    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final ModelResource<System> systemModelResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -56,8 +59,9 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
      * @param resourceEnvironmentResource
      *            resource container model resource
      */
-    public UndeployPCMMapperStage(final ModelResource correspondenceModelResource,
-            final ModelResource systemModelResource, final ModelResource resourceEnvironmentResource) {
+    public UndeployPCMMapperStage(final ModelResource<CorrespondenceModel> correspondenceModelResource,
+            final ModelResource<System> systemModelResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;

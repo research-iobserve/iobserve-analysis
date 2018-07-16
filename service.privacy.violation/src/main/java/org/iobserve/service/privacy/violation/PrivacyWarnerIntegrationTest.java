@@ -27,16 +27,22 @@ import teetime.framework.test.StageTester;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,27 +111,27 @@ public class PrivacyWarnerIntegrationTest {
             final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
 
             /** graphs. */
-            final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "correspondence"));
+            final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
+                    CorrespondencePackage.eINSTANCE, new File(this.modelDatabaseDirectory, "correspondence"));
             correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-            final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
+            final ModelResource<Repository> repositoryModelResource = new ModelResource<>(RepositoryPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "repository"));
             repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-            final ModelResource resourceEnvironmentModelResource = new ModelResource(
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
                     ResourceenvironmentPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "resourceenvironment"));
             resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-            final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
+            final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "system"));
             systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-            final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
+            final ModelResource<Allocation> allocationModelResource = new ModelResource<>(AllocationPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "allocation"));
             allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-            final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
+            final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "privacy"));
             privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 

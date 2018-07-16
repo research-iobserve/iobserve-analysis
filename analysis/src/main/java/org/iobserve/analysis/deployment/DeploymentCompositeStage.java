@@ -22,9 +22,13 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.stages.general.AggregateEventStage;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
@@ -51,9 +55,9 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      * @param correspondenceResource
      *            the correspondence model graph
      */
-    public DeploymentCompositeStage(final ModelResource resourceEnvironmentResource,
-            final ModelResource systemModelResource, final ModelResource allocationResource,
-            final ModelResource correspondenceResource) {
+    public DeploymentCompositeStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
+            final ModelResource<CorrespondenceModel> correspondenceResource) {
 
         this.deployPCMMapper = new DeployPCMMapperStage(correspondenceResource, systemModelResource);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(

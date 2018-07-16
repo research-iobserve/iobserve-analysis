@@ -122,7 +122,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
                 this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);

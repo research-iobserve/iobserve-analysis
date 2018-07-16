@@ -50,13 +50,13 @@ public class PCMNeo4JTest {
     private System system;
     private Allocation allocation;
 
-    private final ModelResource repositoryResource = ModelProviderTestUtils.prepareResource("repository",
+    private final ModelResource<Repository> repositoryResource = ModelProviderTestUtils.prepareResource("repository",
             PCMNeo4JTest.PREFIX, RepositoryPackage.eINSTANCE);
-    private final ModelResource resourceEnvironmentResource = ModelProviderTestUtils
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource = ModelProviderTestUtils
             .prepareResource("resource-environment", PCMNeo4JTest.PREFIX, ResourceenvironmentPackage.eINSTANCE);
-    private final ModelResource systemResource = ModelProviderTestUtils.prepareResource("system", PCMNeo4JTest.PREFIX,
-            SystemPackage.eINSTANCE);
-    private final ModelResource allocationResource = ModelProviderTestUtils.prepareResource("allocation",
+    private final ModelResource<System> systemResource = ModelProviderTestUtils.prepareResource("system",
+            PCMNeo4JTest.PREFIX, SystemPackage.eINSTANCE);
+    private final ModelResource<Allocation> allocationResource = ModelProviderTestUtils.prepareResource("allocation",
             PCMNeo4JTest.PREFIX, AllocationPackage.eINSTANCE);
 
     /**

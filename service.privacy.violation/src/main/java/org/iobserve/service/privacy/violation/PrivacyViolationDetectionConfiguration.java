@@ -17,8 +17,6 @@ package org.iobserve.service.privacy.violation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
@@ -37,7 +35,9 @@ import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
@@ -57,6 +57,10 @@ import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.tcp.ProbeControlFilter;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Configuration for the log replayer.
@@ -93,10 +97,12 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             on configuration errors
      */
     public PrivacyViolationDetectionConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelResource correspondenceResource, final ModelResource repositoryResource,
-            final ModelResource resourceEnvironmentResource, final ModelResource systemModelResource,
-            final ModelResource allocationResource, final ModelResource privacyModelResource, final File warningFile,
-            final File alarmFile) throws IOException, ConfigurationException {
+            final ModelResource<CorrespondenceModel> correspondenceResource,
+            final ModelResource<Repository> repositoryResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
+            final ModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile)
+            throws IOException, ConfigurationException {
 
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -125,12 +131,13 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
             /** deployment. */
             final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentResource,
-                    allocationResource, systemModelResource, correspondenceResource);
+                    systemModelResource, allocationResource, correspondenceResource);
             final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
                     resourceEnvironmentResource, systemModelResource, allocationResource, correspondenceResource);
 
             /** geo location. */
-            final GeoLocationStage geoLocationStage = new GeoLocationStage(privacyModelResource);
+            final GeoLocationStage geoLocationStage = new GeoLocationStage(resourceEnvironmentResource,
+                    privacyModelResource);
 
             final PrivacyWarner privacyWarner = new PrivacyWarner(configuration, repositoryResource,
                     resourceEnvironmentResource, systemModelResource, allocationResource, privacyModelResource);
@@ -196,19 +203,6 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 throw new IOException("Cannot create alarm file.", eAlarm);
             }
         }
-    }
-
-    private List<ConnectionData> createProbeConnections(final String[] connectionConfigurations) {
-        final List<ConnectionData> probeConnections = new ArrayList<>();
-
-        for (final String connectionConfig : connectionConfigurations) {
-            final String[] parameter = connectionConfig.split(":");
-            if (parameter.length == 2) {
-                probeConnections.add(new ConnectionData(parameter[0], Integer.parseInt(parameter[1])));
-            }
-        }
-
-        return probeConnections;
     }
 
 }

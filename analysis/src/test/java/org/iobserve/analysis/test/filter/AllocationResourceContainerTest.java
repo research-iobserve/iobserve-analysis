@@ -50,7 +50,7 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelResource mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 

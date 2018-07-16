@@ -44,7 +44,7 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final ModelResource allocationModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
@@ -55,7 +55,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * @param allocationModelResource
      *            allocation model provider
      */
-    public DeploymentModelUpdater(final ModelResource allocationModelResource) {
+    public DeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
     }
 

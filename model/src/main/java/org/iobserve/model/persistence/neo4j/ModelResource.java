@@ -50,8 +50,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Reiner Jung
  *
+ * @param <R>
+ *            type of the root class
  */
-public class ModelResource {
+public class ModelResource<R extends EObject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelResource.class);
 
@@ -70,8 +72,6 @@ public class ModelResource {
     /**
      * Creates a new {@link GraphDatabaseService} at the given location.
      *
-     * @param prefix
-     *            java code package prefix
      * @param ePackage
      *            ePackage for the particular metamodel
      * @param graphDirectory
@@ -90,11 +90,11 @@ public class ModelResource {
 
         this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(this.graphDirectory);
 
-        this.storeModelFacility = new StoreModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
-        this.queryModelFacility = new QueryModelFacility(this, this.graphDatabaseService, this.objectNodeMap,
+        this.storeModelFacility = new StoreModelFacility<>(this, this.graphDatabaseService, this.objectNodeMap);
+        this.queryModelFacility = new QueryModelFacility<>(this, this.graphDatabaseService, this.objectNodeMap,
                 this.factories);
-        this.updateModelFacility = new UpdateModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
-        this.deleteModelFacility = new DeleteModelFacility(this, this.graphDatabaseService, this.objectNodeMap);
+        this.updateModelFacility = new UpdateModelFacility<>(this, this.graphDatabaseService, this.objectNodeMap);
+        this.deleteModelFacility = new DeleteModelFacility<>(this, this.graphDatabaseService, this.objectNodeMap);
 
         this.registerShutdownHook(this.graphDatabaseService);
         if (ePackage != null) {
@@ -384,7 +384,7 @@ public class ModelResource {
      *
      * @return returns a list of objects
      */
-    public <T> List<T> collectAllObjectsByType(final Class<T> clazz, final EClass eClass) {
+    public <T extends EObject> List<T> collectAllObjectsByType(final Class<T> clazz, final EClass eClass) {
         final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
         final List<T> nodes = new LinkedList<>();
 
@@ -394,7 +394,7 @@ public class ModelResource {
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
 
-                nodes.add(this.queryModelFacility.readContainedNodes(node));
+                nodes.add((T) this.queryModelFacility.readContainedNodes(node));
             }
             tx.success();
         }
@@ -407,6 +407,8 @@ public class ModelResource {
      *
      * @param clazz
      *            Data type of the contained object
+     * @param eClass
+     *            corresponding eClass to clazz
      * @param id
      *            Id of the contained object
      *
@@ -415,7 +417,8 @@ public class ModelResource {
      *
      * @return The containing object
      */
-    public <T> T findAndLockContainingObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
+    public <T extends EObject> T findAndLockContainingObjectById(final Class<T> clazz, final EClass eClass,
+            final Long id) {
         ModelProviderSynchronizer.getLock(this);
         return this.findContainingObjectById(clazz, eClass, id);
     }
@@ -434,7 +437,7 @@ public class ModelResource {
      *
      * @return The containing object
      */
-    public <T> T findContainingObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
+    public <T extends EObject> T findContainingObjectById(final Class<T> clazz, final EClass eClass, final Long id) {
         final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
         T object = null;
@@ -445,7 +448,7 @@ public class ModelResource {
                     .getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS).iterator();
 
             if (inRels.hasNext()) {
-                object = this.queryModelFacility.readContainedNodes(inRels.next().getStartNode());
+                object = (T) this.queryModelFacility.readContainedNodes(inRels.next().getStartNode());
             }
 
             tx.success();
@@ -504,12 +507,11 @@ public class ModelResource {
      *
      * @param clazz
      *            type of the root class
-     *
-     * @param <T>
-     *            type definition
+     * @param eClass
+     *            eclass corresponding to clazz
      * @return returns the object
      */
-    public <T extends EObject> T getAndLockModelRootNode(final Class<T> clazz, final EClass eClass) {
+    public R getAndLockModelRootNode(final Class<R> clazz, final EClass eClass) {
         ModelProviderSynchronizer.getLock(this);
         return this.getModelRootNode(clazz, eClass);
     }
@@ -520,12 +522,12 @@ public class ModelResource {
      *
      * @param clazz
      *            Data type of the root object
-     * @param <T>
-     *            type definition
+     * @param eClass
+     *            eclass type corresponding to clazz
      * @return The read object
      */
-    public <T extends EObject> T getModelRootNode(final Class<T> clazz, final EClass eClass) {
-        T object = null;
+    public R getModelRootNode(final Class<R> clazz, final EClass eClass) {
+        R object = null;
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
 
             final ResourceIterator<Node> nodes = this.graphDatabaseService
@@ -536,7 +538,7 @@ public class ModelResource {
 
                 final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 
-                object = this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
+                object = (R) this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
                         EMFRelationshipType.CONTAINS);
                 this.queryModelFacility.resolveReferences(nodeObjectMap);
             }

@@ -26,11 +26,15 @@ import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.correspondence.AssemblyEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.
@@ -40,23 +44,23 @@ import org.palladiosimulator.pcm.core.composition.CompositionPackage;
  */
 public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> {
 
-    private final ModelResource correspondenceModelResource;
-    private final ModelResource systemModelResource;
+    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final ModelResource<System> systemModelResource;
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
     /**
      * Create a deployed event mapper.
      *
-     * @param correspondenceModelProvider
+     * @param correspondenceModelResource
      *            correspondence model handler
-     * @param assemblyContextModelProvider
+     * @param systemModelResource
      *            assembly context model provider
      */
-    public DeployPCMMapperStage(final ModelResource correspondenceModelProvider,
-            final ModelResource assemblyContextModelProvider) {
-        this.correspondenceModelResource = correspondenceModelProvider;
-        this.systemModelResource = assemblyContextModelProvider;
+    public DeployPCMMapperStage(final ModelResource<CorrespondenceModel> correspondenceModelResource,
+            final ModelResource<System> systemModelResource) {
+        this.correspondenceModelResource = correspondenceModelResource;
+        this.systemModelResource = systemModelResource;
     }
 
     /**
@@ -69,7 +73,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
     }
 
     @Override
-    protected void execute(final IDeployedEvent event) throws Exception {
+    protected void execute(final IDeployedEvent event) throws InvocationException, DBException {
         this.logger.debug("Received deployment event {}", event);
         if (event instanceof ServletDeployedEvent) {
             this.servletMapper((ServletDeployedEvent) event);
@@ -79,24 +83,22 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     }
 
-    private void ejbMapper(final EJBDeployedEvent event) {
+    private void ejbMapper(final EJBDeployedEvent event) throws InvocationException, DBException {
         final String service = event.getService();
         final String context = event.getContext();
 
         this.performMapping(event, service, context);
     }
 
-    private void servletMapper(final ServletDeployedEvent event) {
+    private void servletMapper(final ServletDeployedEvent event) throws InvocationException, DBException {
         final String service = event.getService();
         final String context = event.getContext();
 
         this.performMapping(event, service, context);
     }
 
-    private void performMapping(final IDeployedEvent event, final String service, final String context) {
-
-        org.iobserve.model.DBDebugHelper.printResource(this.correspondenceModelResource.getGraphDatabaseService());
-
+    private void performMapping(final IDeployedEvent event, final String service, final String context)
+            throws InvocationException, DBException {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
@@ -105,9 +107,9 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
         final String url = "http://" + service + '/' + urlContext;
 
         if (assemblyEntry.size() == 1) {
-            final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
-                    AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                    this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
+            DBDebugHelper.printResource("system model", this.systemModelResource.getGraphDatabaseService());
+            final AssemblyContext assemblyContext = this.systemModelResource
+                    .resolve(assemblyEntry.get(0).getAssembly());
             if (event instanceof Privacy) {
                 this.logger.debug("privacy {}", event);
                 this.outputPort

@@ -144,8 +144,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
-                this.prefix, this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils
+                .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
         final UsageScenario writtenUsageScenarioGroup0 = UsageModelDataFactory.findUsageScenario(this.usageModel,
                 UsageModelDataFactory.USAGE_SCENARIO_GROUP_0);

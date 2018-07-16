@@ -66,6 +66,7 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
@@ -78,11 +79,11 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    private final ModelResource allocationModelResource;
-    private final ModelResource systemModelResource;
-    private final ModelResource resourceEnvironmentResource;
-    private final ModelResource repositoryResource;
-    private final ModelResource privacyModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
+    private final ModelResource<System> systemModelResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final ModelResource<Repository> repositoryResource;
+    private final ModelResource<PrivacyModel> privacyModelResource;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -123,9 +124,10 @@ public class PrivacyWarner extends AbstractStage {
      *            privacy model provider
      * @param assemblyView2
      */
-    public PrivacyWarner(final Configuration configuration, final ModelResource repositoryResource,
-            final ModelResource resourceEnvironmentResource, final ModelResource systemModelResource,
-            final ModelResource allocationModelResource, final ModelResource privacyModelResource) {
+    public PrivacyWarner(final Configuration configuration, final ModelResource<Repository> repositoryResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
+            final ModelResource<PrivacyModel> privacyModelResource) {
 
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
@@ -289,7 +291,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent requiringComponent = this.repositoryResource
                         .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
-                if ((providingComponent != null) && (requiringComponent != null)) {
+                if (providingComponent != null && requiringComponent != null) {
                     final OperationProvidedRole providedRole = this.repositoryResource
                             .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
@@ -318,12 +320,12 @@ public class PrivacyWarner extends AbstractStage {
             for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
-                if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
-                if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }

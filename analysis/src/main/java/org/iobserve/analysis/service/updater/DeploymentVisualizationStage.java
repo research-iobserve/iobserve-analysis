@@ -30,9 +30,11 @@ import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
@@ -49,8 +51,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     private final URL outputURL;
     private final String systemId;
-    private final ModelResource resourceEnvironmentModelResource;
-    private final ModelResource allocationModelProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final ModelResource<Allocation> allocationModelProvider;
 
     /**
      * Output visualization configuration.
@@ -59,17 +61,18 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      *            the output URL
      * @param systemId
      *            system id
-     * @param resourceContainerModelProvider
+     * @param resourceEnvironmentModelResource
      *            model provider for the part of the resource environment model about resource
      *            container
      * @param allocationModelProvider
      *            model provider for the allocation model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final ModelResource resourceContainerModelProvider, final ModelResource allocationModelProvider) {
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final ModelResource<Allocation> allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
-        this.resourceEnvironmentModelResource = resourceContainerModelProvider;
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
         this.allocationModelProvider = allocationModelProvider;
     }
 

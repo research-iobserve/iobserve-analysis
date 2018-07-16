@@ -97,7 +97,8 @@ public final class DBDebugHelper {
         }
     }
 
-    public static void printResource(final GraphDatabaseService graphDatabaseService) {
+    public static void printResource(final String name, final GraphDatabaseService graphDatabaseService) {
+        DBDebugHelper.LOGGER.debug("--- Model {} ---", name);
         try (Transaction tx = graphDatabaseService.beginTx()) {
             for (final Node node : graphDatabaseService.getAllNodes()) {
                 DBDebugHelper.LOGGER.debug("Node {} {}", node.getId(), node.getLabels().iterator().next().name());

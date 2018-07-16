@@ -22,18 +22,22 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Transforms {@link EntryCallEvent}s to model level {@link PCMEntryCallEvent}s.
@@ -45,13 +49,13 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
 
     private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
-    private final ModelResource correspondenceResource;
+    private final ModelResource<CorrespondenceModel> correspondenceResource;
 
-    private final ModelResource allocationResource;
+    private final ModelResource<Allocation> allocationResource;
 
-    private final ModelResource assemblyResource;
+    private final ModelResource<System> assemblyResource;
 
-    private final ModelResource repositoryResource;
+    private final ModelResource<Repository> repositoryResource;
 
     /**
      * Entry event mapper.
@@ -65,8 +69,9 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
      * @param allocationResource
      *            allocation model graph
      */
-    public EntryEventMapperStage(final ModelResource correspondenceResource, final ModelResource repositoryResource,
-            final ModelResource assemblyResource, final ModelResource allocationResource) {
+    public EntryEventMapperStage(final ModelResource<CorrespondenceModel> correspondenceResource,
+            final ModelResource<Repository> repositoryResource, final ModelResource<System> assemblyResource,
+            final ModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.assemblyResource = assemblyResource;

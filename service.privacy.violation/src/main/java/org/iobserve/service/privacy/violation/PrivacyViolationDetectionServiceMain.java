@@ -23,18 +23,25 @@ import com.beust.jcommander.Parameter;
 
 import kieker.common.configuration.Configuration;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.analysis.ConfigurationKeys;
-import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.ModelImporter;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
@@ -82,31 +89,23 @@ public final class PrivacyViolationDetectionServiceMain
             final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
 
             /** initialize database. */
-            final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "correspondence"));
-            correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
+            final ModelResource<CorrespondenceModel> correspondenceModelResource = this
+                    .loadResourceAndInitDB(CorrespondencePackage.eINSTANCE, modelHandler.getCorrespondenceModel());
 
-            DBDebugHelper.printResource(correspondenceModelResource.getGraphDatabaseService());
+            final ModelResource<Repository> repositoryModelResource = this
+                    .loadResourceAndInitDB(RepositoryPackage.eINSTANCE, modelHandler.getRepositoryModel());
 
-            final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "repository"));
-            repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = this.loadResourceAndInitDB(
+                    ResourceenvironmentPackage.eINSTANCE, modelHandler.getResourceEnvironmentModel());
 
-            final ModelResource resourceEnvironmentModelResource = new ModelResource(
-                    ResourceenvironmentPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "resourceenvironment"));
-            resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
+            final ModelResource<System> systemModelResource = this.loadResourceAndInitDB(SystemPackage.eINSTANCE,
+                    modelHandler.getSystemModel());
 
-            final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "system"));
-            systemModelResource.storeModelPartition(modelHandler.getSystemModel());
+            final ModelResource<Allocation> allocationModelResource = this
+                    .loadResourceAndInitDB(AllocationPackage.eINSTANCE, modelHandler.getAllocationModel());
 
-            final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "allocation"));
-            allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
-
-            final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
-                    new File(this.modelDatabaseDirectory, "privacy"));
-            privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
+            final ModelResource<PrivacyModel> privacyModelResource = this
+                    .loadResourceAndInitDB(PrivacyPackage.eINSTANCE, modelHandler.getPrivacyModel());
 
             return new PrivacyViolationDetectionConfiguration(configuration, correspondenceModelResource,
                     repositoryModelResource, resourceEnvironmentModelResource, systemModelResource,
@@ -114,6 +113,14 @@ public final class PrivacyViolationDetectionServiceMain
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    private <T extends EObject> ModelResource<T> loadResourceAndInitDB(final EPackage ePackage, final EObject model) {
+        final ModelResource<T> resource = new ModelResource<>(ePackage,
+                new File(this.modelDatabaseDirectory, ePackage.getName()));
+        resource.clearResource();
+        resource.storeModelPartition(model);
+        return resource;
     }
 
     @Override

@@ -59,11 +59,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final ModelResource allocationModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
     /** reference to system model provider. */
-    private final ModelResource systemModelResource;
+    private final ModelResource<System> systemModelResource;
     /** reference to resource environment model provider. */
-    private final ModelResource resourceEnvironmentModelResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     /**
      * Create new TNetworkLink filter.
@@ -75,8 +75,9 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final ModelResource allocationModelProvider, final ModelResource systemModelProvider,
-            final ModelResource resourceEnvironmentModelProvider) {
+    public NetworkLink(final ModelResource<Allocation> allocationModelProvider,
+            final ModelResource<System> systemModelProvider,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.allocationModelResource = allocationModelProvider;
         this.systemModelResource = systemModelProvider;
         this.resourceEnvironmentModelResource = resourceEnvironmentModelProvider;

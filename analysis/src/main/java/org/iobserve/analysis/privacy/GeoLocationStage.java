@@ -29,6 +29,7 @@ import org.iobserve.model.privacy.PrivacyFactory;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Update the geo location of a resource container for a given.
@@ -41,7 +42,9 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
-    private final ModelResource privacyModelResource;
+    private final ModelResource<PrivacyModel> privacyModelResource;
+
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /**
      * Create a geo location filter.
@@ -49,7 +52,9 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
      * @param privacyModelResource
      *            privacy model resource
      */
-    public GeoLocationStage(final ModelResource privacyModelResource) {
+    public GeoLocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<PrivacyModel> privacyModelResource) {
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.privacyModelResource = privacyModelResource;
     }
 
@@ -62,7 +67,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
                 PrivacyPackage.Literals.GEO_LOCATION);
 
         for (final GeoLocation geoLocation : geoLocations) {
-            final String containerId = geoLocation.getResourceContainer().getId();
+            final String containerId = this.resourceEnvironmentResource.resolve(geoLocation.getResourceContainer())
+                    .getId();
             if (event.getResourceContainer().getId().equals(containerId)) {
                 geoLocation.setIsocode(EISOCode.get(event.getCountryCode().getValue()));
                 this.privacyModelResource.updatePartition(geoLocation);

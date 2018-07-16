@@ -24,14 +24,16 @@ import org.neo4j.graphdb.Node;
 /**
  * @author Reiner Jung
  *
+ * @param <R>
+ *            root class type
  */
-public class GenericModelFacility {
+public class GenericModelFacility<R extends EObject> {
 
     protected final GraphDatabaseService graphDatabaseService;
 
     protected final Map<EObject, Node> objectNodeMap;
 
-    protected final ModelResource resource;
+    protected final ModelResource<R> resource;
 
     /**
      * Create an abstract model facility.
@@ -43,7 +45,7 @@ public class GenericModelFacility {
      * @param objectNodeMap
      *            object to node map
      */
-    public GenericModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
+    public GenericModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         this.resource = resource;
         this.graphDatabaseService = graphDatabaseService;

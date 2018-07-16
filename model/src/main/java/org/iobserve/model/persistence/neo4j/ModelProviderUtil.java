@@ -79,7 +79,7 @@ public final class ModelProviderUtil {
      */
     public <V extends EObject> void initializeModelGraph(final EPackage ePackage, final V model, final String nameLabel,
             final String idLabel, final File baseDirectory) {
-        final ModelResource resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
+        final ModelResource<V> resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
         resource.clearResource();
         resource.storeModelPartition(model);
         resource.getGraphDatabaseService().shutdown();
@@ -94,7 +94,8 @@ public final class ModelProviderUtil {
      *            base directory for the model database
      * @return The model graph
      */
-    public static ModelResource createModelResource(final EPackage ePackage, final File baseDirectory) {
+    public static <T extends EObject> ModelResource<T> createModelResource(final EPackage ePackage,
+            final File baseDirectory) {
         final String graphTypeDirName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File graphTypeDir = new File(baseDirectory, graphTypeDirName);
         int maxVersionNumber = ModelProviderUtil.getLastVersionNumber(graphTypeDir.listFiles());
@@ -106,7 +107,7 @@ public final class ModelProviderUtil {
         final File newGraphDir = ModelProviderUtil.createResourceDatabaseFile(graphTypeDir, graphTypeDirName,
                 maxVersionNumber);
 
-        return new ModelResource(ePackage, newGraphDir);
+        return new ModelResource<>(ePackage, newGraphDir);
     }
 
     /**
@@ -139,7 +140,7 @@ public final class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference reference, final Object referenceObject) {
-        return (referenceObject instanceof DataType) && !(reference.getName().equals("parentType_CompositeDataType")
+        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
                 || reference.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
@@ -154,7 +155,8 @@ public final class ModelProviderUtil {
      *
      * @return The cloned graph
      */
-    public static ModelResource createNewModelResourceVersion(final EPackage ePackage, final ModelResource resource) {
+    public static <T extends EObject> ModelResource<T> createNewModelResourceVersion(final EPackage ePackage,
+            final ModelResource<T> resource) {
         final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
 
         return ModelProviderUtil.cloneNewModelGraphVersion(ePackage, baseDirectory);
@@ -170,7 +172,7 @@ public final class ModelProviderUtil {
      *            graph type
      * @return The the model graph
      */
-    private static <T extends EObject> ModelResource cloneNewModelGraphVersion(final EPackage ePackage,
+    private static <T extends EObject> ModelResource<T> cloneNewModelGraphVersion(final EPackage ePackage,
             final File baseDirectory) {
         final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
@@ -193,7 +195,7 @@ public final class ModelProviderUtil {
             throw new InternalError("No such model available for cloning.");
         }
 
-        return new ModelResource(ePackage, newGraphDir);
+        return new ModelResource<>(ePackage, newGraphDir);
     }
 
     /**

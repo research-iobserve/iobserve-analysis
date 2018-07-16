@@ -20,6 +20,7 @@ import java.util.Optional;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.EventConfigurationException;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
@@ -48,7 +49,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to resource environment model provider. */
-    private final ModelResource resourceEnvironmentModelResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
@@ -60,12 +61,15 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
      * @param resourceEnvironmentModelResource
      *            the resource environment which is tested for a proper allocation
      */
-    public SynthesizeAllocationEventStage(final ModelResource resourceEnvironmentModelResource) {
+    public SynthesizeAllocationEventStage(final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource) {
         this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
     }
 
     @Override
-    protected void execute(final PCMDeployedEvent event) throws Exception {
+    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException {
+        if (event.getAssemblyContext() == null) {
+            throw new EventConfigurationException("Missing assembly context in PCMDeployedEvent");
+        }
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(), event.getResourceContainer(),
                 event.getService(), event.getUrl());

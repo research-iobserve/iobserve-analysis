@@ -45,7 +45,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 public final class AllocationStage extends AbstractConsumerStage<IAllocationEvent> {
 
     /** reference to {@link ResourceEnvironment} provider. */
-    private final ModelResource resourceEnvironmentResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /** Relay allocation event. */
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
@@ -59,7 +59,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      * @param resourceEnvironmentResource
      *            the resource environment model
      */
-    public AllocationStage(final ModelResource resourceEnvironmentResource) {
+    public AllocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 

@@ -49,7 +49,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
         final long id = resource.getInternalId(this.testModel);
 
-        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
+        final T readModel = (T) resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 

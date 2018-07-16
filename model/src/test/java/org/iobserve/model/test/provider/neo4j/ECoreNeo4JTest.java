@@ -176,8 +176,8 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreResourceAndRead() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead", this.prefix,
-                OnePackage.eINSTANCE);
+        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
+                this.prefix, OnePackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
 
@@ -195,14 +195,14 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void createThenCloneThenRead() {
-        final ModelResource storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
+        final ModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
                 this.prefix, OnePackage.eINSTANCE);
 
         storeResource.storeModelPartition(this.modelOne);
         storeResource.getGraphDatabaseService().shutdown();
 
-        final ModelResource newVersionResource = ModelProviderUtil.createNewModelResourceVersion(OnePackage.eINSTANCE,
-                storeResource);
+        final ModelResource<Root> newVersionResource = ModelProviderUtil
+                .createNewModelResourceVersion(OnePackage.eINSTANCE, storeResource);
 
         final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
         newVersionResource.getGraphDatabaseService().shutdown();
@@ -212,10 +212,10 @@ public class ECoreNeo4JTest {
 
     @Test
     public void createWithReferenceThenUpdate() throws Exception {
-        final ModelResource oneResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-one",
-                this.prefix, OnePackage.eINSTANCE);
-        final ModelResource twoResource = ModelProviderTestUtils.prepareResource("createWithReferenceThenUpdate-two",
-                this.prefix, TwoPackage.eINSTANCE);
+        final ModelResource<Root> oneResource = ModelProviderTestUtils
+                .prepareResource("createWithReferenceThenUpdate-one", this.prefix, OnePackage.eINSTANCE);
+        final ModelResource<Two> twoResource = ModelProviderTestUtils
+                .prepareResource("createWithReferenceThenUpdate-two", this.prefix, TwoPackage.eINSTANCE);
 
         DebugHelper.printModelPartition(this.modelOne);
         DebugHelper.printModelPartition(this.modelTwo);

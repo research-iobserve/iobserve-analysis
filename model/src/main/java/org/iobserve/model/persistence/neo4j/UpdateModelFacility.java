@@ -34,8 +34,10 @@ import org.neo4j.graphdb.Relationship;
  *
  * @author Reiner Jung
  *
+ * @param <R>
+ *            root class type
  */
-public class UpdateModelFacility extends GenericModelFacility {
+public class UpdateModelFacility<R extends EObject> extends GenericModelFacility<R> {
 
     /**
      * Create an update model facility.
@@ -47,7 +49,7 @@ public class UpdateModelFacility extends GenericModelFacility {
      * @param objectNodeMap
      *            the internal object map
      */
-    public UpdateModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
+    public UpdateModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         super(resource, graphDatabaseService, objectNodeMap);
     }

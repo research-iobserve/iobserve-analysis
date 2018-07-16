@@ -17,6 +17,7 @@ package org.iobserve.model.test.provider.neo4j;
 
 import java.io.File;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -49,7 +50,8 @@ public final class ModelProviderTestUtils {
      *
      * @return the prepared graph
      */
-    public static ModelResource prepareResource(final String name, final String prefix, final EPackage ePackage) {
+    public static <T extends EObject> ModelResource<T> prepareResource(final String name, final String prefix,
+            final EPackage ePackage) {
         final File graphBaseDir = new File("./testdb/" + prefix + "." + ePackage.eClass().getName() + "." + name);
 
         ModelProviderTestUtils.removeDirectory(graphBaseDir);

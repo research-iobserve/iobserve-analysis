@@ -57,7 +57,7 @@ public class DeploymentModelUpdaterTest {
      */
     @Test
     public void testExecutePCMDeployedEvent() {
-        final ModelResource allocationModelResource = this.initializationDatabase();
+        final ModelResource<Allocation> allocationModelResource = this.initializationDatabase();
 
         final Allocation initDbAllocation = allocationModelResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
@@ -89,12 +89,12 @@ public class DeploymentModelUpdaterTest {
         }
     }
 
-    private ModelResource initializationDatabase() {
+    private ModelResource<Allocation> initializationDatabase() {
         this.prepareGraph("testExecutePCMDeployedEvent-repository").storeModelPartition(this.repository);
         this.prepareGraph("testExecutePCMDeployedEvent-system").storeModelPartition(this.system);
         this.prepareGraph("testExecutePCMDeployedEvent-resource").storeModelPartition(this.resourceEnvironment);
 
-        final ModelResource resource = this
+        final ModelResource<Allocation> resource = this
                 .prepareGraph(DeploymentModelUpdaterTest.class + "testExecutePCMDeployedEvent");
         resource.storeModelPartition(this.allocation);
 
@@ -109,12 +109,12 @@ public class DeploymentModelUpdaterTest {
      *
      * @return the prepared graph
      */
-    protected ModelResource prepareGraph(final String name) {
+    protected ModelResource<Allocation> prepareGraph(final String name) {
         final File graphBaseDir = new File("./testdb/" + this.getClass().getCanonicalName() + "." + name);
 
         this.removeDirectory(graphBaseDir);
 
-        return new ModelResource(AllocationPackage.eINSTANCE, graphBaseDir);
+        return new ModelResource<>(AllocationPackage.eINSTANCE, graphBaseDir);
     }
 
     /**

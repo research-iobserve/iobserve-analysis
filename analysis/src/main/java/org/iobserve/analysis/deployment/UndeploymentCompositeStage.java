@@ -21,7 +21,11 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Undeployment stage.
@@ -46,9 +50,9 @@ public class UndeploymentCompositeStage extends CompositeStage {
      * @param correspondenceModelResource
      *            correspondence model resource
      */
-    public UndeploymentCompositeStage(final ModelResource resourceEnvironmentResouce,
-            final ModelResource systemModelResource, final ModelResource allocationModelResource,
-            final ModelResource correspondenceModelResource) {
+    public UndeploymentCompositeStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResouce,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
+            final ModelResource<CorrespondenceModel> correspondenceModelResource) {
 
         this.undeployPCMMapper = new UndeployPCMMapperStage(correspondenceModelResource, systemModelResource,
                 resourceEnvironmentResouce);

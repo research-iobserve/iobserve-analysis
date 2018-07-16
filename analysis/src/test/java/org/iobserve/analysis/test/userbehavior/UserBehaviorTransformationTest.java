@@ -70,7 +70,8 @@ public final class UserBehaviorTransformationTest {
     // @Test
     public void testBranchWithinLoop() throws IOException {
 
-        final ModelResource repositoryModelProvider = new ModelResource(RepositoryPackage.eINSTANCE, new File("x"));
+        final ModelResource<Repository> repositoryModelProvider = new ModelResource<>(RepositoryPackage.eINSTANCE,
+                new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.getAndLockModelRootNode(Repository.class,
                         RepositoryPackage.Literals.REPOSITORY));

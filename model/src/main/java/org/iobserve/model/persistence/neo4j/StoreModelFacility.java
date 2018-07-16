@@ -28,8 +28,10 @@ import org.neo4j.graphdb.Node;
 /**
  * @author Reiner Jung
  *
+ * @param <R>
+ *            root class type
  */
-public final class StoreModelFacility extends GenericModelFacility {
+public final class StoreModelFacility<R extends EObject> extends GenericModelFacility<R> {
 
     /**
      * Create store model facility for the given resource.
@@ -41,7 +43,7 @@ public final class StoreModelFacility extends GenericModelFacility {
      * @param objectNodeMap
      *            the internal object node map
      */
-    public StoreModelFacility(final ModelResource resource, final GraphDatabaseService graphDatabaseService,
+    public StoreModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         super(resource, graphDatabaseService, objectNodeMap);
     }

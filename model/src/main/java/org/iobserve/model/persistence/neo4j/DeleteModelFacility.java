@@ -31,8 +31,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Reiner Jung
  *
+ * @param <R>
+ *            root class type
+ *
  */
-public class DeleteModelFacility extends GenericModelFacility {
+public class DeleteModelFacility<R extends EObject> extends GenericModelFacility<R> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteModelFacility.class);
 
@@ -50,7 +53,7 @@ public class DeleteModelFacility extends GenericModelFacility {
      * @param objectNodeMap
      *            the internal object node map
      */
-    public DeleteModelFacility(final ModelResource modelResource, final GraphDatabaseService graphDatabaseService,
+    public DeleteModelFacility(final ModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService,
             final Map<EObject, Node> objectNodeMap) {
         super(modelResource, graphDatabaseService, objectNodeMap);
     }

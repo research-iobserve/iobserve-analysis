@@ -121,8 +121,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
-                this.prefix, this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils
+                .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
         final Interface payInterface = RepositoryModelDataFactory.findInterfaceByName(this.repository,
                 RepositoryModelDataFactory.PAYMENT_INTERFACE);

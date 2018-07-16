@@ -119,6 +119,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
     protected AnalysisConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
 
+        // TODO fix ModelResource types add Types for generics
         /** Configure model handling. */
         if (this.pcmFeature) {
             try {
@@ -156,7 +157,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
                 // get systemId
-                final System systemModel = systemModelResource.getModelRootNode(System.class,
+                final System systemModel = (System) systemModelResource.getModelRootNode(System.class,
                         SystemPackage.Literals.SYSTEM);
 
                 configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());

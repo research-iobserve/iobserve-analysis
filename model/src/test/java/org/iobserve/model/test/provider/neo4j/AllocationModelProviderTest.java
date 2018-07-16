@@ -146,7 +146,8 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.updatePartition(this.testModel);
 
-        final Allocation readModel = resource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION);
+        final Allocation readModel = (Allocation) resource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 

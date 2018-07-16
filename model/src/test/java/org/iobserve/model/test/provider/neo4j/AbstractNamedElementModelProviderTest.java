@@ -86,12 +86,12 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final ModelResource storeResource = ModelProviderTestUtils.prepareResource(
+        final ModelResource<T> storeResource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.ePackage);
 
         storeResource.storeModelPartition(this.testModel);
 
-        final ModelResource newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
+        final ModelResource<T> newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
                 storeResource);
 
         final T clonedModel = newRevisionResource.getModelRootNode(this.clazz, this.eClass);
@@ -129,7 +129,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
