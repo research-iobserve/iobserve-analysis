@@ -22,12 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import kieker.common.configuration.Configuration;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.persistence.neo4j.DBException;
@@ -69,6 +63,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
+
+import kieker.common.configuration.Configuration;
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -232,7 +231,7 @@ public class PrivacyWarner extends AbstractStage {
             /** Creating component vertices. **/
             final Vertex vertex = new Vertex(basicComponent.getEntityName(), this.computeStereotype(basicComponent));
 
-            vertex.setAllocation(allocationContext.getAllocation_AllocationContext());
+            vertex.setAllocationContext(allocationContext);
             privacyGraph.addVertex(vertex);
 
             this.vertices.put(basicComponent.getId(), vertex);
@@ -291,7 +290,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent requiringComponent = this.repositoryResource
                         .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
-                if (providingComponent != null && requiringComponent != null) {
+                if ((providingComponent != null) && (requiringComponent != null)) {
                     final OperationProvidedRole providedRole = this.repositoryResource
                             .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
@@ -320,12 +319,12 @@ public class PrivacyWarner extends AbstractStage {
             for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
-                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
+                if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
-                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
+                if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }
@@ -343,6 +342,7 @@ public class PrivacyWarner extends AbstractStage {
                         this.vertices.get(requiringComponent.getId()));
                 edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
                 edge.setInterfaceName(operationSignature.getEntityName());
+                edge.setMethodName(operationSignature);
                 graph.addEdge(edge);
             }
             if (outEdgePrivacyLevel != null) {

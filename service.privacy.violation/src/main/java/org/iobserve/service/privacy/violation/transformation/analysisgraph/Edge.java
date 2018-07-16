@@ -16,6 +16,7 @@
 package org.iobserve.service.privacy.violation.transformation.analysisgraph;
 
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Edge {
 
     private String name;
     private String interfaceName = "";
+    private String methodName = "";
 
     private Policy.EDataClassification dataProtectionClass = Policy.EDataClassification.values()[0];
 
@@ -84,5 +86,13 @@ public class Edge {
     public Object getPrint() {
         return "Edge '" + this.getName() + "' from '" + this.getSource() + "' to '" + this.getTarget()
                 + "' with data protection class '" + this.getDPC() + "'";
+    }
+
+    public void setMethodName(final OperationSignature operationSignature) {
+        this.methodName = operationSignature.toString();
+    }
+
+    public String getMethodName() {
+        return this.methodName;
     }
 }

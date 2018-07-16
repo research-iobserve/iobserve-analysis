@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
-import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  *
@@ -36,7 +36,7 @@ public class Vertex {
         GEOLOCATION, COMPUTING_NODE, DATASOURCE
     };
 
-    private Allocation allocation;
+    private AllocationContext allocationcontext;
 
     private final String name;
     private final EStereoType stereotype;
@@ -181,12 +181,12 @@ public class Vertex {
         return this.getAllEdges().size();
     }
 
-    public Allocation getAllocation() {
-        return this.allocation;
+    public AllocationContext getAllocationContext() {
+        return this.allocationcontext;
     }
 
-    public void setAllocation(final Allocation allocation) {
-        this.allocation = allocation;
+    public void setAllocationContext(final AllocationContext allocationcontext) {
+        this.allocationcontext = allocationcontext;
     }
 
     @Override
