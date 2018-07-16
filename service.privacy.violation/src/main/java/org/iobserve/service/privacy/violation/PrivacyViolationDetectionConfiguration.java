@@ -147,8 +147,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     systemModelResource, resourceEnvironmentResource);
             final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
-            final ModelProbeController modelProbeController = new ModelProbeController(allocationResource,
-                    systemModelResource, resourceEnvironmentResource);
+            final ModelProbeController modelProbeController = new ModelProbeController();
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
 
             final ProbeControlFilter probeController = new ProbeControlFilter();
