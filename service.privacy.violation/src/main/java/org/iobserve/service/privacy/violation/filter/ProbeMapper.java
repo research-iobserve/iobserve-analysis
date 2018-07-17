@@ -18,6 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
@@ -40,7 +41,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
      * @param rac
      *            correspondence model used for mapping
      */
-    public ProbeMapper(final ModelResource correspondenceModelResource) {
+    public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceModelResource) {
     }
 
     @Override

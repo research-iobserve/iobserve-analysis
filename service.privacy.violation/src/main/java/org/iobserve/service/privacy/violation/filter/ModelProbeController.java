@@ -27,6 +27,7 @@ import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of
@@ -55,12 +56,12 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         final Map<Allocation, Set<String>> receivedWarnings = new HashMap<>();
         for (final Edge edge : element.getWarningEdges()) {
             // multiple methods per allocation possible
-            final Allocation allocation = edge.getSource().getAllocation();
+            final AllocationContext allocation = edge.getSource().getAllocationContext();
             Set<String> methodSignatures = receivedWarnings.get(allocation);
             // if not present, add new entry
             if (methodSignatures == null) {
                 methodSignatures = new HashSet<>();
-                receivedWarnings.put(allocation, methodSignatures);
+                // receivedWarnings.put(allocation, methodSignatures);
             }
             // TODO get Methodsignature
             methodSignatures.add("TODO");
