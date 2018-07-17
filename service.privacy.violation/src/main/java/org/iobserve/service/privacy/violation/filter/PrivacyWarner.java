@@ -350,6 +350,7 @@ public class PrivacyWarner extends AbstractStage {
                         this.vertices.get(providingComponent.getId()));
                 edge.setDPC(Policy.getDataClassification(outEdgePrivacyLevel));
                 edge.setInterfaceName(operationSignature.getEntityName());
+                edge.setMethodName(operationSignature);
                 graph.addEdge(edge);
             }
 
