@@ -48,7 +48,8 @@ public final class DBDebugHelper {
      * @param object
      *            root element of the partition
      */
-    public static void printModelPartition(final EObject object) {
+    public static void printModelPartition(final String header, final EObject object) {
+        DBDebugHelper.LOGGER.debug(header);
         DBDebugHelper.printModelPartition(object, "");
     }
 
@@ -92,8 +93,13 @@ public final class DBDebugHelper {
     private static void printAttributes(final EObject object, final String indent) {
         for (final EAttribute attribute : object.eClass().getEAllAttributes()) {
             final Object value = object.eGet(attribute);
-            DBDebugHelper.LOGGER.debug("{} - {} = {} : {}", indent, value.toString(), attribute.getName(),
-                    attribute.getEType().getInstanceTypeName());
+            if (value != null) {
+                DBDebugHelper.LOGGER.debug("{} - {} = {} : {}", indent, value.toString(), attribute.getName(),
+                        attribute.getEType().getInstanceTypeName());
+            } else {
+                DBDebugHelper.LOGGER.debug("{} - NULL = {} : {}", indent, attribute.getName(),
+                        attribute.getEType().getInstanceTypeName());
+            }
         }
     }
 

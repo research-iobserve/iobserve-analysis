@@ -62,10 +62,10 @@ public class ModelResource<R extends EObject> {
     private final Set<EFactory> factories = new HashSet<>();
 
     private final Map<EObject, Node> objectNodeMap = new ConcurrentHashMap<>();
-    private final StoreModelFacility storeModelFacility;
-    private final UpdateModelFacility updateModelFacility;
-    private final QueryModelFacility queryModelFacility;
-    private final DeleteModelFacility deleteModelFacility;
+    private final StoreModelFacility<R> storeModelFacility;
+    private final UpdateModelFacility<R> updateModelFacility;
+    private final QueryModelFacility<R> queryModelFacility;
+    private final DeleteModelFacility<R> deleteModelFacility;
 
     private long objectId;
 
@@ -394,9 +394,11 @@ public class ModelResource<R extends EObject> {
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
 
-                nodes.add((T) this.queryModelFacility.readContainedNodes(node));
+                nodes.add(this.queryModelFacility.readContainedNodes(node));
             }
             tx.success();
+        } catch (final Exception e) {
+            ModelResource.LOGGER.debug("Access failed", e);
         }
 
         return nodes;
@@ -448,7 +450,7 @@ public class ModelResource<R extends EObject> {
                     .getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS).iterator();
 
             if (inRels.hasNext()) {
-                object = (T) this.queryModelFacility.readContainedNodes(inRels.next().getStartNode());
+                object = this.queryModelFacility.readContainedNodes(inRels.next().getStartNode());
             }
 
             tx.success();
@@ -538,7 +540,7 @@ public class ModelResource<R extends EObject> {
 
                 final Map<Node, EObject> nodeObjectMap = new HashMap<>();
 
-                object = (R) this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
+                object = this.queryModelFacility.readNodes(node, nodeObjectMap, EMFRelationshipType.REFERENCES,
                         EMFRelationshipType.CONTAINS);
                 this.queryModelFacility.resolveReferences(nodeObjectMap);
             }
@@ -588,10 +590,12 @@ public class ModelResource<R extends EObject> {
      */
     @SuppressWarnings("unchecked")
     public <T extends EObject> T resolve(final T proxyObject) throws InvocationException, DBException {
+        ModelResource.LOGGER.debug("resolve {}", proxyObject);
         if (proxyObject == null) {
             throw new InvocationException("Object reference is null, cannot resolve.");
         }
         if (proxyObject.eIsProxy()) {
+            ModelResource.LOGGER.debug("is proxy");
             try (Transaction tx = this.graphDatabaseService.beginTx()) {
                 final Node realNode = this.queryModelFacility
                         .getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());

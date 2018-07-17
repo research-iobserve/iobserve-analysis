@@ -85,8 +85,14 @@ public class QueryModelFacility<R extends EObject> extends GenericModelFacility<
     public <T extends EObject> T readNodes(final Node parentNode, final Map<Node, EObject> nodesToCreatedObjects,
             final EMFRelationshipType... relationshipType) {
         if (!nodesToCreatedObjects.containsKey(parentNode)) {
-            final T parentObject = (T) ModelObjectFactory.createObject(parentNode, this.factories);
-
+            final EObject object = this.objectFromMap(parentNode);
+            final T parentObject;
+            if (object == null) {
+                parentObject = (T) ModelObjectFactory.createObject(parentNode, this.factories);
+                this.objectNodeMap.put(parentObject, parentNode);
+            } else {
+                parentObject = (T) object;
+            }
             // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(parentNode, parentObject);
 
@@ -96,6 +102,15 @@ public class QueryModelFacility<R extends EObject> extends GenericModelFacility<
         } else {
             return (T) nodesToCreatedObjects.get(parentNode);
         }
+    }
+
+    private EObject objectFromMap(final Node parentNode) {
+        for (final Entry<EObject, Node> entry : this.objectNodeMap.entrySet()) {
+            if (entry.getValue().equals(parentNode)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     /**
@@ -113,14 +128,24 @@ public class QueryModelFacility<R extends EObject> extends GenericModelFacility<
             final Node targetNode = relationship.getEndNode();
 
             if (!nodesToCreatedObjects.containsKey(targetNode)) {
-                final EObject targetObject;
-                if (ModelGraphFactory.isProxyNode(targetNode)) {
-                    targetObject = ModelObjectFactory.createProxyObject(targetNode, this.factories);
-                    nodesToCreatedObjects.put(targetNode, targetObject);
+                final EObject mappedObject = this.objectFromMap(targetNode);
+                if (mappedObject == null) {
+                    final EObject targetObject;
+                    if (ModelGraphFactory.isProxyNode(targetNode)) {
+                        targetObject = ModelObjectFactory.createProxyObject(targetNode, this.factories);
+                        nodesToCreatedObjects.put(targetNode, targetObject);
+                    } else {
+                        targetObject = ModelObjectFactory.createObject(targetNode, this.factories);
+                        nodesToCreatedObjects.put(targetNode, targetObject);
+                        this.loadRelatedNodes(targetNode, relationshipType, nodesToCreatedObjects);
+                    }
                 } else {
-                    targetObject = ModelObjectFactory.createObject(targetNode, this.factories);
-                    nodesToCreatedObjects.put(targetNode, targetObject);
-                    this.loadRelatedNodes(targetNode, relationshipType, nodesToCreatedObjects);
+                    if (ModelGraphFactory.isProxyNode(targetNode)) {
+                        nodesToCreatedObjects.put(targetNode, mappedObject);
+                    } else {
+                        nodesToCreatedObjects.put(targetNode, mappedObject);
+                        this.loadRelatedNodes(targetNode, relationshipType, nodesToCreatedObjects);
+                    }
                 }
             }
         }

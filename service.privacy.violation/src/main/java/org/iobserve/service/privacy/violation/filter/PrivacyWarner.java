@@ -22,8 +22,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import kieker.common.configuration.Configuration;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -63,11 +73,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
-
-import kieker.common.configuration.Configuration;
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -210,6 +215,15 @@ public class PrivacyWarner extends AbstractStage {
                 AllocationPackage.Literals.ALLOCATION);
         this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
                 PrivacyPackage.Literals.PRIVACY_MODEL);
+        DBDebugHelper.printResource("Repository", this.repositoryResource.getGraphDatabaseService());
+        DBDebugHelper.printResource("System", this.systemModelResource.getGraphDatabaseService());
+        DBDebugHelper.printResource("Allocation", this.allocationModelResource.getGraphDatabaseService());
+        DBDebugHelper.printResource("Privacy", this.privacyModelResource.getGraphDatabaseService());
+
+        DBDebugHelper.printModelPartition("Repository", this.repositoryRootElement);
+        DBDebugHelper.printModelPartition("System", this.systemRootElement);
+        DBDebugHelper.printModelPartition("Allocation", this.allocationRootElement);
+        DBDebugHelper.printModelPartition("Privacy", this.privacyRootElement);
     }
 
     /**
@@ -290,7 +304,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent requiringComponent = this.repositoryResource
                         .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
-                if ((providingComponent != null) && (requiringComponent != null)) {
+                if (providingComponent != null && requiringComponent != null) {
                     final OperationProvidedRole providedRole = this.repositoryResource
                             .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
@@ -319,12 +333,12 @@ public class PrivacyWarner extends AbstractStage {
             for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
-                if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
-                if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }
@@ -398,7 +412,15 @@ public class PrivacyWarner extends AbstractStage {
                     location);
         }
         for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
-            this.stereotypes.put(this.repositoryResource.resolve(stereotype.getComponent()).getId(), stereotype);
+            if (stereotype != null) {
+                this.logger.debug("before URI {}", this.getProxyURI(stereotype.getComponent()));
+                final BasicComponent resolvedComponent = this.repositoryResource.resolve(stereotype.getComponent());
+                this.logger.debug("after URI {}", this.getProxyURI(resolvedComponent));
+                this.logger.debug("component {} {}", resolvedComponent.getId(), resolvedComponent);
+                this.stereotypes.put(resolvedComponent.getId(), stereotype);
+            } else {
+                this.logger.debug("missing {}", stereotype);
+            }
         }
         for (final IPrivacyAnnotation privacyAnnocation : this.privacyRootElement.getPrivacyLevels()) {
             if (privacyAnnocation instanceof ParameterPrivacy) {
@@ -418,6 +440,15 @@ public class PrivacyWarner extends AbstractStage {
             if (inf instanceof OperationInterface) {
                 this.interfaces.put(inf.getEntityName(), (OperationInterface) inf);
             }
+        }
+    }
+
+    private String getProxyURI(final EObject object) {
+        final URI uri = ((BasicEObjectImpl) object).eProxyURI();
+        if (uri != null) {
+            return uri.toString();
+        } else {
+            return "no URI";
         }
     }
 
