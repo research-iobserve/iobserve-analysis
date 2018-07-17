@@ -15,10 +15,12 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * Container for transportation of the information, which methods (probes) monitoring should be
@@ -28,21 +30,30 @@ import org.palladiosimulator.pcm.allocation.Allocation;
  *
  */
 public class ProbeManagementData {
-    private final Map<Allocation, Set<String>> methodsToActivate;
-    private final Map<Allocation, Set<String>> methodsToDeactivate;
+    private final Map<AllocationContext, Set<String>> methodsToActivate;
+    private final Map<AllocationContext, Set<String>> methodsToDeactivate;
+    private List<String> whitelist = new LinkedList<>();
 
-    public ProbeManagementData(final Map<Allocation, Set<String>> methodsToActivate,
-            final Map<Allocation, Set<String>> methodsToDeactivate) {
+    public ProbeManagementData(final Map<AllocationContext, Set<String>> methodsToActivate,
+            final Map<AllocationContext, Set<String>> methodsToDeactivate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
     }
 
-    public Map<Allocation, Set<String>> getMethodsToActivate() {
+    public Map<AllocationContext, Set<String>> getMethodsToActivate() {
         return this.methodsToActivate;
     }
 
-    public Map<Allocation, Set<String>> getMethodsToDeactivate() {
+    public Map<AllocationContext, Set<String>> getMethodsToDeactivate() {
         return this.methodsToDeactivate;
+    }
+
+    public List<String> getWhitelist() {
+        return this.whitelist;
+    }
+
+    public void setWhitelist(final List<String> whitelist) {
+        this.whitelist = whitelist;
     }
 
 }

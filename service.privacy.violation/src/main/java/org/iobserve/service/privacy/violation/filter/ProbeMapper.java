@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.Map;
+import java.util.Set;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -22,6 +25,7 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
@@ -46,8 +50,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        // TODO Auto-generated method stub
-
+        final Map<AllocationContext, Set<String>> methodsToActivate = element.getMethodsToActivate();
+        for (final AllocationContext allocation : methodsToActivate.keySet()) {
+            if (allocation.eIsProxy()) {
+                this.logger.debug("is proxy");
+            }
+        }
     }
 
     public OutputPort<AbstractTcpControlEvent> getOutputPort() {
