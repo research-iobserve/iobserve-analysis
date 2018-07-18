@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
  * Container for transportation of the information, which methods (probes) monitoring should be
@@ -30,21 +31,21 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  *
  */
 public class ProbeManagementData {
-    private final Map<AllocationContext, Set<String>> methodsToActivate;
-    private final Map<AllocationContext, Set<String>> methodsToDeactivate;
+    private final Map<AllocationContext, Set<OperationSignature>> methodsToActivate;
+    private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
     private List<String> whitelist = new LinkedList<>();
 
-    public ProbeManagementData(final Map<AllocationContext, Set<String>> methodsToActivate,
-            final Map<AllocationContext, Set<String>> methodsToDeactivate) {
+    public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
+            final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
     }
 
-    public Map<AllocationContext, Set<String>> getMethodsToActivate() {
+    public Map<AllocationContext, Set<OperationSignature>> getMethodsToActivate() {
         return this.methodsToActivate;
     }
 
-    public Map<AllocationContext, Set<String>> getMethodsToDeactivate() {
+    public Map<AllocationContext, Set<OperationSignature>> getMethodsToDeactivate() {
         return this.methodsToDeactivate;
     }
 

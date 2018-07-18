@@ -15,17 +15,21 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.eclipse.emf.common.util.EList;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Parameter;
 
 /**
  * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
@@ -50,7 +54,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        final Map<AllocationContext, Set<String>> methodsToActivate = element.getMethodsToActivate();
+        final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
         for (final AllocationContext allocation : methodsToActivate.keySet()) {
             if (allocation.eIsProxy()) {
                 this.logger.debug("is proxy");
@@ -62,4 +66,29 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         return this.outputPort;
     }
 
+    private String assembleCompleteMethodSignature(final AllocationContext allocation,
+            final OperationSignature operationSignature) {
+        // there are only interfaces on model level -> therefore only public methods (no
+        // getModifiers available)
+        final String modifier = "public";
+        final String returnType = operationSignature.getReturnType__OperationSignature().toString();
+        final String methodSignature = operationSignature.getEntityName();
+        // TODO parameters
+        final List<String> parameters = this.assembleParameters(operationSignature.getParameters__OperationSignature());
+        final String parameterString = "";
+
+        // TODO component of method -> x.x.x.method
+        final String componentIdentifier = allocation.getAssemblyContext_AllocationContext()
+                .getEncapsulatedComponent__AssemblyContext().getId();
+
+        return modifier + " " + returnType + " " + componentIdentifier + methodSignature + "(" + parameters + ")";
+
+    }
+
+    private List<String> assembleParameters(final EList<Parameter> parameters) {
+        for (final Parameter parameter : parameters) {
+        }
+        return null;
+
+    }
 }

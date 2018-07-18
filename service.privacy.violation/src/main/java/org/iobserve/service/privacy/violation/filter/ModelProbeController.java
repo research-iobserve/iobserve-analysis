@@ -27,6 +27,7 @@ import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of
@@ -42,7 +43,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
 
     // Allocation and list of method names
-    private Map<AllocationContext, Set<String>> currentActiveWarnings = new HashMap<>();
+    private Map<AllocationContext, Set<OperationSignature>> currentActiveWarnings = new HashMap<>();
 
     /**
      * Create an initialize the model probe controller.
@@ -52,19 +53,20 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     @Override
     protected void execute(final Warnings element) throws Exception {
-        final Map<AllocationContext, Set<String>> receivedWarnings = new HashMap<>();
-        final Map<AllocationContext, Set<String>> currentWarnings = new HashMap<>(this.currentActiveWarnings);
+        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
+        final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
+                this.currentActiveWarnings);
 
         for (final Edge edge : element.getWarningEdges()) {
             // multiple methods per allocation possible
             final AllocationContext allocation = edge.getSource().getAllocationContext();
-            Set<String> methodSignatures = receivedWarnings.get(allocation);
+            Set<OperationSignature> methodSignatures = receivedWarnings.get(allocation);
             // if not present, add new entry
             if (methodSignatures == null) {
                 methodSignatures = new HashSet<>();
                 receivedWarnings.put(allocation, methodSignatures);
             }
-            methodSignatures.add(edge.getOperationSignature().getEntityName());
+            methodSignatures.add(edge.getOperationSignature());
 
         }
         final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
@@ -76,27 +78,28 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         this.outputPort.send(probeMethodInformation);
     }
 
-    private ProbeManagementData computeWarningDifferences(final Map<AllocationContext, Set<String>> currentWarnings,
-            final Map<AllocationContext, Set<String>> receivedWarnings) {
-        Map<AllocationContext, Set<String>> missingWarnings = new HashMap<>();
-        Map<AllocationContext, Set<String>> addedWarnings = new HashMap<>();
+    private ProbeManagementData computeWarningDifferences(
+            final Map<AllocationContext, Set<OperationSignature>> currentWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> receivedWarnings) {
+        Map<AllocationContext, Set<OperationSignature>> missingWarnings = new HashMap<>();
+        Map<AllocationContext, Set<OperationSignature>> addedWarnings = new HashMap<>();
 
         missingWarnings = new HashMap<>();
         addedWarnings = new HashMap<>();
-        final Map<AllocationContext, Set<String>> newAllocationWarnings = new HashMap<>(receivedWarnings);
+        final Map<AllocationContext, Set<OperationSignature>> newAllocationWarnings = new HashMap<>(receivedWarnings);
         // already existing allocations
         for (final AllocationContext allocation : this.currentActiveWarnings.keySet()) {
-            final Set<String> newMethodSet = receivedWarnings.get(allocation);
-            final Set<String> currentMethods = this.currentActiveWarnings.get(allocation);
+            final Set<OperationSignature> newMethodSet = receivedWarnings.get(allocation);
+            final Set<OperationSignature> currentMethods = this.currentActiveWarnings.get(allocation);
             // no new allocation -> all old methods have to be deactivated
             if (newMethodSet == null) {
                 missingWarnings.put(allocation, currentMethods);
             } else {
                 // current - new = missing methods = deactivate
-                final Set<String> missingMethods = new HashSet<>(currentMethods);
+                final Set<OperationSignature> missingMethods = new HashSet<>(currentMethods);
                 missingMethods.removeAll(newMethodSet);
                 // new - current = added methods = activate
-                final Set<String> addedMethods = new HashSet<>(newMethodSet);
+                final Set<OperationSignature> addedMethods = new HashSet<>(newMethodSet);
                 addedMethods.removeAll(currentMethods);
                 if (!missingMethods.isEmpty()) {
                     missingWarnings.put(allocation, missingMethods);
@@ -117,13 +120,13 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     }
 
-    private Map<AllocationContext, Set<String>> computeNewWarningMap(
-            final Map<AllocationContext, Set<String>> currentWarnings,
-            final Map<AllocationContext, Set<String>> addedWarnings,
-            final Map<AllocationContext, Set<String>> missingWarnings) {
-        final Map<AllocationContext, Set<String>> newWarningMap = new HashMap<>(currentWarnings);
+    private Map<AllocationContext, Set<OperationSignature>> computeNewWarningMap(
+            final Map<AllocationContext, Set<OperationSignature>> currentWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> addedWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> missingWarnings) {
+        final Map<AllocationContext, Set<OperationSignature>> newWarningMap = new HashMap<>(currentWarnings);
         for (final AllocationContext allocation : missingWarnings.keySet()) {
-            final Set<String> currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            final Set<OperationSignature> currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
             currentMethodSet.removeAll(missingWarnings.get(allocation));
             if (currentMethodSet.isEmpty()) {
                 newWarningMap.remove(allocation);
@@ -132,7 +135,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             }
         }
         for (final AllocationContext allocation : addedWarnings.keySet()) {
-            final Set<String> currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            final Set<OperationSignature> currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
             currentMethodSet.addAll(addedWarnings.get(allocation));
             if (currentMethodSet.isEmpty()) {
                 newWarningMap.remove(allocation);
