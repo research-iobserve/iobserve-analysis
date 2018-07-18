@@ -15,21 +15,18 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.eclipse.emf.common.util.EList;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.Parameter;
 
 /**
  * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
@@ -66,6 +63,13 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         return this.outputPort;
     }
 
+    private String assembleTcpInformation(final AllocationContext allocation) {
+        // TODO resolve; entity name = ip
+        allocation.getResourceContainer_AllocationContext().getEntityName();
+        // TODO
+        return null;
+    }
+
     private String assembleCompleteMethodSignature(final AllocationContext allocation,
             final OperationSignature operationSignature) {
         // there are only interfaces on model level -> therefore only public methods (no
@@ -74,21 +78,15 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         final String returnType = operationSignature.getReturnType__OperationSignature().toString();
         final String methodSignature = operationSignature.getEntityName();
         // TODO parameters
-        final List<String> parameters = this.assembleParameters(operationSignature.getParameters__OperationSignature());
-        final String parameterString = "";
+        final String parameterString = "*";
 
         // TODO component of method -> x.x.x.method
         final String componentIdentifier = allocation.getAssemblyContext_AllocationContext()
                 .getEncapsulatedComponent__AssemblyContext().getId();
 
-        return modifier + " " + returnType + " " + componentIdentifier + methodSignature + "(" + parameters + ")";
+        return modifier + " " + returnType + " " + componentIdentifier + "." + methodSignature + "(" + parameterString
+                + ")";
 
     }
 
-    private List<String> assembleParameters(final EList<Parameter> parameters) {
-        for (final Parameter parameter : parameters) {
-        }
-        return null;
-
-    }
 }
