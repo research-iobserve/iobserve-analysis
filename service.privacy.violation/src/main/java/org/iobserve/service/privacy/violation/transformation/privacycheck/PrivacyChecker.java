@@ -206,7 +206,8 @@ public class PrivacyChecker {
      */
     public static void printEdges(final List<Edge> edges) {
         for (final Edge edge : edges) {
-            PrivacyChecker.LOGGER.debug("{} Interface: {}", edge.getPrint(), edge.getInterfaceName());
+            PrivacyChecker.LOGGER.debug("{} Interface: {}", edge.getPrint(),
+                    edge.getOperationSignature().getEntityName());
         }
     }
 }

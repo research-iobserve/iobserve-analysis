@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.servlet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
@@ -51,7 +54,15 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
     @Override
     protected void triggerDeployedEvent(final ServletContextEvent event) {
         final ServletContext servletContext = event.getServletContext();
-        final String service = servletContext.getVirtualServerName();
+
+        String service;
+        try {
+            final InetAddress address = InetAddress.getByName(servletContext.getVirtualServerName());
+            service = address.getHostAddress();
+        } catch (final UnknownHostException e) {
+            service = servletContext.getVirtualServerName();
+        }
+
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);

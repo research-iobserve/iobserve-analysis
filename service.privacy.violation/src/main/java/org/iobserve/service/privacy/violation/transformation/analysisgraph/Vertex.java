@@ -36,7 +36,7 @@ public class Vertex {
         GEOLOCATION, COMPUTING_NODE, DATASOURCE
     };
 
-    private AllocationContext allocationcontext;
+    private AllocationContext allocationContext;
 
     private final String name;
     private final EStereoType stereotype;
@@ -182,11 +182,11 @@ public class Vertex {
     }
 
     public AllocationContext getAllocationContext() {
-        return this.allocationcontext;
+        return this.allocationContext;
     }
 
-    public void setAllocationContext(final AllocationContext allocationcontext) {
-        this.allocationcontext = allocationcontext;
+    public void setAllocationContext(final AllocationContext allocationContext) {
+        this.allocationContext = allocationContext;
     }
 
     @Override

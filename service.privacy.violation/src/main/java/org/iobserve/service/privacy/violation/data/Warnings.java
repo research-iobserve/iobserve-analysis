@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.IWarningEdge;
 import org.iobserve.stages.data.IErrorMessages;
@@ -31,6 +32,7 @@ import org.iobserve.stages.data.IErrorMessages;
  * @since 0.0.3
  */
 public class Warnings implements IErrorMessages, IWarningEdge {
+    private IPCMDeploymentEvent event;
     private List<String> messages = new ArrayList<>();
     private List<Edge> warningEdges = new ArrayList<>();
     private Date date;
@@ -82,6 +84,14 @@ public class Warnings implements IErrorMessages, IWarningEdge {
     public void addWarningEdge(final Edge edge) {
         this.warningEdges.add(edge);
 
+    }
+
+    public IPCMDeploymentEvent getEvent() {
+        return this.event;
+    }
+
+    public void setEvent(final IPCMDeploymentEvent event) {
+        this.event = event;
     }
 
 }

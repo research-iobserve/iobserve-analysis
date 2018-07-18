@@ -22,7 +22,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public class PCMUndeployedEvent {
+public class PCMUndeployedEvent implements IPCMDeploymentEvent {
 
     private final String service;
     private final AssemblyContext assemblyContext;
@@ -45,14 +45,17 @@ public class PCMUndeployedEvent {
         this.resourceContainer = resourceContainer;
     }
 
+    @Override
     public final String getService() {
         return this.service;
     }
 
+    @Override
     public final AssemblyContext getAssemblyContext() {
         return this.assemblyContext;
     }
 
+    @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
     }

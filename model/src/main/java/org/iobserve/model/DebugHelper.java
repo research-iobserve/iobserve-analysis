@@ -175,7 +175,7 @@ public final class DebugHelper {
      * @param resource
      *            the graph
      */
-    public static void listAllRelationships(final ModelResource resource) {
+    public static void listAllRelationships(final ModelResource<?> resource) {
         for (final Relationship r : resource.getGraphDatabaseService().getAllRelationships()) {
             DebugHelper.LOGGER
                     .debug(String.format("\t%d -- (%d) --> %d", r.getStartNodeId(), r.getId(), r.getEndNodeId()));

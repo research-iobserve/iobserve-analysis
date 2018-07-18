@@ -62,9 +62,9 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             // if not present, add new entry
             if (methodSignatures == null) {
                 methodSignatures = new HashSet<>();
-                // receivedWarnings.put(allocation, methodSignatures);
+                receivedWarnings.put(allocation, methodSignatures);
             }
-            methodSignatures.add(edge.getMethodName());
+            methodSignatures.add(edge.getOperationSignature().getEntityName());
 
         }
         final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,

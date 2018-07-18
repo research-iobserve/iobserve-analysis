@@ -31,9 +31,9 @@ import teetime.framework.OutputPort;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
+import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -153,20 +153,23 @@ public class PrivacyWarner extends AbstractStage {
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
             this.logger.debug("Service: " + deployedEvent.getService());
-            this.performPrivacyEvaluation();
+            this.performPrivacyEvaluation(deployedEvent);
         }
 
         if (undeployedEvent != null) {
             this.logger.debug("Received undeployment");
-            this.performPrivacyEvaluation();
+            this.performPrivacyEvaluation(undeployedEvent);
         }
     }
 
-    private void performPrivacyEvaluation() throws FileNotFoundException, InstantiationException,
-            IllegalAccessException, ClassNotFoundException, IOException, InvocationException, DBException {
+    private void performPrivacyEvaluation(final IPCMDeploymentEvent triggerEvent)
+            throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
+            IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
 
         final Warnings warnings = this.checkGraph(graph);
+
+        warnings.setEvent(triggerEvent);
 
         this.probesOutputPort.send(warnings);
         this.warningsOutputPort.send(warnings);
@@ -179,7 +182,7 @@ public class PrivacyWarner extends AbstractStage {
         final List<Edge> edges = privacyChecker.check(graph);
 
         for (final Edge edge : edges) {
-            warnings.addMessage(edge.getPrint() + " Interface: " + edge.getInterfaceName());
+            warnings.addMessage(edge.getPrint() + " Interface: " + edge.getOperationSignature().getEntityName());
             warnings.addWarningEdge(edge);
         }
         warnings.setDate(new Date());
@@ -215,15 +218,6 @@ public class PrivacyWarner extends AbstractStage {
                 AllocationPackage.Literals.ALLOCATION);
         this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
                 PrivacyPackage.Literals.PRIVACY_MODEL);
-        DBDebugHelper.printResource("Repository", this.repositoryResource.getGraphDatabaseService());
-        DBDebugHelper.printResource("System", this.systemModelResource.getGraphDatabaseService());
-        DBDebugHelper.printResource("Allocation", this.allocationModelResource.getGraphDatabaseService());
-        DBDebugHelper.printResource("Privacy", this.privacyModelResource.getGraphDatabaseService());
-
-        DBDebugHelper.printModelPartition("Repository", this.repositoryRootElement);
-        DBDebugHelper.printModelPartition("System", this.systemRootElement);
-        DBDebugHelper.printModelPartition("Allocation", this.allocationRootElement);
-        DBDebugHelper.printModelPartition("Privacy", this.privacyRootElement);
     }
 
     /**
@@ -243,6 +237,7 @@ public class PrivacyWarner extends AbstractStage {
             final BasicComponent basicComponent = (BasicComponent) this.repositoryResource.resolve(proxyComponent);
 
             /** Creating component vertices. **/
+            // TODO name should be allocation name or assembly name + instance count
             final Vertex vertex = new Vertex(basicComponent.getEntityName(), this.computeStereotype(basicComponent));
 
             vertex.setAllocationContext(allocationContext);
@@ -250,9 +245,9 @@ public class PrivacyWarner extends AbstractStage {
 
             this.vertices.put(basicComponent.getId(), vertex);
 
-            final ResourceContainer queryResource = this.resourceEnvironmentResource
+            final ResourceContainer resourceContainer = this.resourceEnvironmentResource
                     .resolve(allocationContext.getResourceContainer_AllocationContext());
-            final GeoLocation geo = this.geolocations.get(queryResource.getId());
+            final GeoLocation geo = this.geolocations.get(resourceContainer.getId());
             final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
             if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
                 privacyGraph.addVertex(vGeo);
@@ -278,7 +273,7 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     /**
-     * Adding connections between components to the graph.
+     * Adding connections between components to the privacy graph.
      *
      * @param graph
      *            graph
@@ -333,6 +328,7 @@ public class PrivacyWarner extends AbstractStage {
             for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
+
                 if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
@@ -355,16 +351,14 @@ public class PrivacyWarner extends AbstractStage {
                 final Edge edge = new Edge(this.vertices.get(providingComponent.getId()),
                         this.vertices.get(requiringComponent.getId()));
                 edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
-                edge.setInterfaceName(operationSignature.getEntityName());
-                edge.setMethodName(operationSignature);
+                edge.setOperationSignature(operationSignature);
                 graph.addEdge(edge);
             }
             if (outEdgePrivacyLevel != null) {
                 final Edge edge = new Edge(this.vertices.get(requiringComponent.getId()),
                         this.vertices.get(providingComponent.getId()));
                 edge.setDPC(Policy.getDataClassification(outEdgePrivacyLevel));
-                edge.setInterfaceName(operationSignature.getEntityName());
-                edge.setMethodName(operationSignature);
+                edge.setOperationSignature(operationSignature);
                 graph.addEdge(edge);
             }
 

@@ -35,11 +35,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
+import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.DebugHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotInTransactionException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
@@ -378,6 +380,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            the type of the objects
+     * @param eClass
+     *            eClass corresponding to clazz
      *
      * @param <T>
      *            type of the objects
@@ -397,7 +401,7 @@ public class ModelResource<R extends EObject> {
                 nodes.add(this.queryModelFacility.readContainedNodes(node));
             }
             tx.success();
-        } catch (final Exception e) {
+        } catch (final NotInTransactionException e) {
             ModelResource.LOGGER.debug("Access failed", e);
         }
 
@@ -590,7 +594,7 @@ public class ModelResource<R extends EObject> {
      */
     @SuppressWarnings("unchecked")
     public <T extends EObject> T resolve(final T proxyObject) throws InvocationException, DBException {
-        ModelResource.LOGGER.debug("resolve {}", proxyObject);
+        DBDebugHelper.printModelPartition("resolve", proxyObject);
         if (proxyObject == null) {
             throw new InvocationException("Object reference is null, cannot resolve.");
         }

@@ -30,8 +30,7 @@ public class Edge {
     private final Vertex target;
 
     private String name;
-    private String interfaceName = "";
-    private String methodName = "";
+    private OperationSignature operationSignature;
 
     private Policy.EDataClassification dataProtectionClass = Policy.EDataClassification.values()[0];
 
@@ -67,12 +66,12 @@ public class Edge {
         this.name = s;
     }
 
-    public void setInterfaceName(final String s) {
-        this.interfaceName = s;
+    public void setOperationSignature(final OperationSignature operationSignature) {
+        this.operationSignature = operationSignature;
     }
 
-    public String getInterfaceName() {
-        return this.interfaceName;
+    public OperationSignature getOperationSignature() {
+        return this.operationSignature;
     }
 
     public void setDPC(final Policy.EDataClassification s) {
@@ -88,11 +87,4 @@ public class Edge {
                 + "' with data protection class '" + this.getDPC() + "'";
     }
 
-    public void setMethodName(final OperationSignature operationSignature) {
-        this.methodName = operationSignature.toString();
-    }
-
-    public String getMethodName() {
-        return this.methodName;
-    }
 }
