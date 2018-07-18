@@ -19,37 +19,37 @@ import org.eclipse.emf.common.util.Enumerator;
  */
 public enum EDataPrivacyLevel implements Enumerator {
     /**
-     * The '<em><b>Anonymous</b></em>' literal object.
+     * The '<em><b>ANONYMOUS</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @see #ANONYMOUS_VALUE
      * @generated
      * @ordered
      */
-    ANONYMOUS(0, "anonymous", "ANONYMOUS"),
+    ANONYMOUS(0, "ANONYMOUS", "anonymous"),
 
     /**
-     * The '<em><b>Depersonalized</b></em>' literal object.
+     * The '<em><b>DEPERSONALIZED</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @see #DEPERSONALIZED_VALUE
      * @generated
      * @ordered
      */
-    DEPERSONALIZED(1, "depersonalized", "DEPERSONALIZED"),
+    DEPERSONALIZED(1, "DEPERSONALIZED", "depersonalized"),
 
     /**
-     * The '<em><b>Personal</b></em>' literal object.
+     * The '<em><b>PERSONAL</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @see #PERSONAL_VALUE
      * @generated
      * @ordered
      */
-    PERSONAL(2, "personal", "PERSONAL");
+    PERSONAL(2, "PERSONAL", "personal");
 
     /**
-     * The '<em><b>Anonymous</b></em>' literal value.
+     * The '<em><b>ANONYMOUS</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
      * If the meaning of '<em><b>Anonymous</b></em>' literal object isn't clear,
@@ -57,14 +57,14 @@ public enum EDataPrivacyLevel implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #ANONYMOUS
-     * @model name="anonymous" literal="ANONYMOUS"
+     * @model literal="anonymous"
      * @generated
      * @ordered
      */
     public static final int ANONYMOUS_VALUE = 0;
 
     /**
-     * The '<em><b>Depersonalized</b></em>' literal value.
+     * The '<em><b>DEPERSONALIZED</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
      * If the meaning of '<em><b>Depersonalized</b></em>' literal object isn't clear,
@@ -72,14 +72,14 @@ public enum EDataPrivacyLevel implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #DEPERSONALIZED
-     * @model name="depersonalized" literal="DEPERSONALIZED"
+     * @model literal="depersonalized"
      * @generated
      * @ordered
      */
     public static final int DEPERSONALIZED_VALUE = 1;
 
     /**
-     * The '<em><b>Personal</b></em>' literal value.
+     * The '<em><b>PERSONAL</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
      * If the meaning of '<em><b>Personal</b></em>' literal object isn't clear,
@@ -87,7 +87,7 @@ public enum EDataPrivacyLevel implements Enumerator {
      * </p>
      * <!-- end-user-doc -->
      * @see #PERSONAL
-     * @model name="personal" literal="PERSONAL"
+     * @model literal="personal"
      * @generated
      * @ordered
      */
