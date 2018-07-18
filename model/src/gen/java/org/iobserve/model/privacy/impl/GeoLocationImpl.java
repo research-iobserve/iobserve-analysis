@@ -36,7 +36,7 @@ public class GeoLocationImpl extends MinimalEObjectImpl.Container implements Geo
      * @generated
      * @ordered
      */
-    protected static final EISOCode ISOCODE_EDEFAULT = EISOCode.USA;
+    protected static final EISOCode ISOCODE_EDEFAULT = EISOCode.AFGHANISTAN;
 
     /**
      * The cached value of the '{@link #getIsocode() <em>Isocode</em>}' attribute.
