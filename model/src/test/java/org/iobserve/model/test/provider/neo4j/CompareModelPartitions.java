@@ -177,8 +177,8 @@ public class CompareModelPartitions {
 
     private boolean compareAllContainedObjects(final EList<?> list1, final EList<?> list2,
             final EClass partitionrootClass) {
-        DebugHelper.printList("expected", list1);
-        DebugHelper.printList("actual", list2);
+        DebugHelper.printList(this.getClass(), "expected", list1);
+        DebugHelper.printList(this.getClass(), "actual", list2);
 
         if (list1.size() != list2.size()) {
             return false;

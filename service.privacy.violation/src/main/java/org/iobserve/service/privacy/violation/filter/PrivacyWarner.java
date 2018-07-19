@@ -28,9 +28,6 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
@@ -154,11 +151,13 @@ public class PrivacyWarner extends AbstractStage {
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
             this.logger.debug("Service: " + deployedEvent.getService());
             this.performPrivacyEvaluation(deployedEvent);
+            this.logger.debug("Deployment processed");
         }
 
         if (undeployedEvent != null) {
             this.logger.debug("Received undeployment");
             this.performPrivacyEvaluation(undeployedEvent);
+            this.logger.debug("Deployment processed");
         }
     }
 
@@ -191,20 +190,22 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     private PrivacyGraph createAnalysisGraph() throws InvocationException, DBException {
-        final PrivacyGraph privacyGraph = new PrivacyGraph("PrivacyWarner");
+        synchronized (this) {
+            final PrivacyGraph privacyGraph = new PrivacyGraph("PrivacyWarner");
 
-        this.loadRoots();
+            this.loadRoots();
 
-        /** AssemblyContext View **/
+            /** AssemblyContext View **/
 
-        // Fill the hashmaps
-        this.clearAndFillQueryMaps();
+            // Fill the hashmaps
+            this.clearAndFillQueryMaps();
 
-        this.addDeployedComponents(privacyGraph);
+            this.addDeployedComponents(privacyGraph);
 
-        this.addConnectors(privacyGraph);
+            this.addConnectors(privacyGraph);
 
-        return privacyGraph;
+            return privacyGraph;
+        }
     }
 
     /**
@@ -248,14 +249,19 @@ public class PrivacyWarner extends AbstractStage {
             final ResourceContainer resourceContainer = this.resourceEnvironmentResource
                     .resolve(allocationContext.getResourceContainer_AllocationContext());
             final GeoLocation geo = this.geolocations.get(resourceContainer.getId());
-            final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
-            if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
-                privacyGraph.addVertex(vGeo);
-                privacyGraph.addEdge(vGeo, vertex);
-                this.vertices.put(geo.getIsocode().getName(), vGeo);
-            } else { // Existing Geolocation
-                privacyGraph.addEdge(this.vertices.get(geo.getIsocode().getName()), vertex);
 
+            if (geo == null) {
+                this.logger.info("Geolocation infomation not available {}", resourceContainer.getId());
+            } else {
+                final Vertex vGeo = new Vertex(geo.getIsocode().getName(), EStereoType.GEOLOCATION);
+                if (!this.vertices.containsKey(geo.getIsocode().getName())) { // New Geolocation
+                    privacyGraph.addVertex(vGeo);
+                    privacyGraph.addEdge(vGeo, vertex);
+                    this.vertices.put(geo.getIsocode().getName(), vGeo);
+                } else { // Existing Geolocation
+                    privacyGraph.addEdge(this.vertices.get(geo.getIsocode().getName()), vertex);
+
+                }
             }
         }
     }
@@ -346,22 +352,24 @@ public class PrivacyWarner extends AbstractStage {
                         operationSignaturePrivacyAnnotation.getLevel());
             }
 
-            // Add Edges
-            if (inEdgePrivacyLevel != null) {
-                final Edge edge = new Edge(this.vertices.get(providingComponent.getId()),
-                        this.vertices.get(requiringComponent.getId()));
-                edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
-                edge.setOperationSignature(operationSignature);
-                graph.addEdge(edge);
-            }
-            if (outEdgePrivacyLevel != null) {
-                final Edge edge = new Edge(this.vertices.get(requiringComponent.getId()),
-                        this.vertices.get(providingComponent.getId()));
-                edge.setDPC(Policy.getDataClassification(outEdgePrivacyLevel));
-                edge.setOperationSignature(operationSignature);
-                graph.addEdge(edge);
-            }
+            final Vertex providingComponentVertex = this.vertices.get(providingComponent.getId());
+            final Vertex requiringComponentVertex = this.vertices.get(requiringComponent.getId());
 
+            if (providingComponentVertex != null && requiringComponentVertex != null) {
+                // Add Edges
+                if (inEdgePrivacyLevel != null) {
+                    final Edge edge = new Edge(providingComponentVertex, requiringComponentVertex);
+                    edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
+                    edge.setOperationSignature(operationSignature);
+                    graph.addEdge(edge);
+                }
+                if (outEdgePrivacyLevel != null) {
+                    final Edge edge = new Edge(requiringComponentVertex, providingComponentVertex);
+                    edge.setDPC(Policy.getDataClassification(outEdgePrivacyLevel));
+                    edge.setOperationSignature(operationSignature);
+                    graph.addEdge(edge);
+                }
+            }
         }
     }
 
@@ -407,10 +415,7 @@ public class PrivacyWarner extends AbstractStage {
         }
         for (final EncapsulatedDataSource stereotype : this.privacyRootElement.getEncapsulatedDataSources()) {
             if (stereotype != null) {
-                this.logger.debug("before URI {}", this.getProxyURI(stereotype.getComponent()));
                 final BasicComponent resolvedComponent = this.repositoryResource.resolve(stereotype.getComponent());
-                this.logger.debug("after URI {}", this.getProxyURI(resolvedComponent));
-                this.logger.debug("component {} {}", resolvedComponent.getId(), resolvedComponent);
                 this.stereotypes.put(resolvedComponent.getId(), stereotype);
             } else {
                 this.logger.debug("missing {}", stereotype);
@@ -434,15 +439,6 @@ public class PrivacyWarner extends AbstractStage {
             if (inf instanceof OperationInterface) {
                 this.interfaces.put(inf.getEntityName(), (OperationInterface) inf);
             }
-        }
-    }
-
-    private String getProxyURI(final EObject object) {
-        final URI uri = ((BasicEObjectImpl) object).eProxyURI();
-        if (uri != null) {
-            return uri.toString();
-        } else {
-            return "no URI";
         }
     }
 

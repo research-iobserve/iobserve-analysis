@@ -160,7 +160,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final ProbeControlFilter probeController = new ProbeControlFilter();
 
             // TODO remove for performance measurements
-            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(200);
+            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(0);
 
             try {
                 final AlarmSink alarmSink = new AlarmSink(alarmFile);

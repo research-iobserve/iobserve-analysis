@@ -26,7 +26,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.hamcrest.core.Is;
-import org.iobserve.model.DebugHelper;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.storage.one.EnumValueExample;
@@ -217,15 +216,10 @@ public class ECoreNeo4JTest {
         final ModelResource<Two> twoResource = ModelProviderTestUtils
                 .prepareResource("createWithReferenceThenUpdate-two", this.prefix, TwoPackage.eINSTANCE);
 
-        DebugHelper.printModelPartition(this.modelOne);
-        DebugHelper.printModelPartition(this.modelTwo);
-
         oneResource.storeModelPartition(this.modelOne);
         twoResource.storeModelPartition(this.modelTwo);
 
         this.modelTwo.getLinks().add(this.createLink(this.secondOther));
-
-        DebugHelper.printModelPartition(this.modelTwo);
 
         twoResource.updatePartition(this.modelTwo);
 

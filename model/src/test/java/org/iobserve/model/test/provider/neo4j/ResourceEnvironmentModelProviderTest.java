@@ -18,7 +18,6 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.DebugHelper;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -64,8 +63,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenReadByType", this.prefix, this.ePackage);
 
         final List<ResourceContainer> writtenContainers = this.testModel.getResourceContainer_ResourceEnvironment();
 
@@ -83,8 +82,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenReadContaining", this.prefix, this.ePackage);
 
         final ResourceContainer writtenContainer = this.testModel.getResourceContainer_ResourceEnvironment().get(0);
         resource.storeModelPartition(this.testModel);
@@ -93,9 +92,6 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         final ResourceEnvironment readModel = (ResourceEnvironment) resource.findContainingObjectById(
                 ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, id);
-
-        DebugHelper.printModelPartition(this.testModel);
-        DebugHelper.printModelPartition(readModel);
 
         Assert.assertTrue(this.equalityHelper.compareObject(this.testModel, readModel));
     }
@@ -106,8 +102,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenReadReferencing", this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -188,9 +184,6 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         final ResourceEnvironment readModel = resource.getModelRootNode(ResourceEnvironment.class, this.eClass);
 
-        DebugHelper.printModelPartition(this.testModel);
-        DebugHelper.printModelPartition(readModel);
-
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
 
@@ -200,8 +193,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObject() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteObject", this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -235,8 +228,8 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteComponentAndDatatypes",
-                this.prefix, this.ePackage);
+        final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteComponentAndDatatypes", this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 

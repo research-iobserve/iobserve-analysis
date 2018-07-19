@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.DebugHelper;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
@@ -102,12 +101,9 @@ public class PCMNeo4JTest {
 
         this.allocationResource.updatePartition(allocationModel);
 
-        DebugHelper.printModelPartition(
-                this.allocationResource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION));
-
         for (final AllocationContext context : this.allocationResource.collectAllObjectsByType(AllocationContext.class,
                 AllocationPackage.Literals.ALLOCATION_CONTEXT)) {
-            DebugHelper.printModelPartition(context);
+            // TODO
         }
     }
 }

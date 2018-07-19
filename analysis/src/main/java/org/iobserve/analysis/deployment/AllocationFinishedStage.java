@@ -43,7 +43,7 @@ public class AllocationFinishedStage extends AbstractStage {
     private final InputPort<PCMDeployedEvent> deployedInputPort = super.createInputPort();
     private final InputPort<ResourceContainer> allocationFinishedInputPort = super.createInputPort();
     private final Queue<PCMDeployedEvent> deployments = new LinkedList<>();
-    private final Queue<ResourceContainer> allocations = new LinkedList<>();
+    private final Queue<ResourceContainer> resourceContainers = new LinkedList<>();
 
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
 
@@ -93,17 +93,17 @@ public class AllocationFinishedStage extends AbstractStage {
 
         if (resourceContainer != null) {
             this.logger.debug("Receive resource container {}", resourceContainer);
-            this.allocations.add(resourceContainer);
+            this.resourceContainers.add(resourceContainer);
         }
 
         if (deployedEvent != null) {
             this.logger.debug("Receive deployed event {}", deployedEvent);
             this.deployments.add(deployedEvent);
         }
-
-        if (this.allocations.size() > 0 && this.deployments.size() > 0) {
+        // TODO better ensure matching parts
+        if (this.resourceContainers.size() > 0 && this.deployments.size() > 0) {
             final PCMDeployedEvent deployed = this.deployments.poll();
-            deployed.setResourceContainer(this.allocations.poll());
+            deployed.setResourceContainer(this.resourceContainers.poll());
 
             this.logger.debug("Send deployed {}", deployed);
             this.deployedOutputPort.send(deployed);

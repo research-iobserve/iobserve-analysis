@@ -108,7 +108,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
                 .getResourceContainerByName(resourceEnvironment, service);
 
         if (!resourceContainer.isPresent()) {
-            this.logger.debug("ResourceContainer {} is created.", service);
+            this.logger.debug("ResourceContainer {} has to be created.", service);
 
             final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironment, service);

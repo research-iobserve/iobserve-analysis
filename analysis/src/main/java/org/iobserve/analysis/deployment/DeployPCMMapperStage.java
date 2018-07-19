@@ -26,7 +26,6 @@ import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.model.DBDebugHelper;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
@@ -107,7 +106,6 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
         final String url = "http://" + service + '/' + urlContext;
 
         if (assemblyEntry.size() == 1) {
-            DBDebugHelper.printResource("system model", this.systemModelResource.getGraphDatabaseService());
             final AssemblyContext assemblyContext = this.systemModelResource
                     .resolve(assemblyEntry.get(0).getAssembly());
             if (event instanceof Privacy) {

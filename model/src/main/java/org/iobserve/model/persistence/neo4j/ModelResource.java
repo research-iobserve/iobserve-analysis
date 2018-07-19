@@ -35,8 +35,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
-import org.iobserve.model.DBDebugHelper;
-import org.iobserve.model.DebugHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -45,6 +43,7 @@ import org.neo4j.graphdb.NotInTransactionException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.TransactionFailureException;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,16 +169,10 @@ public class ModelResource<R extends EObject> {
      *             on node lookup errors
      */
     public <T extends EObject> void updatePartition(final T object) throws NodeLookupException {
+        ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            DebugHelper.printMap("ObjectNodeMap", this.objectNodeMap);
-
-            ModelProviderSynchronizer.getLock(this);
-
-            DebugHelper.printNodeModel(this.objectNodeMap, object);
-
             this.updateModelFacility.updatePartition(object);
-
             tx.success();
         }
 
@@ -210,6 +203,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            data type
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            the id
      * @param forceDelete
@@ -219,17 +214,18 @@ public class ModelResource<R extends EObject> {
      */
     public <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final EClass eClass, final Long id,
             final boolean forceDelete) {
-        try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizer.getLock(this);
 
+        try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
             final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.INTERNAL_ID, id);
             this.deleteModelFacility.deleteObjectNodesRecursively(node, forceDelete);
 
             tx.success();
-            ModelProviderSynchronizer.releaseLock(this);
         }
+
+        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /**
@@ -237,6 +233,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            type
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            id of the object
      *
@@ -254,6 +252,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            Data type of component to be read
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            Id of component to be read
      * @param <T>
@@ -287,6 +287,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            the type of the object
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param name
      *            the property name
      * @param value
@@ -356,7 +358,9 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            the objects' type
-     * @return returns a list.
+     * @param eClass
+     *            eClass corresponding to clazz
+     * @return returns a list of internal ids
      */
     public List<Long> collectAllObjectIdsByType(final Class<?> clazz, final EClass eClass) {
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -435,6 +439,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            Data type of the contained object
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            Id of the contained object
      *
@@ -468,6 +474,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            Data type of the referenced component
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            Id of the referenced component
      * @return The referencing components
@@ -483,6 +491,8 @@ public class ModelResource<R extends EObject> {
      *
      * @param clazz
      *            Data type of the referenced object
+     * @param eClass
+     *            eClass corresponding to clazz
      * @param id
      *            Id of the referenced object
      * @return List of all objects which reference the specified object
@@ -594,12 +604,10 @@ public class ModelResource<R extends EObject> {
      */
     @SuppressWarnings("unchecked")
     public <T extends EObject> T resolve(final T proxyObject) throws InvocationException, DBException {
-        DBDebugHelper.printModelPartition("resolve", proxyObject);
         if (proxyObject == null) {
             throw new InvocationException("Object reference is null, cannot resolve.");
         }
         if (proxyObject.eIsProxy()) {
-            ModelResource.LOGGER.debug("is proxy");
             try (Transaction tx = this.graphDatabaseService.beginTx()) {
                 final Node realNode = this.queryModelFacility
                         .getNodeByUri(((BasicEObjectImpl) proxyObject).eProxyURI());
@@ -625,6 +633,8 @@ public class ModelResource<R extends EObject> {
                 }
 
                 tx.success();
+            } catch (final TransactionFailureException ex) {
+                ModelResource.LOGGER.error("Cannot create transaction to resolve data.");
             }
             return proxyObject;
         } else {

@@ -22,6 +22,8 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
@@ -49,6 +51,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
     /**
      * Create a geo location filter.
      *
+     * @param resourceEnvironmentResource
+     *            resource environment resource
      * @param privacyModelResource
      *            privacy model resource
      */
@@ -63,29 +67,49 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(),
                 event.getResourceContainer().getEntityName(), event.getService(), event.getUrl());
+
+        final GeoLocation geoLocation = this.getGeoLocationForContainer(event.getResourceContainer());
+        if (geoLocation == null) {
+            /** create a geo location. */
+            final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
+                    PrivacyPackage.Literals.PRIVACY_MODEL);
+            privacyModel.getResourceContainerLocations()
+                    .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
+            this.privacyModelResource.updatePartition(privacyModel);
+        } else {
+            /** update the geo location. */
+            geoLocation.setIsocode(EISOCode.get(event.getCountryCode().getValue()));
+            this.privacyModelResource.updatePartition(geoLocation);
+        }
+
+        this.outputPort.send(event);
+    }
+
+    /**
+     * Get the geolocation for the given resource container.
+     *
+     * @param resourceContainer
+     *            resource container
+     * @return returns the geolocation object or null
+     * @throws InvocationException
+     * @throws DBException
+     */
+    private GeoLocation getGeoLocationForContainer(final ResourceContainer resourceContainer)
+            throws InvocationException, DBException {
         final List<GeoLocation> geoLocations = this.privacyModelResource.collectAllObjectsByType(GeoLocation.class,
                 PrivacyPackage.Literals.GEO_LOCATION);
 
         for (final GeoLocation geoLocation : geoLocations) {
-            final String containerId = this.resourceEnvironmentResource.resolve(geoLocation.getResourceContainer())
-                    .getId();
-            if (event.getResourceContainer().getId().equals(containerId)) {
-                geoLocation.setIsocode(EISOCode.get(event.getCountryCode().getValue()));
-                this.privacyModelResource.updatePartition(geoLocation);
-                /** container has already a location: update the location. */
-                this.outputPort.send(event);
-                return;
+            final ResourceContainer existingContainer = this.resourceEnvironmentResource
+                    .resolve(geoLocation.getResourceContainer());
+            if (existingContainer != null) {
+                if (resourceContainer.getId().equals(existingContainer.getId())) {
+                    return geoLocation;
+                }
             }
         }
 
-        /** container has no geolocation: create a location instance. */
-        final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
-                PrivacyPackage.Literals.PRIVACY_MODEL);
-        privacyModel.getResourceContainerLocations()
-                .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
-        this.privacyModelResource.updatePartition(privacyModel);
-
-        this.outputPort.send(event);
+        return null;
     }
 
     private GeoLocation createGeoLocation(final ResourceContainer resourceContainer, final ISOCountryCode countryCode) {

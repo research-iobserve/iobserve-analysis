@@ -92,6 +92,10 @@ public final class ModelProviderUtil {
      *            the factory for the particular metamodel (partition)
      * @param baseDirectory
      *            base directory for the model database
+     *
+     * @param <T>
+     *            root object type
+     *
      * @return The model graph
      */
     public static <T extends EObject> ModelResource<T> createModelResource(final EPackage ePackage,
@@ -152,6 +156,9 @@ public final class ModelProviderUtil {
      *            metamodel factory class
      * @param resource
      *            resource to be cloned
+     * 
+     * @param <T>
+     *            root object type
      *
      * @return The cloned graph
      */

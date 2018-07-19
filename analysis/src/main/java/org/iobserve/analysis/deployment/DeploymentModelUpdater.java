@@ -21,7 +21,6 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.model.DebugHelper;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -91,14 +90,6 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
 
             this.allocationModelResource.updatePartition(allocationModel);
-
-            DebugHelper.printModelPartition(this.allocationModelResource.getModelRootNode(Allocation.class,
-                    AllocationPackage.Literals.ALLOCATION));
-
-            for (final AllocationContext context : this.allocationModelResource
-                    .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT)) {
-                DebugHelper.printModelPartition(context);
-            }
 
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
