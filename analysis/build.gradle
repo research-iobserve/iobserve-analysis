@@ -35,6 +35,8 @@ dependencies {
 	compile project(":common")
 	compile project(":stages")
 	compile project(":model")
+
+	testCompile project(':model').sourceSets.test.output
 		
 	compile project(":service")
 	compile project(":planning.systemadaptation")

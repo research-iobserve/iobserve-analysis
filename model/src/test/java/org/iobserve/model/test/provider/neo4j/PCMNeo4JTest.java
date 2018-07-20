@@ -102,7 +102,7 @@ public class PCMNeo4JTest {
         this.allocationResource.updatePartition(allocationModel);
 
         for (final AllocationContext context : this.allocationResource.collectAllObjectsByType(AllocationContext.class,
-                AllocationPackage.Literals.ALLOCATION_CONTEXT)) {
+                AllocationPackage.Literals.ALLOCATION_CONTEXT)) { // NOCS
             // TODO
         }
     }

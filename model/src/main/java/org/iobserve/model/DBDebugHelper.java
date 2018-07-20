@@ -51,6 +51,8 @@ public final class DBDebugHelper {
      *
      * @param caller
      *            caller class
+     * @param header
+     *            title label
      * @param object
      *            root element of the partition
      */

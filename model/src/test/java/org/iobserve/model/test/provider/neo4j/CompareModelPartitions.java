@@ -54,13 +54,15 @@ public class CompareModelPartitions {
      *            expected models
      * @param actualModels
      *            actual models
+     * @param partitionRootClass
+     *            partition root class
      * @return true on success
      */
     public boolean comparePartitions(final List<EObject> expectedModels, final List<EObject> actualModels,
-            final EClass partitionrootClass) {
+            final EClass partitionRootClass) {
         boolean result = true;
         for (int i = 0; i < expectedModels.size(); i++) {
-            result &= this.comparePartition(expectedModels.get(i), actualModels.get(i), partitionrootClass);
+            result &= this.comparePartition(expectedModels.get(i), actualModels.get(i), partitionRootClass);
         }
         return result;
     }
@@ -75,7 +77,8 @@ public class CompareModelPartitions {
      *            expected model
      * @param actualModel
      *            model
-     * @param packageInfo
+     * @param partitionRootClass
+     *            partition root class
      *
      * @return whether <code>eObject1</code> and <code>eObject2</code> are equal.
      * @since 2.1.0
@@ -208,6 +211,15 @@ public class CompareModelPartitions {
         return result;
     }
 
+    /**
+     * Compare two objects of two models or partitions.
+     *
+     * @param expectedModel
+     *            expected model/partition
+     * @param actualModel
+     *            actual model/partition
+     * @return returns true if both objects are identical
+     */
     public boolean compareObject(final EObject expectedModel, final EObject actualModel) {
         if (expectedModel == null && actualModel == null) {
             return true;

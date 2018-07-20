@@ -45,8 +45,11 @@ public final class ModelProviderTestUtils {
      *            test directory name
      * @param prefix
      *            path prefix
-     * @param factory
-     *            model factory
+     * @param ePackage
+     *            model base package
+     *
+     * @param <T>
+     *            model root type
      *
      * @return the prepared graph
      */
