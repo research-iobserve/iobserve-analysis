@@ -17,3 +17,4 @@ Import-Package: de.uka.ipd.sdq.dsexplore.launch,de.uka.ipd.sdq.simucom
  2,org.palladiosimulator.edp2.impl,org.palladiosimulator.edp2.models.R
  epository,org.palladiosimulator.recorderframework.utils,org.palladios
  imulator.reliability
+Automatic-Module-Name: peropteryx.rcp
