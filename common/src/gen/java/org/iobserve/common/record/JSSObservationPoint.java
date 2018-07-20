@@ -15,11 +15,32 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
+ * API compatibility: Kieker 1.14.0
  * 
- * @since 0.0.2
+ * @since 1.14
  */
-public interface IDeployedEvent extends IDeploymentChange, IEvent {
+public enum JSSObservationPoint {
+	DISPATCHER_ENTRY(0),
+	PRIVACY_WARNER_ENTRY(1),
+	PRIVACY_WARNER_EXIT(2);
+	
+	private int value;
+		
+	private JSSObservationPoint(final int value) {
+		this.value = value;
+	}
+		
+	public int getValue() {
+		return this.value;
+	}
+	
+	public static JSSObservationPoint getEnum(final int value) {
+		for (final JSSObservationPoint type : JSSObservationPoint.values()) {
+			if (type.getValue() == value)
+				return type;
+		}
+		throw new RuntimeException("Illegal value for JSSObservationPoint enumeration.");
+	}
 }

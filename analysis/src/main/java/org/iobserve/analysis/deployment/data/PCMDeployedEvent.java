@@ -30,6 +30,7 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
     private final String url;
     private ResourceContainer resourceContainer;
     private final ISOCountryCode countryCode;
+    private final long timestamp;
 
     /**
      * Create a deployment event which initialized values for service, correspondent, url, and
@@ -45,11 +46,12 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
      *            the country code of the service in case that is available.
      */
     public PCMDeployedEvent(final String service, final AssemblyContext assemblyContext, final String url,
-            final ISOCountryCode isoCountryCode) {
+            final ISOCountryCode isoCountryCode, final long timestamp) {
         this.service = service;
         this.assemblyContext = assemblyContext;
         this.url = url;
         this.countryCode = isoCountryCode;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -77,6 +79,11 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
 
     public final ISOCountryCode getCountryCode() {
         return this.countryCode;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
 }

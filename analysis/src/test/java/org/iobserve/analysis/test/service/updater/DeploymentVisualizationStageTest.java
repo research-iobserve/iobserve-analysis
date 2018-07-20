@@ -105,7 +105,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         final String urlContext = DeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + DeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
         final PCMDeployedEvent deployedEvent = new PCMDeployedEvent(DeploymentVisualizationStageTest.SERVICE, null, url,
-                ISOCountryCode.EVIL_EMPIRE);
+                ISOCountryCode.EVIL_EMPIRE, 0);
 
         deployedEvent.setResourceContainer(testResourceContainer);
 

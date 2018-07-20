@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.IMonitoringController;
+import kieker.monitoring.core.controller.MonitoringController;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -31,6 +33,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.common.record.JSSObservationEvent;
+import org.iobserve.common.record.JSSObservationPoint;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -80,6 +84,9 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public class PrivacyWarner extends AbstractStage {
 
+    // remove probes later
+    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
+
     private final ModelResource<Allocation> allocationModelResource;
     private final ModelResource<System> systemModelResource;
     private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
@@ -123,7 +130,6 @@ public class PrivacyWarner extends AbstractStage {
      *            repository model provider
      * @param privacyModelResource
      *            privacy model provider
-     * @param assemblyView2
      */
     public PrivacyWarner(final Configuration configuration, final ModelResource<Repository> repositoryResource,
             final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
@@ -147,17 +153,39 @@ public class PrivacyWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
+            final long observedTime = deployedEvent.getTimestamp();
+            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
+                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_ENTRY,
+                    deployedEvent.getClass().getCanonicalName(), observedTime));
+
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
             this.logger.debug("Service: " + deployedEvent.getService());
+
             this.performPrivacyEvaluation(deployedEvent);
+
             this.logger.debug("Deployment processed");
+
+            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
+                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_EXIT,
+                    deployedEvent.getClass().getCanonicalName(), observedTime));
         }
 
         if (undeployedEvent != null) {
+            final long observedTime = undeployedEvent.getTimestamp();
+            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
+                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_ENTRY,
+                    undeployedEvent.getClass().getCanonicalName(), observedTime));
+
             this.logger.debug("Received undeployment");
+
             this.performPrivacyEvaluation(undeployedEvent);
+
             this.logger.debug("Deployment processed");
+
+            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
+                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_EXIT,
+                    undeployedEvent.getClass().getCanonicalName(), observedTime));
         }
     }
 

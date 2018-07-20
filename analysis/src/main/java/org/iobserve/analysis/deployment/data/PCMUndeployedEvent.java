@@ -27,6 +27,7 @@ public class PCMUndeployedEvent implements IPCMDeploymentEvent {
     private final String service;
     private final AssemblyContext assemblyContext;
     private final ResourceContainer resourceContainer;
+    private final long timestamp;
 
     /**
      * Create an model level undeployed event.
@@ -39,10 +40,11 @@ public class PCMUndeployedEvent implements IPCMDeploymentEvent {
      *            resource container
      */
     public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
-            final ResourceContainer resourceContainer) {
+            final ResourceContainer resourceContainer, final long timestamp) {
         this.service = service;
         this.assemblyContext = assemblyContext;
         this.resourceContainer = resourceContainer;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -58,5 +60,10 @@ public class PCMUndeployedEvent implements IPCMDeploymentEvent {
     @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 }

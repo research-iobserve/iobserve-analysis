@@ -36,11 +36,11 @@ public final class ModelLevelDataFactory {
         final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
 
-        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, url, countryCode);
+        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, url, countryCode, 0);
     }
 
     public static PCMUndeployedEvent createPCMUndeployedEvent(final AssemblyContext assemblyContext) {
-        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, null);
+        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, null, 0);
     }
 
 }

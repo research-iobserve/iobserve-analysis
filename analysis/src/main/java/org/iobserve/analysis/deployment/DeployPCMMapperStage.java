@@ -110,11 +110,12 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
                     .resolve(assemblyEntry.get(0).getAssembly());
             if (event instanceof Privacy) {
                 this.logger.debug("privacy {}", event);
-                this.outputPort
-                        .send(new PCMDeployedEvent(service, assemblyContext, url, ((Privacy) event).getCountryCode()));
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url,
+                        ((Privacy) event).getCountryCode(), event.getTimestamp()));
             } else {
                 this.logger.debug("evil {}", event);
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url, ISOCountryCode.EVIL_EMPIRE));
+                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url, ISOCountryCode.EVIL_EMPIRE,
+                        event.getTimestamp()));
             }
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);

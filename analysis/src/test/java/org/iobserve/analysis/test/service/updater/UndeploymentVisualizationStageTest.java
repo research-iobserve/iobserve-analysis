@@ -112,7 +112,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
         final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
-                null /* AssemblyContextDataFactory.ASSEMBLY_CONTEXT */, this.testResourceContainer);
+                null /* AssemblyContextDataFactory.ASSEMBLY_CONTEXT */, this.testResourceContainer, 0);
 
         /** input events */
         this.inputEvents.add(undeployedEvent);

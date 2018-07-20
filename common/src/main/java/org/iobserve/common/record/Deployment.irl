@@ -25,9 +25,9 @@ import org.iobserve.common.record.IEvent
 @author "Reiner Jung" @since "0.0.2"
 template IDeploymentChange
 @author "Reiner Jung" @since "0.0.2"
-template IDeployedEvent : IDeploymentChange
+template IDeployedEvent : IDeploymentChange, IEvent
 @author "Reiner Jung" @since "0.0.2"
-template IUndeployedEvent : IDeploymentChange
+template IUndeployedEvent : IDeploymentChange, IEvent
 	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.

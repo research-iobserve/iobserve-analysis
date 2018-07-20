@@ -36,7 +36,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 /**
  * Update the geo location of a resource container for a given.
  *
- * @author unknown
  * @author Reiner Jung
  *
  */
@@ -103,7 +102,9 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
             final ResourceContainer existingContainer = this.resourceEnvironmentResource
                     .resolve(geoLocation.getResourceContainer());
             if (existingContainer != null) {
-                if (resourceContainer.getId().equals(existingContainer.getId())) {
+                if (resourceContainer.getId().equals(existingContainer.getId())) { // NOPMD
+                                                                                   // existingContainer
+                                                                                   // could be null
                     return geoLocation;
                 }
             }

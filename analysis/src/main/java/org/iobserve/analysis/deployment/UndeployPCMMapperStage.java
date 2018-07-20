@@ -85,18 +85,18 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
         final String service = event.getService();
         final String context = event.getContext();
 
-        this.performMapping(service, context);
+        this.performMapping(service, context, event.getTimestamp());
     }
 
     private void ejbMapper(final EJBUndeployedEvent event) {
         final String service = event.getService();
         final String context = event.getContext();
 
-        this.performMapping(service, context);
+        this.performMapping(service, context, event.getTimestamp());
 
     }
 
-    private void performMapping(final String service, final String context) {
+    private void performMapping(final String service, final String context, final long observedTime) {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
 
@@ -108,7 +108,7 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
             final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
                     AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                     this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
-            this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer));
+            this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
                     service);

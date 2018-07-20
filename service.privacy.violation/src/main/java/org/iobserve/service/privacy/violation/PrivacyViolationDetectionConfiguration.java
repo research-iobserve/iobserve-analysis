@@ -167,7 +167,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
                             privacyWarner.getUndeployedInputPort());
 
-                    this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
+                    // this.connectPorts(privacyWarner.getProbesOutputPort(),
+                    // modelProbeController.getInputPort());
                     this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
 
                     // this.connectPorts(modelProbeController.getOutputPort(),

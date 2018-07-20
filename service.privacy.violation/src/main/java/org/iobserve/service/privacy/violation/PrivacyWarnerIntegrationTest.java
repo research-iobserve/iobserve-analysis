@@ -167,7 +167,7 @@ public class PrivacyWarnerIntegrationTest {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
         assemblyContext.setEntityName("EntityName");
         final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService", assemblyContext, "http://Test.test",
-                ISOCountryCode.EVIL_EMPIRE);
+                ISOCountryCode.EVIL_EMPIRE, 0);
 
         final List<Warnings> results = new ArrayList<>();
         StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)

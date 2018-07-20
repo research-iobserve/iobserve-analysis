@@ -27,6 +27,13 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public interface IPCMDeploymentEvent {
 
     /**
+     * Get time of the original event.
+     * 
+     * @return returns the timestamp
+     */
+    long getTimestamp();
+
+    /**
      * Unique service identifier, e.g., IP address.
      *
      * @return returns the service id
