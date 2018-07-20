@@ -16,19 +16,20 @@
 package org.iobserve.analysis.test.userbehavior.builder;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.test.userbehavior.ReferenceElements;
 import org.iobserve.analysis.test.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.test.userbehavior.TestHelper;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.UsageModelFactory;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -70,7 +71,7 @@ public final class LoopWithinLoopReference {
      *             on error
      */
     public ReferenceElements getLoopWithinLoopReferenceModel(final String referenceUsageModelFileName,
-            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModel, final CorrespondenceModel correspondenceModel)
             throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -82,7 +83,6 @@ public final class LoopWithinLoopReference {
         final int lengthOfSubsequentLoopSequence = TestHelper.getRandomInteger(2, 1);
 
         // In the following the reference usage model is created
-        Optional<Correspondent> optionCorrespondent;
         AbstractUserAction lastAction;
         final UsageModel usageModel = UsageModelFactory.createUsageModel();
         final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
@@ -117,12 +117,12 @@ public final class LoopWithinLoopReference {
         final Stop loop2Stop = UsageModelFactory.createStop("");
         UsageModelFactory.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Stop);
         lastAction = loop2Start;
-        optionCorrespondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
+        final OperationSignature operationSignature = CorrespondenceUtility.findModelElementForOperation(
+                correspondenceModel, Repository.class, ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
-        if (optionCorrespondent.isPresent()) {
-            final Correspondent correspondent = optionCorrespondent.get();
+        if (operationSignature != null) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
+                    .createEntryLevelSystemCall(repositoryLookupModel, operationSignature);
             UsageModelFactory.addUserAction(loop2.getBodyBehaviour_Loop(), entryLevelSystemCall);
             UsageModelFactory.connect(lastAction, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;
@@ -132,24 +132,24 @@ public final class LoopWithinLoopReference {
 
         // The sequence that exclusively belongs to the exterior loop is created
         for (int i = 0; i < lengthOfSubsequentLoopSequence; i++) {
+            final OperationSignature operationSignature2;
             switch (i) {
             case 0:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
+                operationSignature2 = CorrespondenceUtility.findModelElementForOperation(correspondenceModel,
+                        Repository.class, ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
                 break;
             case 1:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
+                operationSignature2 = CorrespondenceUtility.findModelElementForOperation(correspondenceModel,
+                        Repository.class, ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
+            if (operationSignature2 != null) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
+                        .createEntryLevelSystemCall(repositoryLookupModel, operationSignature2);
                 UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

@@ -24,7 +24,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,7 +71,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
     @Mock
     private ModelResource<Allocation> mockedAllocationContextModelProvider;
     @Mock
-    private ICorrespondence mockedCorrespondenceModel;
+    private CorrespondenceModel mockedCorrespondenceModel;
 
     /** input events. */
     private final List<PCMDeployedEvent> inputEvents = new ArrayList<>();

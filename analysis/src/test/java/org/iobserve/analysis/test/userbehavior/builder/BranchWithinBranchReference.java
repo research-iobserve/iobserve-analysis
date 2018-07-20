@@ -18,17 +18,19 @@ package org.iobserve.analysis.test.userbehavior.builder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.test.userbehavior.ReferenceElements;
 import org.iobserve.analysis.test.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.test.userbehavior.TestHelper;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.Part;
 import org.iobserve.model.factory.UsageModelFactory;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
@@ -73,7 +75,7 @@ public final class BranchWithinBranchReference {
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
             final UsageModelFactory usageModelBuilder, final RepositoryLookupModelProvider repositoryLookupModel,
-            final ICorrespondence correspondenceModel) throws IOException {
+            final CorrespondenceModel correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -195,13 +197,12 @@ public final class BranchWithinBranchReference {
      * @return
      */
     private static UsageModel createTheReferenceModel(final UsageModelFactory usageModelBuilder,
-            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel,
+            final RepositoryLookupModelProvider repositoryLookupModel, final CorrespondenceModel correspondenceModel,
             final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
             final int numberOfConcurrentUsers, final List<Integer> branchTransitionCounter,
             final List<List<Integer>> listOfbranchTransitionCounterInterior) {
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
-        Optional<Correspondent> optionCorrespondent;
         final UsageModel usageModel = UsageModelFactory.createUsageModel();
         final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
@@ -227,19 +228,20 @@ public final class BranchWithinBranchReference {
             final Stop stopBranchTransition = UsageModelFactory.createStop("");
             UsageModelFactory.addUserAction(branchTransitionBehaviour, stopBranchTransition);
             lastAction = startBranchTransition;
+
             if (i >= 0 && i < 3) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
+                final Part part = CorrespondenceUtility.findPart(Repository.class, correspondenceModel);
+                final OperationSignature operation = CorrespondenceUtility.findModelElementForOperation(part,
                         ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
-            } else {
-                throw new IllegalArgumentException("Illegal value of model element parameter");
-            }
-            if (optionCorrespondent.isPresent()) {
+
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryLookupModel, optionCorrespondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModel, operation);
                 UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
+            } else {
+                throw new IllegalArgumentException("Illegal value of model element parameter");
             }
 
             // The interior branch is created
@@ -263,12 +265,12 @@ public final class BranchWithinBranchReference {
                         branchTransitionBehaviourInterior);
 
                 lastAction = startBranchTransitionInterior;
-                optionCorrespondent = BranchWithinBranchReference.getOptionCorrespondent(correspondenceModel, j);
+                final OperationSignature operation = BranchWithinBranchReference
+                        .getOptionCorrespondent(correspondenceModel, j);
 
-                if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
+                if (operation != null) {
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                            .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
+                            .createEntryLevelSystemCall(repositoryLookupModel, operation);
                     UsageModelFactory.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
                     UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
@@ -281,18 +283,20 @@ public final class BranchWithinBranchReference {
         return usageModel;
     }
 
-    private static Optional<Correspondent> getOptionCorrespondent(final ICorrespondence correspondenceModel,
+    private static OperationSignature getOptionCorrespondent(final CorrespondenceModel correspondenceModel,
             final int j) {
+        final Part part = CorrespondenceUtility.findPart(Repository.class, correspondenceModel);
+
         switch (j) {
         case 0:
-            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
-                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
+            return CorrespondenceUtility.findModelElementForOperation(part,
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[0], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
         case 1:
-            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
-                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
+            return CorrespondenceUtility.findModelElementForOperation(part,
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[3], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
         case 2:
-            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
-                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
+            return CorrespondenceUtility.findModelElementForOperation(part,
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
         default:
             throw new IllegalArgumentException("Illegal value of model element parameter");
         }

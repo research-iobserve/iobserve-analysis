@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.data.BranchModel;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
@@ -43,7 +43,7 @@ public class UserBehaviorTransformation {
     private final int varianceOfUserGroups;
     private final boolean isClosedWorkload;
     private final double thinkTime;
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModel correspondenceModel;
 
     private UsageModel pcmUsageModel;
     private final RepositoryLookupModelProvider repositoryLookupModel;
@@ -70,7 +70,7 @@ public class UserBehaviorTransformation {
     public UserBehaviorTransformation(final UserSessionCollectionModel inputEntryCallSequenceModel,
             final int numberOfUserGroupsFromInputUsageModel, final int varianceOfUserGroups,
             final boolean isClosedWorkload, final double thinkTime,
-            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel) {
+            final RepositoryLookupModelProvider repositoryLookupModel, final CorrespondenceModel correspondenceModel) {
         this.inputEntryCallSequenceModel = inputEntryCallSequenceModel;
         this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
         this.varianceOfUserGroups = varianceOfUserGroups;

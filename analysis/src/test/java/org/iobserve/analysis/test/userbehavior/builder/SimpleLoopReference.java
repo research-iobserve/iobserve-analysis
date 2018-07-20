@@ -16,19 +16,20 @@
 package org.iobserve.analysis.test.userbehavior.builder;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.test.userbehavior.ReferenceElements;
 import org.iobserve.analysis.test.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.test.userbehavior.TestHelper;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.UsageModelFactory;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -70,8 +71,8 @@ public final class SimpleLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
-            throws IOException {
+            final RepositoryLookupModelProvider repositoryLookupModelProvider,
+            final CorrespondenceModel correspondenceModel) throws IOException {
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
         // subsequently the user sessions are used to create a usage model. The created usage model
@@ -105,26 +106,24 @@ public final class SimpleLoopReference {
         final Stop loopStop = UsageModelFactory.createAddStopAction("", loop.getBodyBehaviour_Loop());
         lastAction = loopStart;
 
-        Optional<Correspondent> optionCorrespondent;
         // Because the number of iterated calls is set randomly, the switch case adds the number of
         // iterated calls to the loop
         for (int i = 0; i < numberOfIteratedCalls; i++) {
             if (i >= 0 && i < 5) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
+                final OperationSignature operationSignature = CorrespondenceUtility.findModelElementForOperation(
+                        correspondenceModel, Repository.class, ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
-
+                if (operationSignature != null) {
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
+                            .createEntryLevelSystemCall(repositoryLookupModelProvider, operationSignature);
+                    UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                    UsageModelFactory.connect(lastAction, entryLevelSystemCall);
+                    lastAction = entryLevelSystemCall;
+                }
             } else {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent);
-                UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
-                lastAction = entryLevelSystemCall;
-            }
+
         }
         UsageModelFactory.connect(lastAction, loopStop);
 
