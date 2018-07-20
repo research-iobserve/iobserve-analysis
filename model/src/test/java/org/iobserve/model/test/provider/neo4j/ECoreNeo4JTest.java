@@ -156,7 +156,7 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreResourceCreate() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
+        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
                 TwoPackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);

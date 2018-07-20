@@ -108,7 +108,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenClearResource() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);

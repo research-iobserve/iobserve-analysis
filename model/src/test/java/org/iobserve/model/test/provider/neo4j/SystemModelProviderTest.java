@@ -61,8 +61,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
         // TODO add actual test
@@ -72,8 +72,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
+                this.prefix, this.ePackage);
 
         final AssemblyContext ac = this.testModel.getAssemblyContexts__ComposedStructure().get(0);
 
@@ -88,8 +88,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -194,8 +194,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenDeleteObject() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
+                this.prefix, this.ePackage);
 
         final System writtenModel = this.system;
 
@@ -213,8 +213,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObjectAndDatatypes",
-                this.prefix, this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -233,8 +233,8 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
      */
     @Test
     public final void createThenReadByName() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByName", this.prefix,
-                this.ePackage);
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByName",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 

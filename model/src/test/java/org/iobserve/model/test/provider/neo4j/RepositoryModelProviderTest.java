@@ -57,8 +57,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
+                this.prefix, this.ePackage);
 
         final OperationInterface writtenInterface = (OperationInterface) this.testModel.getInterfaces__Repository()
                 .get(0);
@@ -81,8 +81,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public final void createThenReadByType() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -93,8 +93,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -159,8 +159,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public final void createThenDeleteObject() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
@@ -180,8 +180,8 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
      */
     @Test
     public final void createThenReadByName() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByName", this.prefix,
-                this.ePackage);
+        final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadByName",
+                this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 

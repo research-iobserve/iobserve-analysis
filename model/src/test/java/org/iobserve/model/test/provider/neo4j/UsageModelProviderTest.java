@@ -61,8 +61,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenReadByType() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadByType", this.prefix,
-                this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
+                this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
@@ -87,8 +87,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenReadContaining() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadContaining", this.prefix,
-                this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
+                this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
@@ -107,8 +107,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenReadReferencing() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing", this.prefix,
-                this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
+                this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
@@ -196,8 +196,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenDeleteObject() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject", this.prefix,
-                this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
+                this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
@@ -233,8 +233,8 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      */
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource("createThenDeleteObjectAndDatatypes",
-                this.prefix, this.ePackage);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 

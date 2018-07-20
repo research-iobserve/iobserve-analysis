@@ -31,7 +31,7 @@ public final class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
 
-    private static ConcurrentHashMap<ModelResource, Object> locks = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<ModelResource<?>, Object> locks = new ConcurrentHashMap<>();
 
     private ModelProviderSynchronizer() {
         // private constructor, utility class
@@ -43,7 +43,7 @@ public final class ModelProviderSynchronizer {
      * @param resource
      *            lock the specific resource
      */
-    public static void getLock(final ModelResource resource) {
+    public static void getLock(final ModelResource<?> resource) {
         synchronized (resource) {
             while (ModelProviderSynchronizer.locks.get(resource) != null) {
                 try {
@@ -66,7 +66,7 @@ public final class ModelProviderSynchronizer {
      * @param resource
      *            the resource to be locked
      */
-    public static void releaseLock(final ModelResource resource) {
+    public static void releaseLock(final ModelResource<?> resource) {
         synchronized (resource) {
             if (ModelProviderSynchronizer.locks.get(resource) == resource) {
                 ModelProviderSynchronizer.locks.remove(resource);

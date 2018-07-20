@@ -42,14 +42,14 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenReadById() {
-        final ModelResource resource = ModelProviderTestUtils
+        final ModelResource<T> resource = ModelProviderTestUtils
                 .prepareResource(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         final long id = resource.getInternalId(this.testModel);
 
-        final T readModel = (T) resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
+        final T readModel = resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -63,7 +63,7 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      */
     @Test
     public final void createThenDeleteComponentAndDatatypes() {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);

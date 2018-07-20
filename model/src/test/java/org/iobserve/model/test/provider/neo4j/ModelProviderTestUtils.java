@@ -66,7 +66,7 @@ public final class ModelProviderTestUtils {
      *            A model resource, containing a model
      * @return True if the graph is empty, false otherwise
      */
-    public static boolean isResourceEmpty(final ModelResource resource) {
+    public static boolean isResourceEmpty(final ModelResource<?> resource) {
         boolean isEmpty = false;
 
         try (Transaction tx = resource.getGraphDatabaseService().beginTx()) {

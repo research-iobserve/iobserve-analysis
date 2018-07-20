@@ -64,7 +64,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelResource resource = ModelProviderTestUtils
+        final ModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
@@ -77,7 +77,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelResource resource = ModelProviderTestUtils
+        final ModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.ePackage);
 
         final AllocationContext writtenContext = this.testModel.getAllocationContexts_Allocation().get(0);
@@ -95,7 +95,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelResource resource = ModelProviderTestUtils
+        final ModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
@@ -119,7 +119,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource resource = ModelProviderTestUtils.prepareResource(
+        final ModelResource<Allocation> resource = ModelProviderTestUtils.prepareResource(
                 AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.ePackage);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory
@@ -146,8 +146,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
         resource.updatePartition(this.testModel);
 
-        final Allocation readModel = (Allocation) resource.getModelRootNode(Allocation.class,
-                AllocationPackage.Literals.ALLOCATION);
+        final Allocation readModel = resource.getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION);
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -161,7 +160,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
      */
     @Test
     public final void createThenReadByName() {
-        final ModelResource resource = ModelProviderTestUtils
+        final ModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
