@@ -65,7 +65,11 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     private String assembleTcpInformation(final AllocationContext allocation) {
         // TODO resolve; entity name = ip
-        allocation.getResourceContainer_AllocationContext().getEntityName();
+        final String ip = allocation.getResourceContainer_AllocationContext().getEntityName();
+        // TODO real hostname and dynamic port (currently not supported in the model)
+        final String hostname = allocation.getEntityName();
+        final int port = 5791;
+
         // TODO
         return null;
     }
