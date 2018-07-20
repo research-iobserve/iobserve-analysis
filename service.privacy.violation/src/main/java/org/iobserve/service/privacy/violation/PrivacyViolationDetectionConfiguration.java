@@ -29,8 +29,6 @@ import org.iobserve.analysis.deployment.DeallocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.privacy.GeoLocationStage;
-import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
-import org.iobserve.analysis.traces.traceReconstruction.TraceReconstructionFilter;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
@@ -39,21 +37,14 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.service.InstantiationFactory;
-import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
-import org.iobserve.service.privacy.violation.filter.DataFlowDetectionStage;
-import org.iobserve.service.privacy.violation.filter.EntryEventMapperStage;
 import org.iobserve.service.privacy.violation.filter.ModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.source.ISourceCompositeStage;
-import org.iobserve.stages.data.trace.ConcurrentHashMapWithCreate;
-import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.data.trace.EventBasedTraceFactory;
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
-import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.tcp.ProbeControlFilter;
@@ -143,17 +134,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     resourceEnvironmentResource, systemModelResource, allocationResource, privacyModelResource);
             privacyWarner.declareActive();
 
-            final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
-                    EventBasedTraceFactory.INSTANCE);
-            final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
-
-            final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
-            final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceResource,
-                    repositoryResource, systemModelResource, allocationResource);
-            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(
-                    resourceEnvironmentResource, systemModelResource, allocationResource);
-            final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
-
+            /** controlling probes. */
             final ModelProbeController modelProbeController = new ModelProbeController();
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
 
@@ -171,6 +152,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     /** connect ports. */
                     this.connectPorts(sourceCompositeStage.getOutputPort(), eventDelayer.getInputPort());
                     this.connectPorts(eventDelayer.getOutputPort(), eventDispatcher.getInputPort());
+
+                    /** event dispatcher. */
                     this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
                     this.connectPorts(undeployedEventMatcher.getOutputPort(),
                             undeploymentStage.getUndeployedInputPort());
@@ -178,23 +161,23 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                     this.connectPorts(deallocationEventMatcher.getOutputPort(), deallocationStage.getInputPort());
 
                     this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
+
                     this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
+
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
                             privacyWarner.getUndeployedInputPort());
 
                     this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                     this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
 
-                    this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
-                    this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
+                    // this.connectPorts(modelProbeController.getOutputPort(),
+                    // probeMapper.getInputPort());
+                    // this.connectPorts(probeMapper.getOutputPort(),
+                    // probeController.getInputPort());
 
-                    this.connectPorts(flowMatcher.getOutputPort(), traceReconstructionFilter.getInputPort());
-                    this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(),
-                            entryCallStage.getInputPort());
-                    this.connectPorts(entryCallStage.getOutputPort(), entryEventMapperStage.getInputPort());
-                    this.connectPorts(entryEventMapperStage.getOutputPort(), dataFlowDetectionStage.getInputPort());
-                    this.connectPorts(dataFlowDetectionStage.getOutputPort(), alarmAnalysis.getInputPort());
-                    this.connectPorts(alarmAnalysis.getOutputPort(), alarmSink.getInputPort());
+                    /** Alarm event processing. */
+                    // TODO Trace analysis has become obsolete and will be replaced by an alarm
+                    // event receiving part
                 } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
                                                        // control
                     throw new IOException("Cannot create warning file.", eWarning);
