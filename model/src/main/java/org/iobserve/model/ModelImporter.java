@@ -25,12 +25,9 @@ import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -160,13 +157,14 @@ public final class ModelImporter implements IModelImporter {
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
             if (suffix.equals(extension)) {
-                ModelImporter.LOGGER.debug("Reading model {}", nextFile.toString());
+                ModelImporter.LOGGER.info("Reading model {}", nextFile.toString());
                 return this.getUri(nextFile);
             }
         }
         if (!required) {
             return null;
         } else {
+            ModelImporter.LOGGER.error("Missing {} model.", suffix);
             throw new IOException("Missing " + suffix + " model.");
         }
     }
@@ -313,67 +311,4 @@ public final class ModelImporter implements IModelImporter {
         return URI.createFileURI(file.getAbsolutePath());
     }
 
-    /**
-     * Print a given model partition as tree on stderr.
-     *
-     * @param object
-     *            the root object
-     * @param offset
-     *            character offset
-     */
-    public void printModelParititionAsTree(final EObject object, final String offset) {
-        java.lang.System.err.println(offset + "object " + object.eClass().getInstanceTypeName());
-        for (final EAttribute attr : object.eClass().getEAllAttributes()) {
-            final Object value = object.eGet(attr);
-            if (value != null) {
-                java.lang.System.err.println(offset + "\tattr " + attr.getName() + " " + value.toString());
-            }
-        }
-
-        for (final EReference ref : object.eClass().getEAllReferences()) {
-            if (ref.isContainment()) {
-                this.iterateContainment(object, ref, offset);
-            } else {
-                this.iterateReference(object, ref, offset);
-            }
-        }
-    }
-
-    private void iterateReference(final EObject object, final EReference ref, final String offset) {
-        final Object refRepresentation = object.eGet(ref);
-        if (refRepresentation instanceof EList<?>) {
-            final EList<?> refs = (EList<?>) object.eGet(ref);
-            for (int i = 0; i < refs.size(); i++) {
-                java.lang.System.err.println(offset + "\tref " + ref.getName() + "[" + i + "]" + " " + ref.eIsProxy());
-                this.iterateAttributes((EObject) refs.get(i), offset + "\t\t");
-            }
-        } else if (refRepresentation != null) {
-            java.lang.System.err.println(offset + "\tref " + ref.getName() + " " + ref.eIsProxy());
-            this.iterateAttributes((EObject) refRepresentation, offset + "\t\t");
-        }
-    }
-
-    private void iterateAttributes(final EObject object, final String offset) {
-        java.lang.System.err.println(offset + "object " + object.eClass().getInstanceTypeName());
-        for (final EAttribute attr : object.eClass().getEAllAttributes()) {
-            final Object value = object.eGet(attr);
-            if (value != null) {
-                java.lang.System.err.println(offset + "\tattr " + attr.getName() + " " + value.toString());
-            }
-        }
-    }
-
-    private void iterateContainment(final EObject object, final EReference ref, final String offset) {
-        final Object refRepresentation = object.eGet(ref);
-        if (refRepresentation instanceof EList<?>) {
-            final EList<?> refs = (EList<?>) object.eGet(ref);
-            for (int i = 0; i < refs.size(); i++) {
-                java.lang.System.err.println(offset + "\tcon " + ref.getName() + "[" + i + "]" + " " + ref.eIsProxy());
-                this.printModelParititionAsTree((EObject) refs.get(i), offset + "\t\t");
-            }
-        } else if (refRepresentation != null) {
-            java.lang.System.err.println(offset + "\tcon " + ref.getName() + " " + ref.eIsProxy());
-            this.printModelParititionAsTree((EObject) refRepresentation, offset + "\t\t");
-        }
-    }
 }

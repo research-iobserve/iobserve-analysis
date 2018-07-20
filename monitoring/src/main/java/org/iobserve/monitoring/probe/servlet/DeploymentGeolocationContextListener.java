@@ -55,13 +55,7 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
     protected void triggerDeployedEvent(final ServletContextEvent event) {
         final ServletContext servletContext = event.getServletContext();
 
-        String service;
-        try {
-            final InetAddress address = InetAddress.getByName(servletContext.getVirtualServerName());
-            service = address.getHostAddress();
-        } catch (final UnknownHostException e) {
-            service = servletContext.getVirtualServerName();
-        }
+        final String service = this.getServiceIdentifier(servletContext);
 
         final String context = servletContext.getServletContextName();
 
@@ -85,12 +79,21 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
     @Override
     protected void triggerUndeployedEvent(final ServletContextEvent event) {
         final ServletContext servletContext = event.getServletContext();
-        final String service = servletContext.getVirtualServerName();
+        final String service = this.getServiceIdentifier(servletContext);
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
         this.monitoringCtrl.newMonitoringRecord(
                 new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
+    }
+
+    private String getServiceIdentifier(final ServletContext servletContext) {
+        try {
+            final InetAddress address = InetAddress.getByName(servletContext.getVirtualServerName());
+            return address.getHostAddress();
+        } catch (final UnknownHostException e) {
+            return servletContext.getVirtualServerName();
+        }
     }
 
 }

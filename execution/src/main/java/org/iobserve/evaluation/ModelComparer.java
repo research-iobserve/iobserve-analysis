@@ -21,8 +21,8 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.adaptation.data.graph.HostComponentAllocationGraphFactory;
 import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.model.ModelImporter;
 
@@ -52,7 +52,8 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
             // TODO finish
             final ModelImporter modelProviders = new ModelImporter(new File(element.toFileString()));
             final HostComponentAllocationGraphFactory graphFactory = new HostComponentAllocationGraphFactory();
-            final HostComponentAllocationGraph runtimeGraph = graphFactory.buildGraph(modelProviders, ModelGraphRevision.RUNTIME);
+            final HostComponentAllocationGraph runtimeGraph = graphFactory.buildGraph(modelProviders,
+                    ModelGraphRevision.RUNTIME);
 
             if (runtimeGraph.equals(this.baseAdaptationData.getReDeploymentGraph())
                     && this.baseAdaptationData.getReDeploymentGraph().equals(runtimeGraph)) {

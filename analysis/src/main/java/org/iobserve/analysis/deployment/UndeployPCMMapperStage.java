@@ -27,9 +27,10 @@ import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
@@ -72,7 +73,7 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
     }
 
     @Override
-    protected void execute(final IUndeployedEvent event) throws Exception {
+    protected void execute(final IUndeployedEvent event) throws InvocationException, DBException {
         this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);
@@ -81,14 +82,14 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
         }
     }
 
-    private void servletMapper(final ServletUndeployedEvent event) {
+    private void servletMapper(final ServletUndeployedEvent event) throws InvocationException, DBException {
         final String service = event.getService();
         final String context = event.getContext();
 
         this.performMapping(service, context, event.getTimestamp());
     }
 
-    private void ejbMapper(final EJBUndeployedEvent event) {
+    private void ejbMapper(final EJBUndeployedEvent event) throws InvocationException, DBException {
         final String service = event.getService();
         final String context = event.getContext();
 
@@ -96,7 +97,8 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     }
 
-    private void performMapping(final String service, final String context, final long observedTime) {
+    private void performMapping(final String service, final String context, final long observedTime)
+            throws InvocationException, DBException {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
 
@@ -105,9 +107,8 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
         if (assemblyEntry.size() == 1) {
             final ResourceContainer resourceContainer = resourceContainers.get(0);
-            final AssemblyContext assemblyContext = this.systemModelResource.findObjectByTypeAndId(
-                    AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                    this.systemModelResource.getInternalId(assemblyEntry.get(0).getAssembly()));
+            final AssemblyContext assemblyContext = this.systemModelResource
+                    .resolve(assemblyEntry.get(0).getAssembly());
             this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
