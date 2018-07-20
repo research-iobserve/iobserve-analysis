@@ -24,6 +24,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
@@ -35,9 +36,9 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  */
 public class InitializeUserBehaviorVisualization {
 
-    private final ModelResource usageModelProvider;
+    private final ModelResource<UsageModel> usageModelProvider;
     private Object usageScenarios;
-    private final ModelResource systemModelProvider;
+    private final ModelResource<System> systemModelProvider;
 
     /**
      * Create the user bevahor visualization.
@@ -47,8 +48,8 @@ public class InitializeUserBehaviorVisualization {
      * @param usageModelGraphProvider
      *            usage model provier
      */
-    public InitializeUserBehaviorVisualization(final ModelResource systemModelGraphProvider,
-            final ModelResource usageModelGraphProvider) {
+    public InitializeUserBehaviorVisualization(final ModelResource<System> systemModelGraphProvider,
+            final ModelResource<UsageModel> usageModelGraphProvider) {
         this.systemModelProvider = systemModelGraphProvider;
         this.usageModelProvider = usageModelGraphProvider;
     }

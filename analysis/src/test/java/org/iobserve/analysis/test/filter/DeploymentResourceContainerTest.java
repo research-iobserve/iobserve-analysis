@@ -25,6 +25,7 @@ import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -67,11 +68,11 @@ public class DeploymentResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelResource mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelResource mockedAllocationModelGraphProvider;
+    private static ModelResource<Allocation> mockedAllocationModelGraphProvider;
     @Mock
-    private static ModelResource mockedCorrespondence;
+    private static ModelResource<CorrespondenceModel> mockedCorrespondence;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
     private static Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();

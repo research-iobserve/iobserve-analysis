@@ -33,10 +33,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
@@ -65,9 +67,9 @@ public class DeploymentVisualizationStageTest { // NOCS test
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
-    private ModelResource mockedResourceContainerModelProvider;
+    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
     @Mock
-    private ModelResource mockedAssemblyContextModelProvider;
+    private ModelResource<Allocation> mockedAllocationContextModelProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
@@ -128,13 +130,13 @@ public class DeploymentVisualizationStageTest { // NOCS test
         // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
         // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
-        Mockito.when(this.mockedAssemblyContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
+        Mockito.when(this.mockedAllocationContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
                 CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 
         this.deploymentVisualizationStage = new DeploymentVisualizationStage(changelogURL,
                 DeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
-                this.mockedAssemblyContextModelProvider);
+                this.mockedAllocationContextModelProvider);
     }
 
     /**

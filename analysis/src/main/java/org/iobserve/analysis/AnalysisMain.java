@@ -25,17 +25,23 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 
 import org.iobserve.model.ModelImporter;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
@@ -126,38 +132,38 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                 final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
 
                 /** initialize neo4j graphs. */
-                final ModelResource correspondenceModelResource = new ModelResource(CorrespondencePackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "correspondence"));
+                final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
+                        CorrespondencePackage.eINSTANCE, new File(this.modelDatabaseDirectory, "correspondence"));
                 correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-                final ModelResource repositoryModelResource = new ModelResource(RepositoryPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "repository"));
+                final ModelResource<Repository> repositoryModelResource = new ModelResource<>(
+                        RepositoryPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "repository"));
                 repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-                final ModelResource resourceEnvironmentModelResource = new ModelResource(
+                final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
                         ResourceenvironmentPackage.eINSTANCE,
                         new File(this.modelDatabaseDirectory, "resourceenvironment")); // add
 
                 resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-                final ModelResource systemModelResource = new ModelResource(SystemPackage.eINSTANCE,
+                final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
                         new File(this.modelDatabaseDirectory, "system"));
                 systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-                final ModelResource allocationModelResource = new ModelResource(AllocationPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "allocation"));
+                final ModelResource<Allocation> allocationModelResource = new ModelResource<>(
+                        AllocationPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "allocation"));
                 allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-                final ModelResource usageModelResource = new ModelResource(UsagemodelPackage.eINSTANCE,
+                final ModelResource<UsageModel> usageModelResource = new ModelResource<>(UsagemodelPackage.eINSTANCE,
                         new File(this.modelDatabaseDirectory, "usageModel"));
                 usageModelResource.storeModelPartition(modelHandler.getUsageModel());
 
-                final ModelResource privacyModelResource = new ModelResource(PrivacyPackage.eINSTANCE,
+                final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
                         new File(this.modelDatabaseDirectory, "privacy"));
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
                 // get systemId
-                final System systemModel = (System) systemModelResource.getModelRootNode(System.class,
+                final System systemModel = systemModelResource.getModelRootNode(System.class,
                         SystemPackage.Literals.SYSTEM);
 
                 configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());

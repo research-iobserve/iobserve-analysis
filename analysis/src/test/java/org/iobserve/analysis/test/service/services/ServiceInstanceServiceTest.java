@@ -35,6 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Tests for {@link ServiceInstanceService}.
@@ -50,7 +51,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelResource mockedSystemModelGraphProvider;
+    private ModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 

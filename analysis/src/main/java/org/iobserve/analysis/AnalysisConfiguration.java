@@ -37,6 +37,7 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
@@ -45,7 +46,12 @@ import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,18 +85,26 @@ public class AnalysisConfiguration extends Configuration {
      * @param configuration
      *            Kieker configuration
      * @param repositoryModelResource
+     *            repository resource
      * @param resourceEnvironmentModelResource
+     *            resource environment
      * @param systemModelResource
+     *            system model
      * @param allocationModelResource
+     *            allocation model
      * @param usageModelResource
+     *            usage model
      * @param correspondenceModelResource
+     *            correspondence model
      * @throws ConfigurationException
+     *             on error
      */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelResource repositoryModelResource, final ModelResource resourceEnvironmentModelResource,
-            final ModelResource systemModelResource, final ModelResource allocationModelResource,
-            final ModelResource usageModelResource, final ModelResource correspondenceModelResource)
-            throws ConfigurationException {
+            final ModelResource<Repository> repositoryModelResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
+            final ModelResource<UsageModel> usageModelResource,
+            final ModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
         this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
@@ -111,6 +125,14 @@ public class AnalysisConfiguration extends Configuration {
         }
     }
 
+    /**
+     * Model less config.
+     *
+     * @param configuration
+     *            configuration
+     * @throws ConfigurationException
+     *             on error
+     */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration)
             throws ConfigurationException {
         this(configuration, null, null, null, null, null, null);
@@ -130,9 +152,9 @@ public class AnalysisConfiguration extends Configuration {
      *             when configuration fails
      */
     private void containerManagement(final kieker.common.configuration.Configuration configuration,
-            final ModelResource resourceEnvironmentModelResource, final ModelResource systemModelResource,
-            final ModelResource allocationModelResource, final ModelResource correspondenceModelResource)
-            throws ConfigurationException {
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
+            final ModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             /** allocation. */
@@ -189,8 +211,9 @@ public class AnalysisConfiguration extends Configuration {
      *             when configuration fails
      */
     private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration,
-            final ModelResource resourceEnvironmentModelResource, final ModelResource systemModelResource,
-            final ModelResource allocationModelResource) throws ConfigurationException {
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource)
+            throws ConfigurationException {
         final String[] containerManagementSinks = configuration
                 .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {
