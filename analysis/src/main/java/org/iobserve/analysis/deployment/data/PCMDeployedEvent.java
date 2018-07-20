@@ -44,6 +44,8 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
      *            the service URL
      * @param isoCountryCode
      *            the country code of the service in case that is available.
+     * @param timestamp
+     *            observation timestamp
      */
     public PCMDeployedEvent(final String service, final AssemblyContext assemblyContext, final String url,
             final ISOCountryCode isoCountryCode, final long timestamp) {

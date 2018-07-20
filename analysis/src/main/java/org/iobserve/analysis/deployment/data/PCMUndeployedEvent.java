@@ -38,6 +38,8 @@ public class PCMUndeployedEvent implements IPCMDeploymentEvent {
      *            the correspondent for the component to be removed
      * @param resourceContainer
      *            resource container
+     * @param timestamp
+     *            observation timestamp
      */
     public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
             final ResourceContainer resourceContainer, final long timestamp) {

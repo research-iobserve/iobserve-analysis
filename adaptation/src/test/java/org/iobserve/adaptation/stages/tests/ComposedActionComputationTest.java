@@ -27,8 +27,8 @@ import org.iobserve.adaptation.data.AssemblyContextActionFactory;
 import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.adaptation.data.graph.DeploymentNode;
-import org.iobserve.adaptation.data.graph.GraphFactory;
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraphFactory;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.adaptation.stages.ComposedActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
@@ -327,11 +327,11 @@ public class ComposedActionComputationTest {
 
     private AdaptationData createAdaptationData() throws Exception {
         final AdaptationData adaptationData = new AdaptationData();
-        final GraphFactory graphFactory = new GraphFactory();
+        final HostComponentAllocationGraphFactory graphFactory = new HostComponentAllocationGraphFactory();
 
-        final ModelGraph runtimeModelGraph = graphFactory.buildGraph(this.runtimeModel.getSystem(),
+        final HostComponentAllocationGraph runtimeModelGraph = graphFactory.buildGraph(this.runtimeModel.getSystem(),
                 this.runtimeModel.getResEnvironment(), this.runtimeModel.getAllocation(), ModelGraphRevision.RUNTIME);
-        final ModelGraph redeploymentModelGraph = graphFactory.buildGraph(this.redeploymentModel.getSystem(),
+        final HostComponentAllocationGraph redeploymentModelGraph = graphFactory.buildGraph(this.redeploymentModel.getSystem(),
                 this.redeploymentModel.getResEnvironment(), this.redeploymentModel.getAllocation(),
                 ModelGraphRevision.REDEPLOYMENT);
 

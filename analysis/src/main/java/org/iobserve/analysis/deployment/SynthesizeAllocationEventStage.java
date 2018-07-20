@@ -17,6 +17,9 @@ package org.iobserve.analysis.deployment;
 
 import java.util.Optional;
 
+import kieker.monitoring.core.controller.MonitoringController;
+import kieker.monitoring.timer.ITimeSource;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -47,6 +50,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
  *
  */
 public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
+
+    private static final ITimeSource TIME_SOURCE = MonitoringController.getInstance().getTimeSource();
 
     /** reference to resource environment model provider. */
     private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
@@ -91,7 +96,8 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
              * TAllocation (creating the resource container) and forward the deployment event to
              * TDeployment (deploying on created resource container).
              */
-            this.allocationOutputPort.send(new ContainerAllocationEvent(event.getService()));
+            this.allocationOutputPort.send(new ContainerAllocationEvent(
+                    SynthesizeAllocationEventStage.TIME_SOURCE.getTime(), event.getService()));
             this.deployedRelayOutputPort.send(event);
         }
     }

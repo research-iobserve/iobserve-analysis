@@ -33,32 +33,33 @@ template IUndeployedEvent : IDeploymentChange, IEvent
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event ServletDescriptor : IEvent { 
+template ServletDescriptor { 
 	string service
 	string context
 	string deploymentId
 }
 
 @author "Reiner Jung" @since "0.0.2"
-event ServletDeployedEvent extends ServletDescriptor : IDeployedEvent
+event ServletDeployedEvent : IDeployedEvent, ServletDescriptor
 @author "Reiner Jung" @since "0.0.2"
-event ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
+event ServletUndeployedEvent : IUndeployedEvent, ServletDescriptor
 
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.	 
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event EJBDescriptor : IEvent { 
+template EJBDescriptor { 
 	string service
 	string context
 	string deploymentId
 }
 
 @author "Reiner Jung" @since "0.0.2"
-event EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
+event EJBDeployedEvent : IDeployedEvent, EJBDescriptor
 @author "Reiner Jung" @since "0.0.2"
-event EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
+event EJBUndeployedEvent : IUndeployedEvent, EJBDescriptor
 
+/** defining the privacy extension for a set of events */
 model Deployment IDeployedEvent, IUndeployedEvent
 sub Privacy Deployment : GeoLocation
 

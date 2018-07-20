@@ -118,8 +118,8 @@ public final class InitializeDeploymentVisualization {
      */
     public void initialize() throws IOException {
         // set up the system model and take parts from it
-        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .getModelRootNode(org.palladiosimulator.pcm.system.System.class, SystemPackage.Literals.SYSTEM);
+        final System systemModel = this.systemModelGraphProvider.getModelRootNode(System.class,
+                SystemPackage.Literals.SYSTEM);
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
 
         // set up the allocation model and take parts from it

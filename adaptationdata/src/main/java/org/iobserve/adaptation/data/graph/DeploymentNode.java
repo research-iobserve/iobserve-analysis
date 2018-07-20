@@ -86,7 +86,7 @@ public class DeploymentNode {
     public String getIso3CountryCode() {
         try {
             return CountryCode.getByCode(this.getIsoCountryCode()).getAlpha3();
-        } catch (final NullPointerException e) {
+        } catch (final NullPointerException e) { // NOPMD
             return "ERROR";
         }
     }
@@ -135,7 +135,7 @@ public class DeploymentNode {
             final DeploymentNode compObj = (DeploymentNode) obj;
             if (this.resourceContainerID.equals(compObj.resourceContainerID)
                     && this.resourceContainerName.equals(compObj.resourceContainerName)
-                    && (this.isoCountryCode == compObj.isoCountryCode)) {
+                    && this.isoCountryCode == compObj.isoCountryCode) {
                 return true;
             }
         }
@@ -144,12 +144,12 @@ public class DeploymentNode {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(120);
 
-        sb.append("Server: ").append(this.resourceContainerID);
-        sb.append("\t-- Location: ").append(this.isoCountryCode);
-        sb.append(" (").append(this.getIso3CountryCode()).append(')');
-        sb.append("\t-- Name: ").append(this.getResourceContainerName()).append('\n');
+        sb.append("Server: ").append(this.resourceContainerID); // NOPMD
+        sb.append("\t-- Location: ").append(this.isoCountryCode); // NOPMD
+        sb.append(" (").append(this.getIso3CountryCode()).append(')'); // NOPMD
+        sb.append("\t-- Name: ").append(this.getResourceContainerName()).append('\n'); // NOPMD
 
         sb.append("-Comp:\t ID \t\t\tCompPrivayLvl \tPers \tDeP \tAnonym \tComponent Name\n");
 

@@ -24,7 +24,7 @@ import org.iobserve.common.record.ServletDeployedEvent;
  *
  */
 public final class ImplementationLevelDataFactory {
-	
+
     public static final long DEPLOY_TIME = 1;
     public static final String SERVICE = "test-service";
     public static final String CONTEXT = "/path/test";
@@ -40,12 +40,13 @@ public final class ImplementationLevelDataFactory {
             .createContainerAllocationEvent();
 
     private ImplementationLevelDataFactory() {
-    	// empty final constructor for factory
+        // empty final constructor for factory
     }
-    
+
     private static ServletDeployedEvent createServletDeployedEvent() {
-        return new ServletDeployedEvent(ImplementationLevelDataFactory.DEPLOY_TIME, ImplementationLevelDataFactory.SERVICE,
-                ImplementationLevelDataFactory.CONTEXT, ImplementationLevelDataFactory.DEPLOYMENT_ID);
+        return new ServletDeployedEvent(ImplementationLevelDataFactory.DEPLOY_TIME,
+                ImplementationLevelDataFactory.SERVICE, ImplementationLevelDataFactory.CONTEXT,
+                ImplementationLevelDataFactory.DEPLOYMENT_ID);
     }
 
     private static EJBDeployedEvent createEJBDeployedEvent() {
@@ -54,6 +55,7 @@ public final class ImplementationLevelDataFactory {
     }
 
     private static ContainerAllocationEvent createContainerAllocationEvent() {
-        return new ContainerAllocationEvent(ImplementationLevelDataFactory.URL);
+        return new ContainerAllocationEvent(ImplementationLevelDataFactory.DEPLOY_TIME,
+                ImplementationLevelDataFactory.URL);
     }
 }

@@ -27,8 +27,8 @@ import org.iobserve.adaptation.data.AssemblyContextActionFactory;
 import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.adaptation.data.graph.DeploymentNode;
-import org.iobserve.adaptation.data.graph.GraphFactory;
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraphFactory;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.adaptation.executionplan.AllocateNodeAction;
 import org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction;
@@ -67,8 +67,8 @@ public class AtomicActionComputationTest {
 
     private AdaptationTestModel runtimeModel;
     private AdaptationTestModel redeploymentModel;
-    private ModelGraph runtimeModelGraph;
-    private ModelGraph redeploymentModelGraph;
+    private HostComponentAllocationGraph runtimeModelGraph;
+    private HostComponentAllocationGraph redeploymentModelGraph;
 
     /** initialize models. */
     @Before
@@ -312,7 +312,7 @@ public class AtomicActionComputationTest {
     }
 
     private void initializeModelGraphs() throws Exception {
-        final GraphFactory graphFactory = new GraphFactory();
+        final HostComponentAllocationGraphFactory graphFactory = new HostComponentAllocationGraphFactory();
 
         this.runtimeModelGraph = graphFactory.buildGraph(this.runtimeModel.getSystem(),
                 this.runtimeModel.getResEnvironment(), this.runtimeModel.getAllocation(), ModelGraphRevision.RUNTIME);

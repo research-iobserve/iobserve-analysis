@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * @author Lars Bluemke (added revision for drools rule matching)
  *
  */
-public class ModelGraph {
-    protected static final Logger LOG = LoggerFactory.getLogger(ModelGraph.class);
+public class HostComponentAllocationGraph {
+    protected static final Logger LOG = LoggerFactory.getLogger(HostComponentAllocationGraph.class);
 
     private final Set<DeploymentNode> servers;
     private final Set<ComponentNode> components;
@@ -50,7 +50,7 @@ public class ModelGraph {
      * @param revision
      *            the model graph's revision
      */
-    public ModelGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
+    public HostComponentAllocationGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
             final ModelImporter pcmModels, final ModelGraphRevision revision) {
         this.servers = new HashSet<>(servers);
         this.components = new HashSet<>(components);
@@ -64,7 +64,7 @@ public class ModelGraph {
      */
     public void printGraph() {
         for (final DeploymentNode server : this.getServers()) {
-            ModelGraph.LOG.info(server.toString());
+            HostComponentAllocationGraph.LOG.info(server.toString());
         }
     }
 
@@ -108,8 +108,8 @@ public class ModelGraph {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof ModelGraph) {
-            final ModelGraph compObj = (ModelGraph) obj;
+        if (obj instanceof HostComponentAllocationGraph) {
+            final HostComponentAllocationGraph compObj = (HostComponentAllocationGraph) obj;
 
             // Compare used servers
             boolean equalServers = true;

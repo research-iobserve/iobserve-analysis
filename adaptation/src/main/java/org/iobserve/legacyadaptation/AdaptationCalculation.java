@@ -30,7 +30,7 @@ import org.iobserve.adaptation.data.AssemblyContextActionFactory;
 import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.adaptation.data.graph.DeploymentNode;
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
@@ -87,7 +87,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
         this.outputPort.send(element);
     }
 
-    private void addRuntimeData(final ModelGraph graph) {
+    private void addRuntimeData(final HostComponentAllocationGraph graph) {
         for (final ComponentNode component : graph.getComponents()) {
             this.runtimeComponentNodes.put(component.getAssemblyContextID(), component);
         }
@@ -100,7 +100,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
         }
     }
 
-    private void startComparison(final ModelGraph redeploymentGraph) {
+    private void startComparison(final HostComponentAllocationGraph redeploymentGraph) {
         this.compareComponents(redeploymentGraph.getComponents());
         this.compareServers(redeploymentGraph.getServers());
     }
