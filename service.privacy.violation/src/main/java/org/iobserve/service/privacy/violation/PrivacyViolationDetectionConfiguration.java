@@ -150,8 +150,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final EntryCallStage entryCallStage = new EntryCallStage(new JPetStoreCallTraceMatcher());
             final EntryEventMapperStage entryEventMapperStage = new EntryEventMapperStage(correspondenceResource,
                     repositoryResource, systemModelResource, allocationResource);
-            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(allocationResource,
-                    systemModelResource, resourceEnvironmentResource);
+            final DataFlowDetectionStage dataFlowDetectionStage = new DataFlowDetectionStage(
+                    resourceEnvironmentResource, systemModelResource, allocationResource);
             final AlarmAnalysis alarmAnalysis = new AlarmAnalysis();
 
             final ModelProbeController modelProbeController = new ModelProbeController();

@@ -20,6 +20,9 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * @author Reiner Jung
@@ -27,9 +30,9 @@ import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
  */
 public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEvent> {
 
-    private final ModelResource resourceEnvironmentResource;
-    private final ModelResource systemModelResource;
-    private final ModelResource allocationModelResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final ModelResource<System> systemModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
     private final OutputPort<?> outputPort = this.createOutputPort(Object.class); // TODO define
                                                                                   // better
                                                                                   // data type
@@ -44,8 +47,8 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
      * @param resourceEnvironmentResource
      *            resource environment model provider
      */
-    public DataFlowDetectionStage(final ModelResource allocationModelResource, final ModelResource systemModelResource,
-            final ModelResource resourceEnvironmentResource) {
+    public DataFlowDetectionStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
