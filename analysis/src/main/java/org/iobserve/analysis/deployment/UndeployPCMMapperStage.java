@@ -100,7 +100,7 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
     private void performMapping(final String service, final String context, final long observedTime)
             throws InvocationException, DBException {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
-                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "entityName", context);
+                AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
         final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndName(
                 ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
