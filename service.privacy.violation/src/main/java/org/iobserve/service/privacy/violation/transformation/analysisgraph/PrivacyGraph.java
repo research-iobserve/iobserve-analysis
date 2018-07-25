@@ -16,9 +16,7 @@
 package org.iobserve.service.privacy.violation.transformation.analysisgraph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,145 +85,12 @@ public class PrivacyGraph {
         this.edges.add(edge);
     }
 
-    /**
-     * Remove an edge from the graph.
-     *
-     * @param edge
-     *            edge to be removed
-     *
-     * @return returns true on success else false
-     */
-    public boolean removeEdge(final Edge edge) {
-        if (this.isConsistent() && this.getEdges().contains(edge)) {
-            for (final Vertex v : this.getVertices().values()) {
-                if (v.getIncomingEdges().contains(edge)) {
-                    v.getIncomingEdges().remove(edge);
-                }
-                if (v.getOutgoingEdges().contains(edge)) {
-                    v.getOutgoingEdges().remove(edge);
-                }
-            }
-            this.edges.remove(edge);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Remove a vertex and all edges related to the vertex.
-     *
-     * @param vertex
-     *            vertex to be removed
-     * @return returns true on success else false
-     */
-    public boolean removeVertice(final Vertex vertex) {
-        if (this.isConsistent() && this.getVertices().containsValue(vertex)) {
-            final List<Edge> removals = new ArrayList<>();
-            for (final Edge edge : this.getEdges()) {
-                if (edge.getSource().equals(vertex)) {
-                    removals.add(edge);
-                }
-                if (edge.getTarget().equals(vertex)) {
-                    removals.add(edge);
-                }
-            }
-            for (final Edge e : removals) {
-                this.removeEdge(e);
-            }
-            this.vertices.remove(vertex.getName());
-            return true;
-        }
-        return false;
-    }
-
     public List<Edge> getEdges() {
         return this.edges;
     }
 
     public Map<String, Vertex> getVertices() {
         return this.vertices;
-    }
-
-    /**
-     * Checks whether the graph is consistent.
-     *
-     * @return returns true for consistent graphs, else false.
-     *
-     *         TODO this method should be able to return different types of answers, i.e., missing
-     *         vertices, missing incoming and outgoing edges TODO also all printlns must be removed
-     */
-    public boolean isConsistent() {
-        return this.checkEdgeConsistency() && this.checkVertexConsistency();
-    }
-
-    private boolean checkVertexConsistency() {
-        for (final Vertex v : this.vertices.values()) {
-            for (final Edge e : v.getIncomingEdges()) {
-                if (!this.edges.contains(e)) {
-                    System.out.println("Edge Missing");
-                    return false;
-                }
-            }
-            for (final Edge e : v.getOutgoingEdges()) {
-                if (!this.edges.contains(e)) {
-                    System.out.println("Edge Missing_2");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean checkEdgeConsistency() {
-        for (final Edge edge : this.edges) {
-            final Vertex source = edge.getSource();
-            final Vertex target = edge.getTarget();
-
-            if (!this.vertices.containsValue(source) || !this.vertices.containsValue(target)) {
-                System.out.println("Vertices Missing");
-                return false;
-            }
-
-        }
-
-        return true;
-    }
-
-    /**
-     * Return the adjacency matrix of the current graph. The elements of the matrix indicate whether
-     * pairs of vertices are adjacent or not in the graph.
-     *
-     * @return the adjacency matrix
-     */
-    public int[][] getAdjacencyMatrix() {
-        final int size = this.getVertices().size();
-        final int[][] matrix = new int[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                matrix[i][i] = 0;
-            }
-        }
-        final List<Vertex> localVertices = new LinkedList<>(this.getVertices().values());
-        for (final Vertex v : localVertices) {
-            final int positionX = localVertices.indexOf(v);
-            for (final Edge e : v.getOutgoingEdges()) {
-                final int positionY = localVertices.indexOf(e.getTarget());
-                if (matrix[positionX][positionY] != 0) {
-                    continue;
-                }
-                matrix[positionX][positionY] = 1;
-            }
-            for (final Edge e : v.getIncomingEdges()) {
-                final int positionY = localVertices.indexOf(e.getSource());
-                if (matrix[positionX][positionY] != 0) {
-                    continue;
-                }
-                matrix[positionX][positionY] = 1;
-            }
-
-        }
-
-        return matrix;
     }
 
     /**
@@ -254,13 +119,6 @@ public class PrivacyGraph {
                 System.out.println("\t" + e.getPrint());
             }
         }
-    }
-
-    /**
-     * Print adjacent matrix.
-     */
-    public void printAdjacentMatrix() {
-        System.out.println(Arrays.deepToString(this.getAdjacencyMatrix()).replace("], ", "]\n"));
     }
 
     /**
