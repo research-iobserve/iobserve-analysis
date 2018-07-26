@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import kieker.common.configuration.Configuration;
+
+import teetime.framework.test.StageTester;
+
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
@@ -43,8 +47,7 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kieker.common.configuration.Configuration;
-import teetime.framework.test.StageTester;
+
 
 /**
  * @author Clemens Brackmann
