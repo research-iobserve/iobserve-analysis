@@ -40,18 +40,18 @@ import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.ModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
-import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
-import org.iobserve.stages.tcp.ProbeControlFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+
 
 /**
  * Configuration for the log replayer.
@@ -136,9 +136,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
             /** controlling probes. */
              final ModelProbeController modelProbeController = new ModelProbeController();
-             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
+//             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource);
 
-             final ProbeControlFilter probeController = new ProbeControlFilter();
+//             final ProbeControlFilter probeController = new ProbeControlFilter();
 
             // TODO remove for performance measurements
             final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(0);
@@ -169,9 +169,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                      this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                     this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
-
-                     this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
-                     this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
+//
+//                     this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());
+//                     this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
 
                     /** Alarm event processing. */
                     // TODO Trace analysis has become obsolete and will be replaced by an alarm
