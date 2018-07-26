@@ -16,6 +16,7 @@
 package org.iobserve.service.privacy.violation.transformation.privacycheck;
 
 import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.EISOCode;
 
 /**
  *
@@ -28,9 +29,6 @@ public class Policy {
 
     // TODO should be replaced by the existing model level enumeration if possible
     /** geolocation. */
-    public enum EGeoLocation {
-        DEU, USA, RUS
-    }
 
     // TODO should be replaced by the existing model level enumeration if possible
     /** data classification. */
@@ -39,7 +37,7 @@ public class Policy {
     }
 
     private final EDataClassification dataClassification;
-    private final EGeoLocation geoLocation;
+    private final EISOCode eisocode;
 
     /**
      * Create new policy.
@@ -49,8 +47,8 @@ public class Policy {
      * @param geoLocation
      *            geolocation
      */
-    protected Policy(final EDataClassification dataClassification, final EGeoLocation geoLocation) {
-        this.geoLocation = geoLocation;
+    protected Policy(final EDataClassification dataClassification, final EISOCode geoLocation) {
+        this.eisocode = geoLocation;
         this.dataClassification = dataClassification;
     }
 
@@ -73,8 +71,8 @@ public class Policy {
         return this.dataClassification;
     }
 
-    public EGeoLocation getGeoLocation() {
-        return this.geoLocation;
+    public EISOCode getEisocode() {
+        return this.eisocode;
     }
 
     /**
@@ -95,6 +93,6 @@ public class Policy {
     }
 
     public String getPrint() {
-        return "!(" + this.dataClassification + "," + this.geoLocation + ")";
+        return "!(" + this.dataClassification + "," + this.eisocode + ")";
     }
 }

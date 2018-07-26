@@ -165,15 +165,15 @@ public class PrivacyChecker {
     private List<Edge> determineSetPotentialWarnings(final PrivacyGraph graph, final Policy policy) {
         final List<Edge> warnings = new ArrayList<>();
 
-        final Vertex excludedGeolocationVertice = graph.getVertexByName(policy.getGeoLocation().toString());
+        final Vertex excludedGeolocationVertice = graph.getVertexByName(policy.getEisocode().getName());
 
         if (excludedGeolocationVertice != null) {
             final Map<String, Vertex> componentVerticesDeployedAt = graph
-                    .getComponentVerticesDeployedAt(policy.getGeoLocation());
+                    .getComponentVerticesDeployedAt(policy.getEisocode());
 
             for (final String verticeName : componentVerticesDeployedAt.keySet()) {
                 final Vertex verticeAtExcludedGeolocation = componentVerticesDeployedAt.get(verticeName);
-
+                warnings.addAll(verticeAtExcludedGeolocation.getIncomingEdges());
                 final List<Edge> relevantDatatransfers = verticeAtExcludedGeolocation
                         .getOutgoingEdgesClassifiedAtLeast(policy.getDataClassification());
                 warnings.addAll(relevantDatatransfers);
@@ -206,8 +206,7 @@ public class PrivacyChecker {
      */
     public static void printEdges(final List<Edge> edges) {
         for (final Edge edge : edges) {
-            PrivacyChecker.LOGGER.debug("{} Interface: {}", edge.getPrint(),
-                    edge.getOperationSignature().getEntityName());
+            PrivacyChecker.LOGGER.debug("{}", edge.getPrint());
         }
     }
 }

@@ -208,6 +208,7 @@ public class Vertex {
 
         for (final Edge edge : this.getOutgoingEdges()) {
             reachableVertices.put(edge.getTarget().name, edge.getTarget());
+            System.out.println(edge);
         }
 
         return reachableVertices;

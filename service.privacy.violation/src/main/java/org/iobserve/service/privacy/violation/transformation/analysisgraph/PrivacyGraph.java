@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
+import org.iobserve.model.privacy.EISOCode;
 
 /**
  *
@@ -128,9 +128,8 @@ public class PrivacyGraph {
      *            the geolocation
      * @return the map.
      */
-    public Map<String, Vertex> getComponentVerticesDeployedAt(final Policy.EGeoLocation geoLocation) {
-        final Vertex vertice = this.getVertexByName(geoLocation.name());
-
+    public Map<String, Vertex> getComponentVerticesDeployedAt(final EISOCode geoLocation) {
+        final Vertex vertice = this.getVertexByName(geoLocation.getName());
         return vertice.getAllReachableVertices();
     }
 

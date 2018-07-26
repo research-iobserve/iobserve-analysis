@@ -20,10 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.configuration.Configuration;
-
-import teetime.framework.test.StageTester;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
@@ -46,6 +42,9 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import kieker.common.configuration.Configuration;
+import teetime.framework.test.StageTester;
 
 /**
  * @author Clemens Brackmann
@@ -136,9 +135,10 @@ public class PrivacyWarnerIntegrationTest {
             privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
             final Configuration configration = new Configuration();
-            configration.setProperty("policy.package",
+            configration.setProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX,
                     "org.iobserve.service.privacy.violation.transformation.privacycheck.policies");
-            configration.setStringArrayProperty("policy.list", "NoPersonalDataInUSAPolicy".split(","));
+            configration.setStringArrayProperty(PrivacyConfigurationsKeys.POLICY_LIST,
+                    "NoPersonalDataInUSAPolicy".split(","));
 
             this.pw = new PrivacyWarner(configration, repositoryModelResource, resourceEnvironmentModelResource,
                     systemModelResource, allocationModelResource, privacyModelResource);

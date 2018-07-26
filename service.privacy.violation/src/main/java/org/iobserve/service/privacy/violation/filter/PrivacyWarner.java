@@ -138,7 +138,6 @@ public class PrivacyWarner extends AbstractStage {
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
         this.policyList = configuration.getStringArrayProperty(PrivacyConfigurationsKeys.POLICY_LIST);
-
         this.allocationModelResource = allocationModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
@@ -192,7 +191,7 @@ public class PrivacyWarner extends AbstractStage {
             throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
-
+        graph.printGraph();
         final Warnings warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
@@ -208,7 +207,7 @@ public class PrivacyWarner extends AbstractStage {
         final List<Edge> edges = privacyChecker.check(graph);
 
         for (final Edge edge : edges) {
-            warnings.addMessage(edge.getPrint() + " Interface: " + edge.getOperationSignature().getEntityName());
+            warnings.addMessage(edge.getPrint() + "");
             warnings.addWarningEdge(edge);
         }
         warnings.setDate(new Date());
@@ -401,7 +400,7 @@ public class PrivacyWarner extends AbstractStage {
                     this.logger.error("Missing privacy level");
                 }
             } else {
-                this.logger.error("Vertice not deployed");
+                this.logger.info("Vertice not deployed");
             }
         }
     }

@@ -83,8 +83,10 @@ public class Edge {
     }
 
     public Object getPrint() {
-        return "Edge '" + this.getName() + "' from '" + this.getSource() + "' to '" + this.getTarget()
-                + "' with data protection class '" + this.getDPC() + "'";
+        return (("Edge '" + this.getName() + "' from '" + this.getSource() + "' to '" + this.getTarget()
+                + "' with data protection class '" + this.getDPC() + "'" + " Interface: "
+                + (this.getOperationSignature() != null ? this.getOperationSignature().getEntityName()
+                        : "No OperationSignature annotated")));
     }
 
 }
