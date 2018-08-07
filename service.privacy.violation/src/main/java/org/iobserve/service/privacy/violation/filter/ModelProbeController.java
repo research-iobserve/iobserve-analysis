@@ -56,6 +56,11 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
         final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
                 this.currentActiveWarnings);
+        
+        if (element.getWarningEdges() == null || element.getWarningEdges().isEmpty()) {
+        	logger.error("Received warning with empty edge list");
+        	return;
+        }
 
         for (final Edge edge : element.getWarningEdges()) {
             // multiple methods per allocation possible
@@ -64,9 +69,10 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             // if not present, add new entry
             if (methodSignatures == null) {
                 methodSignatures = new HashSet<>();
-                receivedWarnings.put(allocation, methodSignatures);
             }
             methodSignatures.add(edge.getOperationSignature());
+            receivedWarnings.put(allocation, methodSignatures);
+
 
         }
         final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
