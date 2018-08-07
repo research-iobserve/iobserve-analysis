@@ -22,14 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
@@ -75,7 +67,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
-
+import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.IMonitoringController;
+import kieker.monitoring.core.controller.MonitoringController;
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Privacy warner.
@@ -194,7 +191,6 @@ public class PrivacyWarner extends AbstractStage {
             throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
-        graph.printGraph();
         final Warnings warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
@@ -402,8 +398,6 @@ public class PrivacyWarner extends AbstractStage {
                 if ((inEdgePrivacyLevel == null) && (outEdgePrivacyLevel == null)) {
                     this.logger.error("Missing privacy level");
                 }
-            } else {
-                this.logger.info("Vertice not deployed");
             }
         }
     }

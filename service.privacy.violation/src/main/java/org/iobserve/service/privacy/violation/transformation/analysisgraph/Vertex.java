@@ -205,12 +205,9 @@ public class Vertex {
      */
     public Map<String, Vertex> getAllReachableVertices() {
         final Map<String, Vertex> reachableVertices = new LinkedHashMap<>();
-
         for (final Edge edge : this.getOutgoingEdges()) {
             reachableVertices.put(edge.getTarget().name, edge.getTarget());
-            System.out.println(edge);
         }
-
         return reachableVertices;
     }
 

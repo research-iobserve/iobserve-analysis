@@ -101,7 +101,7 @@ public class PrivacyChecker {
     }
 
     private List<Edge> checkPolicy(final PrivacyGraph graph, final Policy policy) {
-        PrivacyChecker.LOGGER.debug("Now checking: graph({}) against ", graph.getName(), policy.getPrint());
+        PrivacyChecker.LOGGER.debug("Now checking: graph({}) against {}", graph.getName(), policy.getPrint());
 
         final List<Edge> potentialWarnings = this.determineSetPotentialWarnings(graph, policy);
         PrivacyChecker.LOGGER.debug("WARNING_TMP includes:");
