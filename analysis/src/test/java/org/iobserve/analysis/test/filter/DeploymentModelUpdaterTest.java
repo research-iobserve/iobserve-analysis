@@ -110,7 +110,7 @@ public class DeploymentModelUpdaterTest {
      * @return the prepared graph
      */
     protected ModelResource<Allocation> prepareGraph(final String name) {
-        final File graphBaseDir = new File("./testdb/" + this.getClass().getCanonicalName() + "." + name);
+        final File graphBaseDir = new File("testdb/" + this.getClass().getCanonicalName() + "/" + name);
 
         this.removeDirectory(graphBaseDir);
 
