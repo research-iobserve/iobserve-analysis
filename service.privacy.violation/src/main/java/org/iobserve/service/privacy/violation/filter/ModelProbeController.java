@@ -61,7 +61,6 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         	logger.error("Received warning with empty edge list");
         	return;
         }
-
         for (final Edge edge : element.getWarningEdges()) {
             // multiple methods per allocation possible
             final AllocationContext allocation = edge.getSource().getAllocationContext();
@@ -94,9 +93,9 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         addedWarnings = new HashMap<>();
         final Map<AllocationContext, Set<OperationSignature>> newAllocationWarnings = new HashMap<>(receivedWarnings);
         // already existing allocations
-        for (final AllocationContext allocation : this.currentActiveWarnings.keySet()) {
+        for (final AllocationContext allocation : currentWarnings.keySet()) {
             final Set<OperationSignature> newMethodSet = receivedWarnings.get(allocation);
-            final Set<OperationSignature> currentMethods = this.currentActiveWarnings.get(allocation);
+            final Set<OperationSignature> currentMethods = currentWarnings.get(allocation);
             // no new allocation -> all old methods have to be deactivated
             if (newMethodSet == null) {
                 missingWarnings.put(allocation, currentMethods);
@@ -133,7 +132,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         final Map<AllocationContext, Set<OperationSignature>> newWarningMap = new HashMap<>(currentWarnings);
         for (final AllocationContext allocation : missingWarnings.keySet()) {
         	Set<OperationSignature> currentMethodSet = new HashSet<OperationSignature>();
-        	if (!currentWarnings.isEmpty()) {
+        	if (currentWarnings.get(allocation) != null) {
             currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
         	}
             currentMethodSet.removeAll(missingWarnings.get(allocation));
@@ -145,7 +144,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         }
         for (final AllocationContext allocation : addedWarnings.keySet()) {
         	Set<OperationSignature> currentMethodSet = new HashSet<OperationSignature>();
-          	if (!currentWarnings.isEmpty()) {
+          	if (currentWarnings.get(allocation) != null) {
               currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
           	}
           	currentMethodSet.addAll(addedWarnings.get(allocation));

@@ -17,16 +17,30 @@ package org.iobserve.service.privacy.violation.test.filter;
 
 
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import teetime.framework.test.StageTester;
 
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.filter.ModelProbeController;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+
+
 
 
 
@@ -36,6 +50,7 @@ import org.junit.Test;
  * @author Marc Adolf
  *
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ModelProbeControllerTest {
 	private ModelProbeController modelProbeController;
 	
@@ -43,23 +58,94 @@ public class ModelProbeControllerTest {
 	@Test
 	public void testComputedMethodsToActivateAndToDeactivate() {
 		
-		//TODO delayed until its clear how to create mock objects!
+		modelProbeController = new ModelProbeController();
+
+		final OperationSignature operationSignature1 =  Mockito.mock(OperationSignature.class);
+		final OperationSignature operationSignature2 =  Mockito.mock(OperationSignature.class);
+		final AllocationContext allocationContext1 = Mockito.mock(AllocationContext.class);
+		final AllocationContext allocationContext2 = Mockito.mock(AllocationContext.class);
+
 		
-//		final OperationSignature operationSignature1 =  OperationSignatureImpl
-//		
-//		final Warnings warnings1 = new Warnings();
-//		final AllocationContext allocationContext1 = AllocationFactoryImpl.init().createAllocationContext();
-//		final Edge edge1 = new Edge(new Vertex("test vertex 1", EStereoType.DATASOURCE), new Vertex("test vertex 2", EStereoType.DATASOURCE));
-//		edge1.setOperationSignature();
-//		warnings1.addWarningEdge(edge1);
-//		
-//		final List<Warnings> input1 = new LinkedList<Warnings>();
-//		input1.add(warnings1);
-//		
-////		ProbeManagementData expectedOutcome1 = new ProbeManagementData(methodsToActivate, methodsToDeactivate)
-//		
-//		modelProbeController = new ModelProbeController();
-//		assertThat(modelProbeController.getOutputPort(), StageTester.test(this.modelProbeController).and().send(input1).to(modelProbeController.getInputPort()).produces(1));
+		final Warnings warnings1 = new Warnings();
+		final Edge edge1 = new Edge(new Vertex("test vertex 1", EStereoType.DATASOURCE), new Vertex("test vertex 2", EStereoType.DATASOURCE));
+		edge1.setOperationSignature(operationSignature1);
+		edge1.getSource().setAllocationContext(allocationContext1);
+		
+		final Edge edge2 = new Edge(new Vertex("test vertex 3", EStereoType.DATASOURCE), new Vertex("test vertex 4", EStereoType.DATASOURCE));
+		edge2.setOperationSignature(operationSignature2);
+		edge2.getSource().setAllocationContext(allocationContext2);
+		
+		
+		warnings1.addWarningEdge(edge1);
+		warnings1.addWarningEdge(edge2);
+
+		final Map<AllocationContext, Set<OperationSignature>> methodsToActivate1 = new HashMap<AllocationContext, Set<OperationSignature>>();
+		
+		final Set<OperationSignature> methodsSet1 = new HashSet<OperationSignature>();
+		methodsSet1.add(operationSignature1);
+		methodsToActivate1.put(allocationContext1, methodsSet1);
+		
+		final Set<OperationSignature> methodsSet2 = new HashSet<OperationSignature>();
+		methodsSet2.add(operationSignature2);
+		methodsToActivate1.put(allocationContext2, methodsSet2);
+
+		final ProbeManagementData expectedOutcome1 = new ProbeManagementData(methodsToActivate1, new HashMap<AllocationContext, Set<OperationSignature>>());
+	
+		//deactivate 1, keep 1, add 1 to existing and add double set / allocation to output port 
+		final OperationSignature operationSignature3 =  Mockito.mock(OperationSignature.class);
+		final OperationSignature operationSignature4 =  Mockito.mock(OperationSignature.class);
+		final OperationSignature operationSignature5 =  Mockito.mock(OperationSignature.class);
+
+		final AllocationContext allocationContext3 = Mockito.mock(AllocationContext.class);
+
+		final Edge edge3 = new Edge(new Vertex("test vertex 5", EStereoType.DATASOURCE), new Vertex("test vertex 6", EStereoType.DATASOURCE));
+		edge3.setOperationSignature(operationSignature3);
+		edge3.getSource().setAllocationContext(allocationContext2);
+		
+		final Edge edge4 = new Edge(new Vertex("test vertex 7", EStereoType.DATASOURCE), new Vertex("test vertex 8", EStereoType.DATASOURCE));
+		edge4.setOperationSignature(operationSignature4);
+		edge4.getSource().setAllocationContext(allocationContext3);
+		
+		final Edge edge5 = new Edge(new Vertex("test vertex 9", EStereoType.DATASOURCE), new Vertex("test vertex 10", EStereoType.DATASOURCE));
+		edge5.setOperationSignature(operationSignature5);
+		edge5.getSource().setAllocationContext(allocationContext3);
+		
+		final Warnings warnings2 = new Warnings();
+		warnings2.addWarningEdge(edge2);
+		warnings2.addWarningEdge(edge3);
+		warnings2.addWarningEdge(edge4);
+		warnings2.addWarningEdge(edge5);
+		
+		final Map<AllocationContext, Set<OperationSignature>> methodsToActivate2 = new HashMap<AllocationContext, Set<OperationSignature>>();
+		
+		final Set<OperationSignature> methodsSet3 = new HashSet<OperationSignature>();
+		methodsSet3.add(operationSignature3);
+		methodsToActivate2.put(allocationContext2, methodsSet3);
+		
+		final Set<OperationSignature> methodsSet4 = new HashSet<OperationSignature>();
+		methodsSet4.add(operationSignature4);
+		methodsSet4.add(operationSignature5);
+		methodsToActivate2.put(allocationContext3, methodsSet4);
+		
+		final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate2 = new HashMap<AllocationContext, Set<OperationSignature>>();
+		methodsToDeactivate2.put(allocationContext1, methodsSet1);
+
+		final ProbeManagementData expectedOutcome2 = new ProbeManagementData(methodsToActivate2, methodsToDeactivate2);
+
+		
+		final List<Warnings> input = new LinkedList<Warnings>();
+		input.add(warnings1);
+		input.add(warnings2);
+
+		final List<ProbeManagementData> output = new LinkedList<ProbeManagementData>();
+		
+		StageTester.test(this.modelProbeController).and().send(input).to(modelProbeController.getInputPort()).receive(output).from(modelProbeController.getOutputPort()).start();
+		Assert.assertTrue(output.get(0).getMethodsToActivate().equals(expectedOutcome1.getMethodsToActivate()));
+		Assert.assertTrue(output.get(0).getMethodsToDeactivate().equals(expectedOutcome1.getMethodsToDeactivate()));
+
+		Assert.assertTrue(output.get(1).getMethodsToActivate().equals(expectedOutcome2.getMethodsToActivate()));
+		Assert.assertTrue(output.get(1).getMethodsToDeactivate().equals(expectedOutcome2.getMethodsToDeactivate()));
+	
 	}
 	@Test
 	public void testNullWarningList() {
