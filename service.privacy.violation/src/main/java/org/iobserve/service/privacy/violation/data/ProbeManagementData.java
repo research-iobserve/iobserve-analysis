@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +32,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 public class ProbeManagementData {
     private final Map<AllocationContext, Set<OperationSignature>> methodsToActivate;
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
-    private List<String> whitelist = new LinkedList<>();
+    private List<String> whitelist = null;
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
@@ -49,6 +48,10 @@ public class ProbeManagementData {
         return this.methodsToDeactivate;
     }
 
+    /**
+     *
+     * @return null, if there is no whitelist
+     */
     public List<String> getWhitelist() {
         return this.whitelist;
     }

@@ -21,7 +21,7 @@ package org.iobserve.utility.tcp.events;
  * @author Marc Adolf
  *
  */
-public class TcpDeactivationEvent extends AbstractTcpControlEvent {
+public class TcpDeactivationControlEvent extends AbstractTcpControlEvent {
 
     /**
      * Creates a complete deactivation control event.
@@ -35,8 +35,18 @@ public class TcpDeactivationEvent extends AbstractTcpControlEvent {
      * @param pattern
      *            The pattern of the method that should be monitored.
      */
-    public TcpDeactivationEvent(final String ip, final int port, final String hostname, final String pattern) {
+    public TcpDeactivationControlEvent(final String ip, final int port, final String hostname, final String pattern) {
         super(ip, port, hostname, pattern);
+    }
+
+    /**
+     * Creates a new deactivation control event without content except the pattern.
+     *
+     * @param pattern
+     *            The pattern of the method that should be monitored.
+     */
+    public TcpDeactivationControlEvent(final String pattern) {
+        super(pattern);
     }
 
 }

@@ -23,9 +23,9 @@ package org.iobserve.utility.tcp.events;
  */
 public abstract class AbstractTcpControlEvent {
 
-    private final String ip;
-    private final int port;
-    private final String hostname;
+    private String ip;
+    private int port;
+    private String hostname;
 
     private final String pattern;
 
@@ -42,9 +42,19 @@ public abstract class AbstractTcpControlEvent {
      *            The pattern of the method that should be monitored.
      */
     public AbstractTcpControlEvent(final String ip, final int port, final String hostname, final String pattern) {
+        this(pattern);
         this.ip = ip;
         this.port = port;
         this.hostname = hostname;
+    }
+
+    /**
+     * Creates a new control event without content except the pattern.
+     *
+     * @param pattern
+     *            The pattern of the method that should be monitored.
+     */
+    public AbstractTcpControlEvent(final String pattern) {
         this.pattern = pattern;
     }
 
@@ -62,6 +72,18 @@ public abstract class AbstractTcpControlEvent {
 
     public String getPattern() {
         return this.pattern;
+    }
+
+    public void setIp(final String ip) {
+        this.ip = ip;
+    }
+
+    public void setPort(final int port) {
+        this.port = port;
+    }
+
+    public void setHostname(final String hostname) {
+        this.hostname = hostname;
     }
 
 }

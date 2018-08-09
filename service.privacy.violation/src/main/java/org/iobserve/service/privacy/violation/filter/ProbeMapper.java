@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +27,9 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
+import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
+import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
+import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
@@ -37,7 +42,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  *
  */
 public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
-
+    static final int PORT = 5791;
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
     /**
@@ -53,8 +58,22 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     protected void execute(final ProbeManagementData element) throws Exception {
         final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
         for (final AllocationContext allocation : methodsToActivate.keySet()) {
-            if (allocation.eIsProxy()) {
-                this.logger.debug("is proxy");
+            for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
+                final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
+                        element.getWhitelist());
+                this.fillTcpControlEvent(currentEvent, allocation);
+                this.outputPort.send(currentEvent);
+            }
+        }
+        final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = element.getMethodsToDeactivate();
+        for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
+            for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
+                final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                // deactivation -> no parameters needed
+                final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
+                this.fillTcpControlEvent(currentEvent, allocation);
+                this.outputPort.send(currentEvent);
             }
         }
     }
@@ -63,15 +82,16 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         return this.outputPort;
     }
 
-    private String assembleTcpInformation(final AllocationContext allocation) {
+    private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation) {
         // TODO resolve; entity name = ip
         final String ip = allocation.getResourceContainer_AllocationContext().getEntityName();
+        this.logger.debug("Ip is: " + ip);
         // TODO real hostname and dynamic port (currently not supported in the model)
         final String hostname = allocation.getEntityName();
-        final int port = 5791;
 
-        // TODO
-        return null;
+        event.setIp(ip);
+        event.setHostname(hostname);
+        event.setPort(ProbeMapper.PORT);
     }
 
     private String assembleCompleteMethodSignature(final AllocationContext allocation,
@@ -90,7 +110,16 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
         return modifier + " " + returnType + " " + componentIdentifier + "." + methodSignature + "(" + parameterString
                 + ")";
+    }
 
+    private TcpActivationControlEvent createActivationEvent(final String pattern, final List<String> whitelist) {
+        if (whitelist == null) {
+            return new TcpActivationControlEvent(pattern);
+        } else {
+            final Map<String, List<String>> parameters = new HashMap<>();
+            parameters.put("whitelist", whitelist);
+            return new TcpActivationParameterControlEvent(pattern, parameters);
+        }
     }
 
 }

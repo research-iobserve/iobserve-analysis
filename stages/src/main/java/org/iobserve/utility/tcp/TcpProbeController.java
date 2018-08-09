@@ -28,7 +28,7 @@ import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
-import org.iobserve.utility.tcp.events.TcpDeactivationEvent;
+import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public class TcpProbeController {
         final String pattern = event.getPattern();
         if (event instanceof TcpActivationControlEvent) {
             this.activateMonitoredPattern(ip, port, hostname, pattern);
-        } else if (event instanceof TcpDeactivationEvent) {
+        } else if (event instanceof TcpDeactivationControlEvent) {
             this.deactivateMonitoredPattern(ip, port, hostname, pattern);
         } else {
             if (TcpProbeController.LOGGER.isErrorEnabled()) {
