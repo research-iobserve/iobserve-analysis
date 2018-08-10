@@ -23,8 +23,6 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
@@ -48,32 +46,34 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     /**
      * Initialize probe mapper from model to code level.
      *
-     * @param rac
-     *            correspondence model used for mapping
      */
-    public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceModelResource) {
+    public ProbeMapper() {
     }
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
         final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
-        for (final AllocationContext allocation : methodsToActivate.keySet()) {
-            for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
-                final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
-                final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
-                        element.getWhitelist());
-                this.fillTcpControlEvent(currentEvent, allocation);
-                this.outputPort.send(currentEvent);
+        if (!(methodsToActivate == null)) {
+            for (final AllocationContext allocation : methodsToActivate.keySet()) {
+                for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
+                    final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                    final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
+                            element.getWhitelist());
+                    this.fillTcpControlEvent(currentEvent, allocation);
+                    this.outputPort.send(currentEvent);
+                }
             }
         }
         final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = element.getMethodsToDeactivate();
-        for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
-            for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
-                final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
-                // deactivation -> no parameters needed
-                final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
-                this.fillTcpControlEvent(currentEvent, allocation);
-                this.outputPort.send(currentEvent);
+        if (!(methodsToDeactivate == null)) {
+            for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
+                for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
+                    final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                    // deactivation -> no parameters needed
+                    final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
+                    this.fillTcpControlEvent(currentEvent, allocation);
+                    this.outputPort.send(currentEvent);
+                }
             }
         }
     }
@@ -85,7 +85,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation) {
         // TODO resolve; entity name = ip
         final String ip = allocation.getResourceContainer_AllocationContext().getEntityName();
-        this.logger.debug("Ip is: " + ip);
+        this.logger.debug("IP for the control event is: " + ip);
         // TODO real hostname and dynamic port (currently not supported in the model)
         final String hostname = allocation.getEntityName();
 
@@ -104,9 +104,9 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         // TODO parameters
         final String parameterString = "*";
 
-        // TODO component of method -> x.x.x.method
+        // TODO right identifier? and maybe resolve?
         final String componentIdentifier = allocation.getAssemblyContext_AllocationContext()
-                .getEncapsulatedComponent__AssemblyContext().getId();
+                .getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent().getEntityName();
 
         return modifier + " " + returnType + " " + componentIdentifier + "." + methodSignature + "(" + parameterString
                 + ")";
