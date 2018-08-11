@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.eclipse.net4j.util.collection.Pair;
 
+import weka.clusterers.HierarchicalClusterer;
 import weka.core.Instance;
-import weka.core.SelectedTag;
-import weka.core.Tag;
+import weka.core.Instances;
 
 /**
  * @author Stephan Lenga
@@ -30,52 +30,51 @@ import weka.core.Tag;
  */
 public class NumOfClustersSelector {
 
-    private static final int ELBOW = 0;
-    private static final int GAP_STATISTIC = 1;
-    public static final Tag[] STRATEGY_TYPE = { new Tag(NumOfClustersSelector.ELBOW, "ELBOW"),
-            new Tag(NumOfClustersSelector.GAP_STATISTIC, "GAP_STATISTIC"), };
+    private static final String ELBOW = "elbow";
+    private static final String GAP_STATISTIC = "gap";
 
-    private final Map<Integer, List<Pair<Instance, Double>>> initialCluster;
-    private int strategy;
+    private final String strategy;
+    private final HierarchicalClusterer hierarchicalClusterer;
+    private final Instances instances;
 
     /**
      *
-     * @param initialCluster
-     *            single cluster which contains all the data
      * @param strategy
      *            strategy which will be used to find the optimal number of clusters for the
      *            initialCluster
+     *
+     * @param hierarchicalClusterer
+     *            weka-clusterer that performs the hierarchical clustering
+     *
+     * @param instances
+     *            input data that is clustered
      */
-    public NumOfClustersSelector(final Map<Integer, List<Pair<Instance, Double>>> initialCluster, final int strategy) {
-        this.initialCluster = initialCluster;
+    public NumOfClustersSelector(final String strategy, final HierarchicalClusterer hierarchicalClusterer,
+            final Instances instances) {
         this.strategy = strategy;
+        this.hierarchicalClusterer = hierarchicalClusterer;
+        this.instances = instances;
     }
 
     public Map<Integer, List<Pair<Instance, Double>>> findOptimalNumOfClusters() {
         Map<Integer, List<Pair<Instance, Double>>> resultClusters = null;
-        IClusterSelectionMethods clusteringMethod;
+        final IClusterSelectionMethods clusteringMethod;
 
         switch (this.strategy) {
         case ELBOW:
             clusteringMethod = new ElbowMethod();
-            resultClusters = clusteringMethod.analyze(this.initialCluster);
+            resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
             break;
         case GAP_STATISTIC:
             clusteringMethod = new GapStatisticMethod();
-            resultClusters = clusteringMethod.analyze(this.initialCluster);
+            resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
             break;
         default:
-            resultClusters = this.initialCluster;
+            // resultClusters = this.initialCluster;
             break;
         }
 
         return resultClusters;
-    }
-
-    public void setLinkType(final SelectedTag newLinkType) {
-        if (newLinkType.getTags() == NumOfClustersSelector.STRATEGY_TYPE) {
-            this.strategy = newLinkType.getSelectedTag().getID();
-        }
     }
 
 }

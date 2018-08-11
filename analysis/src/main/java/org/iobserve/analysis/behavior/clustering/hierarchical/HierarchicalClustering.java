@@ -19,7 +19,6 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +47,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     private static HierarchicalClusterer hierarchicalClusterer;
     private String[] linkage;
     private DistanceFunction distanceFunction;
+    private final String clusterSelectionMethod;
 
     /**
      * constructor.
@@ -56,17 +56,22 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             final String linkage) {
         this.setLinkage(linkage);
         this.setDistanceFunction(distanceMetric);
-        // this.distanceFunction = new EuclideanDistance();
-        // this.distanceFunction = new ManhattanDistance();
+        this.clusterSelectionMethod = clusterSelectionMethod;
     }
 
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
-        final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
         HierarchicalClustering.hierarchicalClusterer = new HierarchicalClusterer();
         HierarchicalClustering.hierarchicalClusterer.setDistanceFunction(this.distanceFunction);
         HierarchicalClustering.hierarchicalClusterer.setDistanceIsBranchLength(false);
-        HierarchicalClustering.hierarchicalClusterer.setNumClusters(1);
+
+        // final NumOfClustersSelector clusterSelection = new
+        // NumOfClustersSelector(this.clusterSelectionMethod,
+        // HierarchicalClustering.hierarchicalClusterer, instances);
+        // clusterSelection.findOptimalNumOfClusters();
+
+        HierarchicalClustering.hierarchicalClusterer.setNumClusters(2);
 
         try {
             HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
@@ -112,17 +117,21 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
             // ##### END TESTING
 
-            for (int i = 0; i < instances.numInstances(); i++) {
-                final Instance currentInstance = instances.instance(i);
-                final int cluster = HierarchicalClustering.hierarchicalClusterer.clusterInstance(currentInstance);
-                final double probability = HierarchicalClustering.hierarchicalClusterer
-                        .distributionForInstance(currentInstance)[cluster];
-                if (clusteringResults.get(cluster) == null) {
-                    clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
-                }
-                clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
+            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(instances,
+                    HierarchicalClustering.hierarchicalClusterer);
 
-            }
+            // for (int i = 0; i < instances.numInstances(); i++) {
+            // final Instance currentInstance = instances.instance(i);
+            // final int cluster =
+            // HierarchicalClustering.hierarchicalClusterer.clusterInstance(currentInstance);
+            // final double probability = HierarchicalClustering.hierarchicalClusterer
+            // .distributionForInstance(currentInstance)[cluster];
+            // if (clusteringResults.get(cluster) == null) {
+            // clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
+            // }
+            // clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
+            //
+            // }
 
             // clusteringResults = Optional.of(new ClusteringResults("Hierarchical",
             // HierarchicalClustering.hierarchicalClusterer.getNumClusters(), assignments, null));
@@ -139,7 +148,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
      * @param linkageType
      *            type of likage used in hierarchical clustering
      */
-    public void setLinkage(final String linkageType) {
+    private final void setLinkage(final String linkageType) {
         switch (linkageType) {
         case "single":
             this.linkage = new String[] { "-L", "SINGLE" };
@@ -160,11 +169,11 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         return this.distanceFunction;
     }
 
-    public void setDistanceFunction(final DistanceFunction distanceFunction) {
+    private final void setDistanceFunction(final DistanceFunction distanceFunction) {
         this.distanceFunction = distanceFunction;
     }
 
-    public void setDistanceFunction(final String distanceType) {
+    private void setDistanceFunction(final String distanceType) {
         switch (distanceType) {
         case "manhatten":
             this.distanceFunction = new ManhattanDistance();
