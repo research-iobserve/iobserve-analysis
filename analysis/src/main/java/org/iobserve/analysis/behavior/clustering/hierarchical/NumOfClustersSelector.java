@@ -51,6 +51,27 @@ public class NumOfClustersSelector {
         this.strategy = strategy;
     }
 
+    public Map<Integer, List<Pair<Instance, Double>>> findOptimalNumOfClusters() {
+        Map<Integer, List<Pair<Instance, Double>>> resultClusters = null;
+        IClusterSelectionMethods clusteringMethod;
+
+        switch (this.strategy) {
+        case ELBOW:
+            clusteringMethod = new ElbowMethod();
+            resultClusters = clusteringMethod.analyze(this.initialCluster);
+            break;
+        case GAP_STATISTIC:
+            clusteringMethod = new GapStatisticMethod();
+            resultClusters = clusteringMethod.analyze(this.initialCluster);
+            break;
+        default:
+            resultClusters = this.initialCluster;
+            break;
+        }
+
+        return resultClusters;
+    }
+
     public void setLinkType(final SelectedTag newLinkType) {
         if (newLinkType.getTags() == NumOfClustersSelector.STRATEGY_TYPE) {
             this.strategy = newLinkType.getSelectedTag().getID();
