@@ -42,8 +42,17 @@ import org.iobserve.stages.general.ConfigurationException;
 @ReceiveUnfilteredConfiguration
 public class HierarchicalBehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final String PREFIX = HierarchicalBehaviorCompositeStage.class.getCanonicalName() + ".";
+
     private static final String OUTPUT_URL = HierarchicalBehaviorCompositeStage.PREFIX + "outputUrl";
+
     private static final String NAME_PREFIX = HierarchicalBehaviorCompositeStage.PREFIX + "prefix";
+
+    private static final String DISTANCE_METRIC = HierarchicalBehaviorCompositeStage.PREFIX + "distanceMetric";
+
+    private static final String SEL_METHOD = HierarchicalBehaviorCompositeStage.PREFIX + "clusterSelectionMethod";
+
+    private static final String LINKAGE = HierarchicalBehaviorCompositeStage.PREFIX + "linkage";
+
     private static final String REPRESENTATIVE_STRATEGY = HierarchicalBehaviorCompositeStage.PREFIX
             + "representativeStrategy";
 
@@ -77,9 +86,15 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
         final String namePrefix = configuration.getStringProperty(HierarchicalBehaviorCompositeStage.NAME_PREFIX);
         final ISignatureCreationStrategy signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
         final String visualizationUrl = configuration.getStringProperty(HierarchicalBehaviorCompositeStage.OUTPUT_URL);
+        final String distanceMetric = configuration
+                .getStringProperty(HierarchicalBehaviorCompositeStage.DISTANCE_METRIC);
+        final String clusterSelectionMethod = configuration
+                .getStringProperty(HierarchicalBehaviorCompositeStage.SEL_METHOD);
+        final String linkage = configuration.getStringProperty(HierarchicalBehaviorCompositeStage.LINKAGE);
 
         final HierarchicalBehaviorModelAggregation hierarchicalBehaviorModelAggregation = new HierarchicalBehaviorModelAggregation(
-                namePrefix, visualizationUrl, signatureCreationStrategy);
+                namePrefix, visualizationUrl, signatureCreationStrategy, distanceMetric, clusterSelectionMethod,
+                linkage);
 
         this.connectPorts(this.userSessionGeneratorCompositeStage.getSessionOutputPort(),
                 userSessionModelAggregator.getUserSessionInputPort());

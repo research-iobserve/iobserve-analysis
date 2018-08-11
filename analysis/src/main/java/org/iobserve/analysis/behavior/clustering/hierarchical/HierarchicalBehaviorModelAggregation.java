@@ -44,10 +44,12 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
      *            signature creation strategy
      */
     public HierarchicalBehaviorModelAggregation(final String namePrefix, final String visualizationUrl,
-            final ISignatureCreationStrategy signatureCreationStrategy) {
+            final ISignatureCreationStrategy signatureCreationStrategy, final String distanceMetric,
+            final String clusterSelectionMethod, final String linkage) {
         final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
-        this.hierClustering = new HierarchicalClusteringProcess(new HierarchicalClustering());
+        this.hierClustering = new HierarchicalClusteringProcess(
+                new HierarchicalClustering(distanceMetric, clusterSelectionMethod, linkage));
         this.connectPorts(this.hierClustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */

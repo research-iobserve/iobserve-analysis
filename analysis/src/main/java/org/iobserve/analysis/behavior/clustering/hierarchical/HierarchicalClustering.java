@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import weka.clusterers.HierarchicalClusterer;
 import weka.core.DistanceFunction;
+import weka.core.EuclideanDistance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.ManhattanDistance;
@@ -51,10 +52,12 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     /**
      * constructor.
      */
-    public HierarchicalClustering() {
-        this.linkage = new String[] { "-L", "COMPLETE" };
+    public HierarchicalClustering(final String distanceMetric, final String clusterSelectionMethod,
+            final String linkage) {
+        this.setLinkage(linkage);
+        this.setDistanceFunction(distanceMetric);
         // this.distanceFunction = new EuclideanDistance();
-        this.distanceFunction = new ManhattanDistance();
+        // this.distanceFunction = new ManhattanDistance();
     }
 
     @Override
@@ -148,7 +151,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             this.linkage = new String[] { "-L", "COMPLETE" };
             break;
         default:
-            this.linkage = new String[] { "-L", "SINGLE" }; // single linkage as default
+            this.linkage = new String[] { "-L", "COMPLETE" }; // complete linkage as default
             break;
         }
     }
@@ -159,6 +162,20 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
     public void setDistanceFunction(final DistanceFunction distanceFunction) {
         this.distanceFunction = distanceFunction;
+    }
+
+    public void setDistanceFunction(final String distanceType) {
+        switch (distanceType) {
+        case "manhatten":
+            this.distanceFunction = new ManhattanDistance();
+            break;
+        case "euclidean":
+            this.distanceFunction = new EuclideanDistance();
+            break;
+        default:
+            this.distanceFunction = new ManhattanDistance(); // Manhattan as default
+            break;
+        }
     }
 
 }

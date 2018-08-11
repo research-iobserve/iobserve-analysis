@@ -221,6 +221,17 @@ public final class ConfigurationKeys {
     public static final String XM_EXP_CLUS = ConfigurationKeys.PREFIX + "behavior.xmeans.expectedClusters";
 
     /**
+     * Hierarchcal Clustering.
+     */
+
+    public static final String HIER_DIST = ConfigurationKeys.PREFIX + "behavior.clustering.hierarchical.distance";
+
+    public static final String HIER_SEL_METHOD = ConfigurationKeys.PREFIX
+            + "behavior.clustering.hierarchical.clusterSelectionMethod";
+
+    public static final String HIER_LINKAGE = ConfigurationKeys.PREFIX + "behavior.clustering.hierarchical.linkage";
+
+    /**
      * Birch Classification.
      */
 
