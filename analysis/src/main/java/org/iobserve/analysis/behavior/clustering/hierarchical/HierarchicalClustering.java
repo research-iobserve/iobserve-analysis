@@ -34,6 +34,7 @@ import weka.core.EuclideanDistance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.ManhattanDistance;
+import weka.core.SelectedTag;
 import weka.gui.hierarchyvisualizer.HierarchyVisualizer;
 
 /**
@@ -45,7 +46,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 
     private static HierarchicalClusterer hierarchicalClusterer;
-    private String[] linkage;
+    private SelectedTag linkage;
     private DistanceFunction distanceFunction;
     private final String clusterSelectionMethod;
 
@@ -62,16 +63,19 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
         Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+
+        // Create hierarchical clusterer and set its options
         HierarchicalClustering.hierarchicalClusterer = new HierarchicalClusterer();
         HierarchicalClustering.hierarchicalClusterer.setDistanceFunction(this.distanceFunction);
         HierarchicalClustering.hierarchicalClusterer.setDistanceIsBranchLength(false);
+        HierarchicalClustering.hierarchicalClusterer.setLinkType(this.linkage);
 
-        // final NumOfClustersSelector clusterSelection = new
-        // NumOfClustersSelector(this.clusterSelectionMethod,
-        // HierarchicalClustering.hierarchicalClusterer, instances);
-        // clusterSelection.findOptimalNumOfClusters();
+        // Find a "good" number of clusters by applying the clusterSelectionMethod
+        final NumOfClustersSelector clusterSelection = new NumOfClustersSelector(this.clusterSelectionMethod,
+                HierarchicalClustering.hierarchicalClusterer, instances);
+        clusterSelection.findOptimalNumOfClusters();
 
-        HierarchicalClustering.hierarchicalClusterer.setNumClusters(2);
+        // HierarchicalClustering.hierarchicalClusterer.setNumClusters(2);
 
         try {
             HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
@@ -151,16 +155,16 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     private final void setLinkage(final String linkageType) {
         switch (linkageType) {
         case "single":
-            this.linkage = new String[] { "-L", "SINGLE" };
-            break;
-        case "average":
-            this.linkage = new String[] { "-L", "AVERAGE" };
+            this.linkage = new SelectedTag(0, HierarchicalClusterer.TAGS_LINK_TYPE);
             break;
         case "complete":
-            this.linkage = new String[] { "-L", "COMPLETE" };
+            this.linkage = new SelectedTag(1, HierarchicalClusterer.TAGS_LINK_TYPE);
             break;
-        default:
-            this.linkage = new String[] { "-L", "COMPLETE" }; // complete linkage as default
+        case "average":
+            this.linkage = new SelectedTag(2, HierarchicalClusterer.TAGS_LINK_TYPE);
+            break;
+        default: // Complete linkage as default
+            this.linkage = new SelectedTag(1, HierarchicalClusterer.TAGS_LINK_TYPE);
             break;
         }
     }
