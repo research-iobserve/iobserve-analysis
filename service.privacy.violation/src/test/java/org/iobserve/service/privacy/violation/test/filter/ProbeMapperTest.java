@@ -16,7 +16,8 @@
 package org.iobserve.service.privacy.violation.test.filter;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * @author Marc Adolf
@@ -94,7 +99,7 @@ public class ProbeMapperTest {
         final String hostname1 = "hostname1";
         final String ip1 = "111.111.111.111";
 
-        final String returnType2 = "Int";
+        final String returnType2 = "int";
         final String testMethod2 = "testMethod2";
         final String componentIdentifier2 = "componentIdentifier2";
         final String hostname2 = "hostname2";
@@ -114,31 +119,45 @@ public class ProbeMapperTest {
         Mockito.when(operationSignature2.getEntityName()).thenReturn(testMethod2);
 
         final AllocationContext allocationContext1 = Mockito.mock(AllocationContext.class);
+        final ResourceContainer resourceContainer1 = Mockito.mock(ResourceContainer.class);
+        final AssemblyContext assemblyContext1 = Mockito.mock(AssemblyContext.class);
+        final RepositoryComponent repositoryComponent1 = Mockito.mock(RepositoryComponent.class);
+        final Repository repository1 = Mockito.mock(Repository.class);
+
         Mockito.when(allocationContext1.getEntityName()).thenReturn(hostname1);
-        // Mockito.when(allocationContext1.getAssemblyContext_AllocationContext()
-        // .getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent().getEntityName())
-        // .thenReturn(componentIdentifier1);
-        Mockito.when(allocationContext1.getResourceContainer_AllocationContext().getEntityName()).thenReturn(ip1);
+        Mockito.when(allocationContext1.getAssemblyContext_AllocationContext()).thenReturn(assemblyContext1);
+        Mockito.when(assemblyContext1.getEncapsulatedComponent__AssemblyContext()).thenReturn(repositoryComponent1);
+        Mockito.when(repositoryComponent1.getRepository__RepositoryComponent()).thenReturn(repository1);
+        Mockito.when(repository1.getEntityName()).thenReturn(componentIdentifier1);
+        Mockito.when(allocationContext1.getResourceContainer_AllocationContext()).thenReturn(resourceContainer1);
+        Mockito.when(resourceContainer1.getEntityName()).thenReturn(ip1);
 
         final AllocationContext allocationContext2 = Mockito.mock(AllocationContext.class);
+        final ResourceContainer resourceContainer2 = Mockito.mock(ResourceContainer.class);
+        final AssemblyContext assemblyContext2 = Mockito.mock(AssemblyContext.class);
+        final RepositoryComponent repositoryComponent2 = Mockito.mock(RepositoryComponent.class);
+        final Repository repository2 = Mockito.mock(Repository.class);
+
         Mockito.when(allocationContext2.getEntityName()).thenReturn(hostname2);
-        Mockito.when(allocationContext2.getAssemblyContext_AllocationContext()
-                .getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent().getEntityName())
-                .thenReturn(componentIdentifier2);
-        Mockito.when(allocationContext1.getResourceContainer_AllocationContext().getEntityName()).thenReturn(ip2);
+        Mockito.when(allocationContext2.getAssemblyContext_AllocationContext()).thenReturn(assemblyContext2);
+        Mockito.when(assemblyContext2.getEncapsulatedComponent__AssemblyContext()).thenReturn(repositoryComponent2);
+        Mockito.when(repositoryComponent2.getRepository__RepositoryComponent()).thenReturn(repository2);
+        Mockito.when(repository2.getEntityName()).thenReturn(componentIdentifier2);
+        Mockito.when(allocationContext2.getResourceContainer_AllocationContext()).thenReturn(resourceContainer2);
+        Mockito.when(resourceContainer2.getEntityName()).thenReturn(ip2);
 
-        final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = new HashMap<>();
+        final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = new LinkedHashMap<>();
 
-        final Set<OperationSignature> methodsSet1 = new HashSet<>();
-        methodsSet1.add(operationSignature1);
-        methodsToActivate.put(allocationContext1, methodsSet1);
+        final Set<OperationSignature> methodSet1 = new LinkedHashSet<>();
+        methodSet1.add(operationSignature1);
+        methodsToActivate.put(allocationContext1, methodSet1);
 
-        final Set<OperationSignature> methodsSet2 = new HashSet<>();
-        methodsSet2.add(operationSignature2);
-        methodsToActivate.put(allocationContext2, methodsSet2);
+        final Set<OperationSignature> methodSet2 = new LinkedHashSet<>();
+        methodSet2.add(operationSignature2);
+        methodsToActivate.put(allocationContext2, methodSet2);
 
-        final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = new HashMap<>();
-        methodsToDeactivate.put(allocationContext1, methodsSet1);
+        final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = new LinkedHashMap<>();
+        methodsToDeactivate.put(allocationContext1, methodSet1);
 
         final ProbeManagementData data1 = new ProbeManagementData(methodsToActivate, null);
         final ProbeManagementData data2 = new ProbeManagementData(methodsToActivate, methodsToDeactivate);
@@ -161,17 +180,17 @@ public class ProbeMapperTest {
         final List<AbstractTcpControlEvent> expectedOutput = new LinkedList<>();
 
         // 1. input
-        output.add(activationEvent1);
-        output.add(activationEvent2);
+        expectedOutput.add(activationEvent1);
+        expectedOutput.add(activationEvent2);
         // 2.input
-        output.add(activationEvent1);
-        output.add(activationEvent2);
-        output.add(deactivationEvent1);
+        expectedOutput.add(activationEvent1);
+        expectedOutput.add(activationEvent2);
+        expectedOutput.add(deactivationEvent1);
 
         StageTester.test(this.probeMapper).and().send(input).to(this.probeMapper.getInputPort()).receive(output)
                 .from(this.probeMapper.getOutputPort()).start();
 
-        Assert.assertTrue(output.equals(expectedOutput));
+        Assert.assertTrue(this.areListsEqual(output, expectedOutput));
 
     }
 
@@ -180,5 +199,29 @@ public class ProbeMapperTest {
 
         // TODO
 
+    }
+
+    private Boolean areListsEqual(final List<AbstractTcpControlEvent> list1,
+            final List<AbstractTcpControlEvent> list2) {
+        if (list1.size() != list2.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < list1.size(); i++) {
+            if (!this.areEventsEqual(list1.get(i), list2.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private Boolean areEventsEqual(final AbstractTcpControlEvent event1, final AbstractTcpControlEvent event2) {
+        if ((event1.getHostname().equals(event2.getHostname())) && event1.getPattern().equals(event2.getPattern())
+                && (event1.getIp() == event2.getIp()) && (event1.getPort() == event2.getPort())) {
+            return true;
+        }
+
+        return false;
     }
 }
