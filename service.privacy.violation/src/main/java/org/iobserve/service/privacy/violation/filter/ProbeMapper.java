@@ -23,6 +23,10 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
@@ -30,6 +34,8 @@ import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
@@ -40,14 +46,28 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  *
  */
 public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
-    static final int PORT = 5791;
+    private static final int PORT = 5791;
+
+    private final ModelResource<CorrespondenceModel> correspondenceResource;
+    private final ModelResource<Repository> repositoryResource;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
     /**
-     * Initialize probe mapper from model to code level.
+     * /** Initialize probe mapper from model to code level.
      *
+     * @param correspondenceResource
+     * @param repositoryResource
+     * @param resourceEnvironmentResource
      */
-    public ProbeMapper() {
+    public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
+            final ModelResource<Repository> repositoryResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+        this.correspondenceResource = correspondenceResource;
+        this.repositoryResource = repositoryResource;
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
+
     }
 
     @Override
@@ -82,9 +102,11 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         return this.outputPort;
     }
 
-    private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation) {
-        // TODO resolve; entity name = ip
-        final String ip = allocation.getResourceContainer_AllocationContext().getEntityName();
+    private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation)
+            throws InvocationException, DBException {
+        // TODO resolve; entity name = ip?
+        final String ip = this.resourceEnvironmentResource.resolve(allocation.getResourceContainer_AllocationContext())
+                .getEntityName();
         this.logger.debug("IP for the control event is: " + ip);
         // TODO real hostname and dynamic port (currently not supported in the model)
         final String hostname = allocation.getEntityName();

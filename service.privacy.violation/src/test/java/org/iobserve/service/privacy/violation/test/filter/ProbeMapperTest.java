@@ -25,10 +25,12 @@ import java.util.Set;
 
 import teetime.framework.test.StageTester;
 
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
+import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,8 +53,8 @@ public class ProbeMapperTest {
 
     @Test
     public void receiveUninitializedDataTest() {
-        this.probeMapper = new ProbeMapper();
-
+        this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
         final ProbeManagementData data = new ProbeManagementData(null, null);
 
         final List<ProbeManagementData> input = new LinkedList<>();
@@ -69,8 +71,8 @@ public class ProbeMapperTest {
 
     @Test
     public void receiveEmptyDataTest() {
-        this.probeMapper = new ProbeMapper();
-
+        this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
         final ProbeManagementData data = new ProbeManagementData(
                 new HashMap<AllocationContext, Set<OperationSignature>>(),
                 new HashMap<AllocationContext, Set<OperationSignature>>());
@@ -89,7 +91,8 @@ public class ProbeMapperTest {
 
     @Test
     public void receiveDataTest() {
-        this.probeMapper = new ProbeMapper();
+        this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
         final String modifier = "public";
         final String parameterString = "*";
 
@@ -194,10 +197,72 @@ public class ProbeMapperTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void receiveParameterDataTest() {
+        this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
 
-        // TODO
+        final String modifier = "public";
+        final String parameterString = "*";
+
+        final String returnType = "String";
+        final String testMethod = "testMethod";
+        final String componentIdentifier = "componentIdentifier";
+        final String hostname = "hostname";
+        final String ip = "111.111.111.111";
+
+        final List<String> whitelist = new LinkedList<>();
+        whitelist.add("111.111.111.111");
+        whitelist.add("222.222.222.222");
+        whitelist.add("333.333.333.333");
+
+        final DataType datatype = Mockito.mock(DataType.class);
+
+        final OperationSignature operationSignature = Mockito.mock(OperationSignature.class);
+        Mockito.when(operationSignature.getReturnType__OperationSignature()).thenReturn(datatype);
+        Mockito.when(datatype.toString()).thenReturn(returnType);
+        Mockito.when(operationSignature.getEntityName()).thenReturn(testMethod);
+
+        final AllocationContext allocationContext = Mockito.mock(AllocationContext.class);
+        final ResourceContainer resourceContainer = Mockito.mock(ResourceContainer.class);
+        final AssemblyContext assemblyContext = Mockito.mock(AssemblyContext.class);
+        final RepositoryComponent repositoryComponent = Mockito.mock(RepositoryComponent.class);
+        final Repository repository = Mockito.mock(Repository.class);
+
+        Mockito.when(allocationContext.getEntityName()).thenReturn(hostname);
+        Mockito.when(allocationContext.getAssemblyContext_AllocationContext()).thenReturn(assemblyContext);
+        Mockito.when(assemblyContext.getEncapsulatedComponent__AssemblyContext()).thenReturn(repositoryComponent);
+        Mockito.when(repositoryComponent.getRepository__RepositoryComponent()).thenReturn(repository);
+        Mockito.when(repository.getEntityName()).thenReturn(componentIdentifier);
+        Mockito.when(allocationContext.getResourceContainer_AllocationContext()).thenReturn(resourceContainer);
+        Mockito.when(resourceContainer.getEntityName()).thenReturn(ip);
+
+        final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = new LinkedHashMap<>();
+
+        final Set<OperationSignature> methodSet = new LinkedHashSet<>();
+        methodSet.add(operationSignature);
+        methodsToActivate.put(allocationContext, methodSet);
+
+        final Map<String, List<String>> parameters = new HashMap<>();
+        parameters.put("whitelist", whitelist);
+
+        final ProbeManagementData data = new ProbeManagementData(methodsToActivate, null);
+        data.setWhitelist(whitelist);
+
+        final List<ProbeManagementData> input = new LinkedList<>();
+        input.add(data);
+
+        final List<AbstractTcpControlEvent> output = new LinkedList<>();
+
+        final List<AbstractTcpControlEvent> expectedOutput = new LinkedList<>();
+        expectedOutput.add(new TcpActivationParameterControlEvent(ip, this.port, hostname, modifier + " " + returnType
+                + " " + componentIdentifier + "." + testMethod + "(" + parameterString + ")", parameters));
+
+        StageTester.test(this.probeMapper).and().send(input).to(this.probeMapper.getInputPort()).receive(output)
+                .from(this.probeMapper.getOutputPort()).start();
+
+        Assert.assertTrue(this.areListsEqual(output, expectedOutput));
 
     }
 
