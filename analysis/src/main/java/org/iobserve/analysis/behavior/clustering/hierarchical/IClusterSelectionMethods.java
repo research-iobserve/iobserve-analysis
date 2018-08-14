@@ -11,6 +11,6 @@ import weka.core.Instances;
 
 public interface IClusterSelectionMethods {
 
-    Map<Integer, List<Pair<Instance, Double>>> analyze(HierarchicalClusterer hierarchicalClusterer,
-            Instances instances);
+    Map<Integer, List<Pair<Instance, Double>>> analyze(final HierarchicalClusterer hierarchicalClusterer,
+            final Instances instances);
 }

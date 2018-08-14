@@ -17,6 +17,7 @@
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -52,22 +53,11 @@ public class ElbowMethod implements IClusterSelectionMethods {
     public Map<Integer, List<Pair<Instance, Double>>> analyze(final HierarchicalClusterer hierarchicalClusterer,
             final Instances instances) {
 
-        // var sse = {};
-        // for (var k = 1; k <= maxK; ++k) {
-        // sse[k] = 0;
-        // clusters = kmeans(dataset, k);
-        // clusters.forEach(function(cluster) {
-        // mean = clusterMean(cluster);
-        // cluster.forEach(function(datapoint) {
-        // sse[k] += Math.pow(datapoint - mean, 2);
-        // });
-        // });
-        // }
-
+        ElbowMethod.LOGGER.info("Starting ElbowMethod");
         final int numInstances = instances.numInstances();
-
-        List<Double> lastSSE = new ArrayList<>();
-        for (int i = 1; 1 <= instances.numInstances(); ++i) {
+        // sum of square error for each number of clusters.
+        final List<Double> ess = new ArrayList<>();
+        for (int i = 1; i <= instances.numInstances(); ++i) {
 
             try {
                 final int numberOfClusters = i;
@@ -78,9 +68,9 @@ public class ElbowMethod implements IClusterSelectionMethods {
                 final Vector<Integer>[] assignments = new Vector[numberOfClusters];
                 // Initialize assignments with empty vectors.
                 for (int j = 0; j < numberOfClusters; j++) {
-                    assignments[j] = new Vector();
+                    assignments[j] = new Vector<>();
                 }
-                // Cluster size of each cluster
+                // Cluster size of each cluster (not needed)
                 final int[] clustersize = new int[numberOfClusters];
 
                 for (int s = 0; s < numInstances; s++) {
@@ -89,60 +79,129 @@ public class ElbowMethod implements IClusterSelectionMethods {
                     clustersize[hierarchicalClusterer.clusterInstance(instances.instance(s))]++;
                 }
 
-                /*
-                 * Take a random data point of a cluster as reference point to calculate the total
-                 * intra-cluster variation
-                 */
-
-                // sum of square error for each cluster
-                final List<Double> sse = new ArrayList<>(numberOfClusters);
-
-                // Calculate the intra-cluster variation for each cluster
-                for (int cluster = 0; cluster < numberOfClusters; cluster++) {
-                    sse.add(cluster, this.calcESS(assignments[cluster], instances, hierarchicalClusterer));
+                String assignmentString = "";
+                for (final Vector<Integer> v : assignments) {
+                    assignmentString += v.toString();
                 }
+                ElbowMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
 
-                lastSSE = new ArrayList<>(sse);
+                // Calculate the error sum-of-squares for each cluster.
+                double s = 0.0;
+                for (int cluster = 0; cluster < numberOfClusters; cluster++) {
+                    if (!assignments[cluster].isEmpty()) {
+                        s += this.calcESS(assignments[cluster], instances, hierarchicalClusterer);
+                    }
+                }
+                ess.add(i - 1, s);
 
-                System.out.println(sse);
+                ElbowMethod.LOGGER.info(ess.toString() + "\n");
 
             } catch (final Exception e) {
                 ElbowMethod.LOGGER.error("Hierarchical clustering failed.", e);
             }
         }
 
-        System.out.println("Elbow done");
+        final int goodClustereNumber = this.findElbow(ess);
 
-        return null;
+        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+
+        try {
+            hierarchicalClusterer.setNumClusters(goodClustereNumber);
+            hierarchicalClusterer.buildClusterer(instances);
+            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(instances, hierarchicalClusterer);
+        } catch (final Exception e) {
+            ElbowMethod.LOGGER.error("Clustering at ElbowMethod failed.", e);
+        }
+
+        // Print clusteringResult
+        for (int i = 0; i < clusteringResults.size(); i++) {
+            ElbowMethod.LOGGER.info(clusteringResults.get(i).toString() + "\n");
+        }
+
+        ElbowMethod.LOGGER.info("ElbowMethod done.");
+        return clusteringResults;
+    }
+
+    /**
+     * Find the Ellbow of the ESS data.
+     *
+     * @param ess
+     *            Error sum-of-squares array for all posslible number of clusters.
+     */
+    private int findElbow(List<Double> ess) {
+
+        // ess = new ArrayList<>();
+        // ess.add(7.0);
+        // ess.add(3.0);
+        // ess.add(2.0);
+        // ess.add(1.5);
+        // ess.add(1.0);
+        // ess.add(0.5);
+
+        final int essSize = ess.size();
+        final double start = ess.get(0);
+        final double end = ess.get(essSize - 1);
+        final double decline = (end - start) / (essSize - 1);
+
+        double maxDistance = 0;
+        int elbowIndex = 1;
+        for (int i = 0; i < (essSize - 1); i++) {
+            final double referencePoint = start + ((i + 1) * decline);
+            final double oldMaxDistance = maxDistance;
+            maxDistance = Math.max(maxDistance, referencePoint - ess.get(i + 1));
+            if (maxDistance > oldMaxDistance) {
+                elbowIndex = i + 1;
+            }
+        }
+
+        System.out.println(maxDistance);
+        System.out.println(elbowIndex);
+
+        return elbowIndex;
     }
 
     // From HierarchicalClusterer
-    /** calculated error sum-of-squares for instances wrt centroid **/
+    /**
+     * Calculated error sum-of-squares for a given cluster.
+     *
+     * @param cluster
+     *            Calculate the ESS for this cluster
+     * @param instances
+     *            Input data that is clustered
+     * @param hierarchicalClusterer
+     *            Clusterer that performs heirarchical clustering
+     * @return ESS
+     **/
     public double calcESS(Vector<Integer> cluster, Instances instances, HierarchicalClusterer hierarchicalClusterer) {
 
         final DistanceFunction distanceFunction = hierarchicalClusterer.getDistanceFunction();
-
-        final double[] fValues1 = new double[instances.numAttributes()];
+        final double[] sumAttValues = new double[instances.numAttributes()];
         for (int i = 0; i < cluster.size(); i++) {
             final Instance instance = instances.instance(cluster.elementAt(i));
+            // Sum up all values of all instances.
             for (int j = 0; j < instances.numAttributes(); j++) {
-                fValues1[j] += instance.value(j);
+                sumAttValues[j] += instance.value(j);
             }
         }
+        // Get average value of each attribute value.
         for (int j = 0; j < instances.numAttributes(); j++) {
-            fValues1[j] /= cluster.size();
+            sumAttValues[j] /= cluster.size();
         }
-        // set up two instances for distance function
+
+        /*
+         * Create a centroid of this cluster by setting the average attributes of this cluster as
+         * its own.
+         */
         final Instance centroid = (Instance) instances.instance(cluster.elementAt(0)).copy();
         for (int j = 0; j < instances.numAttributes(); j++) {
-            centroid.setValue(j, fValues1[j]);
+            centroid.setValue(j, sumAttValues[j]);
         }
-        double fESS = 0;
+        // Sum up distances of each data point in cluster to centroid to get ESS.
+        double clusterESS = 0;
         for (int i = 0; i < cluster.size(); i++) {
             final Instance instance = instances.instance(cluster.elementAt(i));
-            fESS += distanceFunction.distance(centroid, instance);
+            clusterESS += distanceFunction.distance(centroid, instance);
         }
-        return fESS / cluster.size();
-    } // calcESS
-
+        return clusterESS;
+    }
 }

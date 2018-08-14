@@ -31,6 +31,7 @@ import weka.core.Instances;
 public class NumOfClustersSelector {
 
     private static final String ELBOW = "elbow";
+    private static final String AVG_SILHOUETTE = "avgsil";
     private static final String GAP_STATISTIC = "gap";
 
     private final String strategy;
@@ -63,16 +64,18 @@ public class NumOfClustersSelector {
         switch (this.strategy) {
         case ELBOW:
             clusteringMethod = new ElbowMethod();
-            resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
+            break;
+        case AVG_SILHOUETTE:
+            clusteringMethod = new AvgSilhouetteMethod();
             break;
         case GAP_STATISTIC:
             clusteringMethod = new GapStatisticMethod();
-            resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
             break;
-        default:
-            // resultClusters = this.initialCluster;
+        default: // default is ElbowMethod
+            clusteringMethod = new ElbowMethod();
             break;
         }
+        resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
 
         return resultClusters;
     }
