@@ -136,6 +136,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         event.setHostname(hostname);
         // TODO dynamic port (currently not supported in the model)
         event.setPort(ProbeMapper.PORT);
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("IP is set to: " + ip + "; Hostname ist set to: " + hostname + "; Port is set to: "
+                    + ProbeMapper.PORT);
+        }
+
     }
 
     private String assembleCompleteMethodSignature(final AllocationContext allocation,
@@ -146,7 +152,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         final DataType returnType = operationSignature.getReturnType__OperationSignature();
         final List<DataTypeEntry> dataTypeEntries = this.correspondenceResource
                 .collectAllObjectsByType(DataTypeEntry.class, CorrespondencePackage.Literals.DATA_TYPE_ENTRY);
-        final String codeLevelReturnType = this.getCodeLevelReturnType(dataTypeEntries, returnType);
+        final String codeLevelReturnType = this.getCodeLevelDataType(dataTypeEntries, returnType);
 
         final String methodSignature = operationSignature.getEntityName();
         // TODO parameters
@@ -156,16 +162,23 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                 .resolve(allocation.getAssemblyContext_AllocationContext());
         final RepositoryComponent repositoryComponent = this.repositoryResource
                 .resolve(assemblyContext.getEncapsulatedComponent__AssemblyContext());
-
-        // TODO map component identifier
         final String codeLevelComponentIdentifier = repositoryComponent.getEntityName();
 
-        return modifier + " " + codeLevelReturnType + " " + codeLevelComponentIdentifier + "." + methodSignature + "("
-                + parameterString + ")";
+        final String completeMethodSignature = modifier + " " + codeLevelReturnType + " " + codeLevelComponentIdentifier
+                + "." + methodSignature + "(" + parameterString + ")";
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Constructed method string: " + completeMethodSignature);
+        }
+
+        return completeMethodSignature;
     }
 
-    private String getCodeLevelReturnType(final List<DataTypeEntry> dataTypes, final DataType dataType)
+    private String getCodeLevelDataType(final List<DataTypeEntry> dataTypes, final DataType dataType)
             throws ControlEventCreationFailedException {
+        if (dataType == null) {
+            return "void";
+        }
         for (final DataTypeEntry currentDataType : dataTypes) {
             if ((this.getTypeName(currentDataType.getDataTypeEntry()).equals(this.getTypeName(dataType)))) {
                 return currentDataType.getImplementationId();
