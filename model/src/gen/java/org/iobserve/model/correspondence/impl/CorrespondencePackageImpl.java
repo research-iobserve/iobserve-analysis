@@ -19,6 +19,7 @@ import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.DataTypeEntry;
 import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.correspondence.Part;
 import org.palladiosimulator.pcm.PcmPackage;
@@ -39,6 +40,13 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      * @generated
      */
     private EClass correspondenceModelEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass dataTypeEntryEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -166,6 +174,24 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      */
     public EReference getCorrespondenceModel_Parts() {
         return (EReference)correspondenceModelEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getDataTypeEntry() {
+        return dataTypeEntryEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getDataTypeEntry_DataTypeEntry() {
+        return (EReference)dataTypeEntryEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -316,6 +342,9 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         correspondenceModelEClass = createEClass(CORRESPONDENCE_MODEL);
         createEReference(correspondenceModelEClass, CORRESPONDENCE_MODEL__PARTS);
 
+        dataTypeEntryEClass = createEClass(DATA_TYPE_ENTRY);
+        createEReference(dataTypeEntryEClass, DATA_TYPE_ENTRY__DATA_TYPE_ENTRY);
+
         partEClass = createEClass(PART);
         createEReference(partEClass, PART__MODEL_TYPE);
         createEReference(partEClass, PART__ENTRIES);
@@ -369,6 +398,7 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         // Set bounds for type parameters
 
         // Add supertypes to classes
+        dataTypeEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         componentEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         allocationEntryEClass.getESuperTypes().add(this.getAbstractEntry());
         assemblyEntryEClass.getESuperTypes().add(this.getAbstractEntry());
@@ -377,6 +407,9 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         // Initialize classes, features, and operations; add parameters
         initEClass(correspondenceModelEClass, CorrespondenceModel.class, "CorrespondenceModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getCorrespondenceModel_Parts(), this.getPart(), null, "parts", null, 0, -1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(dataTypeEntryEClass, DataTypeEntry.class, "DataTypeEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getDataTypeEntry_DataTypeEntry(), theRepositoryPackage.getDataType(), null, "dataTypeEntry", null, 1, 1, DataTypeEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(partEClass, Part.class, "Part", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getPart_ModelType(), ecorePackage.getEObject(), null, "modelType", null, 1, 1, Part.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

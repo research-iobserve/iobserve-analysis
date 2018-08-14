@@ -101,7 +101,90 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getPart()
      * @generated
      */
-    int PART = 1;
+    int PART = 2;
+
+    /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.AbstractEntryImpl <em>Abstract Entry</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.impl.AbstractEntryImpl
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAbstractEntry()
+     * @generated
+     */
+    int ABSTRACT_ENTRY = 3;
+
+    /**
+     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY__IMPLEMENTATION_ID = 0;
+
+    /**
+     * The number of structural features of the '<em>Abstract Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY_FEATURE_COUNT = 1;
+
+    /**
+     * The number of operations of the '<em>Abstract Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY_OPERATION_COUNT = 0;
+
+    /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.DataTypeEntryImpl <em>Data Type Entry</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.impl.DataTypeEntryImpl
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getDataTypeEntry()
+     * @generated
+     */
+    int DATA_TYPE_ENTRY = 1;
+
+    /**
+     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY__IMPLEMENTATION_ID = ABSTRACT_ENTRY__IMPLEMENTATION_ID;
+
+    /**
+     * The feature id for the '<em><b>Data Type Entry</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY__DATA_TYPE_ENTRY = ABSTRACT_ENTRY_FEATURE_COUNT + 0;
+
+    /**
+     * The number of structural features of the '<em>Data Type Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+
+    /**
+     * The number of operations of the '<em>Data Type Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY_OPERATION_COUNT = ABSTRACT_ENTRY_OPERATION_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Model Type</b></em>' reference.
@@ -140,43 +223,6 @@ public interface CorrespondencePackage extends EPackage {
     int PART_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.AbstractEntryImpl <em>Abstract Entry</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.iobserve.model.correspondence.impl.AbstractEntryImpl
-     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAbstractEntry()
-     * @generated
-     */
-    int ABSTRACT_ENTRY = 2;
-
-    /**
-     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY__IMPLEMENTATION_ID = 0;
-
-    /**
-     * The number of structural features of the '<em>Abstract Entry</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY_FEATURE_COUNT = 1;
-
-    /**
-     * The number of operations of the '<em>Abstract Entry</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY_OPERATION_COUNT = 0;
-
-    /**
      * The meta object id for the '{@link org.iobserve.model.correspondence.impl.ComponentEntryImpl <em>Component Entry</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -184,7 +230,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getComponentEntry()
      * @generated
      */
-    int COMPONENT_ENTRY = 3;
+    int COMPONENT_ENTRY = 4;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -230,7 +276,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAllocationEntry()
      * @generated
      */
-    int ALLOCATION_ENTRY = 4;
+    int ALLOCATION_ENTRY = 5;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -276,7 +322,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAssemblyEntry()
      * @generated
      */
-    int ASSEMBLY_ENTRY = 5;
+    int ASSEMBLY_ENTRY = 6;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -322,7 +368,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getOperationEntry()
      * @generated
      */
-    int OPERATION_ENTRY = 6;
+    int OPERATION_ENTRY = 7;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -381,6 +427,27 @@ public interface CorrespondencePackage extends EPackage {
      * @generated
      */
     EReference getCorrespondenceModel_Parts();
+
+    /**
+     * Returns the meta object for class '{@link org.iobserve.model.correspondence.DataTypeEntry <em>Data Type Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Data Type Entry</em>'.
+     * @see org.iobserve.model.correspondence.DataTypeEntry
+     * @generated
+     */
+    EClass getDataTypeEntry();
+
+    /**
+     * Returns the meta object for the reference '{@link org.iobserve.model.correspondence.DataTypeEntry#getDataTypeEntry <em>Data Type Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the reference '<em>Data Type Entry</em>'.
+     * @see org.iobserve.model.correspondence.DataTypeEntry#getDataTypeEntry()
+     * @see #getDataTypeEntry()
+     * @generated
+     */
+    EReference getDataTypeEntry_DataTypeEntry();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.Part <em>Part</em>}'.
@@ -559,6 +626,24 @@ public interface CorrespondencePackage extends EPackage {
          * @generated
          */
         EReference CORRESPONDENCE_MODEL__PARTS = eINSTANCE.getCorrespondenceModel_Parts();
+
+        /**
+         * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.DataTypeEntryImpl <em>Data Type Entry</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.model.correspondence.impl.DataTypeEntryImpl
+         * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getDataTypeEntry()
+         * @generated
+         */
+        EClass DATA_TYPE_ENTRY = eINSTANCE.getDataTypeEntry();
+
+        /**
+         * The meta object literal for the '<em><b>Data Type Entry</b></em>' reference feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference DATA_TYPE_ENTRY__DATA_TYPE_ENTRY = eINSTANCE.getDataTypeEntry_DataTypeEntry();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.PartImpl <em>Part</em>}' class.

@@ -24,22 +24,28 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.DataTypeEntry;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.service.privacy.exceptions.ControlEventCreationFailedException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
 import org.palladiosimulator.pcm.repository.CompositeDataType;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Translate model level {@link ProbeManagementData} events to code level events. Gets real system
@@ -55,6 +61,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private final ModelResource<CorrespondenceModel> correspondenceResource;
     private final ModelResource<Repository> repositoryResource;
     private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final ModelResource<System> assemblyResource;
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -67,10 +74,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
      */
     public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
             final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> assemblyResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
+        this.assemblyResource = assemblyResource;
 
     }
 
@@ -80,11 +89,16 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         if (!(methodsToActivate == null)) {
             for (final AllocationContext allocation : methodsToActivate.keySet()) {
                 for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
-                    final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
-                    final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
-                            element.getWhitelist());
-                    this.fillTcpControlEvent(currentEvent, allocation);
-                    this.outputPort.send(currentEvent);
+                    try {
+                        final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                        final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
+                                element.getWhitelist());
+                        this.fillTcpControlEvent(currentEvent, allocation);
+                        this.outputPort.send(currentEvent);
+                    } catch (final ControlEventCreationFailedException e) {
+                        this.logger.error("Could not construct activation event for: " + operationSignature.toString(),
+                                e);
+                    }
                 }
             }
         }
@@ -92,11 +106,16 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         if (!(methodsToDeactivate == null)) {
             for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
                 for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
-                    final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
-                    // deactivation -> no parameters needed
-                    final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
-                    this.fillTcpControlEvent(currentEvent, allocation);
-                    this.outputPort.send(currentEvent);
+                    try {
+                        final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                        // deactivation -> no parameters needed
+                        final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
+                        this.fillTcpControlEvent(currentEvent, allocation);
+                        this.outputPort.send(currentEvent);
+                    } catch (final ControlEventCreationFailedException e) {
+                        this.logger.error(
+                                "Could not construct deactivation event for: " + operationSignature.toString(), e);
+                    }
                 }
             }
         }
@@ -108,60 +127,62 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation)
             throws InvocationException, DBException {
-        // TODO resolve; entity name = ip?
         final String ip = this.resourceEnvironmentResource.resolve(allocation.getResourceContainer_AllocationContext())
                 .getEntityName();
         this.logger.debug("IP for the control event is: " + ip);
-        // TODO real hostname and dynamic port (currently not supported in the model)
         final String hostname = allocation.getEntityName();
 
         event.setIp(ip);
         event.setHostname(hostname);
+        // TODO dynamic port (currently not supported in the model)
         event.setPort(ProbeMapper.PORT);
     }
 
     private String assembleCompleteMethodSignature(final AllocationContext allocation,
-            final OperationSignature operationSignature) {
+            final OperationSignature operationSignature) throws Exception {
         // there are only interfaces on model level -> therefore only public methods (no
         // getModifiers available)
         final String modifier = "public";
         final DataType returnType = operationSignature.getReturnType__OperationSignature();
-        // TODO map model level returnType to code level returnType
-        // TODO toString is not a good idea
-        final List<DataTypeEntry> dataTypeEntries = this.correspondenceResource.collectAllObjectsByType(clazz, eClass);
+        final List<DataTypeEntry> dataTypeEntries = this.correspondenceResource
+                .collectAllObjectsByType(DataTypeEntry.class, CorrespondencePackage.Literals.DATA_TYPE_ENTRY);
         final String codeLevelReturnType = this.getCodeLevelReturnType(dataTypeEntries, returnType);
 
         final String methodSignature = operationSignature.getEntityName();
         // TODO parameters
         final String parameterString = "*";
 
-        // TODO right identifier? and must resolve
-        final String componentIdentifier = allocation.getAssemblyContext_AllocationContext()
-                .getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent().getEntityName();
+        final AssemblyContext assemblyContext = this.assemblyResource
+                .resolve(allocation.getAssemblyContext_AllocationContext());
+        final RepositoryComponent repositoryComponent = this.repositoryResource
+                .resolve(assemblyContext.getEncapsulatedComponent__AssemblyContext());
 
         // TODO map component identifier
+        final String codeLevelComponentIdentifier = repositoryComponent.getEntityName();
 
-        return modifier + " " + codeLevelReturnType + " " + componentIdentifier + "." + methodSignature + "("
+        return modifier + " " + codeLevelReturnType + " " + codeLevelComponentIdentifier + "." + methodSignature + "("
                 + parameterString + ")";
     }
 
-    private String getCodeLevelReturnType(final List<DataTypeEntry> dataTypes, final DataType returnType) {
-        for (final DataTypeEntry dataType : dataTypes) {
-            if (dataType.getOperation().getEntityName().equals(this.getTypeName(returnType))) {
-                return dataType.getImplementationId();
+    private String getCodeLevelReturnType(final List<DataTypeEntry> dataTypes, final DataType dataType)
+            throws ControlEventCreationFailedException {
+        for (final DataTypeEntry currentDataType : dataTypes) {
+            if ((this.getTypeName(currentDataType.getDataTypeEntry()).equals(this.getTypeName(dataType)))) {
+                return currentDataType.getImplementationId();
             }
         }
+        throw new ControlEventCreationFailedException("No matching code level data type was found for: " + dataType);
     }
 
-    private String getTypeName(final DataType returnType) throws Exception {
-        if (returnType instanceof PrimitiveDataType) {
-            return ((PrimitiveDataType) returnType).getType().getLiteral(); // oder name
-        } else if (returnType instanceof CollectionDataType) {
-            return ((CollectionDataType) returnType).getEntityName();
-        } else if (returnType instanceof CompositeDataType) {
-            return ((CompositeDataType) returnType).getEntityName();
+    private String getTypeName(final DataType dataType) throws ControlEventCreationFailedException {
+        if (dataType instanceof PrimitiveDataType) {
+            return ((PrimitiveDataType) dataType).getType().getLiteral(); // oder name
+        } else if (dataType instanceof CollectionDataType) {
+            return ((CollectionDataType) dataType).getEntityName();
+        } else if (dataType instanceof CompositeDataType) {
+            return ((CompositeDataType) dataType).getEntityName();
         } else {
-            throw new Exception("XXXXX");
+            throw new ControlEventCreationFailedException("Could not find name for data type: " + dataType);
         }
 
     }

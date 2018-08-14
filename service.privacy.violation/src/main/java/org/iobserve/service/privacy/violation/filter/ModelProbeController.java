@@ -56,10 +56,10 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
         final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
                 this.currentActiveWarnings);
-        
-        if (element.getWarningEdges() == null || element.getWarningEdges().isEmpty()) {
-        	logger.error("Received warning with empty edge list");
-        	return;
+
+        if ((element.getWarningEdges() == null) || element.getWarningEdges().isEmpty()) {
+            this.logger.error("Received warning with empty edge list");
+            return;
         }
         for (final Edge edge : element.getWarningEdges()) {
             // multiple methods per allocation possible
@@ -69,9 +69,12 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             if (methodSignatures == null) {
                 methodSignatures = new HashSet<>();
             }
-            methodSignatures.add(edge.getOperationSignature());
-            receivedWarnings.put(allocation, methodSignatures);
-
+            if (edge.getOperationSignature() != null) {
+                methodSignatures.add(edge.getOperationSignature());
+                receivedWarnings.put(allocation, methodSignatures);
+            } else {
+                this.logger.debug("Recevied warning without operation signature");
+            }
 
         }
         final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
@@ -131,10 +134,10 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             final Map<AllocationContext, Set<OperationSignature>> missingWarnings) {
         final Map<AllocationContext, Set<OperationSignature>> newWarningMap = new HashMap<>(currentWarnings);
         for (final AllocationContext allocation : missingWarnings.keySet()) {
-        	Set<OperationSignature> currentMethodSet = new HashSet<OperationSignature>();
-        	if (currentWarnings.get(allocation) != null) {
-            currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
-        	}
+            Set<OperationSignature> currentMethodSet = new HashSet<>();
+            if (currentWarnings.get(allocation) != null) {
+                currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            }
             currentMethodSet.removeAll(missingWarnings.get(allocation));
             if (currentMethodSet.isEmpty()) {
                 newWarningMap.remove(allocation);
@@ -143,11 +146,11 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             }
         }
         for (final AllocationContext allocation : addedWarnings.keySet()) {
-        	Set<OperationSignature> currentMethodSet = new HashSet<OperationSignature>();
-          	if (currentWarnings.get(allocation) != null) {
-              currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
-          	}
-          	currentMethodSet.addAll(addedWarnings.get(allocation));
+            Set<OperationSignature> currentMethodSet = new HashSet<>();
+            if (currentWarnings.get(allocation) != null) {
+                currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            }
+            currentMethodSet.addAll(addedWarnings.get(allocation));
             if (currentMethodSet.isEmpty()) {
                 newWarningMap.remove(allocation);
             } else {

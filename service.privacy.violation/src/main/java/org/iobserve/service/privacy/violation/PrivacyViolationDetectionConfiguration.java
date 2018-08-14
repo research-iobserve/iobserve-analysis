@@ -136,7 +136,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             /** controlling probes. */
             final ModelProbeController modelProbeController = new ModelProbeController();
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource, repositoryResource,
-                    resourceEnvironmentResource);
+                    resourceEnvironmentResource, systemModelResource);
 
             // final ProbeControlFilter probeController = new ProbeControlFilter();
 

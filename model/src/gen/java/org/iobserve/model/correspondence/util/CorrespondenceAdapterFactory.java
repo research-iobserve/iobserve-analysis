@@ -6,6 +6,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.correspondence.*;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
@@ -76,6 +77,10 @@ public class CorrespondenceAdapterFactory extends AdapterFactoryImpl {
                 return createCorrespondenceModelAdapter();
             }
             @Override
+            public Adapter caseDataTypeEntry(DataTypeEntry object) {
+                return createDataTypeEntryAdapter();
+            }
+            @Override
             public Adapter casePart(Part object) {
                 return createPartAdapter();
             }
@@ -130,6 +135,20 @@ public class CorrespondenceAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createCorrespondenceModelAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.correspondence.DataTypeEntry <em>Data Type Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.correspondence.DataTypeEntry
+     * @generated
+     */
+    public Adapter createDataTypeEntryAdapter() {
         return null;
     }
 
