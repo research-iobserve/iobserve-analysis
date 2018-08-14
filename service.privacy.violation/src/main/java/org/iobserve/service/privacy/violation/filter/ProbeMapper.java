@@ -24,6 +24,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -33,6 +35,7 @@ import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -55,7 +58,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
     /**
-     * /** Initialize probe mapper from model to code level.
+     * Initialize probe mapper from model to code level.
      *
      * @param correspondenceResource
      * @param repositoryResource
@@ -121,7 +124,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         // there are only interfaces on model level -> therefore only public methods (no
         // getModifiers available)
         final String modifier = "public";
-        final String returnType = operationSignature.getReturnType__OperationSignature().toString();
+        final DataType returnType = operationSignature.getReturnType__OperationSignature();
+        // TODO map model level returnType to code level returnType
+        // TODO toString is not a good idea
+        this.correspondenceResource.findObjectsByTypeAndName(OperationEntry.class,
+                CorrespondencePackage.Literals.OPERATION_ENTRY, "name oder entityName", returnType.toString());
+
         final String methodSignature = operationSignature.getEntityName();
         // TODO parameters
         final String parameterString = "*";
@@ -129,6 +137,8 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         // TODO right identifier? and maybe resolve?
         final String componentIdentifier = allocation.getAssemblyContext_AllocationContext()
                 .getEncapsulatedComponent__AssemblyContext().getRepository__RepositoryComponent().getEntityName();
+
+        // TODO map component identifier
 
         return modifier + " " + returnType + " " + componentIdentifier + "." + methodSignature + "(" + parameterString
                 + ")";
