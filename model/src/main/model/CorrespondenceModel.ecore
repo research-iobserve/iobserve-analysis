@@ -6,6 +6,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="parts" upperBound="-1"
         eType="#//Part" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DataTypeEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataTypeEntry" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/DataType"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Part">
     <eStructuralFeatures xsi:type="ecore:EReference" name="modelType" lowerBound="1"
         eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>

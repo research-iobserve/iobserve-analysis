@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.iobserve.model.correspondence.*;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
@@ -61,6 +62,7 @@ public class CorrespondenceFactoryImpl extends EFactoryImpl implements Correspon
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
             case CorrespondencePackage.CORRESPONDENCE_MODEL: return createCorrespondenceModel();
+            case CorrespondencePackage.DATA_TYPE_ENTRY: return createDataTypeEntry();
             case CorrespondencePackage.PART: return createPart();
             case CorrespondencePackage.COMPONENT_ENTRY: return createComponentEntry();
             case CorrespondencePackage.ALLOCATION_ENTRY: return createAllocationEntry();
@@ -79,6 +81,16 @@ public class CorrespondenceFactoryImpl extends EFactoryImpl implements Correspon
     public CorrespondenceModel createCorrespondenceModel() {
         CorrespondenceModelImpl correspondenceModel = new CorrespondenceModelImpl();
         return correspondenceModel;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public DataTypeEntry createDataTypeEntry() {
+        DataTypeEntryImpl dataTypeEntry = new DataTypeEntryImpl();
+        return dataTypeEntry;
     }
 
     /**

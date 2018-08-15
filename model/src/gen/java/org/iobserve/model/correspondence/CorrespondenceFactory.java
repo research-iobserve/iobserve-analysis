@@ -31,6 +31,15 @@ public interface CorrespondenceFactory extends EFactory {
     CorrespondenceModel createCorrespondenceModel();
 
     /**
+     * Returns a new object of class '<em>Data Type Entry</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Data Type Entry</em>'.
+     * @generated
+     */
+    DataTypeEntry createDataTypeEntry();
+
+    /**
      * Returns a new object of class '<em>Part</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

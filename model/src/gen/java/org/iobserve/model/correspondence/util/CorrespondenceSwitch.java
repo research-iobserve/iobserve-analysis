@@ -5,6 +5,7 @@ package org.iobserve.model.correspondence.util;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
+import org.iobserve.model.correspondence.*;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
@@ -77,6 +78,13 @@ public class CorrespondenceSwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
+            case CorrespondencePackage.DATA_TYPE_ENTRY: {
+                DataTypeEntry dataTypeEntry = (DataTypeEntry)theEObject;
+                T result = caseDataTypeEntry(dataTypeEntry);
+                if (result == null) result = caseAbstractEntry(dataTypeEntry);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
             case CorrespondencePackage.PART: {
                 Part part = (Part)theEObject;
                 T result = casePart(part);
@@ -133,6 +141,21 @@ public class CorrespondenceSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseCorrespondenceModel(CorrespondenceModel object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Data Type Entry</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Data Type Entry</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseDataTypeEntry(DataTypeEntry object) {
         return null;
     }
 
