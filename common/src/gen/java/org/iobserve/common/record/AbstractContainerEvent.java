@@ -21,6 +21,7 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
+import org.iobserve.common.record.IEvent;
 
 /**
  * @author Reiner Jung
@@ -28,23 +29,27 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 0.0.2
  */
-public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
+public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
-	private static final long serialVersionUID = -7649457401311508334L;
+	private static final long serialVersionUID = 743898805447896033L;
 	
 		
 	/** property declarations. */
+	private final long timestamp;
 	private final String service;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
+	 * @param timestamp
+	 *            timestamp
 	 * @param service
 	 *            service
 	 */
-	public AbstractContainerEvent(final String service) {
+	public AbstractContainerEvent(final long timestamp, final String service) {
+		this.timestamp = timestamp;
 		this.service = service == null?"":service;
 	}
 
@@ -62,7 +67,8 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	@Deprecated
 	protected AbstractContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.service = (String) values[0];
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
 	}
 
 	
@@ -73,6 +79,7 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	 *            when the record could not be deserialized
 	 */
 	public AbstractContainerEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
+		this.timestamp = deserializer.getLong();
 		this.service = deserializer.getString();
 	}
 	
@@ -107,12 +114,20 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
 			return false;
 		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
 		if (!this.getService().equals(castedRecord.getService())) {
 			return false;
 		}
 		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final String getService() {
 		return this.service;

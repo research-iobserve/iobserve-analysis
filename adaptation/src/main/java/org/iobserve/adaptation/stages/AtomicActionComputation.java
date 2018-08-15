@@ -38,6 +38,9 @@ public class AtomicActionComputation extends CompositeStage {
     private final SystemAdaptationModel2ComposedActions systemAdaptationModel2ComposedActions;
     private final AtomicActions2ExecutionPlan atomicActions2ExecutionPlan;
 
+    /**
+     * atomic action computation.
+     */
     public AtomicActionComputation() {
         final ComposedAction2AtomicActions composed2AtomicActions = new ComposedAction2AtomicActions();
 

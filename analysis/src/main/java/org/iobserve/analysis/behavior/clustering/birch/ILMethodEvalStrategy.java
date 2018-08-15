@@ -18,18 +18,20 @@ package org.iobserve.analysis.behavior.clustering.birch;
 import java.util.List;
 
 import org.iobserve.analysis.behavior.clustering.birch.model.ClusteringFeature;
+
 /**
- * @author Melf Lorenzen
- * Interface for different 
- * metrics for the lmethod of the 
- * ClusterSelection stage.
+ * @author Melf Lorenzen Interface for different metrics for the lmethod of the ClusterSelection
+ *         stage.
  */
 public interface ILMethodEvalStrategy {
 
-	/** Calculates the value of the clustering.
-	 * @param cluster clustering to be valued
-	 * @return the value 
-	 */
-	public double calculateClusterMetric(final List<ClusteringFeature> cluster);
-	
+    /**
+     * Calculates the value of the clustering.
+     * 
+     * @param cluster
+     *            clustering to be valued
+     * @return the value
+     */
+    double calculateClusterMetric(final List<ClusteringFeature> cluster);
+
 }

@@ -29,9 +29,13 @@ import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * This stage is triggered by an analysis deployment update.
@@ -47,8 +51,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     private final URL outputURL;
     private final String systemId;
-    private final IModelProvider<ResourceContainer> resourceContainerModelProvider;
-    private final IModelProvider<AssemblyContext> allocationModelProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final ModelResource<Allocation> allocationModelProvider;
 
     /**
      * Output visualization configuration.
@@ -57,18 +61,18 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      *            the output URL
      * @param systemId
      *            system id
-     * @param resourceContainerModelProvider
+     * @param resourceEnvironmentModelResource
      *            model provider for the part of the resource environment model about resource
      *            container
      * @param allocationModelProvider
      *            model provider for the allocation model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
-            final IModelProvider<AssemblyContext> allocationModelProvider) {
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final ModelResource<Allocation> allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
-        this.resourceContainerModelProvider = resourceContainerModelProvider;
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
         this.allocationModelProvider = allocationModelProvider;
     }
 
@@ -88,13 +92,15 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      */
     private JsonArray createData(final PCMDeployedEvent deployment) {
         final String serverName = deployment.getService();
-        final String nodeId = this.resourceContainerModelProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+        final String nodeId = this.resourceEnvironmentModelResource
+                .findObjectsByTypeAndName(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
+                .get(0).getId();
 
         final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
-        final List<AssemblyContext> contexts = this.allocationModelProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName);
+        final List<AssemblyContext> contexts = this.allocationModelProvider.findObjectsByTypeAndName(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
         final JsonObject serviceObject = Changelog
@@ -102,9 +108,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
         final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
                 .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
-
-        return dataArray;
+        return Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
     }
 
 }

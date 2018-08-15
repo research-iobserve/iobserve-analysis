@@ -30,10 +30,12 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Alessandro Guisa
  *
+ * @deprecated 0.0.3 replaced by EMF corrspondence model
  */
 @XmlRootElement(name = "PcmMapping")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "PcmMapping", propOrder = { "entities" })
+@Deprecated
 public class PcmMapping {
 
     private List<PcmEntity> entities = new ArrayList<>();

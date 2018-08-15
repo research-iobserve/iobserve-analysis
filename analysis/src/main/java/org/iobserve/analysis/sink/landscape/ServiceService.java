@@ -37,7 +37,7 @@ public class ServiceService {
      * empty default constructor.
      */
     public ServiceService() {
-
+        // empty constructor
     }
 
     /**
@@ -54,10 +54,8 @@ public class ServiceService {
         this.serviceId = assemblyContext.getId();
         this.serviceName = assemblyContext.getEntityName();
 
-        final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", this.serviceId)
-                .add("systemId", systemId).add("name", this.serviceName).build();
-
-        return service;
+        return Json.createObjectBuilder().add("type", "service").add("id", this.serviceId).add("systemId", systemId)
+                .add("name", this.serviceName).build();
     }
 
     public String getServiceId() {

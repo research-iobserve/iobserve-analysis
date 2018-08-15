@@ -43,7 +43,7 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 
     /**
      * Constructor for the ClusterSelection Stage.
-     * 
+     *
      * @param expectedNumberOfClusters
      *            the expected number of clusters
      * @param useClusterNumberMetric
@@ -117,7 +117,7 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
             avgMetric += entry.getValue();
         }
 
-        if (graph.size() > 0) {
+        if (!graph.isEmpty()) {
             avgMetric /= this.evaluationGraph.size();
             avgSize /= this.evaluationGraph.size();
         }
@@ -135,7 +135,7 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
         for (final Entry<Double, Double> pair : graph) {
             rmse += Math.pow(pair.getValue() - (a + b * pair.getKey()), 2);
         }
-        rmse = graph.size() > 0 ? rmse / graph.size() : 0.0;
+        rmse = graph.isEmpty() ? 0.0 : rmse / graph.size();
         rmse = Math.sqrt(rmse);
 
         return rmse;

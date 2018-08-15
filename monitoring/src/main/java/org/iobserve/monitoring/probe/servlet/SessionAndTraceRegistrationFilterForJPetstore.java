@@ -106,6 +106,9 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
     private final Pattern removeActionOfOperationPattern = Pattern.compile("action\\.");
 
+    /**
+     * Create a session an trace filter specifically for the jpetstore.
+     */
     public SessionAndTraceRegistrationFilterForJPetstore() {
         // empty default constructor
     }
@@ -156,7 +159,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 final String requestPath = httpRequest.getRequestURI().replace('/', '.').substring(1);
 
                 // remove sessionId from request Path
-                path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(";")) : requestPath;
+                path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(';')) : requestPath;
 
                 sessionId = httpRequest.getSession().getId();
 

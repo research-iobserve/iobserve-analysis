@@ -35,7 +35,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Lars Bluemke
  *
  */
-public class PCMModelHandlerMockup implements IPCMModelHandler {
+public class PCMModelHandlerMockup implements IModelImporter {
 
     private final Allocation allocationModel;
     private final ResourceEnvironment resourceEnvironmentModel;

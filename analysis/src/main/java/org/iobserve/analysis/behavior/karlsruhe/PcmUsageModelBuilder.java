@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.iobserve.analysis.behavior.karlsruhe.data.Branch;
 import org.iobserve.analysis.behavior.karlsruhe.data.BranchElement;
@@ -29,12 +28,14 @@ import org.iobserve.analysis.behavior.karlsruhe.data.CallElement;
 import org.iobserve.analysis.behavior.karlsruhe.data.ISequenceElement;
 import org.iobserve.analysis.behavior.karlsruhe.data.LoopBranchElement;
 import org.iobserve.analysis.behavior.karlsruhe.data.LoopElement;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -64,7 +65,7 @@ public class PcmUsageModelBuilder {
     private final boolean isClosedWorkloadRequested;
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModel correspondenceModel;
     private final RepositoryLookupModelProvider repositoryLookupModel;
 
     /**
@@ -82,7 +83,7 @@ public class PcmUsageModelBuilder {
      */
     public PcmUsageModelBuilder(final List<BranchModel> loopBranchModels, final boolean isClosedWorkloadRequested,
             final double thinkTime, final RepositoryLookupModelProvider repositoryLookupModelProvider,
-            final ICorrespondence correspondenceModel) {
+            final CorrespondenceModel correspondenceModel) {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
@@ -202,15 +203,15 @@ public class PcmUsageModelBuilder {
                 final String operationSignature = branchElement.getOperationSignature().replaceAll("\\(.*\\)", "()");
                 final String[] operationSplit = operationSignature.split(" ");
 
-                final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
-                        .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
-                if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
-                    if (PcmUsageModelBuilder.LOGGER.isDebugEnabled()) {
-                        PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
-                                correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
-                    }
-                    eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel, correspondent);
+                final OperationSignature modelOperationSignature = CorrespondenceUtility.findModelElementForOperation(
+                        this.correspondenceModel, Repository.class, branchElement.getClassSignature(),
+                        operationSplit[operationSplit.length - 1]);
+                if (modelOperationSignature != null) {
+                    PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
+                            modelOperationSignature.getEntityName());
+
+                    eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel,
+                            modelOperationSignature);
                 }
                 if (eSysCall != null) {
                     if (isLastElementACall) {

@@ -16,6 +16,7 @@
 package org.iobserve.analysis.behavior.clustering.birch;
 
 import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Melf Lorenzen
  *
  */
+@ReceiveUnfilteredConfiguration
 public class BirchClassificaton extends CompositeStage implements IClassificationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(BirchClassificaton.class);
     private final InputPort<UserSession> sessionInputPort;

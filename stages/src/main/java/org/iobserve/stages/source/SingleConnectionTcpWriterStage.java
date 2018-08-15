@@ -38,27 +38,27 @@ public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<File> 
     private static final int FILE_BUFFER_SIZE = 1024;
 
     private final String hostname;
-    private final int inputPort;
+    private final int outputPort;
 
     /**
      * Creates a new instance of this class.
      *
      * @param hostname
      *            The reader's host name
-     * @param inputPort
+     * @param outputPort
      *            The reader's port number
      *
      */
-    public SingleConnectionTcpWriterStage(final String hostname, final int inputPort) {
+    public SingleConnectionTcpWriterStage(final String hostname, final int outputPort) {
         this.hostname = hostname;
-        this.inputPort = inputPort;
+        this.outputPort = outputPort;
     }
 
     @Override
     protected void execute(final File modelFile) throws Exception {
         // Connect to reader
         final SocketChannel socketChannel = SocketChannel.open();
-        socketChannel.connect(new InetSocketAddress(this.hostname, this.inputPort));
+        socketChannel.connect(new InetSocketAddress(this.hostname, this.outputPort));
 
         // Send file name length + file name
         final String filename = modelFile.getName();

@@ -38,10 +38,7 @@ public final class Changelog {
      * @return JsonObject for a creating changelog
      */
     public static JsonObject create(final JsonObject data) {
-        final JsonObject createChangelog = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", data).build();
-        return createChangelog;
-
+        return Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE").add("data", data).build();
     }
 
     /**
@@ -52,10 +49,7 @@ public final class Changelog {
      * @return JsonObject for a creating changelog
      */
     public static JsonObject delete(final JsonObject data) {
-        final JsonObject deleteChangelog = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "DELETE").add("data", data).build();
-
-        return deleteChangelog;
+        return Json.createObjectBuilder().add("type", "changelog").add("operation", "DELETE").add("data", data).build();
     }
 
 }

@@ -108,7 +108,7 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
 
     @Override
     protected void shutdownService() {
-
+        // nothing special to shutdown
     }
 
 }

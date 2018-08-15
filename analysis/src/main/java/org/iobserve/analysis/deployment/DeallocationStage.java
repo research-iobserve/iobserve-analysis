@@ -24,9 +24,10 @@ import teetime.framework.OutputPort;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * @author Reiner Jung
@@ -36,7 +37,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent> {
 
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /** Relay allocation event. */
     private final OutputPort<IDeallocationEvent> deallocationOutputPort = this.createOutputPort();
@@ -46,11 +47,11 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
     /**
      * Create a stage managing deallocation.
      *
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentResource
      *            resource environment model
      */
-    public DeallocationStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    public DeallocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 
     @Override
@@ -62,17 +63,15 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
             throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
         }
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
-                .getResourceContainerByName(
-                        this.resourceEnvironmentModelProvider.readOnlyRootComponent(ResourceEnvironment.class),
-                        service);
+                .getResourceContainerByName(this.resourceEnvironmentResource.getModelRootNode(ResourceEnvironment.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT), service);
 
         if (resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
-            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelProvider
-                    .readOnlyRootComponent(ResourceEnvironment.class);
+            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentResource.getModelRootNode(
+                    ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().remove(resourceContainer.get());
-            this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class,
-                    resourceEnvironmentModelGraph);
+            this.resourceEnvironmentResource.updatePartition(resourceEnvironmentModelGraph);
 
             /** signal allocation update. */
             this.deallocationNotifyOutputPort.send(resourceContainer.get());

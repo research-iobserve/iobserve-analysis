@@ -20,10 +20,10 @@ import java.io.File;
 import teetime.stage.basic.AbstractFilter;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.adaptation.data.graph.GraphFactory;
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 
 /**
  * Receives AdaptationData, creates a ModelGraph and adds it to the AdaptationData.
@@ -35,16 +35,16 @@ public class ModelGraphCreator extends AbstractFilter<AdaptationData> {
 
     @Override
     protected void execute(final AdaptationData adaptationData) throws Exception {
-        final GraphFactory runtimeFactory = new GraphFactory();
-        final GraphFactory redeploymentFactory = new GraphFactory();
+        final HostComponentAllocationGraphFactory runtimeFactory = new HostComponentAllocationGraphFactory();
+        final HostComponentAllocationGraphFactory redeploymentFactory = new HostComponentAllocationGraphFactory();
 
         final File runtimeModelDir = adaptationData.getRuntimeModelDir();
         final File redeploymentModelDir = adaptationData.getReDeploymentModelDir();
 
-        final ModelGraph runtimeModelGraph = runtimeFactory.buildGraph(new PCMModelHandler(runtimeModelDir),
-                ModelGraphRevision.RUNTIME);
-        final ModelGraph redeploymentModelGraph = redeploymentFactory
-                .buildGraph(new PCMModelHandler(redeploymentModelDir), ModelGraphRevision.REDEPLOYMENT);
+        final HostComponentAllocationGraph runtimeModelGraph = runtimeFactory
+                .buildGraph(new ModelImporter(runtimeModelDir), ModelGraphRevision.RUNTIME);
+        final HostComponentAllocationGraph redeploymentModelGraph = redeploymentFactory
+                .buildGraph(new ModelImporter(redeploymentModelDir), ModelGraphRevision.REDEPLOYMENT);
 
         adaptationData.setRuntimeGraph(runtimeModelGraph);
         adaptationData.setReDeploymentGraph(redeploymentModelGraph);

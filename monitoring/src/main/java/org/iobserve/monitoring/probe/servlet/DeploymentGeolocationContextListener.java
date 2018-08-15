@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.servlet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
@@ -24,7 +27,14 @@ import org.iobserve.common.record.ServletUndeployedEvent;
 
 /**
  * Collects information on deployment and send deployment and geolocation data. On undeployment only
- * the undeployment request is send.
+ * the undeployment request is send. The probe checks for two parameters:
+ *
+ * <ul>
+ * <li>deploymentId which should be an unique identifier for each deployment</li>
+ * <li>countryCode which is an ISO 3166 country code</li>
+ * </ul>
+ *
+ * In case the country code is missing a random country code is assigned.
  *
  * @author Reiner Jung
  *
@@ -44,25 +54,46 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
     @Override
     protected void triggerDeployedEvent(final ServletContextEvent event) {
         final ServletContext servletContext = event.getServletContext();
-        final String service = servletContext.getVirtualServerName();
+
+        final String service = this.getServiceIdentifier(servletContext);
+
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
-        final String countryCode = servletContext.getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
+        final String countryCodeNumber = servletContext
+                .getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
+
+        final ISOCountryCode countryCode;
+
+        if (countryCodeNumber == null) {
+            final ISOCountryCode[] values = ISOCountryCode.values();
+            countryCode = values[(int) (Math.random() * values.length)];
+        } else {
+            countryCode = ISOCountryCode.getEnum(Short.valueOf(countryCodeNumber));
+        }
 
         this.monitoringCtrl.newMonitoringRecord(new Privacy_ServletDeployedEvent(this.timeSource.getTime(), service,
-                context, deploymentId, ISOCountryCode.getEnum(Short.valueOf(countryCode))));
+                context, deploymentId, countryCode));
     }
 
     @Override
     protected void triggerUndeployedEvent(final ServletContextEvent event) {
         final ServletContext servletContext = event.getServletContext();
-        final String service = servletContext.getVirtualServerName();
+        final String service = this.getServiceIdentifier(servletContext);
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
         this.monitoringCtrl.newMonitoringRecord(
                 new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
+    }
+
+    private String getServiceIdentifier(final ServletContext servletContext) {
+        try {
+            final InetAddress address = InetAddress.getByName(servletContext.getVirtualServerName());
+            return address.getHostAddress();
+        } catch (final UnknownHostException e) {
+            return servletContext.getVirtualServerName();
+        }
     }
 
 }
