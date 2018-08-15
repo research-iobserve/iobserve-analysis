@@ -23,6 +23,7 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.DataTypeEntry;
@@ -162,7 +163,10 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                 .resolve(allocation.getAssemblyContext_AllocationContext());
         final RepositoryComponent repositoryComponent = this.repositoryResource
                 .resolve(assemblyContext.getEncapsulatedComponent__AssemblyContext());
-        final String codeLevelComponentIdentifier = repositoryComponent.getEntityName();
+
+        final List<ComponentEntry> componentEntries = this.correspondenceResource
+                .collectAllObjectsByType(ComponentEntry.class, CorrespondencePackage.Literals.COMPONENT_ENTRY);
+        final String codeLevelComponentIdentifier = this.getCodeLevelComponent(componentEntries, repositoryComponent);
 
         final String completeMethodSignature = modifier + " " + codeLevelReturnType + " " + codeLevelComponentIdentifier
                 + "." + methodSignature + "(" + parameterString + ")";
@@ -172,6 +176,18 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         }
 
         return completeMethodSignature;
+    }
+
+    private String getCodeLevelComponent(final List<ComponentEntry> componentEntries,
+            final RepositoryComponent repositoryComponent) throws ControlEventCreationFailedException {
+        for (final ComponentEntry component : componentEntries) {
+            if (component.getComponent().equals(repositoryComponent)) {
+                return component.getComponent().getEntityName();
+            }
+        }
+
+        throw new ControlEventCreationFailedException(
+                "No matching code level component entry was found for: " + repositoryComponent);
     }
 
     private String getCodeLevelDataType(final List<DataTypeEntry> dataTypes, final DataType dataType)
