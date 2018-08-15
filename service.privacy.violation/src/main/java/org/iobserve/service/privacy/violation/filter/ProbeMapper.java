@@ -182,7 +182,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             final RepositoryComponent repositoryComponent) throws ControlEventCreationFailedException {
         for (final ComponentEntry component : componentEntries) {
             if (component.getComponent().equals(repositoryComponent)) {
-                return component.getComponent().getEntityName();
+                return component.getImplementationId();
             }
         }
 
