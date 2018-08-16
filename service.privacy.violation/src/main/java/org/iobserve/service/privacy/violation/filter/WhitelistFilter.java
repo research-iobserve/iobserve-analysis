@@ -28,7 +28,9 @@ import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
@@ -39,12 +41,14 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  */
 public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> {
-
+    private final ModelResource<Allocation> allocationResource;
     private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort();
 
-    public WhitelistFilter(final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    public WhitelistFilter(final ModelResource<Allocation> allocationResource,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+        this.allocationResource = allocationResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
 
     }
@@ -66,30 +70,52 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         final Set<String> allIps = this.computeAvailableIps();
         final Set<String> whitelist = new HashSet<>(allIps);
         whitelist.removeAll(blacklist);
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("All available IPs: " + allIps);
+            this.logger.debug("Forbidden IPs: " + blacklist);
+            this.logger.debug("Computed whitelist: " + whitelist);
+        }
         return new LinkedList<>(whitelist);
     }
 
     private Set<String> computeAvailableIps() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        final List<AllocationContext> allocations = this.allocationResource
+                .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT);
+        final Set<String> availableIps = new LinkedHashSet<>();
 
-    private Set<String> computeForbiddenIps(final ProbeManagementData element) {
-        final Set<AllocationContext> allocationSet = new LinkedHashSet<>();
-        allocationSet.addAll(element.getMethodsToActivate().keySet());
-        allocationSet.addAll(element.getMethodsToDeactivate().keySet());
-
-        for (final AllocationContext allocation : allocationSet) {
+        for (final AllocationContext allocation : allocations) {
             try {
-                this.resourceEnvironmentResource.resolve(allocation.getResourceContainer_AllocationContext())
-                        .getEntityName();
+                availableIps.add(this.resourceEnvironmentResource
+                        .resolve(allocation.getResourceContainer_AllocationContext()).getEntityName());
             } catch (InvocationException | DBException e) {
                 this.logger.error(
                         "Could not resolve resource container during the computation of the IP from: " + allocation, e);
             }
         }
 
-        return null;
+        return availableIps;
+    }
+
+    private Set<String> computeForbiddenIps(final ProbeManagementData element) {
+        final Set<AllocationContext> allocationSet = new LinkedHashSet<>();
+        allocationSet.addAll(element.getMethodsToActivate().keySet());
+        allocationSet.addAll(element.getMethodsToDeactivate().keySet());
+        final Set<String> blacklistSet = new HashSet<>();
+
+        for (final AllocationContext allocation : allocationSet) {
+            try {
+                blacklistSet.add(this.resourceEnvironmentResource
+                        .resolve(allocation.getResourceContainer_AllocationContext()).getEntityName());
+            } catch (InvocationException | DBException e) {
+                this.logger.error(
+                        "Could not resolve resource container during the computation of the IP of the black list from: "
+                                + allocation,
+                        e);
+            }
+        }
+
+        return blacklistSet;
     }
 
     public OutputPort<ProbeManagementData> getOutputPort() {
