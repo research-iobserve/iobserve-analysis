@@ -19,16 +19,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents an event for the activation of a probe via TCP. Additionally transfers parameters.
+ * Represents an event for the update of parameters of a probe via TCP.
+ *
  *
  * @author Marc Adolf
  *
  */
-public class TcpActivationParameterControlEvent extends TcpActivationControlEvent implements IParameterEvent {
+public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements IParameterEvent {
+
     Map<String, List<String>> parameters;
 
     /**
-     * Creates a complete parameter activation control event.
+     * Creates a parameter update control event without content except the pattern and parameters.
+     *
+     * @param pattern
+     *            The pattern of the method that is monitored.
+     * @param parameters
+     *            a map of parameters and a list of each entry per parameter
+     *
+     */
+    public TcpUpdateParameterEvent(final String pattern, final Map<String, List<String>> parameters) {
+        super(pattern);
+        this.parameters = parameters;
+    }
+
+    /**
+     * Creates a complete parameter update control event.
      *
      * @param ip
      *            Address of the monitored application.
@@ -37,28 +53,14 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      * @param hostname
      *            The name of the component which is using this IP and port.
      * @param pattern
-     *            The pattern of the method that should be monitored.
+     *            The pattern of the method that is monitored.
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
      */
-    public TcpActivationParameterControlEvent(final String ip, final int port, final String hostname,
-            final String pattern, final Map<String, List<String>> parameters) {
+    public TcpUpdateParameterEvent(final String ip, final int port, final String hostname, final String pattern,
+            final Map<String, List<String>> parameters) {
         super(ip, port, hostname, pattern);
-        this.parameters = parameters;
-    }
-
-    /**
-     * Creates a parameter activation control event without content except the pattern and
-     * parameters.
-     *
-     * @param pattern
-     *            The pattern of the method that should be monitored.
-     * @param parameters
-     *            a map of parameters and a list of each entry per parameter
-     */
-    public TcpActivationParameterControlEvent(final String pattern, final Map<String, List<String>> parameters) {
-        super(pattern);
         this.parameters = parameters;
     }
 
