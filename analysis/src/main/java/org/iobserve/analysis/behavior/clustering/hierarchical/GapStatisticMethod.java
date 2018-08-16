@@ -32,8 +32,8 @@ import weka.core.Instances;
 public class GapStatisticMethod implements IClusterSelectionMethods {
 
     @Override
-    public Map<Integer, List<Pair<Instance, Double>>> analyze(HierarchicalClusterer hierarchicalClusterer,
-            Instances instances) {
+    public Map<Integer, List<Pair<Instance, Double>>> analyze(final HierarchicalClusterer hierarchicalClusterer,
+            final Instances instances) {
 
         return null;
     }

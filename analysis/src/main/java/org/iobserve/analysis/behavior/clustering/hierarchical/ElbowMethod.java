@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.net4j.util.collection.Pair;
 import org.slf4j.Logger;
@@ -65,10 +64,10 @@ public class ElbowMethod implements IClusterSelectionMethods {
                 hierarchicalClusterer.buildClusterer(instances);
 
                 // Assignments of each data point the clusters.
-                final Vector<Integer>[] assignments = new Vector[numberOfClusters];
+                final List<Integer>[] assignments = new ArrayList[numberOfClusters];
                 // Initialize assignments with empty vectors.
                 for (int j = 0; j < numberOfClusters; j++) {
-                    assignments[j] = new Vector<>();
+                    assignments[j] = new ArrayList<>();
                 }
                 // Cluster size of each cluster (not needed)
                 final int[] clustersize = new int[numberOfClusters];
@@ -80,7 +79,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
                 }
 
                 String assignmentString = "";
-                for (final Vector<Integer> v : assignments) {
+                for (final List<Integer> v : assignments) {
                     assignmentString += v.toString();
                 }
                 ElbowMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
@@ -128,7 +127,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * @param ess
      *            Error sum-of-squares array for all posslible number of clusters.
      */
-    private int findElbow(List<Double> ess) {
+    private int findElbow(final List<Double> ess) {
 
         // ess = new ArrayList<>();
         // ess.add(7.0);
@@ -169,15 +168,16 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * @param instances
      *            Input data that is clustered
      * @param hierarchicalClusterer
-     *            Clusterer that performs heirarchical clustering
+     *            Clusterer that performs hierarchical clustering
      * @return ESS
      **/
-    public double calcESS(Vector<Integer> cluster, Instances instances, HierarchicalClusterer hierarchicalClusterer) {
+    public double calcESS(final List<Integer> cluster, final Instances instances,
+            final HierarchicalClusterer hierarchicalClusterer) {
 
         final DistanceFunction distanceFunction = hierarchicalClusterer.getDistanceFunction();
         final double[] sumAttValues = new double[instances.numAttributes()];
         for (int i = 0; i < cluster.size(); i++) {
-            final Instance instance = instances.instance(cluster.elementAt(i));
+            final Instance instance = instances.instance(cluster.get(i));
             // Sum up all values of all instances.
             for (int j = 0; j < instances.numAttributes(); j++) {
                 sumAttValues[j] += instance.value(j);
@@ -192,14 +192,14 @@ public class ElbowMethod implements IClusterSelectionMethods {
          * Create a centroid of this cluster by setting the average attributes of this cluster as
          * its own.
          */
-        final Instance centroid = (Instance) instances.instance(cluster.elementAt(0)).copy();
+        final Instance centroid = (Instance) instances.instance(cluster.get(0)).copy();
         for (int j = 0; j < instances.numAttributes(); j++) {
             centroid.setValue(j, sumAttValues[j]);
         }
         // Sum up distances of each data point in cluster to centroid to get ESS.
         double clusterESS = 0;
         for (int i = 0; i < cluster.size(); i++) {
-            final Instance instance = instances.instance(cluster.elementAt(i));
+            final Instance instance = instances.instance(cluster.get(i));
             clusterESS += distanceFunction.distance(centroid, instance);
         }
         return clusterESS;
