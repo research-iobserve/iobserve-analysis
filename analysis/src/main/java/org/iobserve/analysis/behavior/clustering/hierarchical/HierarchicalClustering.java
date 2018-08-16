@@ -52,6 +52,14 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
     /**
      * constructor.
+     *
+     * @param distanceMetric
+     *            Used distance metric for hierarchical clustering
+     *
+     * @param clusterSelectionMethod
+     *            Used method for selecting a "good" number of clusters from clustering
+     * @param linkage
+     *            Used linkage for hierarchical clustering
      */
     public HierarchicalClustering(final String distanceMetric, final String clusterSelectionMethod,
             final String linkage) {
@@ -173,10 +181,6 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         return this.distanceFunction;
     }
 
-    private final void setDistanceFunction(final DistanceFunction distanceFunction) {
-        this.distanceFunction = distanceFunction;
-    }
-
     private void setDistanceFunction(final String distanceType) {
         switch (distanceType) {
         case "manhatten":
@@ -190,5 +194,4 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             break;
         }
     }
-
 }

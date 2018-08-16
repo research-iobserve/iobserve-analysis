@@ -28,7 +28,7 @@ import weka.core.Instances;
 /**
  * interface for hierarchical clustering usable by {@link HierarchicalClusteringStage}.
  *
- * @author Stephan Lenga
+ * @author SL
  *
  */
 

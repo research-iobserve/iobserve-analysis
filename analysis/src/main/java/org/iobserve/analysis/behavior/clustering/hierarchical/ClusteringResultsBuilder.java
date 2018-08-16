@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.net4j.util.collection.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import weka.clusterers.HierarchicalClusterer;
 import weka.core.Instance;
@@ -33,6 +35,8 @@ import weka.core.Instances;
  *         Utility class for building clustering results to write into a file.
  */
 public final class ClusteringResultsBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 
     private ClusteringResultsBuilder() {
         throw new UnsupportedOperationException();
@@ -50,17 +54,21 @@ public final class ClusteringResultsBuilder {
      * @throws Exception
      */
     public static Map<Integer, List<Pair<Instance, Double>>> buildClusteringResults(final Instances instances,
-            final HierarchicalClusterer hierarchicalClusterer) throws Exception {
+            final HierarchicalClusterer hierarchicalClusterer) {
         final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD;
 
         for (int i = 0; i < instances.numInstances(); i++) {
             final Instance currentInstance = instances.instance(i);
-            final int cluster = hierarchicalClusterer.clusterInstance(currentInstance);
-            final double probability = hierarchicalClusterer.distributionForInstance(currentInstance)[cluster];
-            if (clusteringResults.get(cluster) == null) {
-                clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
+            try {
+                final int cluster = hierarchicalClusterer.clusterInstance(currentInstance);
+                final double probability = hierarchicalClusterer.distributionForInstance(currentInstance)[cluster];
+                if (clusteringResults.get(cluster) == null) {
+                    clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
+                }
+                clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
+            } catch (final Exception e) { // NOPMD NOCS api dependency
+                ClusteringResultsBuilder.LOGGER.error("Failed building hierarchical clustering.", e);
             }
-            clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
 
         }
 

@@ -36,54 +36,44 @@ import weka.core.Instances;
 public class AvgSilhouetteMethod implements IClusterSelectionMethods {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
+    private final HierarchicalClusterer hierarchicalClusterer;
+    private final Instances instances;
+
+    public AvgSilhouetteMethod(final HierarchicalClusterer hierarchicalClusterer, final Instances instances) {
+        this.hierarchicalClusterer = hierarchicalClusterer;
+        this.instances = instances;
+    }
 
     @Override
-    public Map<Integer, List<Pair<Instance, Double>>> analyze(final HierarchicalClusterer hierarchicalClusterer,
-            final Instances instances) {
+    public Map<Integer, List<Pair<Instance, Double>>> analyze() {
 
         AvgSilhouetteMethod.LOGGER.info("Starting AvgSilhouetteMethod");
 
-        final int numInstances = instances.numInstances();
+        final int numInstances = this.instances.numInstances();
         // Average silhouette for each cluster.
         final List<Double> avgSilhouettes = new ArrayList<>();
-        for (int i = 1; i <= instances.numInstances(); ++i) {
+        for (int i = 1; i <= this.instances.numInstances(); ++i) {
 
             try {
                 final int numberOfClusters = i;
-                hierarchicalClusterer.setNumClusters(numberOfClusters);
-                hierarchicalClusterer.buildClusterer(instances);
+                this.hierarchicalClusterer.setNumClusters(numberOfClusters);
+                this.hierarchicalClusterer.buildClusterer(this.instances);
 
                 // Assignments of each data point the clusters.
-                final List<Integer>[] assignments = new ArrayList[numberOfClusters];
-                // Initialize assignments with empty list.
-                for (int j = 0; j < numberOfClusters; j++) {
-                    assignments[j] = new ArrayList<>();
-                }
-                // Cluster size of each cluster (not needed)
-                final int[] clustersize = new int[numberOfClusters];
+                final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
 
-                for (int s = 0; s < numInstances; s++) {
-                    final int assignedCluster = hierarchicalClusterer.clusterInstance(instances.instance(s));
-                    assignments[assignedCluster].add(s);
-                    clustersize[hierarchicalClusterer.clusterInstance(instances.instance(s))]++;
-                }
-
-                String assignmentString = "";
-                for (final List<Integer> v : assignments) {
-                    assignmentString += v.toString();
-                }
-                AvgSilhouetteMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
+                // Print assignments for debugging.
+                this.printAssignmentString(assignments);
 
                 /*
                  * Calculate the average dissimilarity of all data points in a cluster for all
                  * clusters.
                  */
-
-                avgSilhouettes.add(this.calcAvgSilhouettes(assignments, instances, hierarchicalClusterer));
+                avgSilhouettes.add(this.calcAvgSilhouettes(assignments));
 
                 AvgSilhouetteMethod.LOGGER.info(avgSilhouettes.toString() + "\n");
 
-            } catch (final Exception e) {
+            } catch (final Exception e) { // NOPMD NOCS api dependency
                 AvgSilhouetteMethod.LOGGER.error("Hierarchical clustering failed.", e);
             }
         }
@@ -93,17 +83,16 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
         Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
 
         try {
-            hierarchicalClusterer.setNumClusters(goodClustereNumber);
-            hierarchicalClusterer.buildClusterer(instances);
-            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(instances, hierarchicalClusterer);
-        } catch (final Exception e) {
+            this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
+            this.hierarchicalClusterer.buildClusterer(this.instances);
+            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(this.instances,
+                    this.hierarchicalClusterer);
+        } catch (final Exception e) { // NOPMD NOCS api dependency
             AvgSilhouetteMethod.LOGGER.error("Clustering at AvgSilhouette failed.", e);
         }
 
         // Print clusteringResult
-        for (int i = 0; i < clusteringResults.size(); i++) {
-            AvgSilhouetteMethod.LOGGER.info(clusteringResults.get(i).toString() + "\n");
-        }
+        this.printClusteringResults(clusteringResults);
 
         AvgSilhouetteMethod.LOGGER.info("AvgSilhouetteMethod done.");
         return clusteringResults;
@@ -112,7 +101,7 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
     /**
      * Calculate the average silhouettes of each cluster.
      *
-     * @param clusters
+     * @param assignments
      *            Resulting clusters from hierarchical clustering.
      * @param instances
      *            Input data
@@ -120,52 +109,32 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      *            Clusterer that performs the hierarchical clustering.
      * @return average silhouettes of the clusters.
      */
-    public double calcAvgSilhouettes(final List<Integer>[] clusters, final Instances instances,
-            final HierarchicalClusterer hierarchicalClusterer) {
+    public double calcAvgSilhouettes(final List<ArrayList<Integer>> assignments) {
 
-        final DistanceFunction distanceFunction = hierarchicalClusterer.getDistanceFunction();
+        final DistanceFunction distanceFunction = this.hierarchicalClusterer.getDistanceFunction();
         double avgSilhouette = 0.0;
 
-        if (clusters.length == 1) {
+        if (assignments.size() <= 1) {
             // Default silhouette value is 0 there is only one cluster.
             return avgSilhouette;
         } else {
             final List<Double> silhouetteList = new ArrayList<>();
-            // final double[] silhouetteList = new double[cluster.size()];
-            for (final List<Integer> cluster : clusters) {
+            for (final List<Integer> cluster : assignments) {
                 for (int i = 0; i < cluster.size(); i++) {
                     /*
                      * Calculate the average dissimilarity of instance i to all other instances of
                      * the same cluster.
                      */
-                    final Instance instanceI = instances.instance(cluster.get(i));
-                    double sumDistanceFromI = 0.0;
-                    for (int j = 0; j < cluster.size(); j++) {
-                        if (j != i) {
-                            final Instance otherInstance = instances.instance(cluster.get(j));
-                            sumDistanceFromI += distanceFunction.distance(instanceI, otherInstance);
-                        }
-                    }
-                    final double avgDissimFromISameCluster = sumDistanceFromI / (cluster.size() - 1);
+                    final Instance instanceI = this.instances.instance(cluster.get(i));
+                    final double avgDissimFromISameCluster = this.calcAvgDissimSameCluster(i, instanceI, cluster);
 
                     /*
                      * For each other cluster that instance i is not part of, calculate the average
-                     * dissimilarity of instance i to all instances of these other clusters.
+                     * dissimilarity of instance i to all instances of these other clusters and
+                     * search the minimum.
                      */
-                    double minAvgDissimFromIToOtherClusters = Double.POSITIVE_INFINITY;
-                    for (final List<Integer> otherCluster : clusters) {
-                        if (!otherCluster.equals(cluster)) {
-                            double sumDistanceFromIOtherClusters = 0.0;
-                            for (int j = 0; j < otherCluster.size(); j++) {
-                                final Instance otherInstance = instances.instance(otherCluster.get(j));
-                                sumDistanceFromIOtherClusters += distanceFunction.distance(instanceI, otherInstance);
-                            }
-                            final double avgDissimFromIOtherCluster = sumDistanceFromIOtherClusters
-                                    / otherCluster.size();
-                            minAvgDissimFromIToOtherClusters = Math.min(minAvgDissimFromIToOtherClusters,
-                                    avgDissimFromIOtherCluster);
-                        }
-                    }
+                    final double minAvgDissimFromIToOtherClusters = this.calcMinAvgDissimOtherClusters(instanceI,
+                            assignments, cluster);
 
                     /*
                      * Calculate the silhouette value of instance i. Instances with a large
@@ -178,20 +147,58 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
                     // Add silhouette of i to silhouette list in order to calculate the average.
                     silhouetteList.add(silhouetteI);
                 }
-
-                // // Calculate the average silhouette of the cluster.
-                // double avgSilhouetteOfCluster = 0.0;
-                // for (final double silhouette : silhouetteList) {
-                // avgSilhouetteOfCluster += silhouette;
-                // }
-                // avgSilhouetteOfCluster /= cluster.size();
-                // avgSilhouetteList.add(avgSilhouetteOfCluster);
             }
-
             avgSilhouette = this.calculateAverage(silhouetteList);
         }
-
         return avgSilhouette;
+    }
+
+    /**
+     * Calculate the minimum average dissimilarity of instance i to all other instances of different
+     * clusters.
+     *
+     * @param instanceI
+     * @param assignments
+     * @param cluster
+     * @return
+     */
+    private double calcMinAvgDissimOtherClusters(final Instance instanceI, final List<ArrayList<Integer>> assignments,
+            final List<Integer> cluster) {
+        double minAvgDissimFromIToOtherClusters = Double.POSITIVE_INFINITY;
+        for (final List<Integer> otherCluster : assignments) {
+            if (!otherCluster.equals(cluster)) {
+                double sumDistanceFromIOtherClusters = 0.0;
+                for (int j = 0; j < otherCluster.size(); j++) {
+                    final Instance otherInstance = this.instances.instance(otherCluster.get(j));
+                    sumDistanceFromIOtherClusters += this.hierarchicalClusterer.getDistanceFunction()
+                            .distance(instanceI, otherInstance);
+                }
+                final double avgDissimFromIOtherCluster = sumDistanceFromIOtherClusters / otherCluster.size();
+                minAvgDissimFromIToOtherClusters = Math.min(minAvgDissimFromIToOtherClusters,
+                        avgDissimFromIOtherCluster);
+            }
+        }
+        return minAvgDissimFromIToOtherClusters;
+    }
+
+    /**
+     * Calculates the average dissimilarity of instance i to all other instances of the same
+     * cluster.
+     *
+     * @param i
+     * @param instanceI
+     * @param cluster
+     * @return
+     */
+    private double calcAvgDissimSameCluster(final int i, final Instance instanceI, final List<Integer> cluster) {
+        double sumDistanceFromI = 0.0;
+        for (int j = 0; j < cluster.size(); j++) {
+            if (j != i) {
+                final Instance otherInstance = this.instances.instance(cluster.get(j));
+                sumDistanceFromI += this.hierarchicalClusterer.getDistanceFunction().distance(instanceI, otherInstance);
+            }
+        }
+        return sumDistanceFromI / (cluster.size() - 1);
     }
 
     /**
@@ -226,5 +233,59 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
             return sum / list.size();
         }
         return sum;
+    }
+
+    /**
+     * Builds a String of the instance-to-cluster assignments for debugging.
+     *
+     * @param assignments
+     * @return
+     */
+    private void printAssignmentString(final List<ArrayList<Integer>> assignments) {
+        String assignmentString = "";
+        for (final List<Integer> v : assignments) {
+            assignmentString += v.toString();
+        }
+        AvgSilhouetteMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
+    }
+
+    /**
+     * Returns a list which i-th entry is the number of the assigned cluster of the i-th instance.
+     *
+     * @param numberOfClusters
+     *            number of total clusters of this clustering
+     * @return
+     */
+    private List<ArrayList<Integer>> buildClusterAssignmentsList(final int numberOfClusters) {
+        // Assignments of each data point the clusters.
+        // final List<Integer>[] assignments = new ArrayList[numberOfClusters];
+        final List<ArrayList<Integer>> assignments = new ArrayList<>();
+        // Initialize assignments with empty vectors.
+        for (int j = 0; j < numberOfClusters; j++) {
+            // assignments[j] = new ArrayList<>();
+            assignments.add(j, new ArrayList<>());
+        }
+
+        for (int s = 0; s < this.instances.numInstances(); s++) {
+            try {
+                final int assignedCluster = this.hierarchicalClusterer.clusterInstance(this.instances.instance(s));
+                // assignments[assignedCluster].add(s);
+                assignments.get(assignedCluster).add(s);
+            } catch (final Exception e) { // NOPMD NOCS api dependency
+                AvgSilhouetteMethod.LOGGER.error("Clustering at AvgSilhouetteMethod failed.", e);
+            }
+        }
+        return assignments;
+    }
+
+    /**
+     * Print clustering results for debugging.
+     *
+     * @param clusteringResults
+     */
+    public void printClusteringResults(final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
+        for (int i = 0; i < clusteringResults.size(); i++) {
+            AvgSilhouetteMethod.LOGGER.info(clusteringResults.get(i).toString() + "\n");
+        }
     }
 }

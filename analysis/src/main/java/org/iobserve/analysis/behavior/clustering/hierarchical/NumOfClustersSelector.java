@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.util.List;
@@ -25,11 +26,12 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author Stephan Lenga
+ * @author SL
  *
  */
 public class NumOfClustersSelector {
 
+    // Different available methods to find a "good" number of clusters.
     private static final String ELBOW = "elbow";
     private static final String AVG_SILHOUETTE = "avgsil";
     private static final String GAP_STATISTIC = "gap";
@@ -57,27 +59,31 @@ public class NumOfClustersSelector {
         this.instances = instances;
     }
 
+    /**
+     * Finds a "good" number of clusters for clustering the input data and clusters the input data.
+     *
+     * @return clustering results with a "good" number of clusters.
+     */
     public Map<Integer, List<Pair<Instance, Double>>> findOptimalNumOfClusters() {
         Map<Integer, List<Pair<Instance, Double>>> resultClusters = null;
         final IClusterSelectionMethods clusteringMethod;
 
         switch (this.strategy) {
         case ELBOW:
-            clusteringMethod = new ElbowMethod();
+            clusteringMethod = new ElbowMethod(this.hierarchicalClusterer, this.instances);
             break;
         case AVG_SILHOUETTE:
-            clusteringMethod = new AvgSilhouetteMethod();
+            clusteringMethod = new AvgSilhouetteMethod(this.hierarchicalClusterer, this.instances);
             break;
         case GAP_STATISTIC:
-            clusteringMethod = new GapStatisticMethod();
+            clusteringMethod = new GapStatisticMethod(this.hierarchicalClusterer, this.instances);
             break;
         default: // default is ElbowMethod
-            clusteringMethod = new ElbowMethod();
+            clusteringMethod = new ElbowMethod(this.hierarchicalClusterer, this.instances);
             break;
         }
-        resultClusters = clusteringMethod.analyze(this.hierarchicalClusterer, this.instances);
+        resultClusters = clusteringMethod.analyze();
 
         return resultClusters;
     }
-
 }

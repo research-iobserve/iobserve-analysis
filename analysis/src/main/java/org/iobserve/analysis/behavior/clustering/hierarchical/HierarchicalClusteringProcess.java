@@ -33,7 +33,7 @@ public class HierarchicalClusteringProcess extends CompositeStage {
     private final OutputPort<Instances> outputPort;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param clustering
      *            clustering algorithm

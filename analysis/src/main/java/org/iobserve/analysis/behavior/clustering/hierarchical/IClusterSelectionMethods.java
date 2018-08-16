@@ -21,9 +21,7 @@ import java.util.Map;
 
 import org.eclipse.net4j.util.collection.Pair;
 
-import weka.clusterers.HierarchicalClusterer;
 import weka.core.Instance;
-import weka.core.Instances;
 
 /**
  * @author SL
@@ -33,6 +31,15 @@ import weka.core.Instances;
  */
 public interface IClusterSelectionMethods {
 
-    Map<Integer, List<Pair<Instance, Double>>> analyze(final HierarchicalClusterer hierarchicalClusterer,
-            final Instances instances);
+    /**
+     *
+     * @param hierarchicalClusterer
+     *            Performs hierarchical clustering.
+     *
+     * @param instances
+     *            Input data that is clustered.
+     *
+     * @return clustered data with a "good" number of clusters.
+     */
+    Map<Integer, List<Pair<Instance, Double>>> analyze();
 }

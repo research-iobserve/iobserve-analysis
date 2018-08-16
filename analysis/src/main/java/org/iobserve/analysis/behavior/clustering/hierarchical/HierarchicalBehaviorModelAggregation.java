@@ -42,6 +42,12 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
      *            path or url for the sink
      * @param signatureCreationStrategy
      *            signature creation strategy
+     * @param distanceMetric
+     *            used distance metric for hierarchical clustering
+     * @param clusterSelectionMethod
+     *            used method for selecting a "good" number of clusters from clustering
+     * @param linkage
+     *            used linkage for hierarchical clustering
      */
     public HierarchicalBehaviorModelAggregation(final String namePrefix, final String visualizationUrl,
             final ISignatureCreationStrategy signatureCreationStrategy, final String distanceMetric,
