@@ -20,7 +20,7 @@ import teetime.stage.basic.AbstractFilter;
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.testmodel.AdaptationTestModel;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.PCMModelHandlerMockup;
 
 /**
@@ -67,8 +67,8 @@ public class ComposedActionFactoryInitialization extends AbstractFilter<Adaptati
 
         // Set up ActionFactory because the rule engine will invoke it in ComposedActionComputation
         if (!this.isTestRun) {
-            ActionFactory.setRuntimeModels(new PCMModelHandler(adaptationData.getRuntimeModelDir()));
-            ActionFactory.setRedeploymentModels(new PCMModelHandler(adaptationData.getReDeploymentModelDir()));
+            ActionFactory.setRuntimeModels(new ModelImporter(adaptationData.getRuntimeModelDir()));
+            ActionFactory.setRedeploymentModels(new ModelImporter(adaptationData.getReDeploymentModelDir()));
         }
 
         this.outputPort.send(adaptationData);

@@ -35,6 +35,9 @@ public class AdaptationDataCreator extends CompositeStage {
     private final ModelCollector modelCollector;
     private final ModelGraphCreator modelGraphCreator;
 
+    /**
+     * adaptation data creator.
+     */
     public AdaptationDataCreator() {
         this.modelCollector = new ModelCollector();
         this.modelGraphCreator = new ModelGraphCreator();

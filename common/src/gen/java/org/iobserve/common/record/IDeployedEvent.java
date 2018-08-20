@@ -21,5 +21,5 @@ package org.iobserve.common.record;
  * 
  * @since 0.0.2
  */
-public interface IDeployedEvent extends IDeploymentChange {
+public interface IDeployedEvent extends IDeploymentChange, IEvent {
 }

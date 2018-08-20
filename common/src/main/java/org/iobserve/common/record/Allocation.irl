@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.common.record
 
+import org.iobserve.common.record.IEvent
+
 /**
  * Marker interfaces for allocation and deallocation.	 
  */
@@ -26,7 +28,7 @@ template IDeallocationEvent
  * Event records for PaaS allocation deallocation.
  */
 @author "Reiner Jung" @since "0.0.2"
-abstract event AbstractContainerEvent {
+abstract event AbstractContainerEvent : IEvent {
 	string service
 }
 

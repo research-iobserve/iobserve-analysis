@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.model.utils;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
  * Utility class for string related stuff.
  *
- * TODO this class should not be necessary, as
+ * TODO this class should not be necessary
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -62,7 +63,7 @@ public final class StringUtils {
      * @return lower case string
      */
     public static Supplier<String> modifyForOperationSigMatching(final String str) {
-        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase();
+        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase(Locale.getDefault());
     }
 
 }

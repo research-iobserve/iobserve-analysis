@@ -31,6 +31,15 @@ public interface PrivacyFactory extends EFactory {
     PrivacyModel createPrivacyModel();
 
     /**
+     * Returns a new object of class '<em>Return Type Privacy</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Return Type Privacy</em>'.
+     * @generated
+     */
+    ReturnTypePrivacy createReturnTypePrivacy();
+
+    /**
      * Returns a new object of class '<em>Geo Location</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -47,6 +56,15 @@ public interface PrivacyFactory extends EFactory {
      * @generated
      */
     ParameterPrivacy createParameterPrivacy();
+
+    /**
+     * Returns a new object of class '<em>Encapsulated Data Source</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Encapsulated Data Source</em>'.
+     * @generated
+     */
+    EncapsulatedDataSource createEncapsulatedDataSource();
 
     /**
      * Returns the package supported by this factory.

@@ -21,10 +21,12 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -41,9 +43,7 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    /** reference to allocation model provider. */
-    private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private final ModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
@@ -51,16 +51,11 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param allocationModelGraphProvider
+     * @param allocationModelResource
      *            allocation model provider
-     * @param allocationContextModelGraphProvider
-     *            model provider for a view on the allocation model only containing the allocation
-     *            contexts
      */
-    public DeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
+    public DeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
+        this.allocationModelResource = allocationModelResource;
     }
 
     /**
@@ -68,24 +63,34 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      *
      * @param event
      *            one deployment event to be processed
+     * @throws NodeLookupException
+     *             node lookup failed
      */
     @Override
-    protected void execute(final PCMDeployedEvent event) {
+    protected void execute(final PCMDeployedEvent event) throws NodeLookupException {
+        this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
+        this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
+                event.getAssemblyContext(), event.getResourceContainer(), event.getService());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContext = this.allocationContextModelGraphProvider
-                .readOnlyComponentByName(AllocationContext.class, allocationContextName);
+        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndName(
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
+                allocationContextName);
         if (allocationContext.isEmpty()) {
-            final Allocation allocationModel = this.allocationModelGraphProvider.readRootComponent(Allocation.class);
+            this.logger.debug("Create allocation context {}", event);
+            final Allocation allocationModel = this.allocationModelResource.getModelRootNode(Allocation.class,
+                    AllocationPackage.Literals.ALLOCATION);
+
             final AllocationContext newAllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
             newAllocationContext.setEntityName(allocationContextName);
             newAllocationContext.setAssemblyContext_AllocationContext(event.getAssemblyContext());
             newAllocationContext.setResourceContainer_AllocationContext(event.getResourceContainer());
-            this.allocationContextModelGraphProvider.createComponent(newAllocationContext);
 
             allocationModel.getAllocationContexts_Allocation().add(newAllocationContext);
-            this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
+
+            this.allocationModelResource.updatePartition(allocationModel);
+
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);

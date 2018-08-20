@@ -6,7 +6,7 @@
     operationReflection="true" importOrganizing="true">
   <foreignModel>CorrespondenceModel.ecore</foreignModel>
   <genPackages prefix="Correspondence" basePackage="org.iobserve.model" disposableProviderFactory="true"
-      ecorePackage="CorrespondenceModel.ecore#/">
+      fileExtensions="rac" ecorePackage="CorrespondenceModel.ecore#/">
     <genClasses ecoreClass="CorrespondenceModel.ecore#//CorrespondenceModel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel.ecore#//CorrespondenceModel/parts"/>
     </genClasses>

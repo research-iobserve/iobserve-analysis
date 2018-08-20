@@ -324,7 +324,7 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
                 final String requestPath = httpRequest.getRequestURI().replace('/', '.').substring(1);
 
                 // remove sessionId from request Path
-                path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(";")) : requestPath;
+                path = requestPath.indexOf(';') >= 0 ? requestPath.substring(0, requestPath.indexOf(';')) : requestPath;
 
                 sessionId = httpRequest.getSession().getId();
 

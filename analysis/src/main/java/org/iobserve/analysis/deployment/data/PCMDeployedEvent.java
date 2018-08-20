@@ -23,13 +23,14 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public class PCMDeployedEvent {
+public class PCMDeployedEvent implements IPCMDeploymentEvent {
 
     private final String service;
     private final AssemblyContext assemblyContext;
     private final String url;
     private ResourceContainer resourceContainer;
     private final ISOCountryCode countryCode;
+    private final long timestamp;
 
     /**
      * Create a deployment event which initialized values for service, correspondent, url, and
@@ -43,19 +44,24 @@ public class PCMDeployedEvent {
      *            the service URL
      * @param isoCountryCode
      *            the country code of the service in case that is available.
+     * @param timestamp
+     *            observation timestamp
      */
     public PCMDeployedEvent(final String service, final AssemblyContext assemblyContext, final String url,
-            final ISOCountryCode isoCountryCode) { // NOPMD country code is short
+            final ISOCountryCode isoCountryCode, final long timestamp) {
         this.service = service;
         this.assemblyContext = assemblyContext;
         this.url = url;
         this.countryCode = isoCountryCode;
+        this.timestamp = timestamp;
     }
 
+    @Override
     public final String getService() {
         return this.service;
     }
 
+    @Override
     public final AssemblyContext getAssemblyContext() {
         return this.assemblyContext;
     }
@@ -68,12 +74,18 @@ public class PCMDeployedEvent {
         this.resourceContainer = resourceContainer;
     }
 
+    @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
     }
 
     public final ISOCountryCode getCountryCode() {
         return this.countryCode;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
 }

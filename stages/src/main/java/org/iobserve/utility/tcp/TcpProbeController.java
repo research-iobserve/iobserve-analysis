@@ -17,6 +17,7 @@ package org.iobserve.utility.tcp;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kieker.common.configuration.Configuration;
@@ -28,7 +29,8 @@ import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
-import org.iobserve.utility.tcp.events.TcpDeactivationEvent;
+import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
+import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +71,13 @@ public class TcpProbeController {
         final String hostname = event.getHostname();
         final String pattern = event.getPattern();
         if (event instanceof TcpActivationControlEvent) {
-            this.activateMonitoredPattern(ip, port, hostname, pattern);
-        } else if (event instanceof TcpDeactivationEvent) {
+            if (event instanceof TcpActivationParameterControlEvent) {
+                this.activateParameterMonitoredPattern(ip, port, hostname, pattern,
+                        ((TcpActivationParameterControlEvent) event).getParameters());
+            } else {
+                this.activateMonitoredPattern(ip, port, hostname, pattern);
+            }
+        } else if (event instanceof TcpDeactivationControlEvent) {
             this.deactivateMonitoredPattern(ip, port, hostname, pattern);
         } else {
             if (TcpProbeController.LOGGER.isErrorEnabled()) {
@@ -78,6 +85,33 @@ public class TcpProbeController {
             }
         }
 
+    }
+
+    /**
+     * Updates the given parameters for a probe.
+     *
+     * @param ip
+     *            Address of the monitored application.
+     * @param port
+     *            Port of the TCP controller.
+     * @param hostname
+     *            The name of the component which is using this IP and port.
+     * @param pattern
+     *            The pattern of the method that should is monitored.
+     * @param parameters
+     *            The map of parameters to be set, the key is the name and the values the values for
+     *            the parameter.
+     * @throws RemoteControlFailedException
+     *             if the connection can not be established within a set timeout.
+     */
+    public void updateProbeParameter(final String ip, final int port, final String hostname, final String pattern,
+            final Map<String, List<String>> parameters) {
+        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+        final String[][] parameterArray = this.computeParameterArray(parameters);
+
+        // TODO add with new Kiekerversion
+        // this.sendTcpCommand(ip, port, hostname, new
+        // UpdateParameterEvent(pattern,parameterNames,parameterArray));
     }
 
     /**
@@ -97,6 +131,34 @@ public class TcpProbeController {
     public void activateMonitoredPattern(final String ip, final int port, final String hostname, final String pattern)
             throws RemoteControlFailedException {
         this.sendTcpCommand(ip, port, hostname, new ActivationEvent(pattern));
+    }
+
+    /**
+     * Activates monitoring of a method (pattern) on one monitored application via TCP and transfers
+     * parameter.
+     *
+     * @param ip
+     *            Address of the monitored application.
+     * @param port
+     *            Port of the TCP controller.
+     * @param hostname
+     *            The name of the component which is using this IP and port.
+     * @param pattern
+     *            The pattern of the method that should be monitored.
+     * @param parameters
+     *            The map of parameters to be set, the key is the name and the values the values for
+     *            the parameter.
+     * @throws RemoteControlFailedException
+     *             if the connection can not be established within a set timeout.
+     */
+    public void activateParameterMonitoredPattern(final String ip, final int port, final String hostname,
+            final String pattern, final Map<String, List<String>> parameters) {
+        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+        final String[][] parameterArray = this.computeParameterArray(parameters);
+
+        // TODO add with new Kiekerversion
+        // this.sendTcpCommand(ip, port, hostname, new
+        // ActivationParameterEvent(pattern,parameterNames,parameterArray));
     }
 
     /**
@@ -126,7 +188,7 @@ public class TcpProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if (currentConnection == null || currentConnection.getHostname() != hostname) {
+        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -182,4 +244,17 @@ public class TcpProbeController {
     public boolean isKnownHost(final String ip, final int port) {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
     }
+
+    private String[][] computeParameterArray(final Map<String, List<String>> parameters) {
+        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+
+        final int parameterLength = parameterNames.length;
+        final String[][] parameterArray = new String[parameterLength][];
+
+        for (int i = 0; i < parameterLength; i++) {
+            parameterArray[i] = (String[]) parameters.get(parameterNames[i]).toArray();
+        }
+        return parameterArray;
+    }
+
 }

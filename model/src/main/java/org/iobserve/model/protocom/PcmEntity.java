@@ -36,10 +36,12 @@ import org.iobserve.model.utils.StringUtils;
  * @author Alesanndro Guisa
  * @author Nicolas Boltz
  *
+ * @deprecated 0.0.3 replaced by EMF corrspondence model
  */
 @XmlRootElement(name = "PcmEntity")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "PcmEntity", propOrder = { "name", "id", "operationSigs", "correspondents" })
+@Deprecated
 public class PcmEntity {
 
     private String name;

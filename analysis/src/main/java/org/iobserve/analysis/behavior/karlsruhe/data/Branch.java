@@ -28,13 +28,14 @@ public class Branch {
     private int branchId;
     private int treeLevel;
     private List<ISequenceElement> branchSequence = new ArrayList<>();
-    private double branchLikelihood = 0;
+    private double branchLikelihood = 0; // NOPMD
     private List<Branch> childBranches = new ArrayList<>();
 
     /**
      * Entity constructor.
      */
     public Branch() {
+        // empty constructor
     }
 
     /**

@@ -164,9 +164,4 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
         return this.outputPort;
     }
 
-    @Override
-    public void onTerminating() {
-        super.onTerminating();
-    }
-
 }

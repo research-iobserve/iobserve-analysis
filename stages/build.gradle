@@ -15,6 +15,11 @@ dependencies {
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 	
 	compile 'org.tukaani:xz:1.6'
+	
+	testCompile 'org.powermock:powermock-core:1.6.1'
+	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+	testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+
 }
 
 clover {

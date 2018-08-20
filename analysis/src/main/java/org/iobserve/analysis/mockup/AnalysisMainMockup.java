@@ -37,8 +37,7 @@ public class AnalysisMainMockup {
     }
 
     private void run() {
-        final Execution<AnalysisConfigurationMockup> execution = new Execution<>(
-                new AnalysisConfigurationMockup());
+        final Execution<AnalysisConfigurationMockup> execution = new Execution<>(new AnalysisConfigurationMockup());
 
         this.shutdownHook(execution);
 
@@ -58,7 +57,7 @@ public class AnalysisMainMockup {
                         execution.abortEventually();
                         AnalysisMainMockup.this.shutdownService();
                     }
-                } catch (final Exception e) { // NOCS
+                } catch (final Exception e) { // NOCS NOPMD framework uses Exception
 
                 }
             }

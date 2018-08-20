@@ -29,8 +29,6 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Filter collects all events until it receives an EmptyRecord. Then it flushes out all sessions and
@@ -41,8 +39,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.3
  */
 public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EndSessionDetector.class);
 
     private static final long SESSION_TIMEOUT = 1000L * 1000L * 1000L * 60L * 60L * 24L;
 
@@ -114,9 +110,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
             metadata.setTimestamp(event.getLoggingTimestamp());
             final SessionEntry sessionEntry = this.sessionMap.get(metadata.getSessionId());
             sessionEntry.setTimestamp(metadata.getTimestamp());
-        } //else {
-            //EndSessionDetector.LOGGER.error("Event has no trace {} {}", event.getClass(), event.toString());
-        //}
+        }
     }
 
     public OutputPort<IMonitoringRecord> getOutputPort() {

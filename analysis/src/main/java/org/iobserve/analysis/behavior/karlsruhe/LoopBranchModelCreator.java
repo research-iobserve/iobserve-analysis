@@ -43,7 +43,7 @@ public class LoopBranchModelCreator {
      * Default constructor.
      */
     public LoopBranchModelCreator() {
-
+        // empty constructor
     }
 
     /**
@@ -156,7 +156,7 @@ public class LoopBranchModelCreator {
                     }
                 }
 
-                if (loopElements.size() > 0) {
+                if (!loopElements.isEmpty()) {
                     // Filters the loops from overlapping loops
                     this.filterLoops(loopElements);
                     // Find Loops within the loops

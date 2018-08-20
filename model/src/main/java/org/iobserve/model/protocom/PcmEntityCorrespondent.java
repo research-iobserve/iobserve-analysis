@@ -34,11 +34,13 @@ import javax.xml.bind.annotation.XmlType;
  * @author Alessandro Guisa
  * @author Nicolas Boltz
  *
+ * @deprecated 0.0.3 replaced by EMF corrspondence model
  */
 @XmlRootElement(name = "Correspondent")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "Correspondent", propOrder = { "filePath", "projectName", "packageName", "interfaces", "unitName",
         "methods" })
+@Deprecated
 public class PcmEntityCorrespondent {
 
     /**
@@ -66,16 +68,9 @@ public class PcmEntityCorrespondent {
             final StringBuilder builder = new StringBuilder();
 
             // build method signature
-            builder.append(method.getVisibilityModifier());
-            builder.append(' ');
-            builder.append(method.getReturnType());
-            builder.append(' ');
-            builder.append(method.getParent().getPackageName());
-            builder.append('.');
-            builder.append(method.getParent().getUnitName());
-            builder.append('.');
-            builder.append(method.getName());
-            builder.append('(');
+            builder.append(method.getVisibilityModifier()).append(' ').append(method.getReturnType()).append(' ')
+                    .append(method.getParent().getPackageName()).append('.').append(method.getParent().getUnitName())
+                    .append('.').append(method.getName()).append('(');
             if (method.getParameters() != null) {
                 builder.append(method.getParameters());
             }
@@ -83,8 +78,7 @@ public class PcmEntityCorrespondent {
             // <exception throws signature> is missing since this.
             // is not retrievable from protocom-generation process so far.
 
-            final String methodSig = builder.toString().trim();
-            return methodSig;
+            return builder.toString().trim();
         }
     };
 

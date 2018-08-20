@@ -16,7 +16,6 @@
 package org.iobserve.rac.creator.filter;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -25,13 +24,6 @@ import org.junit.Test;
  * @since 0.0.2
  */
 public class PcmCorrespondentMethodStageTest { // NOCS test does not need default constructor
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
 
     /**
      * Test method for

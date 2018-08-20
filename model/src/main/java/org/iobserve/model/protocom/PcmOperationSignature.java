@@ -27,10 +27,12 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Alessandro Guisa
  *
+ * @deprecated 0.0.3 replaced by EMF corrspondence model
  */
 @XmlRootElement(name = "OperationSignature")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "OperationSignature", propOrder = { "name", "seffName", "id" })
+@Deprecated
 public class PcmOperationSignature {
 
     private String name;

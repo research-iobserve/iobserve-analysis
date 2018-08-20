@@ -27,9 +27,13 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This stage is triggered by an analysis undeployment update.
@@ -44,9 +48,8 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
     private final URL outputURL;
     private final String systemId;
-    private final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider;
-    private final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider;
-    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final ModelResource<System> systemModelGraphProvider;
 
     /**
      * Output visualization configuration.
@@ -58,20 +61,15 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
      * @param resourceContainerModelGraphProvider
      *            model provider for the part of the resource environment model about resource
      *            container
-     * @param assemblyContextModelGraphProvider
-     *            model provider for the part of the resource environment model about assembly
-     *            context
      * @param systemModelGraphProvider
      *            provider for system model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
-            final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final ModelResource<ResourceEnvironment> resourceContainerModelGraphProvider,
+            final ModelResource<System> systemModelGraphProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
-        this.resourceContainerModelGraphProvider = resourceContainerModelGraphProvider;
-        this.assemblyContextModelGraphProvider = assemblyContextModelGraphProvider;
+        this.resourceEnvironmentModelResource = resourceContainerModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
     }
 
@@ -91,18 +89,20 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
         final String serverName = undeployment.getService();
 
-        final String nodeId = this.resourceContainerModelGraphProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+        final String nodeId = this.resourceEnvironmentModelResource
+                .findObjectsByTypeAndName(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
+                .get(0).getId();
 
         final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
-        final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
+        final AssemblyContext assemblyContext = this.systemModelGraphProvider
+                .findObjectsByTypeAndName(AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                        "entityName", asmContextName)
+                .get(0);
 
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
-
-        return dataArray;
+        return Json.createArrayBuilder().add(serviceInstanceObject).build();
     }
 
 }

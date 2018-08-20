@@ -94,7 +94,7 @@ public class ClusteringPrePostProcessing {
      * Default constructor.
      */
     public ClusteringPrePostProcessing() {
-
+        // empty constructor
     }
 
     /**
@@ -330,7 +330,7 @@ public class ClusteringPrePostProcessing {
      */
     public long getEntryTime(final List<EntryCallEvent> events) {
         long entryTime = 0;
-        if (events.size() > 0) {
+        if (!events.isEmpty()) {
             this.sortEventsBy(this.sortEntryCallEventsByEntryTime, events);
             // Here was the bug: First element has to be returned instead of last
             entryTime = events.get(0).getEntryTime();

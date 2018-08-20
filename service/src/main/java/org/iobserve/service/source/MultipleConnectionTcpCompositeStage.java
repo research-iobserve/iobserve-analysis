@@ -28,7 +28,18 @@ import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 
 /**
- * Multiple TCP input stage.
+ * Multiple TCP input composite stage.
+ *
+ * Configuration parameters are:
+ * <dl>
+ * <dt>port</dt>
+ * <dd>port where the service is listening on</dd>
+ * <dt>capacity</dt>
+ * <dd>capacity of the receiving buffer</dd>
+ * <dt>recordRewriter</dt>
+ * <dd>the record rewriter used to rewrite trace ids</dd>
+ * </dl>
+ * All names are prefixed with org.iobserve.service.source.MultipleConnectionTcpCompositeStage.
  *
  * @author Reiner Jung
  *
@@ -52,6 +63,7 @@ public class MultipleConnectionTcpCompositeStage extends CompositeStage implemen
      * @param configuration
      *            configuration parameters
      * @throws ConfigurationException
+     *             on configuration errors during instantiation
      */
     public MultipleConnectionTcpCompositeStage(final Configuration configuration) throws ConfigurationException {
         final int inputPort = configuration.getIntProperty(MultipleConnectionTcpCompositeStage.SOURCE_PORT,
