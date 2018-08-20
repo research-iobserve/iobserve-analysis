@@ -29,6 +29,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
@@ -46,8 +47,6 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 /**
  * @author Clemens Brackmann
@@ -169,8 +168,8 @@ public class PrivacyWarnerIntegrationTest {
     public void executeTestPW() {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
         assemblyContext.setEntityName("EntityName");
-        final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService", assemblyContext, "http://Test.test",
-                ISOCountryCode.EVIL_EMPIRE, 0);
+        final PCMDeployedEvent pcmdpe = new PCMDeployedEvent(EServiceTechnology.SERVLET, "TestService", assemblyContext,
+                "http://Test.test", ISOCountryCode.EVIL_EMPIRE, 0);
 
         final List<Warnings> results = new ArrayList<>();
         StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)

@@ -4,6 +4,7 @@ package org.iobserve.model.correspondence;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -297,13 +298,22 @@ public interface CorrespondencePackage extends EPackage {
     int ALLOCATION_ENTRY__ALLOCATION = ABSTRACT_ENTRY_FEATURE_COUNT + 0;
 
     /**
+     * The feature id for the '<em><b>Technology</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ALLOCATION_ENTRY__TECHNOLOGY = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+
+    /**
      * The number of structural features of the '<em>Allocation Entry</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ALLOCATION_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+    int ALLOCATION_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 2;
 
     /**
      * The number of operations of the '<em>Allocation Entry</em>' class.
@@ -405,6 +415,17 @@ public interface CorrespondencePackage extends EPackage {
      * @ordered
      */
     int OPERATION_ENTRY_OPERATION_COUNT = ABSTRACT_ENTRY_OPERATION_COUNT + 0;
+
+
+    /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getEServiceTechnology()
+     * @generated
+     */
+    int ESERVICE_TECHNOLOGY = 8;
 
 
     /**
@@ -545,6 +566,17 @@ public interface CorrespondencePackage extends EPackage {
     EReference getAllocationEntry_Allocation();
 
     /**
+     * Returns the meta object for the attribute '{@link org.iobserve.model.correspondence.AllocationEntry#getTechnology <em>Technology</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Technology</em>'.
+     * @see org.iobserve.model.correspondence.AllocationEntry#getTechnology()
+     * @see #getAllocationEntry()
+     * @generated
+     */
+    EAttribute getAllocationEntry_Technology();
+
+    /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.AssemblyEntry <em>Assembly Entry</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -585,6 +617,16 @@ public interface CorrespondencePackage extends EPackage {
      * @generated
      */
     EReference getOperationEntry_Operation();
+
+    /**
+     * Returns the meta object for enum '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for enum '<em>EService Technology</em>'.
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @generated
+     */
+    EEnum getEServiceTechnology();
 
     /**
      * Returns the factory that creates the instances of the model.
@@ -726,6 +768,14 @@ public interface CorrespondencePackage extends EPackage {
         EReference ALLOCATION_ENTRY__ALLOCATION = eINSTANCE.getAllocationEntry_Allocation();
 
         /**
+         * The meta object literal for the '<em><b>Technology</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute ALLOCATION_ENTRY__TECHNOLOGY = eINSTANCE.getAllocationEntry_Technology();
+
+        /**
          * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.AssemblyEntryImpl <em>Assembly Entry</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -760,6 +810,16 @@ public interface CorrespondencePackage extends EPackage {
          * @generated
          */
         EReference OPERATION_ENTRY__OPERATION = eINSTANCE.getOperationEntry_Operation();
+
+        /**
+         * The meta object literal for the '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}' enum.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.model.correspondence.EServiceTechnology
+         * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getEServiceTechnology()
+         * @generated
+         */
+        EEnum ESERVICE_TECHNOLOGY = eINSTANCE.getEServiceTechnology();
 
     }
 

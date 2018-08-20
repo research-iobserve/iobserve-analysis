@@ -23,6 +23,8 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.eclipse.emf.common.util.EList;
+import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
@@ -42,6 +44,7 @@ import org.palladiosimulator.pcm.repository.CollectionDataType;
 import org.palladiosimulator.pcm.repository.CompositeDataType;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
@@ -81,17 +84,27 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.assemblyResource = assemblyResource;
+    }
 
+    public OutputPort<AbstractTcpControlEvent> getOutputPort() {
+        return this.outputPort;
     }
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
+        this.createMethodsToActivate(element);
+        this.createMethodsToDeactivate(element);
+    }
+
+    private void createMethodsToActivate(final ProbeManagementData element)
+            throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
-        if (!(methodsToActivate == null)) {
+        if (methodsToActivate != null) {
             for (final AllocationContext allocation : methodsToActivate.keySet()) {
                 for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
                     try {
-                        final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                                operationSignature);
                         final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
                                 element.getWhitelist());
                         this.fillTcpControlEvent(currentEvent, allocation);
@@ -103,12 +116,17 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                 }
             }
         }
+    }
+
+    private void createMethodsToDeactivate(final ProbeManagementData element)
+            throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = element.getMethodsToDeactivate();
-        if (!(methodsToDeactivate == null)) {
+        if (methodsToDeactivate != null) {
             for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
                 for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
                     try {
-                        final String pattern = this.assembleCompleteMethodSignature(allocation, operationSignature);
+                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                                operationSignature);
                         // deactivation -> no parameters needed
                         final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
                         this.fillTcpControlEvent(currentEvent, allocation);
@@ -120,10 +138,6 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                 }
             }
         }
-    }
-
-    public OutputPort<AbstractTcpControlEvent> getOutputPort() {
-        return this.outputPort;
     }
 
     private void fillTcpControlEvent(final AbstractTcpControlEvent event, final AllocationContext allocation)
@@ -145,8 +159,58 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     }
 
-    private String assembleCompleteMethodSignature(final AllocationContext allocation,
-            final OperationSignature operationSignature) throws Exception {
+    private String computeAllocationComponentIdentifier(final AllocationContext allocation,
+            final OperationSignature operationSignature)
+            throws ControlEventCreationFailedException, InvocationException, DBException {
+        final AllocationEntry entry = this.findAllocationEntry(allocation);
+
+        switch (entry.getTechnology()) {
+        case SERVLET:
+            return this.computeAllocationComponentServletId(entry, allocation, operationSignature);
+        case EJB:
+        case ASPECT_J:
+            return this.computeAllocationComponentJavaSignature(allocation, operationSignature);
+        default:
+            throw new InternalError("Technology " + entry.getTechnology().getLiteral() + " not supported.");
+        }
+
+    }
+
+    private AllocationEntry findAllocationEntry(final AllocationContext allocation) {
+        final List<AllocationEntry> allocations = this.correspondenceResource
+                .collectAllObjectsByType(AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY);
+
+        for (final AllocationEntry entry : allocations) {
+            if (entry.getAllocation().getId().equals(allocation.getId())) {
+                return entry;
+            }
+        }
+
+        return null;
+    }
+
+    private String computeAllocationComponentServletId(final AllocationEntry entry, final AllocationContext allocation,
+            final OperationSignature operationSignature) {
+        final EList<Parameter> parameterList = operationSignature.getParameters__OperationSignature();
+        String parameters = null;
+        for (final Parameter parameter : parameterList) {
+            if (parameters == null) {
+                parameters = parameter.getParameterName();
+            } else {
+                parameters += ", " + parameter.getParameterName();
+            }
+        }
+
+        final String componentId = String.format("%s (%s)", entry.getImplementationId(), parameters);
+
+        this.logger.debug("Constructed method string: {}", componentId);
+
+        return componentId;
+    }
+
+    private String computeAllocationComponentJavaSignature(final AllocationContext allocation,
+            final OperationSignature operationSignature)
+            throws ControlEventCreationFailedException, InvocationException, DBException {
         // there are only interfaces on model level -> therefore only public methods (no
         // getModifiers available)
         final String modifier = "public";
@@ -171,9 +235,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         final String completeMethodSignature = modifier + " " + codeLevelReturnType + " " + codeLevelComponentIdentifier
                 + "." + methodSignature + "(" + parameterString + ")";
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Constructed method string: " + completeMethodSignature);
-        }
+        this.logger.debug("Constructed method string: {}", completeMethodSignature);
 
         return completeMethodSignature;
     }
@@ -196,7 +258,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             return "void";
         }
         for (final DataTypeEntry currentDataType : dataTypes) {
-            if ((this.getTypeName(currentDataType.getDataTypeEntry()).equals(this.getTypeName(dataType)))) {
+            if (this.getTypeName(currentDataType.getDataTypeEntry()).equals(this.getTypeName(dataType))) {
                 return currentDataType.getImplementationId();
             }
         }

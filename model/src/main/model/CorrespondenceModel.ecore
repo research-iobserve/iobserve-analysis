@@ -26,6 +26,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="AllocationEntry" eSuperTypes="#//AbstractEntry">
     <eStructuralFeatures xsi:type="ecore:EReference" name="allocation" lowerBound="1"
         eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="technology" lowerBound="1"
+        eType="#//EServiceTechnology"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AssemblyEntry" eSuperTypes="#//AbstractEntry">
     <eStructuralFeatures xsi:type="ecore:EReference" name="assembly" lowerBound="1"
@@ -34,5 +36,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="OperationEntry" eSuperTypes="#//AbstractEntry">
     <eStructuralFeatures xsi:type="ecore:EReference" name="operation" lowerBound="1"
         eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/OperationSignature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EServiceTechnology">
+    <eLiterals name="SERVLET"/>
+    <eLiterals name="EJB" value="1"/>
+    <eLiterals name="ASPECT_J" value="2"/>
   </eClassifiers>
 </ecore:EPackage>

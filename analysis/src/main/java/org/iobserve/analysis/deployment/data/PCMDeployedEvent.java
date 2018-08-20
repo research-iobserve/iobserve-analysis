@@ -16,6 +16,7 @@
 package org.iobserve.analysis.deployment.data;
 
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -25,6 +26,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  */
 public class PCMDeployedEvent implements IPCMDeploymentEvent {
 
+    private final EServiceTechnology technology;
     private final String service;
     private final AssemblyContext assemblyContext;
     private final String url;
@@ -36,6 +38,8 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
      * Create a deployment event which initialized values for service, correspondent, url, and
      * countryCode.
      *
+     * @param technology
+     *            type of service technology
      * @param service
      *            the service on which the component is deployed
      * @param assemblyContext
@@ -47,13 +51,19 @@ public class PCMDeployedEvent implements IPCMDeploymentEvent {
      * @param timestamp
      *            observation timestamp
      */
-    public PCMDeployedEvent(final String service, final AssemblyContext assemblyContext, final String url,
-            final ISOCountryCode isoCountryCode, final long timestamp) {
+    public PCMDeployedEvent(final EServiceTechnology technology, final String service,
+            final AssemblyContext assemblyContext, final String url, final ISOCountryCode isoCountryCode,
+            final long timestamp) {
+        this.technology = technology;
         this.service = service;
         this.assemblyContext = assemblyContext;
         this.url = url;
         this.countryCode = isoCountryCode;
         this.timestamp = timestamp;
+    }
+
+    public final EServiceTechnology getTechnology() {
+        return this.technology;
     }
 
     @Override

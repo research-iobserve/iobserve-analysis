@@ -21,6 +21,11 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.model.correspondence.AllocationEntry;
+import org.iobserve.model.correspondence.CorrespondenceFactory;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.Part;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -47,6 +52,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
+    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
+
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
@@ -54,7 +61,9 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * @param allocationModelResource
      *            allocation model provider
      */
-    public DeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
+    public DeploymentModelUpdater(final ModelResource<CorrespondenceModel> correspondenceModelResource,
+            final ModelResource<Allocation> allocationModelResource) {
+        this.correspondenceModelResource = correspondenceModelResource;
         this.allocationModelResource = allocationModelResource;
     }
 
@@ -78,7 +87,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
                 allocationContextName);
         if (allocationContext.isEmpty()) {
-            this.logger.debug("Create allocation context {}", event);
+            this.logger.debug("Create allocation context (deploy) {}", event);
             final Allocation allocationModel = this.allocationModelResource.getModelRootNode(Allocation.class,
                     AllocationPackage.Literals.ALLOCATION);
 
@@ -91,6 +100,19 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
             this.allocationModelResource.updatePartition(allocationModel);
 
+            /** create correspondence model entry. */
+            final CorrespondenceModel correspondenceModel = this.correspondenceModelResource
+                    .getModelRootNode(CorrespondenceModel.class, CorrespondencePackage.Literals.CORRESPONDENCE_MODEL);
+            final Part part = this.findOrCreate(correspondenceModel, allocationModel);
+
+            final AllocationEntry entry = CorrespondenceFactory.eINSTANCE.createAllocationEntry();
+            entry.setAllocation(newAllocationContext);
+            entry.setTechnology(event.getTechnology());
+            entry.setImplementationId(event.getUrl());
+
+            part.getEntries().add(entry);
+
+            this.correspondenceModelResource.updatePartition(correspondenceModel);
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);
@@ -98,6 +120,31 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
         // signal deployment update
         this.deployedNotifyOutputPort.send(event);
+    }
+
+    /**
+     * Find the corresponding part for the allocationModel or create a new part if no part exists.
+     * The method has a side effect, as the part is added to the correspondence model.
+     *
+     * @param correspondenceModel
+     *            correspondence model
+     * @param allocationModel
+     *            allocation model
+     * @return returns a part
+     */
+    private Part findOrCreate(final CorrespondenceModel correspondenceModel, final Allocation allocationModel) {
+        for (final Part part : correspondenceModel.getParts()) {
+            if (part.getModelType().equals(allocationModel)) {
+                return part;
+            }
+        }
+
+        final Part part = CorrespondenceFactory.eINSTANCE.createPart();
+        part.setModelType(allocationModel);
+
+        correspondenceModel.getParts().add(part);
+
+        return part;
     }
 
     /**

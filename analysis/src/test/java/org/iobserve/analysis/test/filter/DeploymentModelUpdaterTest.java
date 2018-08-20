@@ -21,10 +21,15 @@ import java.util.List;
 
 import teetime.framework.test.StageTester;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.test.data.ModelLevelDataFactory;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.correspondence.CorrespondenceFactory;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -37,8 +42,11 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * @author Reiner Jung
@@ -50,6 +58,9 @@ public class DeploymentModelUpdaterTest {
     private final System system = SystemDataFactory.createSystem(this.repository);
     private final ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
     private final Allocation allocation = AllocationDataFactory.createAllocation(this.system, this.resourceEnvironment);
+    private final CorrespondenceModel correspondenceModel = CorrespondenceFactory.eINSTANCE.createCorrespondenceModel();
+    private ModelResource<Allocation> allocationResource;
+    private ModelResource<CorrespondenceModel> correspondenceResource;
 
     /**
      * Test method for
@@ -57,12 +68,12 @@ public class DeploymentModelUpdaterTest {
      */
     @Test
     public void testExecutePCMDeployedEvent() {
-        final ModelResource<Allocation> allocationModelResource = this.initializationDatabase();
-
-        final Allocation initDbAllocation = allocationModelResource.getModelRootNode(Allocation.class,
+        this.initializationDatabase();
+        final Allocation initDbAllocation = this.allocationResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
 
-        final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(allocationModelResource);
+        final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(this.correspondenceResource,
+                this.allocationResource);
 
         /** input deployment event */
         final AssemblyContext assemblyContext = SystemDataFactory.findAssemblyContext(this.system,
@@ -81,7 +92,7 @@ public class DeploymentModelUpdaterTest {
         Assert.assertThat(deploymentModelUpdater.getDeployedNotifyOutputPort(), StageTester.produces(deploymentEvent));
 
         // TODO check is DB contains a deployment
-        final Allocation dbAllocation = allocationModelResource.getModelRootNode(Allocation.class,
+        final Allocation dbAllocation = this.allocationResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
         for (final AllocationContext context : dbAllocation.getAllocationContexts_Allocation()) {
             Assert.assertNotEquals("No assembly context for " + context.getEntityName(),
@@ -89,16 +100,20 @@ public class DeploymentModelUpdaterTest {
         }
     }
 
-    private ModelResource<Allocation> initializationDatabase() {
-        this.prepareGraph("testExecutePCMDeployedEvent-repository").storeModelPartition(this.repository);
-        this.prepareGraph("testExecutePCMDeployedEvent-system").storeModelPartition(this.system);
-        this.prepareGraph("testExecutePCMDeployedEvent-resource").storeModelPartition(this.resourceEnvironment);
+    private void initializationDatabase() {
+        this.prepareGraph(RepositoryPackage.eINSTANCE, "testExecutePCMDeployedEvent-repository")
+                .storeModelPartition(this.repository);
+        this.prepareGraph(SystemPackage.eINSTANCE, "testExecutePCMDeployedEvent-system")
+                .storeModelPartition(this.system);
+        this.prepareGraph(ResourceenvironmentPackage.eINSTANCE, "testExecutePCMDeployedEvent-resource")
+                .storeModelPartition(this.resourceEnvironment);
 
-        final ModelResource<Allocation> resource = this
-                .prepareGraph(DeploymentModelUpdaterTest.class + "testExecutePCMDeployedEvent");
-        resource.storeModelPartition(this.allocation);
+        this.correspondenceResource = this.prepareGraph(CorrespondencePackage.eINSTANCE,
+                "testExecutePCMDeployedEvent-correspondence");
+        this.correspondenceResource.storeModelPartition(this.correspondenceModel);
 
-        return resource;
+        this.allocationResource = this.prepareGraph(AllocationPackage.eINSTANCE, "testExecutePCMDeployedEvent-package");
+        this.allocationResource.storeModelPartition(this.allocation);
     }
 
     /**
@@ -109,12 +124,12 @@ public class DeploymentModelUpdaterTest {
      *
      * @return the prepared graph
      */
-    protected ModelResource<Allocation> prepareGraph(final String name) {
+    protected <T extends EObject> ModelResource<T> prepareGraph(final EPackage ePackage, final String name) {
         final File graphBaseDir = new File("testdb/" + this.getClass().getCanonicalName() + "/" + name);
 
         this.removeDirectory(graphBaseDir);
 
-        return new ModelResource<>(AllocationPackage.eINSTANCE, graphBaseDir);
+        return new ModelResource<>(ePackage, graphBaseDir);
     }
 
     /**
