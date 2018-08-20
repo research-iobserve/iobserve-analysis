@@ -15,7 +15,9 @@
  ***************************************************************************/
 package org.iobserve.stages.test.utility.tcp;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kieker.common.record.IMonitoringRecord;
@@ -125,6 +127,54 @@ public class TcpProbeControllerTest {
 
     }
 
+    @Test(timeout = 30000)
+    public void testActivateParameterPatternAndUpdate() throws RemoteControlFailedException {
+        final Map<String, Boolean> state = TcpProbeControllerTest.listener.getState();
+        final Map<String, Map<String, List<String>>> recordedParameters = TcpProbeControllerTest.listener
+                .getRecordedParameters();
+
+        final String testPattern = "update.pattern";
+
+        final String[] parameterNames = new String[] { "Pos1", "Pos2" };
+        final String[][] parameters = new String[][] {
+                { "Pos1Parameter1", "Pos1Parameter2", "Pos1Parameter3", "Pos1Parameter4" },
+                { "Pos2Parameter1", "Pos2Parameter2", "Pos2Parameter3", "Pos2Parameter4" } };
+
+        final Map<String, List<String>> exampleParameter = new HashMap<>();
+        exampleParameter.put(parameterNames[0], Arrays.asList(parameters[0]));
+        exampleParameter.put(parameterNames[1], Arrays.asList(parameters[1]));
+
+        // TODO comment in with new Kieker version
+
+        // Assert.assertFalse(state.containsKey(testPattern));
+        //
+        // TcpProbeControllerTest.tcpProbeController.activateParameterMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
+        // TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern,
+        // exampleParameter);
+        //
+        // Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,
+        // TcpProbeControllerTest.PORT));
+        // // wait for the other thread
+        // while (!state.containsKey(testPattern)) {
+        // Thread.yield();
+        // }
+        // Assert.assertTrue(state.get(testPattern));
+        // Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter));
+        // final Map<String, List<String>> exampleParameter2 = new HashMap<>(exampleParameter);
+        // exampleParameter.put(parameterNames[1],
+        // Arrays.asList(new String[] { "Change1", "Change2", "Change3", "Change4" }));
+        //
+        // TcpProbeControllerTest.tcpProbeController.updateProbeParameter(TcpProbeControllerTest.LOCALHOST_IP,
+        // TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern,
+        // exampleParameter2);
+        // while (recordedParameters.get(testPattern).equals(exampleParameter)) {
+        // Thread.yield();
+        // }
+        //
+        // Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter2));
+
+    }
+
     /**
      * Terminate the thread that runs the TCP Reader.
      */
@@ -142,14 +192,37 @@ public class TcpProbeControllerTest {
     private static class TestListener implements IRecordReceivedListener { // NOCS private class, no
                                                                            // constructor
         private final Map<String, Boolean> state = new HashMap<>();
+        private final Map<String, Map<String, List<String>>> recordedParameters = new HashMap<>();
+
+        @Override
+        public void onRecordReceived(final IMonitoringRecord arg0) {
+            final String pattern = ((IRemoteControlEvent) arg0).getPattern();
+
+            this.state.put(pattern, arg0 instanceof ActivationEvent);
+            // TODO comment in with new Kieker version
+            // if (arg0 instanceof IRemoteParameterControlEvent) {
+            // this.recordedParameters.put(pattern,
+            // this.buildParameterMap(((IRemoteParameterControlEvent) arg0).getParameterNames(),
+            // ((IRemoteParameterControlEvent) arg0).getParameters());
+            // }
+        }
+
+        public Map<String, Map<String, List<String>>> getRecordedParameters() {
+            return this.recordedParameters;
+        }
 
         public Map<String, Boolean> getState() {
             return this.state;
         }
 
-        @Override
-        public void onRecordReceived(final IMonitoringRecord arg0) {
-            this.state.put(((IRemoteControlEvent) arg0).getPattern(), arg0 instanceof ActivationEvent);
+        private Map<String, List<String>> buildParameterMap(final String[] parameterNames,
+                final String[][] parameterValues) {
+            final Map<String, List<String>> parameterMap = new HashMap<>();
+            for (int i = 0; i < parameterNames.length; i++) {
+                parameterMap.put(parameterNames[i], Arrays.asList(parameterValues[i]));
+            }
+
+            return parameterMap;
         }
     }
 }
