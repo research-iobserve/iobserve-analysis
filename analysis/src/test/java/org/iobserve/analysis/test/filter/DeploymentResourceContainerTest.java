@@ -112,7 +112,7 @@ public class DeploymentResourceContainerTest {
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         PowerMockito.mockStatic(SystemModelFactory.class);
 
-        this.deploymentModelUpdater = new DeploymentModelUpdater(
+        this.deploymentModelUpdater = new DeploymentModelUpdater(DeploymentResourceContainerTest.mockedCorrespondence,
                 DeploymentResourceContainerTest.mockedAllocationModelGraphProvider);
 
         /** get models */

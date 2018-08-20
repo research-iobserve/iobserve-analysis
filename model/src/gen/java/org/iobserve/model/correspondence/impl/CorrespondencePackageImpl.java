@@ -9,6 +9,7 @@ import de.uka.ipd.sdq.units.UnitsPackage;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
@@ -20,6 +21,7 @@ import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.DataTypeEntry;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.correspondence.OperationEntry;
 import org.iobserve.model.correspondence.Part;
 import org.palladiosimulator.pcm.PcmPackage;
@@ -89,6 +91,13 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      * @generated
      */
     private EClass operationEntryEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EEnum eServiceTechnologyEEnum = null;
 
     /**
      * Creates an instance of the model <b>Package</b>, registered with
@@ -280,6 +289,15 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      * <!-- end-user-doc -->
      * @generated
      */
+    public EAttribute getAllocationEntry_Technology() {
+        return (EAttribute)allocationEntryEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getAssemblyEntry() {
         return assemblyEntryEClass;
     }
@@ -309,6 +327,15 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
      */
     public EReference getOperationEntry_Operation() {
         return (EReference)operationEntryEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EEnum getEServiceTechnology() {
+        return eServiceTechnologyEEnum;
     }
 
     /**
@@ -357,12 +384,16 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
 
         allocationEntryEClass = createEClass(ALLOCATION_ENTRY);
         createEReference(allocationEntryEClass, ALLOCATION_ENTRY__ALLOCATION);
+        createEAttribute(allocationEntryEClass, ALLOCATION_ENTRY__TECHNOLOGY);
 
         assemblyEntryEClass = createEClass(ASSEMBLY_ENTRY);
         createEReference(assemblyEntryEClass, ASSEMBLY_ENTRY__ASSEMBLY);
 
         operationEntryEClass = createEClass(OPERATION_ENTRY);
         createEReference(operationEntryEClass, OPERATION_ENTRY__OPERATION);
+
+        // Create enums
+        eServiceTechnologyEEnum = createEEnum(ESERVICE_TECHNOLOGY);
     }
 
     /**
@@ -423,12 +454,19 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
 
         initEClass(allocationEntryEClass, AllocationEntry.class, "AllocationEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAllocationEntry_Allocation(), theAllocationPackage.getAllocationContext(), null, "allocation", null, 1, 1, AllocationEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getAllocationEntry_Technology(), this.getEServiceTechnology(), "technology", null, 1, 1, AllocationEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(assemblyEntryEClass, AssemblyEntry.class, "AssemblyEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAssemblyEntry_Assembly(), theCompositionPackage.getAssemblyContext(), null, "assembly", null, 1, 1, AssemblyEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(operationEntryEClass, OperationEntry.class, "OperationEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getOperationEntry_Operation(), theRepositoryPackage.getOperationSignature(), null, "operation", null, 1, 1, OperationEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        // Initialize enums and add enum literals
+        initEEnum(eServiceTechnologyEEnum, EServiceTechnology.class, "EServiceTechnology");
+        addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.SERVLET);
+        addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.EJB);
+        addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.ASPECT_J);
 
         // Create resource
         createResource(eNS_URI);

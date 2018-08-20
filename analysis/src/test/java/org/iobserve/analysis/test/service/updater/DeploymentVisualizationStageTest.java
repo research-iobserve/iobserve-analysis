@@ -25,6 +25,7 @@ import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,8 +105,8 @@ public class DeploymentVisualizationStageTest { // NOCS test
         /** test events */
         final String urlContext = DeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + DeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
-        final PCMDeployedEvent deployedEvent = new PCMDeployedEvent(DeploymentVisualizationStageTest.SERVICE, null, url,
-                ISOCountryCode.EVIL_EMPIRE, 0);
+        final PCMDeployedEvent deployedEvent = new PCMDeployedEvent(EServiceTechnology.SERVLET,
+                DeploymentVisualizationStageTest.SERVICE, null, url, ISOCountryCode.EVIL_EMPIRE, 0);
 
         deployedEvent.setResourceContainer(testResourceContainer);
 

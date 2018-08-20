@@ -29,6 +29,7 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -74,30 +75,30 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
     @Override
     protected void execute(final IDeployedEvent event) throws InvocationException, DBException {
         this.logger.debug("Received deployment event {}", event);
+        final ISOCountryCode countryCode;
+        if (event instanceof Privacy) {
+            countryCode = ((Privacy) event).getCountryCode();
+        } else {
+            countryCode = ISOCountryCode.EVIL_EMPIRE;
+        }
         if (event instanceof ServletDeployedEvent) {
-            this.servletMapper((ServletDeployedEvent) event);
+            final ServletDeployedEvent servletEvent = (ServletDeployedEvent) event;
+            final String service = servletEvent.getService();
+            final String context = servletEvent.getContext();
+            this.performMapping(EServiceTechnology.SERVLET, service, context, countryCode, event.getTimestamp());
         } else if (event instanceof EJBDeployedEvent) {
-            this.ejbMapper((EJBDeployedEvent) event);
+            final EJBDeployedEvent ejbEvent = (EJBDeployedEvent) event;
+            final String service = ejbEvent.getService();
+            final String context = ejbEvent.getContext();
+            this.performMapping(EServiceTechnology.EJB, service, context, countryCode, event.getTimestamp());
+        } else {
+            throw new InternalError("Deployment event type " + event.getClass().getCanonicalName() + " not supported.");
         }
 
     }
 
-    private void ejbMapper(final EJBDeployedEvent event) throws InvocationException, DBException {
-        final String service = event.getService();
-        final String context = event.getContext();
-
-        this.performMapping(event, service, context);
-    }
-
-    private void servletMapper(final ServletDeployedEvent event) throws InvocationException, DBException {
-        final String service = event.getService();
-        final String context = event.getContext();
-
-        this.performMapping(event, service, context);
-    }
-
-    private void performMapping(final IDeployedEvent event, final String service, final String context)
-            throws InvocationException, DBException {
+    private void performMapping(final EServiceTechnology technology, final String service, final String context,
+            final ISOCountryCode countryCode, final long timestamp) throws InvocationException, DBException {
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
@@ -108,15 +109,9 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
         if (assemblyEntry.size() == 1) {
             final AssemblyContext assemblyContext = this.systemModelResource
                     .resolve(assemblyEntry.get(0).getAssembly());
-            if (event instanceof Privacy) {
-                this.logger.debug("privacy {}", event);
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url,
-                        ((Privacy) event).getCountryCode(), event.getTimestamp()));
-            } else {
-                this.logger.debug("evil {}", event);
-                this.outputPort.send(new PCMDeployedEvent(service, assemblyContext, url, ISOCountryCode.EVIL_EMPIRE,
-                        event.getTimestamp()));
-            }
+            this.outputPort
+                    .send(new PCMDeployedEvent(technology, service, assemblyContext, url, countryCode, timestamp));
+
         } else if (assemblyEntry.isEmpty()) {
             this.logger.error("Deplyoment failed: No corresponding assembly context {} found on {}.", context, service);
         } else if (assemblyEntry.size() > 1) {

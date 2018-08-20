@@ -63,13 +63,15 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
                 resourceEnvironmentResource);
 
-        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationResource);
+        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(correspondenceResource,
+                allocationResource);
 
         this.syntehticAllocation = new AllocationStage(resourceEnvironmentResource);
         final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
         allocationFinished.declareActive();
 
-        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationResource);
+        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(correspondenceResource,
+                allocationResource);
 
         this.relayDeployedEventStage = new AggregateEventStage<>(2);
         this.relayDeployedEventStage.declareActive();

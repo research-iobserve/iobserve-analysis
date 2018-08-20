@@ -18,6 +18,7 @@ package org.iobserve.analysis.test.data;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -36,7 +37,8 @@ public final class ModelLevelDataFactory {
         final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
 
-        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, assemblyContext, url, countryCode, 0);
+        return new PCMDeployedEvent(EServiceTechnology.SERVLET, ImplementationLevelDataFactory.SERVICE, assemblyContext,
+                url, countryCode, 0);
     }
 
     public static PCMUndeployedEvent createPCMUndeployedEvent(final AssemblyContext assemblyContext) {

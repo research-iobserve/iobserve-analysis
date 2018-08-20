@@ -14,6 +14,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * </p>
  * <ul>
  *   <li>{@link org.iobserve.model.correspondence.AllocationEntry#getAllocation <em>Allocation</em>}</li>
+ *   <li>{@link org.iobserve.model.correspondence.AllocationEntry#getTechnology <em>Technology</em>}</li>
  * </ul>
  *
  * @see org.iobserve.model.correspondence.CorrespondencePackage#getAllocationEntry()
@@ -46,5 +47,34 @@ public interface AllocationEntry extends AbstractEntry {
      * @generated
      */
     void setAllocation(AllocationContext value);
+
+    /**
+     * Returns the value of the '<em><b>Technology</b></em>' attribute.
+     * The literals are from the enumeration {@link org.iobserve.model.correspondence.EServiceTechnology}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Technology</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Technology</em>' attribute.
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @see #setTechnology(EServiceTechnology)
+     * @see org.iobserve.model.correspondence.CorrespondencePackage#getAllocationEntry_Technology()
+     * @model required="true"
+     * @generated
+     */
+    EServiceTechnology getTechnology();
+
+    /**
+     * Sets the value of the '{@link org.iobserve.model.correspondence.AllocationEntry#getTechnology <em>Technology</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Technology</em>' attribute.
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @see #getTechnology()
+     * @generated
+     */
+    void setTechnology(EServiceTechnology value);
 
 } // AllocationEntry
