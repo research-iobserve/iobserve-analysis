@@ -38,6 +38,7 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
+import org.iobserve.utility.tcp.events.TcpUpdateParameterEvent;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
@@ -94,6 +95,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     protected void execute(final ProbeManagementData element) throws Exception {
         this.createMethodsToActivate(element);
         this.createMethodsToDeactivate(element);
+        this.createMethodsToUpdate(element);
     }
 
     private void createMethodsToActivate(final ProbeManagementData element)
@@ -134,6 +136,29 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                     } catch (final ControlEventCreationFailedException e) {
                         this.logger.error(
                                 "Could not construct deactivation event for: " + operationSignature.toString(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    private void createMethodsToUpdate(final ProbeManagementData element)
+            throws ControlEventCreationFailedException, InvocationException, DBException {
+        final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
+        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
+            for (final AllocationContext allocation : methodsToUpdate.keySet()) {
+                for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
+                    try {
+                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                                operationSignature);
+                        final Map<String, List<String>> parameters = new HashMap<>();
+                        parameters.put("whitelist", element.getWhitelist());
+                        final TcpUpdateParameterEvent currentEvent = new TcpUpdateParameterEvent(pattern, parameters);
+                        this.fillTcpControlEvent(currentEvent, allocation);
+                        this.outputPort.send(currentEvent);
+                    } catch (final ControlEventCreationFailedException e) {
+                        this.logger.error("Could not construct activation event for: " + operationSignature.toString(),
+                                e);
                     }
                 }
             }
