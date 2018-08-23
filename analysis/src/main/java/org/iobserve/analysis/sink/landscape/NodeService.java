@@ -30,13 +30,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public class NodeService {
 
     private String nodeId;
-    private String hostname;
 
     /**
      * empty default constructor.
      */
     public NodeService() {
-
+        // nothing to do
     }
 
     /**
@@ -53,12 +52,10 @@ public class NodeService {
     public JsonObject createNode(final ResourceContainer resourceContainer, final String systemId,
             final String nodegroupId) {
         this.nodeId = resourceContainer.getId();
-        this.hostname = resourceContainer.getEntityName();
+        final String hostname = resourceContainer.getEntityName();
 
-        final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", this.nodeId)
-                .add("systemId", systemId).add("nodeGroupId", nodegroupId).add("hostname", this.hostname).build();
-
-        return node;
+        return Json.createObjectBuilder().add("type", "node").add("id", this.nodeId).add("systemId", systemId)
+                .add("nodeGroupId", nodegroupId).add("hostname", hostname).build();
     }
 
     public String getNodeId() {

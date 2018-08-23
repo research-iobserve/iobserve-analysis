@@ -60,7 +60,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      * @param signatures
      *            signatures
      */
-    public BehaviorModelTable(final String[] signatures) {
+    public BehaviorModelTable(final String[] signatures) { // NOPMD
 
         final int size = signatures.length;
         this.inverseSignatures = signatures;
@@ -246,7 +246,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     public Instance toInstance() {
         final List<Double> attValues = new ArrayList<>();
 
-        // add transitions
+        // create vector from matrix
         for (int i = 0; i < this.signatures.size(); i++) {
             for (int j = 0; j < this.signatures.size(); j++) {
 
@@ -258,8 +258,11 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(
-                callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))));
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> {
+            if (callInformation.getRepresentativeValue() != null) {
+                attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()));
+            }
+        }));
 
         final double[] attArray = new double[attValues.size()];
 
@@ -267,9 +270,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             attArray[i] = attValues.get(i) == null ? 0.0 : attValues.get(i);
         }
 
-        final Instance instance = new Instance(1.0, attArray);
-        return instance;
-
+        return new Instance(1.0, attArray);
     }
 
     /*
@@ -279,8 +280,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      */
     @Override
     public String toString() {
-        final String string = this.signatures.keySet().stream().reduce("\n", (s1, s2) -> s1 + "\n" + s2) + "\n";
-        return string;
+        return this.signatures.keySet().stream().reduce("\n", (s1, s2) -> s1 + "\n" + s2) + "\n";
     }
 
     /**
@@ -294,13 +294,13 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      * @return the inverseSignatures
      */
     public String[] getInverseSignatures() {
-        return this.inverseSignatures;
+        return this.inverseSignatures; // NOPMD
     }
 
     /**
      * @return the transitions
      */
     public Integer[][] getTransitions() {
-        return this.transitions;
+        return this.transitions; // NOPMD
     }
 }

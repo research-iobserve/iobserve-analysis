@@ -155,7 +155,7 @@ public class ComponentNode {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return super.hashCode() + 1;
     }
 
     /**
@@ -186,12 +186,12 @@ public class ComponentNode {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(this.getAssemblyContextID()).append('\t').append(this.privacyLvl.toString()).append('\t');
+        sb.append(this.getAssemblyContextID()).append('\t').append(this.privacyLvl.toString()).append('\t'); // NOPMD
 
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count()).append('\t');
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count())
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count()).append('\t'); // NOPMD
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count()) // NOPMD
                 .append('\t');
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count())
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count()) // NOPMD
                 .append('\t');
 
         sb.append(this.getAssemblyName()).append('\n');

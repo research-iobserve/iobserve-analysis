@@ -39,7 +39,7 @@ public class CommunicationInstanceService {
      * empty default constructor.
      */
     public CommunicationInstanceService() {
-
+        // empty constructor
     }
 
     /**
@@ -65,12 +65,9 @@ public class CommunicationInstanceService {
         // visible.
         this.workload = "1";
 
-        final JsonObject communicationInst = Json.createObjectBuilder().add("type", "communicationInstance")
-                .add("id", this.communicationInstanceId).add("systemId", systemId)
-                .add("communicationId", communicationId).add("workload", this.workload).add("sourceId", this.sourceId)
-                .add("targetId", this.targetId).build();
-
-        return communicationInst;
+        return Json.createObjectBuilder().add("type", "communicationInstance").add("id", this.communicationInstanceId)
+                .add("systemId", systemId).add("communicationId", communicationId).add("workload", this.workload)
+                .add("sourceId", this.sourceId).add("targetId", this.targetId).build();
     }
 
     /**
@@ -83,10 +80,8 @@ public class CommunicationInstanceService {
     public JsonObject deleteCommunicationInstance(final AssemblyConnector assemblyConnector) {
         this.communicationInstanceId = "ci" + assemblyConnector.getId();
 
-        final JsonObject communicationInst = Json.createObjectBuilder().add("type", "communicationInstance")
-                .add("id", this.communicationInstanceId).build();
-
-        return communicationInst;
+        return Json.createObjectBuilder().add("type", "communicationInstance").add("id", this.communicationInstanceId)
+                .build();
     }
 
     public String getCommunicationInstanceId() {

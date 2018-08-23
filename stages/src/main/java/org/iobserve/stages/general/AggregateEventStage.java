@@ -51,6 +51,7 @@ public class AggregateEventStage<T> extends AbstractStage {
     protected void execute() throws Exception {
         for (final InputPort<T> input : this.inputPorts) {
             final T event = input.receive();
+            Thread.sleep(100);
             if (event != null) {
                 this.outputPort.send(event);
             }
@@ -66,7 +67,7 @@ public class AggregateEventStage<T> extends AbstractStage {
      * @return the port associated with the port number or null on error.
      */
     public InputPort<T> getInputPort(final int port) {
-        if ((port >= 0) && (port < this.inputPorts.size())) {
+        if (port >= 0 && port < this.inputPorts.size()) {
             return this.inputPorts.get(port);
         } else {
             return null;

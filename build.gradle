@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+        classpath 'com.bmuschko:gradle-clover-plugin:2.2.1'
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
          
         ////////// Goomph //////////      
@@ -52,8 +52,8 @@ apply plugin: 'com.bmuschko.clover'
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
-        memoryMaximumSize = '1g'
-        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+        memoryMaximumSize = '4g'
+        jvmArgs = ['-XX:MaxPermSize=2048m', '-Xms2048m', '-Xmx4g']
     }
 }
 
@@ -70,6 +70,8 @@ clover {
 	report {
 		html = true
 	}
+	excludes = [ "**/package-info.java" ]
+	testExcludes = [ "**/package-info.java" ]
 }
 
 subprojects {
@@ -98,15 +100,17 @@ subprojects {
 		
 	    // central
 		testCompile "junit:junit:4.12"
-	    testCompile 'org.hamcrest:hamcrest-all:1.3'
-	    testCompile 'org.powermock:powermock-core:1.6.1'
-	    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
-	    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+	   
 	}
         
 
     clover {
-		targetPercentage = cloverCoverage
+    	excludes = [ '**/package-info.java' ]
+	testExcludes = [ '**/package-info.java' ]
+	
+    	debug = true
+    	
+	targetPercentage = cloverCoverage
         report {
            html=true
         }
@@ -612,7 +616,7 @@ apply plugin: 'com.diffplug.gradle.equinoxlaunch'
 // Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
 equinoxLaunch {
 	codegenSetup {
-		source.addProject(project(':peropteryx.rcp'))
+		//source.addProject(project(':peropteryx.rcp'))
 		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
 	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
 	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')

@@ -20,17 +20,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.ModelHandlingErrorException;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentCloudFactory;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
+import org.iobserve.model.persistence.file.FileModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
@@ -42,6 +44,7 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Helper class for model related tasks, especially resource environment related.
@@ -51,6 +54,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public final class ModelHelper {
 
     private static final String INTERNET_LINKING_RESOURCE_NAME = "Internet";
+
+    private static final ResourceSet RESOURCE_SET = new ResourceSetImpl();
 
     private ModelHelper() {
     }
@@ -104,16 +109,14 @@ public final class ModelHelper {
         final Optional<LinkingResource> internetLink = linkingResources.stream()
                 .filter(link -> link.getEntityName().contains(ModelHelper.INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-        final LinkingResource linkingResource = internetLink.orElseGet(() -> {
+        return internetLink.orElseGet(() -> {
             try {
-                return org.iobserve.model.factory.ResourceEnvironmentCloudFactory.createLinkingResource(environment,
-                        null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME);
+                return ResourceEnvironmentCloudFactory.createLinkingResource(environment, null,
+                        ModelHelper.INTERNET_LINKING_RESOURCE_NAME);
             } catch (final ModelHandlingErrorException e) {
                 return null;
             }
         });
-
-        return linkingResource;
     }
 
     /**
@@ -226,9 +229,8 @@ public final class ModelHelper {
      */
     public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(final DecisionSpace decisionSpace,
             final Class<T> degreeClass) {
-        final List<T> results = decisionSpace.getDegreesOfFreedom().stream().filter(degreeClass::isInstance)
-                .map(degreeClass::cast).collect(Collectors.toList());
-        return results;
+        return decisionSpace.getDegreesOfFreedom().stream().filter(degreeClass::isInstance).map(degreeClass::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -250,7 +252,7 @@ public final class ModelHelper {
      *             model handling issue
      */
     public static void fillResourceEnvironmentFromCloudProfile(final org.eclipse.emf.common.util.URI writeURI,
-            final PCMModelHandler modelHandler) throws ModelHandlingErrorException {
+            final ModelImporter modelHandler) throws ModelHandlingErrorException {
         final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
         final CloudProfile cloudProfileModel = modelHandler.getCloudProfileModel();
         final CostRepository costRepositoryModel = modelHandler.getCostModel();
@@ -264,9 +266,10 @@ public final class ModelHelper {
                 }
             }
         }
-        new ResourceEnvironmentModelHandler()
-                .save(writeURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX), environment);
-        new CostModelHandler().save(writeURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), costRepositoryModel);
+        new FileModelHandler<ResourceEnvironment>(ModelHelper.RESOURCE_SET, ResourceenvironmentPackage.eINSTANCE)
+                .save(writeURI.appendFileExtension(ResourceenvironmentPackage.eNAME), environment);
+        new FileModelHandler<CostRepository>(ModelHelper.RESOURCE_SET, costPackage.eINSTANCE)
+                .save(writeURI.appendFileExtension(costPackage.eNAME), costRepositoryModel);
     }
 
     /**
@@ -313,7 +316,7 @@ public final class ModelHelper {
      * @throws ModelHandlingErrorException
      *             modeling handlign issue
      */
-    public static ResourceContainerCloud getResourceContainerFromHostname(final PCMModelHandler modelProviders,
+    public static ResourceContainerCloud getResourceContainerFromHostname(final ModelImporter modelProviders,
             final String hostname) throws ModelHandlingErrorException {
         final String[] nameParts = hostname.split("_");
 
@@ -348,13 +351,13 @@ public final class ModelHelper {
                 .filter(provider -> provider.getName().equals(cloudProviderName)).findFirst().orElse(null);
 
         if (cloudProvider != null) {
-            final VMType vmType = cloudProvider.getCloudResources().stream()
+            return cloudProvider.getCloudResources().stream()
                     .filter(resource -> (resource instanceof VMType
                             && ((VMType) resource).getLocation().equals(location)
                             && ((VMType) resource).getName().equals(instanceType)))
                     .map(resource -> (VMType) resource).findFirst().orElse(null);
-            return vmType;
+        } else {
+            return null;
         }
-        return null;
     }
 }

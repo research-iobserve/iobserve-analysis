@@ -34,6 +34,14 @@ public class AdaptationResultDistributor extends AbstractConsumerStage<File> {
     private final OutputPort<File> runtimeModelDirectoryOutputPort;
     private final OutputPort<File> redeploymentModelDirectoryOutputPort;
 
+    /**
+     * Create an adaptation result distributor.
+     *
+     * @param runtimeModelDirectory
+     *            runtime model directory
+     * @param redeploymentModelDirectory
+     *            redeployment model directory
+     */
     public AdaptationResultDistributor(final File runtimeModelDirectory, final File redeploymentModelDirectory) {
         super();
         this.runtimeModelDirectory = runtimeModelDirectory;

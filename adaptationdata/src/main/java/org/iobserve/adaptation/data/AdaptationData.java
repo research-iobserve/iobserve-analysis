@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
@@ -41,10 +41,10 @@ public class AdaptationData {
     public static final String NODE_PRE_TERMINATE_SCRIPT_NAME = "node_pre_terminate.sh";
 
     private File runtimeModelDir;
-    private ModelGraph runtimeGraph;
+    private HostComponentAllocationGraph runtimeGraph;
 
     private File reDeploymentModelDir;
-    private ModelGraph reDeploymentGraph;
+    private HostComponentAllocationGraph reDeploymentGraph;
 
     private File deployablesDir;
 
@@ -84,7 +84,7 @@ public class AdaptationData {
     /**
      * @return the runtimeGraph
      */
-    public ModelGraph getRuntimeGraph() {
+    public HostComponentAllocationGraph getRuntimeGraph() {
         return this.runtimeGraph;
     }
 
@@ -92,7 +92,7 @@ public class AdaptationData {
      * @param runtimeGraph
      *            the runtimeGraph to set
      */
-    public void setRuntimeGraph(final ModelGraph runtimeGraph) {
+    public void setRuntimeGraph(final HostComponentAllocationGraph runtimeGraph) {
         this.runtimeGraph = runtimeGraph;
     }
 
@@ -114,7 +114,7 @@ public class AdaptationData {
     /**
      * @return the reDeploymentGraph
      */
-    public ModelGraph getReDeploymentGraph() {
+    public HostComponentAllocationGraph getReDeploymentGraph() {
         return this.reDeploymentGraph;
     }
 
@@ -122,7 +122,7 @@ public class AdaptationData {
      * @param reDeploymentGraph
      *            the reDeploymentGraph to set
      */
-    public void setReDeploymentGraph(final ModelGraph reDeploymentGraph) {
+    public void setReDeploymentGraph(final HostComponentAllocationGraph reDeploymentGraph) {
         this.reDeploymentGraph = reDeploymentGraph;
     }
 

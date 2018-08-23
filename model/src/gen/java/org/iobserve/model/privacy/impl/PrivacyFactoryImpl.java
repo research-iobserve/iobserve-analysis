@@ -6,12 +6,17 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.iobserve.model.privacy.*;
+import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.EISOCode;
+import org.iobserve.model.privacy.EncapsulatedDataSource;
+import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.PrivacyFactory;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 
 /**
  * <!-- begin-user-doc -->
@@ -58,8 +63,10 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
             case PrivacyPackage.PRIVACY_MODEL: return createPrivacyModel();
+            case PrivacyPackage.RETURN_TYPE_PRIVACY: return createReturnTypePrivacy();
             case PrivacyPackage.GEO_LOCATION: return createGeoLocation();
             case PrivacyPackage.PARAMETER_PRIVACY: return createParameterPrivacy();
+            case PrivacyPackage.ENCAPSULATED_DATA_SOURCE: return createEncapsulatedDataSource();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -114,6 +121,16 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
      * <!-- end-user-doc -->
      * @generated
      */
+    public ReturnTypePrivacy createReturnTypePrivacy() {
+        ReturnTypePrivacyImpl returnTypePrivacy = new ReturnTypePrivacyImpl();
+        return returnTypePrivacy;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public GeoLocation createGeoLocation() {
         GeoLocationImpl geoLocation = new GeoLocationImpl();
         return geoLocation;
@@ -127,6 +144,16 @@ public class PrivacyFactoryImpl extends EFactoryImpl implements PrivacyFactory {
     public ParameterPrivacy createParameterPrivacy() {
         ParameterPrivacyImpl parameterPrivacy = new ParameterPrivacyImpl();
         return parameterPrivacy;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EncapsulatedDataSource createEncapsulatedDataSource() {
+        EncapsulatedDataSourceImpl encapsulatedDataSource = new EncapsulatedDataSourceImpl();
+        return encapsulatedDataSource;
     }
 
     /**

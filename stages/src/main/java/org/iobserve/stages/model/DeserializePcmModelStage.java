@@ -17,19 +17,32 @@ package org.iobserve.stages.model;
 
 import java.io.File;
 
+import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
+import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarationsPackage;
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
+
 import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.file.AllocationModelHandler;
-import org.iobserve.model.provider.file.CloudProfileModelHandler;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.DesignDecisionModelHandler;
-import org.iobserve.model.provider.file.QMLDeclarationsModelHandler;
-import org.iobserve.model.provider.file.RepositoryModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
-import org.iobserve.model.provider.file.SystemModelHandler;
-import org.iobserve.model.provider.file.UsageModelHandler;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.iobserve.model.persistence.file.FileModelHandler;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * This stage gets a serialized PCM model's File and loads the model EObject from it. The EObject is
@@ -40,30 +53,41 @@ import org.iobserve.model.provider.file.UsageModelHandler;
  */
 public class DeserializePcmModelStage extends AbstractTransformation<File, EObject> {
 
+    private final ResourceSet resourceSet = new ResourceSetImpl();
+
     @Override
     protected void execute(final File modelFile) throws Exception {
         final String modelFileName = modelFile.getName();
-        final String modelFileExtension = modelFileName.substring(modelFileName.lastIndexOf(".") + 1);
+        final String modelFileExtension = modelFileName.substring(modelFileName.lastIndexOf('.') + 1);
         final EObject model;
 
-        if (".allocation".equals(modelFileExtension)) {
-            model = new AllocationModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".cloudprofile".equals(modelFileExtension)) {
-            model = new CloudProfileModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".cost".equals(modelFileExtension)) {
-            model = new CostModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".designdecision".equals(modelFileExtension)) {
-            model = new DesignDecisionModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".qmldeclarations".equals(modelFileExtension)) {
-            model = new QMLDeclarationsModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".repository".equals(modelFileExtension)) {
-            model = new RepositoryModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".resourceenvironment".equals(modelFileExtension)) {
-            model = new ResourceEnvironmentModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".system".equals(modelFileExtension)) {
-            model = new SystemModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
-        } else if (".usagemodel".equals(modelFileExtension)) {
-            model = new UsageModelHandler().load(URI.createFileURI(modelFile.getAbsolutePath()));
+        if (AllocationPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<Allocation>(this.resourceSet, AllocationPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (CloudprofilePackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<CloudProfile>(this.resourceSet, CloudprofilePackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (costPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<CostRepository>(this.resourceSet, costPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (designdecisionPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<DecisionSpace>(this.resourceSet, designdecisionPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (QMLDeclarationsPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<QMLDeclarations>(this.resourceSet, QMLDeclarationsPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (RepositoryPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<Repository>(this.resourceSet, RepositoryPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (ResourceenvironmentPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<ResourceEnvironment>(this.resourceSet, ResourceenvironmentPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (SystemPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<System>(this.resourceSet, SystemPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
+        } else if (UsagemodelPackage.eNAME.equals(modelFileExtension)) {
+            model = new FileModelHandler<UsageModel>(this.resourceSet, UsagemodelPackage.eINSTANCE)
+                    .load(URI.createFileURI(modelFile.getAbsolutePath()));
         } else {
             throw new IllegalArgumentException("File extension does not look like a PCM model!");
         }

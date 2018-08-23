@@ -17,8 +17,6 @@ package org.iobserve.model.snapshot;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.StandardCopyOption;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -26,7 +24,7 @@ import teetime.framework.OutputPort;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +38,16 @@ public class SnapshotBuilder extends AbstractStage {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(SnapshotBuilder.class);
 
-    private static URI baseSnapshotLocation = null;
-    private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
-            StandardCopyOption.COPY_ATTRIBUTES };
+    private static URI baseSnapshotLocation;
+    // private static CopyOption[] copyOptions = new CopyOption[] {
+    // StandardCopyOption.REPLACE_EXISTING,
+    // StandardCopyOption.COPY_ATTRIBUTES };
 
-    private static boolean createSnapshot;
+    private static boolean canCreateSnapshot;
     private static boolean evaluationMode;
 
     private final URI snapshotURI;
-    private final PCMModelHandler modelHandler;
+    private final ModelImporter modelHandler;
 
     private final OutputPort<URI> outputPort = super.createOutputPort();
     private final OutputPort<URI> evaluationOutputPort = super.createOutputPort();
@@ -63,7 +62,7 @@ public class SnapshotBuilder extends AbstractStage {
      * @throws InitializationException
      *             when no snapshot location was specified
      */
-    public SnapshotBuilder(final String subURI, final PCMModelHandler modelHandler) throws InitializationException {
+    public SnapshotBuilder(final String subURI, final ModelImporter modelHandler) throws InitializationException {
         super();
 
         if (SnapshotBuilder.baseSnapshotLocation == null) {
@@ -71,7 +70,7 @@ public class SnapshotBuilder extends AbstractStage {
                     "Intitialize baseSnapshotLocation via setBaseSnapshotURI(...) first, befor calling the constructor!");
         }
 
-        SnapshotBuilder.createSnapshot = false;
+        SnapshotBuilder.canCreateSnapshot = false;
         this.snapshotURI = SnapshotBuilder.baseSnapshotLocation.appendSegment(subURI);
         this.modelHandler = modelHandler;
 
@@ -94,9 +93,9 @@ public class SnapshotBuilder extends AbstractStage {
         // List<InputPort<?>> inputPorts = super.getInputPorts();
         // Boolean createSnapshot = this.inputPort.receive();
 
-        if (SnapshotBuilder.createSnapshot) {
+        if (SnapshotBuilder.canCreateSnapshot) {
             this.createSnapshot();
-            SnapshotBuilder.createSnapshot = false;
+            SnapshotBuilder.canCreateSnapshot = false;
 
             if (SnapshotBuilder.evaluationMode) {
                 this.evaluationOutputPort.send(this.snapshotURI);
@@ -147,7 +146,7 @@ public class SnapshotBuilder extends AbstractStage {
      * call this function if a snapshot should be created upon snapshot execution.
      */
     public static void setSnapshotFlag() {
-        SnapshotBuilder.createSnapshot = true;
+        SnapshotBuilder.canCreateSnapshot = true;
     }
 
     /**

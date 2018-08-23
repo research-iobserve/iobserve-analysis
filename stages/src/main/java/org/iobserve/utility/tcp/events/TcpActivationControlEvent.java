@@ -39,4 +39,14 @@ public class TcpActivationControlEvent extends AbstractTcpControlEvent {
         super(ip, port, hostname, pattern);
     }
 
+    /**
+     * Creates a new activation control event without content except the pattern.
+     *
+     * @param pattern
+     *            The pattern of the method that should be monitored.
+     */
+    public TcpActivationControlEvent(final String pattern) {
+        super(pattern);
+    }
+
 }

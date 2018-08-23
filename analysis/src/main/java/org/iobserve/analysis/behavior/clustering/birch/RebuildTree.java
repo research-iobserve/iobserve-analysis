@@ -21,43 +21,46 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.clustering.birch.model.CFTree;
 
 /**
+ * This stage implements phase 2 of the birch algorithm. Incoming tree will be rebuilt with higher
+ * merge thresholds until they reach the target size.
+ * 
  * @author Melf Lorenzen
- * This stage implements phase 2 
- * of the birch algorithm. Incoming
- * tree will be rebuilt with higher 
- * merge thresholds until they 
- * reach the target size.
  */
 public class RebuildTree extends AbstractConsumerStage<CFTree> {
-	private int maxLeafEntries;
-    private final OutputPort<CFTree> outputPort = this.createOutputPort();
-    
-	/** Constructor for the CFTree rebuilding phase.
-	 * @param maxLeafEntries maximum number of leaf entries allowed.
-	 */
-	public RebuildTree(final int maxLeafEntries) {
-		super();
-		this.maxLeafEntries = maxLeafEntries;
-	}
-    
-	@Override
-	protected void execute(final CFTree tree) throws Exception {
-		int noChange = 0;
-		int last = tree.getNumberOfLeafEntries();
-		/** if the number of leaf entries hasnt shrunk for a 100 consecutive
-		 * rebuildings, end this phase anyway */
-		CFTree newTree = tree;
-		while (newTree.getNumberOfLeafEntries() > maxLeafEntries 
-				&& noChange < 100) {
-            newTree = newTree.rebuild(newTree.getAvgMinimalLeafDistance());
-            noChange = last == newTree.getNumberOfLeafEntries() ? (noChange + 1) : 0;
-            last = newTree.getNumberOfLeafEntries();
-		} 
-		this.outputPort.send(newTree);
-	}
 
-	public OutputPort<CFTree> getOutputPort() {
-		return outputPort;
-	}
+    private final int maxLeafEntries;
+    private final OutputPort<CFTree> outputPort = this.createOutputPort();
+
+    /**
+     * Constructor for the CFTree rebuilding phase.
+     *
+     * @param maxLeafEntries
+     *            maximum number of leaf entries allowed.
+     */
+    public RebuildTree(final int maxLeafEntries) {
+        super();
+        this.maxLeafEntries = maxLeafEntries;
+    }
+
+    @Override
+    protected void execute(final CFTree tree) throws Exception {
+        int noChange = 0;
+        int last = tree.getNumberOfLeafEntries();
+        /**
+         * if the number of leaf entries hasnt shrunk for a 100 consecutive rebuildings, end this
+         * phase anyway
+         */
+        CFTree newTree = tree;
+        while (newTree.getNumberOfLeafEntries() > this.maxLeafEntries && noChange < 100) {
+            newTree = newTree.rebuild(newTree.getAvgMinimalLeafDistance());
+            noChange = last == newTree.getNumberOfLeafEntries() ? noChange + 1 : 0;
+            last = newTree.getNumberOfLeafEntries();
+        }
+        this.outputPort.send(newTree);
+    }
+
+    public OutputPort<CFTree> getOutputPort() {
+        return this.outputPort;
+    }
 
 }

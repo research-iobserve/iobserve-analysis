@@ -3,18 +3,14 @@
 package org.iobserve.model.privacy.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyPackage;
-
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -40,7 +36,7 @@ public class GeoLocationImpl extends MinimalEObjectImpl.Container implements Geo
      * @generated
      * @ordered
      */
-    protected static final EISOCode ISOCODE_EDEFAULT = EISOCode.USA;
+    protected static final EISOCode ISOCODE_EDEFAULT = EISOCode.AFGHANISTAN;
 
     /**
      * The cached value of the '{@link #getIsocode() <em>Isocode</em>}' attribute.

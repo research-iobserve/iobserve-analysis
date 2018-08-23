@@ -4,10 +4,14 @@ package org.iobserve.model.privacy.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
-
-import org.iobserve.model.privacy.*;
+import org.iobserve.model.privacy.EncapsulatedDataSource;
+import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
+import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 
 /**
  * <!-- begin-user-doc -->
@@ -72,6 +76,19 @@ public class PrivacySwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
+            case PrivacyPackage.RETURN_TYPE_PRIVACY: {
+                ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy)theEObject;
+                T result = caseReturnTypePrivacy(returnTypePrivacy);
+                if (result == null) result = caseIPrivacyAnnotation(returnTypePrivacy);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case PrivacyPackage.IPRIVACY_ANNOTATION: {
+                IPrivacyAnnotation iPrivacyAnnotation = (IPrivacyAnnotation)theEObject;
+                T result = caseIPrivacyAnnotation(iPrivacyAnnotation);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
             case PrivacyPackage.GEO_LOCATION: {
                 GeoLocation geoLocation = (GeoLocation)theEObject;
                 T result = caseGeoLocation(geoLocation);
@@ -81,6 +98,13 @@ public class PrivacySwitch<T> extends Switch<T> {
             case PrivacyPackage.PARAMETER_PRIVACY: {
                 ParameterPrivacy parameterPrivacy = (ParameterPrivacy)theEObject;
                 T result = caseParameterPrivacy(parameterPrivacy);
+                if (result == null) result = caseIPrivacyAnnotation(parameterPrivacy);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case PrivacyPackage.ENCAPSULATED_DATA_SOURCE: {
+                EncapsulatedDataSource encapsulatedDataSource = (EncapsulatedDataSource)theEObject;
+                T result = caseEncapsulatedDataSource(encapsulatedDataSource);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -100,6 +124,36 @@ public class PrivacySwitch<T> extends Switch<T> {
      * @generated
      */
     public T casePrivacyModel(PrivacyModel object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Return Type Privacy</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Return Type Privacy</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseReturnTypePrivacy(ReturnTypePrivacy object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>IPrivacy Annotation</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>IPrivacy Annotation</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseIPrivacyAnnotation(IPrivacyAnnotation object) {
         return null;
     }
 
@@ -130,6 +184,21 @@ public class PrivacySwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseParameterPrivacy(ParameterPrivacy object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Encapsulated Data Source</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Encapsulated Data Source</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseEncapsulatedDataSource(EncapsulatedDataSource object) {
         return null;
     }
 

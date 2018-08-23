@@ -31,6 +31,7 @@
     <allow pkg="fi.iki.elonen"/>
     <allow pkg="org.jclouds"/>
     <allow pkg="org.tukaani.xz"/>
+    <allow pkg="org.aspectj"/>
 
 	<allow pkg="weka"/>
     

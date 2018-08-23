@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Christian Wulf
  *
- * @since 1.0
+ * @since 1.14
  */
 public final class Dir2RecordsFilter extends CompositeStage {
 
@@ -98,7 +98,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.recordMerger = new Merger<>();
 
         // store ports due to readability reasons
-        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
+        final OutputPort<File> datFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
         final OutputPort<File> binFileOutputPort = fileExtensionSwitch
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
         final OutputPort<File> xzFileOutputPort = fileExtensionSwitch.addFileExtension(".xz");
@@ -107,7 +107,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
         this.connectPorts(directory2FilesFilter.getOutputPort(), fileExtensionSwitch.getInputPort());
 
-        this.connectPorts(normalFileOutputPort, datFile2RecordFilter.getInputPort());
+        this.connectPorts(datFileOutputPort, datFile2RecordFilter.getInputPort());
         this.connectPorts(binFileOutputPort, binaryFile2RecordFilter.getInputPort());
 
         this.connectPorts(xzFileOutputPort, decompBinaryStream2RecordFilter.getInputPort());
