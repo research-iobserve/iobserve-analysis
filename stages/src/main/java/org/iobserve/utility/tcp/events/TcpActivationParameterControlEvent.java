@@ -25,7 +25,8 @@ import java.util.Map;
  *
  */
 public class TcpActivationParameterControlEvent extends TcpActivationControlEvent implements IParameterEvent {
-    Map<String, List<String>> parameters;
+
+    private final Map<String, List<String>> parameters;
 
     /**
      * Creates a complete parameter activation control event.

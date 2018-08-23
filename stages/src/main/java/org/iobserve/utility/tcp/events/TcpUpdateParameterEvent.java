@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements IParameterEvent {
 
-    Map<String, List<String>> parameters;
+    private final Map<String, List<String>> parameters;
 
     /**
      * Creates a parameter update control event without content except the pattern and parameters.

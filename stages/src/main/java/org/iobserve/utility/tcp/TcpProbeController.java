@@ -22,8 +22,10 @@ import java.util.Map;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
+import kieker.common.record.remotecontrol.ActivationParameterEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
+import kieker.common.record.remotecontrol.UpdateParameterEvent;
 import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
@@ -105,13 +107,11 @@ public class TcpProbeController {
      *             if the connection can not be established within a set timeout.
      */
     public void updateProbeParameter(final String ip, final int port, final String hostname, final String pattern,
-            final Map<String, List<String>> parameters) {
-        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+            final Map<String, List<String>> parameters) throws RemoteControlFailedException {
+        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
         final String[][] parameterArray = this.computeParameterArray(parameters);
 
-        // TODO add with new Kiekerversion
-        // this.sendTcpCommand(ip, port, hostname, new
-        // UpdateParameterEvent(pattern,parameterNames,parameterArray));
+        this.sendTcpCommand(ip, port, hostname, new UpdateParameterEvent(pattern, parameterNames, parameterArray));
     }
 
     /**
@@ -152,13 +152,11 @@ public class TcpProbeController {
      *             if the connection can not be established within a set timeout.
      */
     public void activateParameterMonitoredPattern(final String ip, final int port, final String hostname,
-            final String pattern, final Map<String, List<String>> parameters) {
-        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+            final String pattern, final Map<String, List<String>> parameters) throws RemoteControlFailedException {
+        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
         final String[][] parameterArray = this.computeParameterArray(parameters);
 
-        // TODO add with new Kiekerversion
-        // this.sendTcpCommand(ip, port, hostname, new
-        // ActivationParameterEvent(pattern,parameterNames,parameterArray));
+        this.sendTcpCommand(ip, port, hostname, new ActivationParameterEvent(pattern, parameterNames, parameterArray));
     }
 
     /**
@@ -246,7 +244,7 @@ public class TcpProbeController {
     }
 
     private String[][] computeParameterArray(final Map<String, List<String>> parameters) {
-        final String[] parameterNames = (String[]) parameters.keySet().toArray();
+        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
 
         final int parameterLength = parameterNames.length;
         final String[][] parameterArray = new String[parameterLength][];

@@ -23,7 +23,9 @@ import java.util.Map;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
 import kieker.common.record.remotecontrol.ActivationEvent;
+import kieker.common.record.remotecontrol.ActivationParameterEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
+import kieker.common.record.remotecontrol.IRemoteParameterControlEvent;
 import kieker.common.record.tcp.SingleSocketRecordReader;
 
 import org.iobserve.utility.tcp.RemoteControlFailedException;
@@ -78,8 +80,7 @@ public class TcpProbeControllerTest {
               // as unit test using powermock or transform into integration test
             Thread.sleep(10000);
         } catch (final InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            TcpProbeControllerTest.LOGGER.error("Test init failed", e);
         }
     }
 
@@ -144,34 +145,32 @@ public class TcpProbeControllerTest {
         exampleParameter.put(parameterNames[0], Arrays.asList(parameters[0]));
         exampleParameter.put(parameterNames[1], Arrays.asList(parameters[1]));
 
-        // TODO comment in with new Kieker version
+        Assert.assertFalse(state.containsKey(testPattern));
 
-        // Assert.assertFalse(state.containsKey(testPattern));
-        //
-        // TcpProbeControllerTest.tcpProbeController.activateParameterMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
-        // TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern,
-        // exampleParameter);
-        //
-        // Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,
-        // TcpProbeControllerTest.PORT));
-        // // wait for the other thread
-        // while (!state.containsKey(testPattern)) {
-        // Thread.yield();
-        // }
-        // Assert.assertTrue(state.get(testPattern));
-        // Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter));
-        // final Map<String, List<String>> exampleParameter2 = new HashMap<>(exampleParameter);
-        // exampleParameter.put(parameterNames[1],
-        // Arrays.asList(new String[] { "Change1", "Change2", "Change3", "Change4" }));
-        //
-        // TcpProbeControllerTest.tcpProbeController.updateProbeParameter(TcpProbeControllerTest.LOCALHOST_IP,
-        // TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern,
-        // exampleParameter2);
-        // while (recordedParameters.get(testPattern).equals(exampleParameter)) {
-        // Thread.yield();
-        // }
-        //
-        // Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter2));
+        TcpProbeControllerTest.tcpProbeController.activateParameterMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
+                TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern, exampleParameter);
+
+        Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,
+                TcpProbeControllerTest.PORT));
+        // wait for the other thread
+        while (!state.containsKey(testPattern)) {
+            Thread.yield();
+        }
+        Assert.assertTrue(state.get(testPattern));
+
+        Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter));
+
+        final Map<String, List<String>> exampleParameter2 = new HashMap<>(exampleParameter);
+        exampleParameter.put(parameterNames[1],
+                Arrays.asList(new String[] { "Change1", "Change2", "Change3", "Change4" }));
+
+        TcpProbeControllerTest.tcpProbeController.updateProbeParameter(TcpProbeControllerTest.LOCALHOST_IP,
+                TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern, exampleParameter2);
+        while (recordedParameters.get(testPattern).equals(exampleParameter)) {
+            Thread.yield();
+        }
+
+        Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter2));
 
     }
 
@@ -198,13 +197,14 @@ public class TcpProbeControllerTest {
         public void onRecordReceived(final IMonitoringRecord arg0) {
             final String pattern = ((IRemoteControlEvent) arg0).getPattern();
 
-            this.state.put(pattern, arg0 instanceof ActivationEvent);
-            // TODO comment in with new Kieker version
-            // if (arg0 instanceof IRemoteParameterControlEvent) {
-            // this.recordedParameters.put(pattern,
-            // this.buildParameterMap(((IRemoteParameterControlEvent) arg0).getParameterNames(),
-            // ((IRemoteParameterControlEvent) arg0).getParameters());
-            // }
+            if (arg0 instanceof IRemoteParameterControlEvent) {
+                this.recordedParameters.put(pattern,
+                        this.buildParameterMap(((IRemoteParameterControlEvent) arg0).getParameterNames(),
+                                ((IRemoteParameterControlEvent) arg0).getParameters()));
+            }
+
+            this.state.put(pattern, (arg0 instanceof ActivationEvent) || (arg0 instanceof ActivationParameterEvent));
+
         }
 
         public Map<String, Map<String, List<String>>> getRecordedParameters() {

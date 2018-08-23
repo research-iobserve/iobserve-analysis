@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,12 +33,21 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 public class ProbeManagementData {
     private final Map<AllocationContext, Set<OperationSignature>> methodsToActivate;
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
+    private Map<AllocationContext, Set<OperationSignature>> methodsToUpdate;
+
     private List<String> whitelist = null;
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
+        this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>());
+    }
+
+    public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
+            final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
+            final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
+        this.methodsToUpdate = methodsToUpdate;
     }
 
     public Map<AllocationContext, Set<OperationSignature>> getMethodsToActivate() {
@@ -46,6 +56,14 @@ public class ProbeManagementData {
 
     public Map<AllocationContext, Set<OperationSignature>> getMethodsToDeactivate() {
         return this.methodsToDeactivate;
+    }
+
+    public void setMethodsToUpdate(final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
+        this.methodsToUpdate = methodsToUpdate;
+    }
+
+    public Map<AllocationContext, Set<OperationSignature>> getMethodsToUpdate() {
+        return this.methodsToUpdate;
     }
 
     /**

@@ -83,6 +83,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
                 probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
 
+        probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
         this.outputPort.send(probeMethodInformation);
     }
 
