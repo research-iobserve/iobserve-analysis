@@ -41,17 +41,21 @@ public class ElbowMethod implements IClusterSelectionMethods {
     private final HierarchicalClusterer hierarchicalClusterer;
     private final Instances instances;
 
+    /**
+     * Constructor.
+     *
+     * @param hierarchicalClusterer
+     *            Clusterer that performs hierarchical clustering
+     * @param instances
+     *            Input data
+     */
     public ElbowMethod(final HierarchicalClusterer hierarchicalClusterer, final Instances instances) {
         this.hierarchicalClusterer = hierarchicalClusterer;
         this.instances = instances;
     }
 
     /**
-     * @param hierarchicalClusterer
-     *            weka-clusterer that performs the hierarchical clustering
-     *
-     * @param instances
-     *            input data that is clustered
+     * Find a "good" clustering for the input data.
      *
      * @return a "good" clustering according to the Elbow method
      */
@@ -140,10 +144,10 @@ public class ElbowMethod implements IClusterSelectionMethods {
     }
 
     /**
-     * Find the Ellbow of the ESS data.
+     * Find the Elbow of the ESS data.
      *
      * @param ess
-     *            Error sum-of-squares array for all posslible number of clusters.
+     *            Error sum-of-squares array for all possible number of clusters.
      */
     private int findElbow(final List<Double> ess) {
 
@@ -183,10 +187,6 @@ public class ElbowMethod implements IClusterSelectionMethods {
      *
      * @param cluster
      *            Calculate the ESS for this cluster
-     * @param instances
-     *            Input data that is clustered
-     * @param hierarchicalClusterer
-     *            Clusterer that performs hierarchical clustering
      * @return ESS
      **/
     public double calcESS(final List<Integer> cluster) {
@@ -240,6 +240,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * Print clustering results for debugging.
      *
      * @param clusteringResults
+     *            Clustering results that should be printed.
      */
     public void printClusteringResults(final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
         for (int i = 0; i < clusteringResults.size(); i++) {

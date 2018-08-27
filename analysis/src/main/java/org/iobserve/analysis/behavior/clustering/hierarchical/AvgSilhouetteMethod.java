@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import weka.clusterers.HierarchicalClusterer;
-import weka.core.DistanceFunction;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -39,6 +38,14 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
     private final HierarchicalClusterer hierarchicalClusterer;
     private final Instances instances;
 
+    /**
+     * Constructor.
+     *
+     * @param hierarchicalClusterer
+     *            Clusterer that performs hierarchical clustering.
+     * @param instances
+     *            Input data
+     */
     public AvgSilhouetteMethod(final HierarchicalClusterer hierarchicalClusterer, final Instances instances) {
         this.hierarchicalClusterer = hierarchicalClusterer;
         this.instances = instances;
@@ -49,7 +56,6 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
 
         AvgSilhouetteMethod.LOGGER.info("Starting AvgSilhouetteMethod");
 
-        final int numInstances = this.instances.numInstances();
         // Average silhouette for each cluster.
         final List<Double> avgSilhouettes = new ArrayList<>();
         for (int i = 1; i <= this.instances.numInstances(); ++i) {
@@ -103,15 +109,10 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      *
      * @param assignments
      *            Resulting clusters from hierarchical clustering.
-     * @param instances
-     *            Input data
-     * @param hierarchicalClusterer
-     *            Clusterer that performs the hierarchical clustering.
      * @return average silhouettes of the clusters.
      */
     public double calcAvgSilhouettes(final List<ArrayList<Integer>> assignments) {
 
-        final DistanceFunction distanceFunction = this.hierarchicalClusterer.getDistanceFunction();
         double avgSilhouette = 0.0;
 
         if (assignments.size() <= 1) {
@@ -282,6 +283,7 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      * Print clustering results for debugging.
      *
      * @param clusteringResults
+     *            Clustered input data
      */
     public void printClusteringResults(final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
         for (int i = 0; i < clusteringResults.size(); i++) {

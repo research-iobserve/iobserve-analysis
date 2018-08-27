@@ -18,6 +18,7 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ import weka.gui.hierarchyvisualizer.HierarchyVisualizer;
 public class HierarchicalClustering implements IHierarchicalClustering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
+
+    private static String CSVOUTPUTPATH = "/Users/SL/Desktop/res";
 
     private static HierarchicalClusterer hierarchicalClusterer;
     private SelectedTag linkage;
@@ -81,12 +84,22 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         // Find a "good" number of clusters by applying the clusterSelectionMethod
         final NumOfClustersSelector clusterSelection = new NumOfClustersSelector(this.clusterSelectionMethod,
                 HierarchicalClustering.hierarchicalClusterer, instances);
-        clusterSelection.findOptimalNumOfClusters();
+
+        final Map<Integer, List<Pair<Instance, Double>>> clusteringResult = clusterSelection.findGoodClustering();
+        final CSVSinkFilter csvFilter = new CSVSinkFilter();
+        final Map<Double, Double> clusteringKVs = csvFilter.convertClusteringResultsToKVPair(clusteringResult);
+
+        try {
+            csvFilter.createCSVFromClusteringResult(HierarchicalClustering.CSVOUTPUTPATH, clusteringKVs);
+        } catch (final IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         // HierarchicalClustering.hierarchicalClusterer.setNumClusters(2);
 
         try {
-            HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
+            // HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
 
             // // Print Membership-Matrix
             // double[] arr;
@@ -132,22 +145,6 @@ public class HierarchicalClustering implements IHierarchicalClustering {
             clusteringResults = ClusteringResultsBuilder.buildClusteringResults(instances,
                     HierarchicalClustering.hierarchicalClusterer);
 
-            // for (int i = 0; i < instances.numInstances(); i++) {
-            // final Instance currentInstance = instances.instance(i);
-            // final int cluster =
-            // HierarchicalClustering.hierarchicalClusterer.clusterInstance(currentInstance);
-            // final double probability = HierarchicalClustering.hierarchicalClusterer
-            // .distributionForInstance(currentInstance)[cluster];
-            // if (clusteringResults.get(cluster) == null) {
-            // clusteringResults.put(cluster, new LinkedList<Pair<Instance, Double>>());
-            // }
-            // clusteringResults.get(cluster).add(new Pair<>(currentInstance, probability));
-            //
-            // }
-
-            // clusteringResults = Optional.of(new ClusteringResults("Hierarchical",
-            // HierarchicalClustering.hierarchicalClusterer.getNumClusters(), assignments, null));
-
         } catch (final Exception e) { // NOPMD NOCS api dependency
             HierarchicalClustering.LOGGER.error("Hierarchical clustering failed.", e);
         }
@@ -158,7 +155,7 @@ public class HierarchicalClustering implements IHierarchicalClustering {
     /**
      *
      * @param linkageType
-     *            type of likage used in hierarchical clustering
+     *            type of linkage used in hierarchical clustering
      */
     private final void setLinkage(final String linkageType) {
         switch (linkageType) {

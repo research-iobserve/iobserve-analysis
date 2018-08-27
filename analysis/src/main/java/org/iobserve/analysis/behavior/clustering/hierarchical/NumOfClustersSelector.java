@@ -64,7 +64,7 @@ public class NumOfClustersSelector {
      *
      * @return clustering results with a "good" number of clusters.
      */
-    public Map<Integer, List<Pair<Instance, Double>>> findOptimalNumOfClusters() {
+    public Map<Integer, List<Pair<Instance, Double>>> findGoodClustering() {
         Map<Integer, List<Pair<Instance, Double>>> resultClusters = null;
         final IClusterSelectionMethods clusteringMethod;
 

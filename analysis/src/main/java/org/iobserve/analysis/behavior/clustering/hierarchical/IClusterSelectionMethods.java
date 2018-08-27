@@ -32,12 +32,7 @@ import weka.core.Instance;
 public interface IClusterSelectionMethods {
 
     /**
-     *
-     * @param hierarchicalClusterer
-     *            Performs hierarchical clustering.
-     *
-     * @param instances
-     *            Input data that is clustered.
+     * Find a "good" clustering for the input data.
      *
      * @return clustered data with a "good" number of clusters.
      */

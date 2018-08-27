@@ -55,6 +55,11 @@ public final class ClusteringResultsBuilder {
      */
     public static Map<Integer, List<Pair<Instance, Double>>> buildClusteringResults(final Instances instances,
             final HierarchicalClusterer hierarchicalClusterer) {
+        /*
+         * An entry of the map looks like this: <clusterID, <instance, 1.0>>. The 1,0 is the
+         * probability that the instance is in this cluster. It is needed for unity of clustering
+         * output data.
+         */
         final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD;
 
         for (int i = 0; i < instances.numInstances(); i++) {
