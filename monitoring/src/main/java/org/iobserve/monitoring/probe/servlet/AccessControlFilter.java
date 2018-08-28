@@ -106,12 +106,21 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
             }
         }
 
-        return String.format("%s %s %s (%s)", request.getRequestURI(), parameters);
+        return String.format("%s (%s)", request.getRequestURI(), parameters);
     }
 
     private boolean isInWhiteList(final String remoteAddr, final String locationId) {
         final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getParameters(locationId);
-        return parameters.get("whitelist").contains(remoteAddr);
+        if (parameters != null) {
+            final List<String> whitelist = parameters.get("whitelist");
+            if (whitelist != null) {
+                return whitelist.contains(remoteAddr);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
