@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<!-- see http://stackoverflow.com/questions/1119677/how-do-i-automatically-generate-a-jar-file-in-an-eclipse-java-project --> 
+<!-- see http://stackoverflow.com/questions/10976063/how-to-pass-parameter-to-ant-scripts -->
+<project name="${pluginName}" default="CreateJar">
+  <target name="CreateJar" description="Create Jar file">
+        <jar destfile="${targetFile}" basedir="${sourceFile}" includes="**/*.class" />
+  </target>
+</project>
