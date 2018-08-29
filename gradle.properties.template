@@ -35,7 +35,7 @@ VER_JUNIT=4.12
 
 cpdErrorThreshold = 360
 
-org.gradle.jvmargs = "-XX:MaxPermSize=128m"
+org.gradle.jvmargs = "-XX:MaxPermSize=2048m -Xmx3g"
 
 checkstyleVersion = 8.8
 pmdAndCpdVersion = 5.2.2
