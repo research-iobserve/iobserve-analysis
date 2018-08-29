@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/model/src/gen/java/" editDirectory="/CorrespondenceModel2.edit/src"
+    editorDirectory="/CorrespondenceModel2.editor/src" modelPluginID="correspondencemodel2"
+    runtimeJar="true" modelName="CorrespondenceModel2" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    testsDirectory="/model.tests/src" booleanFlagsField="" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" editPluginID="CorrespondenceModel2.edit" editorPluginID="CorrespondenceModel2.editor"
+    language="en" usedGenPackages="../../../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
+    importOrganizing="true" decoration="Live" oSGiCompatible="true">
+  <genAnnotations source="http://www.eclipse.org/emf/2002/GenModel/exporter/org.eclipse.xsd.ecore.exporter">
+    <genAnnotations source="selectedPackages">
+      <details key="http://www.eclipse.org/emf/2002/Ecore" value="Ecore.xsd"/>
+    </genAnnotations>
+    <details key="directoryURI" value="."/>
+  </genAnnotations>
+  <genAnnotations source="http://www.eclipse.org/emf/2002/GenModel/exporter/org.eclipse.xsd.ecore.exporter.xmi">
+    <genAnnotations source="selectedPackages">
+      <details key="http://www.eclipse.org/emf/2002/Ecore" value="EcoreXMI.xsd"/>
+    </genAnnotations>
+    <details key="directoryURI" value="."/>
+  </genAnnotations>
+  <foreignModel>CorrespondenceModel2.ecore</foreignModel>
+  <modelPluginVariables>org.eclipse.xtext.xbase.lib</modelPluginVariables>
+  <modelPluginVariables>org.eclipse.emf.ecore.xcore.lib</modelPluginVariables>
+  <genPackages prefix="Correspondence2" basePackage="org.iobserve.model" disposableProviderFactory="true"
+      ecorePackage="CorrespondenceModel2.ecore#/">
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//HighLevelModelElement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//HighLevelModelElement/model"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//HighLevelModelElement/parent"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//LowLevelModelElement">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//LowLevelModelElement/model"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//LowLevelModelElement/parent"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//HighLevelModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//HighLevelModel/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//LowLevelModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//LowLevelModel/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//Correspondence">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//Correspondence/from"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//Correspondence/to"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//Correspondence/correspondenceModel"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute CorrespondenceModel2.ecore#//Correspondence/debugStr"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//CorrespondenceModel">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//CorrespondenceModel/highLevelModel"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//CorrespondenceModel/lowLevelModel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel2.ecore#//CorrespondenceModel/correspondences"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel2.ecore#//ModelElement"/>
+  </genPackages>
+</genmodel:GenModel>
