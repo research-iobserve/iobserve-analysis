@@ -100,10 +100,7 @@ subprojects {
 		
 	    // central
 		testCompile "junit:junit:4.12"
-	    testCompile 'org.hamcrest:hamcrest-all:1.3'
-	    testCompile 'org.powermock:powermock-core:1.6.1'
-	    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
-	    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+	   
 	}
         
 
@@ -619,7 +616,7 @@ apply plugin: 'com.diffplug.gradle.equinoxlaunch'
 // Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
 equinoxLaunch {
 	codegenSetup {
-		source.addProject(project(':peropteryx.rcp'))
+		//source.addProject(project(':peropteryx.rcp'))
 		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
 	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
 	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')

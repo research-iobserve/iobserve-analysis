@@ -3,7 +3,6 @@
 package org.iobserve.model.privacy;
 
 import org.eclipse.emf.ecore.EObject;
-
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**

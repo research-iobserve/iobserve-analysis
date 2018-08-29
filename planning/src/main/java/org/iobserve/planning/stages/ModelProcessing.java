@@ -21,7 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
 
 import teetime.stage.basic.AbstractFilter;
 
@@ -30,7 +32,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.ModelHandlingErrorException;
-import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.ModelImporter;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
 import org.iobserve.planning.data.AllocationGroup;
@@ -38,6 +40,7 @@ import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.utils.ModelHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
@@ -47,6 +50,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +73,7 @@ public class ModelProcessing extends AbstractFilter<File> {
     public static final int POSSIBLE_REPLICAS_OFFSET = 10;
     public static final int POSSIBLE_REPLICAS_FACTOR = 1;
 
-    private PCMModelHandler processedModelHandler;
+    private ModelImporter processedModelHandler;
 
     private AllocationGroupsContainer originalAllocationGroups;
     private Allocation allocationModel;
@@ -124,13 +128,13 @@ public class ModelProcessing extends AbstractFilter<File> {
         for (final File nextFile : files) {
             final String filename = nextFile.getName();
             final String extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length());
-            if (PCMModelHandler.ALLOCATION_SUFFIX.equalsIgnoreCase(extension)) {
+            if (AllocationPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.allocationModelName = filename;
-            } else if (PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (ResourceenvironmentPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.resourceEnvironmentName = filename;
-            } else if (PCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (costPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.costModelName = filename;
-            } else if (PCMModelHandler.DESIGN_DECISION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (designdecisionPackage.eNAME.equalsIgnoreCase(extension)) {
                 this.decisionSpaceName = filename;
             }
 
@@ -139,13 +143,13 @@ public class ModelProcessing extends AbstractFilter<File> {
 
     private void initModelTransformation(final File originalModelDirectory)
             throws IOException, InitializationException {
-        final PCMModelHandler originalModelHandler = new PCMModelHandler(originalModelDirectory);
+        final ModelImporter originalModelHandler = new ModelImporter(originalModelDirectory);
 
         this.processedModelDirectory = new File(originalModelDirectory, ModelProcessing.PROCESSED_MODEL_FOLDER);
 
         FileUtils.copyDirectory(originalModelDirectory, this.processedModelDirectory);
 
-        this.processedModelHandler = new PCMModelHandler(this.processedModelDirectory);
+        this.processedModelHandler = new ModelImporter(this.processedModelDirectory);
 
         this.allocationModel = this.processedModelHandler.getAllocationModel();
         this.cloudProfileModel = this.processedModelHandler.getCloudProfileModel();
@@ -215,7 +219,6 @@ public class ModelProcessing extends AbstractFilter<File> {
         this.processedModelHandler.save(allocationModelURI);
         this.processedModelHandler.save(costModelURI);
         this.processedModelHandler.save(resourceenvironmentModelURI);
-
     }
 
     private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,

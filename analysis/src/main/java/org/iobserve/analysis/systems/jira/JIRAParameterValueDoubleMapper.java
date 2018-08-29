@@ -35,7 +35,7 @@ public class JIRAParameterValueDoubleMapper implements IParameterValueDoubleMapp
      * Constructor of the value double mapper.
      */
     public JIRAParameterValueDoubleMapper() {
-
+        // empty constructor
     }
 
     @Override

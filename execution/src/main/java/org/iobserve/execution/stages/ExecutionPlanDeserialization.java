@@ -20,8 +20,11 @@ import java.io.File;
 import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
-import org.iobserve.model.provider.file.ExecutionPlanHandler;
+import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
+import org.iobserve.model.persistence.file.FileModelHandler;
 
 /**
  * Deserializes a serialized execution plan.
@@ -31,10 +34,12 @@ import org.iobserve.model.provider.file.ExecutionPlanHandler;
  */
 public class ExecutionPlanDeserialization extends AbstractTransformation<File, ExecutionPlan> {
 
+    private final ResourceSet resouceSet = new ResourceSetImpl();
+
     @Override
     protected void execute(final File executionPlanFile) throws Exception {
-        final ExecutionPlan executionPlan = new ExecutionPlanHandler()
-                .load(URI.createFileURI(executionPlanFile.getAbsolutePath()));
+        final ExecutionPlan executionPlan = new FileModelHandler<ExecutionPlan>(this.resouceSet,
+                ExecutionplanPackage.eINSTANCE).load(URI.createFileURI(executionPlanFile.getAbsolutePath()));
 
         this.outputPort.send(executionPlan);
     }

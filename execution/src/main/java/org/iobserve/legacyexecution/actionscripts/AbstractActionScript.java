@@ -115,8 +115,7 @@ public abstract class AbstractActionScript {
                 .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(), new SshjSshClientModule())) // NOCS
                 .buildView(ComputeServiceContext.class);
 
-        final ComputeService client = context.getComputeService();
-        return client;
+        return context.getComputeService();
     }
 
     /**
@@ -158,8 +157,7 @@ public abstract class AbstractActionScript {
             throw new IllegalArgumentException(error);
         }
 
-        final ResourceContainerCloud cloudContainer = (ResourceContainerCloud) container;
-        return cloudContainer;
+        return (ResourceContainerCloud) container;
     }
 
     /**

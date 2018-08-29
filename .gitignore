@@ -145,3 +145,7 @@ $RECYCLE.BIN/
 /bin/
 /gradle.properties
 /reports.html
+model/build.properties
+model/plugin.properties
+model/META-INF/
+model/plugin.xml

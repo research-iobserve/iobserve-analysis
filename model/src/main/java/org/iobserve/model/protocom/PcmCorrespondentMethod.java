@@ -27,10 +27,12 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Alessandro Guisa
  *
+ * @deprecated 0.0.3 replaced by EMF corrspondence model
  */
 @XmlRootElement(name = "CorrespondentMethod")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "CorrespondentMethod", propOrder = { "name", "returnType", "visibilityModifier", "parameters" })
+@Deprecated
 public class PcmCorrespondentMethod {
 
     private String name;

@@ -93,6 +93,7 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
      * signature.
      */
     public SessionAndTraceRegistrationPayloadFilter() {
+        // empty constructor
     }
 
     @Override
@@ -135,7 +136,7 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
 
                 // TODO is this a generic thing?
                 /** remove sessionId from request path. */
-                path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(";")) : requestPath;
+                path = requestPath.indexOf(';') >= 0 ? requestPath.substring(0, requestPath.indexOf(';')) : requestPath;
 
                 sessionId = httpRequest.getSession().getId();
 

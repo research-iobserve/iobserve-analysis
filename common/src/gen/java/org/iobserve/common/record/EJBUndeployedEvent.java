@@ -18,11 +18,13 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.EJBDescriptor;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.common.record.EJBDescriptor;
 
 /**
  * @author Reiner Jung
@@ -30,7 +32,7 @@ import org.iobserve.common.record.IUndeployedEvent;
  * 
  * @since 0.0.2
  */
-public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEvent {			
+public class EJBUndeployedEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IUndeployedEvent, EJBDescriptor {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
@@ -44,7 +46,11 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 		String.class, // EJBDescriptor.deploymentId
 	};
 	
-	private static final long serialVersionUID = 1489000978778871399L;
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -3501215990833926224L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -54,6 +60,11 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 		"deploymentId",
 	};
 	
+	/** property declarations. */
+	private final long timestamp;
+	private final String service;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -68,7 +79,10 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 	 *            deploymentId
 	 */
 	public EJBUndeployedEvent(final long timestamp, final String service, final String context, final String deploymentId) {
-		super(timestamp, service, context, deploymentId);
+		this.timestamp = timestamp;
+		this.service = service == null?"":service;
+		this.context = context == null?"":context;
+		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
 
 	/**
@@ -82,7 +96,11 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 	 */
 	@Deprecated
 	public EJBUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	/**
@@ -97,7 +115,11 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 	 */
 	@Deprecated
 	protected EJBUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	
@@ -108,7 +130,10 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 	 *            when the record could not be deserialized
 	 */
 	public EJBUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
+		this.service = deserializer.getString();
+		this.context = deserializer.getString();
+		this.deploymentId = deserializer.getString();
 	}
 	
 	/**
@@ -206,6 +231,25 @@ public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployedEven
 		}
 		
 		return true;
+	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	
+	public final String getService() {
+		return this.service;
+	}
+	
+	
+	public final String getContext() {
+		return this.context;
+	}
+	
+	
+	public final String getDeploymentId() {
+		return this.deploymentId;
 	}
 	
 }

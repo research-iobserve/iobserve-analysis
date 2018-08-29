@@ -95,7 +95,7 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
 
     @Override
     protected void shutdownService() {
-
+        // nothing to be done specifically
     }
 
 }

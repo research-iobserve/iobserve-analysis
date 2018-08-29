@@ -19,11 +19,14 @@ import java.io.File;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.iobserve.adaptation.executionplan.DeployComponentAction;
 import org.iobserve.model.correspondence.AbstractEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.provider.file.CorrespondenceModelHandler;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.file.FileModelHandler;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +51,9 @@ public class DeploymentExecutor extends AbstractExecutor<DeployComponentAction> 
     private final File correspondenceModelFile;
     private final String namespace;
 
+    // TODO is this the correct location for the executor's resourceSet
+    private final ResourceSet resourceSet = new ResourceSetImpl();
+
     /**
      * Creates a new deployment executor.
      *
@@ -68,8 +74,9 @@ public class DeploymentExecutor extends AbstractExecutor<DeployComponentAction> 
     @Override
     public void execute(final DeployComponentAction action) {
         // Can't be loaded earlier because it references the other models received via TCP
-        final CorrespondenceModel correspondenceModel = new CorrespondenceModelHandler()
-                .load(URI.createFileURI(this.correspondenceModelFile.getAbsolutePath()));
+        final CorrespondenceModel correspondenceModel = new FileModelHandler<CorrespondenceModel>(this.resourceSet,
+                CorrespondencePackage.eINSTANCE)
+                        .load(URI.createFileURI(this.correspondenceModelFile.getAbsolutePath()));
         final KubernetesClient client = new DefaultKubernetesClient();
         final String rcName = this.normalizeComponentName(
                 action.getTargetAllocationContext().getResourceContainer_AllocationContext().getEntityName());

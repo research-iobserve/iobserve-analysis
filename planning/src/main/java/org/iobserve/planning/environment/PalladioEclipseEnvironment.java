@@ -85,6 +85,7 @@ public enum PalladioEclipseEnvironment {
     private URIConverterHandler uriConverter;
 
     PalladioEclipseEnvironment() {
+        // empty constructor
     }
 
     /**

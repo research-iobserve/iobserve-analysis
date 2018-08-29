@@ -4,12 +4,15 @@ package org.iobserve.model.privacy.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
-
-import org.iobserve.model.privacy.*;
+import org.iobserve.model.privacy.EncapsulatedDataSource;
+import org.iobserve.model.privacy.GeoLocation;
+import org.iobserve.model.privacy.IPrivacyAnnotation;
+import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.ReturnTypePrivacy;
 
 /**
  * <!-- begin-user-doc -->
@@ -72,12 +75,24 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
                 return createPrivacyModelAdapter();
             }
             @Override
+            public Adapter caseReturnTypePrivacy(ReturnTypePrivacy object) {
+                return createReturnTypePrivacyAdapter();
+            }
+            @Override
+            public Adapter caseIPrivacyAnnotation(IPrivacyAnnotation object) {
+                return createIPrivacyAnnotationAdapter();
+            }
+            @Override
             public Adapter caseGeoLocation(GeoLocation object) {
                 return createGeoLocationAdapter();
             }
             @Override
             public Adapter caseParameterPrivacy(ParameterPrivacy object) {
                 return createParameterPrivacyAdapter();
+            }
+            @Override
+            public Adapter caseEncapsulatedDataSource(EncapsulatedDataSource object) {
+                return createEncapsulatedDataSourceAdapter();
             }
             @Override
             public Adapter defaultCase(EObject object) {
@@ -114,6 +129,34 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
     }
 
     /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.ReturnTypePrivacy <em>Return Type Privacy</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.ReturnTypePrivacy
+     * @generated
+     */
+    public Adapter createReturnTypePrivacyAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.IPrivacyAnnotation <em>IPrivacy Annotation</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.IPrivacyAnnotation
+     * @generated
+     */
+    public Adapter createIPrivacyAnnotationAdapter() {
+        return null;
+    }
+
+    /**
      * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.GeoLocation <em>Geo Location</em>}'.
      * <!-- begin-user-doc -->
      * This default implementation returns null so that we can easily ignore cases;
@@ -138,6 +181,20 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     public Adapter createParameterPrivacyAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.EncapsulatedDataSource <em>Encapsulated Data Source</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.iobserve.model.privacy.EncapsulatedDataSource
+     * @generated
+     */
+    public Adapter createEncapsulatedDataSourceAdapter() {
         return null;
     }
 

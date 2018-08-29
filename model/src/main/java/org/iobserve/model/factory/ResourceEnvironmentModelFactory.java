@@ -52,12 +52,30 @@ public final class ResourceEnvironmentModelFactory {
      *            name of the new container
      * @return builder
      */
-    public static ResourceContainer createResourceContainer(final ResourceEnvironment model, final String name) {
+    public static ResourceContainer createResourceContainerPrivacy(final ResourceEnvironment model, final String name) {
         final ResourceContainerPrivacy resContainer = ResourceenvironmentPrivacyFactory.eINSTANCE
                 .createResourceContainerPrivacy();
         resContainer.setEntityName(name);
         model.getResourceContainer_ResourceEnvironment().add(resContainer);
         return resContainer;
+    }
+
+    /**
+     * Create a {@link ResourceContainer} with the given name, without checking if it already
+     * exists. Use {@link #createResourceContainerIfAbsent(String)} instead if you wont create the
+     * container if it is already available.
+     *
+     * @param model
+     *            resource environment model
+     * @param name
+     *            name of the new container
+     * @return builder
+     */
+    public static ResourceContainer createResourceContainer(final ResourceEnvironment model, final String name) {
+        final ResourceContainer resourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        resourceContainer.setEntityName(name);
+        model.getResourceContainer_ResourceEnvironment().add(resourceContainer);
+        return resourceContainer;
     }
 
     /**
@@ -93,7 +111,6 @@ public final class ResourceEnvironmentModelFactory {
      */
     public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment,
             final String name) {
-        // TODO: Change to ResourceContainerPrivacy
         return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream()
                 .filter(container -> container.getEntityName().equals(name)).findFirst();
     }

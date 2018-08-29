@@ -3,13 +3,6 @@ apply plugin: 'java'
 
 mainClassName = 'org.iobserve.planning.PlanningMain'
 
-if (version.isEmpty()) {
-	System.err.println("version not set")
-}
-if (group.isEmpty()) {
-	System.err.println("group not set")
-}
-
 dependencies {
 	compile project(":adaptationdata")
     compile project(":stages")

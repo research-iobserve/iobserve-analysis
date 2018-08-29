@@ -22,7 +22,7 @@ import java.util.Set;
 import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.HostComponentAllocationGraph;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.kie.api.KieServices;
@@ -53,8 +53,8 @@ public class ComposedActionComputation extends AbstractTransformation<Adaptation
 
     @Override
     protected void execute(final AdaptationData adaptationData) throws Exception {
-        final ModelGraph runtimeGraph = adaptationData.getRuntimeGraph();
-        final ModelGraph redeploymentGraph = adaptationData.getReDeploymentGraph();
+        final HostComponentAllocationGraph runtimeGraph = adaptationData.getRuntimeGraph();
+        final HostComponentAllocationGraph redeploymentGraph = adaptationData.getReDeploymentGraph();
         final List<Command<?>> workingMemoryInserts = new ArrayList<>();
         final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
 

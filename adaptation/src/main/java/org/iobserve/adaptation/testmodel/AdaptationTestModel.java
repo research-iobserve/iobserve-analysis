@@ -48,7 +48,7 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  * @author Lars Bluemke
  *
  */
-public class AdaptationTestModel {
+public class AdaptationTestModel { // NOPMD all fields are required for testing
     // Repository components
     private final Repository repository = RepositoryFactory.eINSTANCE.createRepository();
     private final BasicComponent compA = RepositoryFactory.eINSTANCE.createBasicComponent();

@@ -36,6 +36,9 @@ public class DummyClassificationStage extends AbstractStage {
     private final InputPort<Long> timerInputPort = this.createInputPort(Long.class);
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
+    /**
+     * Create dummy classification stage.
+     */
     public DummyClassificationStage() {
         this.declareActive();
     }

@@ -32,16 +32,19 @@ import org.iobserve.common.record.IDeallocationEvent;
  */
 public class ContainerDeallocationEvent extends AbstractContainerEvent implements IDeallocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING; // AbstractContainerEvent.service
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+			 + TYPE_SIZE_STRING; // AbstractContainerEvent.service
 	
 	public static final Class<?>[] TYPES = {
+		long.class, // IEvent.timestamp
 		String.class, // AbstractContainerEvent.service
 	};
 	
-	private static final long serialVersionUID = 2096939141926232619L;
+	private static final long serialVersionUID = 6294283798368247976L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
+		"timestamp",
 		"service",
 	};
 	
@@ -49,11 +52,13 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
+	 * @param timestamp
+	 *            timestamp
 	 * @param service
 	 *            service
 	 */
-	public ContainerDeallocationEvent(final String service) {
-		super(service);
+	public ContainerDeallocationEvent(final long timestamp, final String service) {
+		super(timestamp, service);
 	}
 
 	/**
@@ -105,6 +110,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
+			this.getTimestamp(),
 			this.getService(),
 		};
 	}
@@ -114,6 +120,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
+		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getService());
 	}
 	
@@ -169,6 +176,9 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 		
 		final ContainerDeallocationEvent castedRecord = (ContainerDeallocationEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
 			return false;
 		}
 		if (!this.getService().equals(castedRecord.getService())) {

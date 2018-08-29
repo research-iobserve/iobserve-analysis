@@ -35,7 +35,7 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  * @author Reiner Jung
  */
-public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfiguration> {
+public final class CollectorMain extends AbstractServiceMain<CollectorConfiguration> {
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
@@ -59,9 +59,9 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
     }
 
     @Override
-    protected SimpleBridgeConfiguration createConfiguration(final Configuration configuration)
+    protected CollectorConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
-        return new SimpleBridgeConfiguration(configuration);
+        return new CollectorConfiguration(configuration);
     }
 
     @Override
@@ -86,7 +86,7 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
 
     @Override
     protected void shutdownService() {
-
+        // nothing special to shutdown
     }
 
 }

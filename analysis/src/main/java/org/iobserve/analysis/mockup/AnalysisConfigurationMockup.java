@@ -27,6 +27,9 @@ import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
  */
 public class AnalysisConfigurationMockup extends Configuration {
 
+    /**
+     * Create mock up object.
+     */
     public AnalysisConfigurationMockup() {
 
         // Debugging

@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -30,9 +30,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEvent> {
 
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final IModelProvider<System> systemModelGraphProvider;
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final ModelResource<System> systemModelResource;
+    private final ModelResource<Allocation> allocationModelResource;
     private final OutputPort<?> outputPort = this.createOutputPort(Object.class); // TODO define
                                                                                   // better
                                                                                   // data type
@@ -40,19 +40,18 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
     /**
      * Create a data flow detection stage.
      *
-     * @param allocationModelGraphProvider
+     * @param allocationModelResource
      *            allocation model provider
-     * @param systemModelGraphProvider
+     * @param systemModelResource
      *            system model provider
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentResource
      *            resource environment model provider
      */
-    public DataFlowDetectionStage(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.systemModelGraphProvider = systemModelGraphProvider;
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public DataFlowDetectionStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource) {
+        this.allocationModelResource = allocationModelResource;
+        this.systemModelResource = systemModelResource;
+        this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 
     @Override

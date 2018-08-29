@@ -38,17 +38,41 @@ import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
  */
 public class AdaptationConfiguration extends Configuration {
 
+    /**
+     * Create an AdaptationConfiguration.
+     * 
+     * @param runtimeModelInputPort
+     *            runtime model input port
+     * @param redeploymentModelInputPort
+     *            redeployment model input port
+     * @param runtimeModelDirectory
+     *            runtime model directory
+     * @param redeploymentModelDirectory
+     *            redeployment model directory
+     * @param executionPlanURI
+     *            execution plan URI
+     * @param executionHostname
+     *            execution hostname
+     * @param executionPlanOutputPort
+     *            execution plan input port
+     * @param executionRuntimeModelOutputPort
+     *            execution runtime model input port
+     * @param executionRedeploymentModelOutputPort
+     *            execution redeployment model input port
+     */
     public AdaptationConfiguration(final int runtimeModelInputPort, final int redeploymentModelInputPort,
             final File runtimeModelDirectory, final File redeploymentModelDirectory, final File executionPlanURI,
-            final String executionHostname, final int executionPlanInputPort, final int executionRuntimeModelInputPort,
-            final int executionRedeploymentModelInputPort) {
+            final String executionHostname, final int executionPlanOutputPort,
+            final int executionRuntimeModelOutputPort, final int executionRedeploymentModelOutputPort) {
 
         final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
                 runtimeModelInputPort, runtimeModelDirectory);
         final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
                 redeploymentModelInputPort, redeploymentModelDirectory);
+
         final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
         final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
+
         final AdaptationDataCreator adaptationDataCreator = new AdaptationDataCreator();
         final ComposedActionFactoryInitialization actionFactoryInitializer = new ComposedActionFactoryInitialization();
         final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
@@ -56,14 +80,16 @@ public class AdaptationConfiguration extends Configuration {
         final ExecutionPlanSerialization executionPlanSerializer = new ExecutionPlanSerialization(executionPlanURI);
         final AdaptationResultDistributor adaptationResultDistributor = new AdaptationResultDistributor(
                 runtimeModelDirectory, redeploymentModelDirectory);
+
         final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
         final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+
         final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionPlanInputPort);
+                executionPlanOutputPort);
         final SingleConnectionTcpWriterStage runtimeModelWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionRuntimeModelInputPort);
+                executionRuntimeModelOutputPort);
         final SingleConnectionTcpWriterStage redeploymentModelWriter = new SingleConnectionTcpWriterStage(
-                executionHostname, executionRedeploymentModelInputPort);
+                executionHostname, executionRedeploymentModelOutputPort);
 
         // TCP readers -> model collectors
         this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());

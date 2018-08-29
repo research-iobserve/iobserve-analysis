@@ -32,21 +32,41 @@ import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
  */
 public class AdaptationConfigurationMockup extends Configuration {
 
+    /**
+     * Mockup configuration.
+     *
+     * @param runtimeModelDirectory
+     *            runtime model directory
+     * @param redeploymentModelDirectory
+     *            redeployment model directory
+     * @param executionPlanURI
+     *            execution plan URI
+     * @param executionHostname
+     *            execution hostname
+     * @param executionPlanOutputPort
+     *            execution plan input port
+     * @param executionRuntimeModelOutputPort
+     *            execution runtime model input port
+     * @param executionRedeploymentModelOutputPort
+     *            execution redeployment model input port
+     */
     public AdaptationConfigurationMockup(final File runtimeModelDirectory, final File redeploymentModelDirectory,
-            final File executionPlanURI, final String executionHostname, final int executionPlanInputPort,
-            final int executionRuntimeModelInputPort, final int executionRedeploymentModelInputPort) {
+            final File executionPlanURI, final String executionHostname, final int executionPlanOutputPort,
+            final int executionRuntimeModelOutputPort, final int executionRedeploymentModelOutputPort) {
         final ExecutionPlanSerializationMockup executionPlanSerializer = new ExecutionPlanSerializationMockup(
                 executionPlanURI);
         final AdaptationResultDistributor adaptationResultDistributor = new AdaptationResultDistributor(
                 runtimeModelDirectory, redeploymentModelDirectory);
+
         final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
         final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+
         final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionPlanInputPort);
+                executionPlanOutputPort);
         final SingleConnectionTcpWriterStage runtimeModelWriter = new SingleConnectionTcpWriterStage(executionHostname,
-                executionRuntimeModelInputPort);
+                executionRuntimeModelOutputPort);
         final SingleConnectionTcpWriterStage redeploymentModelWriter = new SingleConnectionTcpWriterStage(
-                executionHostname, executionRedeploymentModelInputPort);
+                executionHostname, executionRedeploymentModelOutputPort);
 
         // Distribute adaptation results (execution plan and models) and send them to execution
         this.connectPorts(executionPlanSerializer.getOutputPort(), adaptationResultDistributor.getInputPort());

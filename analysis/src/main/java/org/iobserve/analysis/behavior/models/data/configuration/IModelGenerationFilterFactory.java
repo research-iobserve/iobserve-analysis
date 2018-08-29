@@ -23,10 +23,11 @@ package org.iobserve.analysis.behavior.models.data.configuration;
  *
  */
 public interface IModelGenerationFilterFactory {
+
     /**
      * create a {@link EntryCallFilterRules}.
      *
      * @return specific {@link EntryCallFilterRules}
      */
-    public EntryCallFilterRules createFilter();
+    EntryCallFilterRules createFilter();
 }

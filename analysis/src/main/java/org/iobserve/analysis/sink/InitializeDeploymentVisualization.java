@@ -32,16 +32,21 @@ import org.iobserve.analysis.sink.landscape.NodegroupService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
 import org.iobserve.analysis.sink.landscape.SystemService;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +62,9 @@ public final class InitializeDeploymentVisualization {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /** model provider for palladio models. */
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelResource<Allocation> allocationModelGraphProvider;
+    private final ModelResource<System> systemModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** services for visualization elements. */
     private final SystemService systemService = new SystemService();
@@ -91,9 +96,9 @@ public final class InitializeDeploymentVisualization {
      */
 
     public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
-            final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider)
+            final ModelResource<Allocation> allocationModelGraphProvider,
+            final ModelResource<System> systemModelGraphProvider,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelGraphProvider)
             throws MalformedURLException {
         this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
         this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
@@ -113,21 +118,22 @@ public final class InitializeDeploymentVisualization {
      */
     public void initialize() throws IOException {
         // set up the system model and take parts from it
-        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+        final System systemModel = this.systemModelGraphProvider.getModelRootNode(System.class,
+                SystemPackage.Literals.SYSTEM);
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
 
         // set up the allocation model and take parts from it
-        final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
+        final List<Long> allocationIds = this.allocationModelGraphProvider.collectAllObjectIdsByType(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
         // an allocation model contains exactly one allocation, therefore .get(0)
-        final String allocationId = allocationIds.get(0);
-        final Allocation allocation = this.allocationModelGraphProvider.readOnlyComponentById(Allocation.class,
-                allocationId);
+        final long allocationId = allocationIds.get(0);
+        final Allocation allocation = this.allocationModelGraphProvider.findObjectByTypeAndId(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION, allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
         // set up the resource environment model and take parts from it
         final ResourceEnvironment resourceEnvironmentModel = this.resourceEnvironmentModelGraphProvider
-                .readOnlyRootComponent(ResourceEnvironment.class);
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
@@ -214,8 +220,10 @@ public final class InitializeDeploymentVisualization {
      */
 
     private String getTechnology(final AssemblyConnector connector, final List<LinkingResource> linkingResources) {
-        final String assemblyContextSourceId = connector.getProvidingAssemblyContext_AssemblyConnector().getId();
-        final String assemblyContextTargetId = connector.getRequiringAssemblyContext_AssemblyConnector().getId();
+        final Long assemblyContextSourceId = this.systemModelGraphProvider
+                .getInternalId(connector.getProvidingAssemblyContext_AssemblyConnector());
+        final Long assemblyContextTargetId = this.systemModelGraphProvider
+                .getInternalId(connector.getRequiringAssemblyContext_AssemblyConnector());
 
         /**
          * ID of resource container on which source (regarding communication) assembly context is
@@ -257,9 +265,9 @@ public final class InitializeDeploymentVisualization {
      *            the id of the assembly context.
      * @return the id or null if no such container exists
      */
-    private String findResourceIdByAssemblyContextId(final String assemblyContextId) {
-        final List<EObject> allocationContexts = this.allocationModelGraphProvider
-                .readOnlyReferencingComponentsById(AssemblyContext.class, assemblyContextId);
+    private String findResourceIdByAssemblyContextId(final Long assemblyContextId) {
+        final List<EObject> allocationContexts = this.allocationModelGraphProvider.collectReferencingObjectsByTypeAndId(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, assemblyContextId);
         if (allocationContexts.get(0) instanceof AllocationContext) {
             final AllocationContext allocationContext = (AllocationContext) allocationContexts.get(0);
             return allocationContext.getResourceContainer_AllocationContext().getId();

@@ -33,6 +33,7 @@ public class BranchTransitionElement {
      * Entity constructor.
      */
     public BranchTransitionElement() {
+        // empty constructor
     }
 
     public double getTransitionLikelihood() {

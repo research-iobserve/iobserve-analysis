@@ -26,7 +26,6 @@ import java.util.Optional;
  * @author Jannis Kuckei
  *
  */
-
 public class EntryCallNode {
     private String signature;
     private final Map<String, CallInformation> entryCallInformation;
@@ -110,7 +109,7 @@ public class EntryCallNode {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @Override // NOCS
+    @Override
     public boolean equals(final Object obj) {
         if (obj instanceof EntryCallNode) {
             // compare signatures
@@ -120,6 +119,11 @@ public class EntryCallNode {
         } else {
             return super.equals(obj);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return new Double(this.signature).hashCode() + this.entryCallInformation.hashCode();
     }
 
     @Override
