@@ -149,3 +149,6 @@ model/build.properties
 model/plugin.properties
 model/META-INF/
 model/plugin.xml
+
+#For protocom correspondence model creationg
+!org.palladiosimulator.protocom/*
