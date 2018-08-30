@@ -1,0 +1,136 @@
+/*
+ * This package describes the meta-model for the CorrespondenceModel
+ */
+@Ecore(nsURI="https://www.iobserve-devops.net/model/0.0.1/correspondence2")
+package org.iobserve.model
+
+/*
+ * Abstract base class for a model element.
+ */
+abstract class ModelElement {  
+	/*
+	 * Name of a model element.
+	 */
+	String name
+	/*
+	 * Id of a model element.
+	 */
+	String Id
+}
+
+/*
+ * Instances of this class represent an element of a
+ * high-level model. Each model element might have a 
+ * parent model element.
+ */
+class HighLevelModelElement extends ModelElement {
+	
+	/*
+	 * Parent model element where this model element 
+	 * belongs semantically to.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers HighLevelModelElement parent
+	
+	/*
+	 * Reference to the container model.
+	 */
+	container HighLevelModel model opposite elements
+}
+
+/*
+ * Instances of this class represent an element of a
+ * low-level model. Each model element might have a 
+ * parent model element.
+ */
+class LowLevelModelElement extends ModelElement {
+	/*
+	 * Parent model element where this model element 
+	 * belongs semantically to.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers LowLevelModelElement parent
+	
+	/*
+	 * Reference to the container model.
+	 */
+	container LowLevelModel model opposite elements
+}
+
+/*
+ * Instances of this class represent a high-level model.
+ */
+class HighLevelModel {
+	/*
+	 * Model elements contained from this model.
+	 */
+	@Ecore(lowerBound="1", upperBound="-1")
+	contains HighLevelModelElement[] elements opposite model
+}
+
+/*
+ * Instances of this class represent a low-level model.
+ */
+class LowLevelModel {
+	/*
+	 * Model elements contained from this model.
+	 */
+	@Ecore(lowerBound="1", upperBound="-1")
+	contains LowLevelModelElement[] elements opposite model
+}
+
+/*
+ * Instances of this class represent a correspondence between
+ * a HighLevelModelElement and a LowLevelModelElement.
+ */
+class Correspondence {
+	/*
+	 * Just for the purpose of debugging.
+	 */
+	String debugStr
+	
+	/*
+	 * Reference to the high-level model element.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers HighLevelModelElement from 
+	
+	/*
+	 * Reference to low-level model element.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers LowLevelModelElement to
+	
+	/*
+	 * Reference to the correspondence model, where this correspondence is contained.
+	 */
+	container CorrespondenceModel correspondenceModel opposite correspondences
+}
+
+/*
+ * Instances of this class represent a correspondence model.
+ * A correspondence model contains correspondences which map a high-level
+ * model elements to low-level model elements. Therefore, a reference to the
+ * high-level- and low-level model is provided beside the container for the correspondences.
+ */
+class CorrespondenceModel {
+	
+	/*
+	 * Reference to the high-level model.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers HighLevelModel highLevelModel
+	
+	/*
+	 * Reference to the high-level model.
+	 */
+	@Ecore(lowerBound="1", upperBound="1")
+	refers LowLevelModel lowLevelModel
+	
+	/*
+	 * Container for the correspondence objects.
+	 */
+	@Ecore(lowerBound="1", upperBound="-1")
+	contains Correspondence[] correspondences opposite correspondenceModel
+}
+ 
