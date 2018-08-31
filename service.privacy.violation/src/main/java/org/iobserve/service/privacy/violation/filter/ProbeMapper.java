@@ -157,8 +157,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
                         this.fillTcpControlEvent(currentEvent, allocation);
                         this.outputPort.send(currentEvent);
                     } catch (final ControlEventCreationFailedException e) {
-                        this.logger.error("Could not construct activation event for: " + operationSignature.toString(),
-                                e);
+                        this.logger.error("Could not construct update event for: " + operationSignature.toString(), e);
                     }
                 }
             }
