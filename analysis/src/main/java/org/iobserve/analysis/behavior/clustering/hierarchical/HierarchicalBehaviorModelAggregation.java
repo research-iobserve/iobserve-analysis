@@ -55,7 +55,7 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
         final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
         this.hierClustering = new HierarchicalClusteringProcess(
-                new HierarchicalClustering(distanceMetric, clusterSelectionMethod, linkage));
+                new HierarchicalClustering(distanceMetric, clusterSelectionMethod, linkage, visualizationUrl));
         this.connectPorts(this.hierClustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */

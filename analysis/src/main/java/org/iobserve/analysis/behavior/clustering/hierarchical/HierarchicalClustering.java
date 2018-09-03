@@ -16,14 +16,10 @@
 
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
-import java.awt.Container;
-import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFrame;
 
 import org.eclipse.net4j.util.collection.Pair;
 import org.slf4j.Logger;
@@ -36,7 +32,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.ManhattanDistance;
 import weka.core.SelectedTag;
-import weka.gui.hierarchyvisualizer.HierarchyVisualizer;
 
 /**
  * @author Stephan Lenga
@@ -46,12 +41,11 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 
-    private static String CSVOUTPUTPATH = "/Users/SL/Desktop/res";
-
     private static HierarchicalClusterer hierarchicalClusterer;
     private SelectedTag linkage;
     private DistanceFunction distanceFunction;
     private final String clusterSelectionMethod;
+    private final String outputPath;
 
     /**
      * constructor.
@@ -65,10 +59,11 @@ public class HierarchicalClustering implements IHierarchicalClustering {
      *            Used linkage for hierarchical clustering
      */
     public HierarchicalClustering(final String distanceMetric, final String clusterSelectionMethod,
-            final String linkage) {
+            final String linkage, final String outputPath) {
         this.setLinkage(linkage);
         this.setDistanceFunction(distanceMetric);
         this.clusterSelectionMethod = clusterSelectionMethod;
+        this.outputPath = outputPath;
     }
 
     @Override
@@ -87,59 +82,34 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
         final Map<Integer, List<Pair<Instance, Double>>> clusteringResult = clusterSelection.findGoodClustering();
         final CSVSinkFilter csvFilter = new CSVSinkFilter();
-        final Map<Double, Double> clusteringKVs = csvFilter.convertClusteringResultsToKVPair(clusteringResult);
+        final Map<Double, List<Instance>> clusteringKVs = csvFilter.convertClusteringResultsToKVPair(clusteringResult);
 
         try {
-            csvFilter.createCSVFromClusteringResult(HierarchicalClustering.CSVOUTPUTPATH, clusteringKVs);
+            csvFilter.createCSVFromClusteringResult(this.outputPath, clusteringKVs);
         } catch (final IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
-        // HierarchicalClustering.hierarchicalClusterer.setNumClusters(2);
-
         try {
-            // HierarchicalClustering.hierarchicalClusterer.buildClusterer(instances);
-
-            // // Print Membership-Matrix
-            // double[] arr;
-            // for (int i = 0; i < instances.numInstances(); i++) {
-            //
-            // arr =
-            // HierarchicalClustering.hierarchicalClusterer.distributionForInstance(instances.instance(i));
-            // for (final double element : arr) {
-            // System.out.print(element + ",");
-            // }
-            // System.out.println();
-            // }
-
             // ##### TESTING
             // Print Newick
-            HierarchicalClustering.LOGGER.info("#### NEWICK ####");
-            HierarchicalClustering.hierarchicalClusterer.setPrintNewick(true);
-            HierarchicalClustering.LOGGER.info(HierarchicalClustering.hierarchicalClusterer.toString());
-
-            // Show clustered data
-            final JFrame mainFrame = new JFrame("Weka Test");
-            mainFrame.setSize(600, 400);
-            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            final Container content = mainFrame.getContentPane();
-            content.setLayout(new GridLayout(1, 1));
-
-            final HierarchyVisualizer visualizer = new HierarchyVisualizer(
-                    HierarchicalClustering.hierarchicalClusterer.toString());
-            content.add(visualizer);
-
-            mainFrame.setVisible(true);
-
-            // // Evaluation
-            // final ClusterEvaluation eval = new ClusterEvaluation();
-            // eval.setClusterer(HierarchicalClustering.hierarchicalClusterer); // the cluster to
-            // // evaluate
-            // eval.evaluateClusterer(newInstances); // data to evaluate the clusterer on
-            // System.out.println("# of clusters: " + eval.getNumClusters()); // output # of
-            // clusters
-
+            // HierarchicalClustering.LOGGER.info("#### NEWICK ####");
+            // HierarchicalClustering.hierarchicalClusterer.setPrintNewick(true);
+            // HierarchicalClustering.LOGGER.info(HierarchicalClustering.hierarchicalClusterer.toString());
+            //
+            // // Show clustered data
+            // final JFrame mainFrame = new JFrame("Weka Test");
+            // mainFrame.setSize(600, 400);
+            // mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            // final Container content = mainFrame.getContentPane();
+            // content.setLayout(new GridLayout(1, 1));
+            //
+            // final HierarchyVisualizer visualizer = new HierarchyVisualizer(
+            // HierarchicalClustering.hierarchicalClusterer.toString());
+            // content.add(visualizer);
+            //
+            // mainFrame.setVisible(true);
             // ##### END TESTING
 
             clusteringResults = ClusteringResultsBuilder.buildClusteringResults(instances,
