@@ -86,9 +86,8 @@ public class HierarchicalClustering implements IHierarchicalClustering {
 
         try {
             csvFilter.createCSVFromClusteringResult(this.outputPath, clusteringKVs);
-        } catch (final IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (final IOException e) {
+            HierarchicalClustering.LOGGER.error("Writing hierarchical clustering results to csv failed.", e);
         }
 
         try {
@@ -118,6 +117,8 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         } catch (final Exception e) { // NOPMD NOCS api dependency
             HierarchicalClustering.LOGGER.error("Hierarchical clustering failed.", e);
         }
+
+        HierarchicalClustering.LOGGER.info("Hierarchical clustering done.");
 
         return clusteringResults;
     }

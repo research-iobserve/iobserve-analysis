@@ -63,7 +63,8 @@ public class ElbowMethod implements IClusterSelectionMethods {
     public Map<Integer, List<Pair<Instance, Double>>> analyze() {
 
         ElbowMethod.LOGGER.info("Starting ElbowMethod");
-        // sum of square error for each number of clusters.
+
+        // Calculate sum of square error for each number of clusters.
         final List<Double> ess = new ArrayList<>();
         for (int i = 1; i <= this.instances.numInstances(); i++) {
 
@@ -214,7 +215,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
             centroid.setValue(j, sumAttValues[j]);
         }
         // Sum up distances of each data point in cluster to centroid to get ESS.
-        double clusterESS = 0;
+        double clusterESS = 0.0;
         for (int i = 0; i < cluster.size(); i++) {
             final Instance instance = this.instances.instance(cluster.get(i));
             clusterESS += distanceFunction.distance(centroid, instance);
