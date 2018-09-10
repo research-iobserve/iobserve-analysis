@@ -17,6 +17,7 @@
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,25 +153,28 @@ public class ElbowMethod implements IClusterSelectionMethods {
      */
     private int findElbow(final List<Double> ess) {
 
-        // ess = new ArrayList<>();
-        // ess.add(7.0);
-        // ess.add(3.0);
-        // ess.add(2.0);
-        // ess.add(1.5);
-        // ess.add(1.0);
-        // ess.add(0.5);
+        // Filter zero values from the list.
+        ess.removeAll(Collections.singleton(0.0));
 
         final int essSize = ess.size();
-        final double start = ess.get(0);
-        final double end = ess.get(essSize - 1);
-        final double decline = (end - start) / (essSize - 1);
+        final double startX = 1.0;
+        final double endX = essSize;
+        final double startY = ess.get(0);
+        final double endY = ess.get(essSize - 1);
 
-        double maxDistance = 0;
+        double maxDistance = 0.0;
         int elbowIndex = 1;
         for (int i = 0; i < (essSize - 1); i++) {
-            final double referencePoint = start + ((i + 1) * decline);
+            final double refPointX = i + 1;
+            final double refPointY = ess.get(i);
+            // Calculate distance of a point to a line defined by two points (equation from wiki).
+            final double distance = (Math
+                    .abs(((((endY - startY) * refPointX) - ((endX - startX) * refPointY)) + (endX * startY))
+                            - (endY * startX)))
+                    / (Math.sqrt(((endY - startY) * (endY - startY)) + ((endX - startX) * (endX - startX))));
+
             final double oldMaxDistance = maxDistance;
-            maxDistance = Math.max(maxDistance, referencePoint - ess.get(i + 1));
+            maxDistance = Math.max(distance, maxDistance);
             if (maxDistance > oldMaxDistance) {
                 elbowIndex = i + 1;
             }
