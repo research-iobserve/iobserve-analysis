@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import teetime.framework.AbstractConsumerStage;
@@ -55,6 +56,10 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     @Override
     protected void execute(final Warnings element) throws Exception {
+        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
+        final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
+                this.currentActiveWarnings);
+
         if (element.getWarningEdges() == null || element.getWarningEdges().isEmpty()) {
             this.logger.error("Received warning with empty edge list");
             return;
@@ -106,7 +111,43 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             }
         }
 
-        return receivedWarnings;
+        probeMethodInformation.setWarnedMethods(receivedWarnings);
+        probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
+
+        this.logger.debug("Send probeMethodInformation");
+        for (final Entry<AllocationContext, Set<OperationSignature>> methods : probeMethodInformation
+                .getMethodsToActivate().entrySet()) {
+            this.logger.debug("Active method {}", methods.getKey().getEntityName());
+            for (final OperationSignature value : methods.getValue()) {
+                this.logger.debug(">> {}", value.getEntityName());
+            }
+        }
+
+        for (final Entry<AllocationContext, Set<OperationSignature>> methods : probeMethodInformation
+                .getMethodsToDeactivate().entrySet()) {
+            this.logger.debug("Deactive method {}", methods.getKey().getEntityName());
+            for (final OperationSignature value : methods.getValue()) {
+                this.logger.debug(">> {}", value.getEntityName());
+            }
+        }
+
+        for (final Entry<AllocationContext, Set<OperationSignature>> methods : probeMethodInformation
+                .getMethodsToUpdate().entrySet()) {
+            this.logger.debug("Update method {}", methods.getKey().getEntityName());
+            for (final OperationSignature value : methods.getValue()) {
+                this.logger.debug(">> {}", value.getEntityName());
+            }
+        }
+
+        if (probeMethodInformation.getWhitelist() != null) {
+            for (final String entry : probeMethodInformation.getWhitelist()) {
+                this.logger.debug("whitelist {}", entry);
+            }
+        } else {
+            this.logger.debug("whitelist null");
+        }
+
+        this.outputPort.send(probeMethodInformation);
     }
 
     private ProbeManagementData computeWarningDifferences(
