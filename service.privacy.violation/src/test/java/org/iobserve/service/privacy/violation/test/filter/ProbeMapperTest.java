@@ -43,7 +43,8 @@ public class ProbeMapperTest {
     @Test
     public void receiveUninitializedDataTest() {
         this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
-                Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class));
+                Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
         final ProbeManagementData data = new ProbeManagementData(null, null);
 
         final List<ProbeManagementData> input = new LinkedList<>();
@@ -61,7 +62,8 @@ public class ProbeMapperTest {
     @Test
     public void receiveEmptyDataTest() {
         this.probeMapper = new ProbeMapper(Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
-                Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class));
+                Mockito.mock(ModelResource.class), Mockito.mock(ModelResource.class),
+                Mockito.mock(ModelResource.class));
         final ProbeManagementData data = new ProbeManagementData(
                 new HashMap<AllocationContext, Set<OperationSignature>>(),
                 new HashMap<AllocationContext, Set<OperationSignature>>());
@@ -292,8 +294,8 @@ public class ProbeMapperTest {
     }
 
     private Boolean areEventsEqual(final AbstractTcpControlEvent event1, final AbstractTcpControlEvent event2) {
-        if ((event1.getHostname().equals(event2.getHostname())) && event1.getPattern().equals(event2.getPattern())
-                && (event1.getIp() == event2.getIp()) && (event1.getPort() == event2.getPort())) {
+        if (event1.getHostname().equals(event2.getHostname()) && event1.getPattern().equals(event2.getPattern())
+                && event1.getIp() == event2.getIp() && event1.getPort() == event2.getPort()) {
             return true;
         }
 

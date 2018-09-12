@@ -71,11 +71,10 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         final Set<String> whitelist = new HashSet<>(allIps);
         whitelist.removeAll(blacklist);
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("All available IPs: " + allIps);
-            this.logger.debug("Forbidden IPs: " + blacklist);
-            this.logger.debug("Computed whitelist: " + whitelist);
-        }
+        this.logger.debug("All available IPs: {}", allIps);
+        this.logger.debug("Forbidden IPs: {}", blacklist);
+        this.logger.debug("Computed whitelist: {}", whitelist);
+
         return new LinkedList<>(whitelist);
     }
 
