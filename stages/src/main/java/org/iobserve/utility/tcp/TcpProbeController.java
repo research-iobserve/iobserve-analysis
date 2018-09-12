@@ -68,6 +68,7 @@ public class TcpProbeController {
      *             if the connection can not be established within a set timeout.
      */
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
+        System.err.println(">> [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
         final String ip = event.getIp();
         final int port = event.getPort();
         final String hostname = event.getHostname();
@@ -186,7 +187,7 @@ public class TcpProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+        if (currentConnection == null || currentConnection.getHostname() != hostname) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -250,7 +251,12 @@ public class TcpProbeController {
         final String[][] parameterArray = new String[parameterLength][];
 
         for (int i = 0; i < parameterLength; i++) {
-            parameterArray[i] = (String[]) parameters.get(parameterNames[i]).toArray();
+            final List<String> list = parameters.get(parameterNames[i]);
+            if (list.isEmpty()) {
+                parameterArray[i] = new String[0];
+            } else {
+                parameterArray[i] = (String[]) list.toArray();
+            }
         }
         return parameterArray;
     }

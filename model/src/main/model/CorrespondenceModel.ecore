@@ -41,5 +41,6 @@
     <eLiterals name="SERVLET"/>
     <eLiterals name="EJB" value="1"/>
     <eLiterals name="ASPECT_J" value="2"/>
+    <eLiterals name="DB" value="3" literal="DB"/>
   </eClassifiers>
 </ecore:EPackage>
