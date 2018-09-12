@@ -467,6 +467,7 @@ public class CorrespondencePackageImpl extends EPackageImpl implements Correspon
         addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.SERVLET);
         addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.EJB);
         addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.ASPECT_J);
+        addEEnumLiteral(eServiceTechnologyEEnum, EServiceTechnology.DB);
 
         // Create resource
         createResource(eNS_URI);

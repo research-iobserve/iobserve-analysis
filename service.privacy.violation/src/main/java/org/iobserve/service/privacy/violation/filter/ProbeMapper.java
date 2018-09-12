@@ -39,6 +39,7 @@ import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpUpdateParameterEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
@@ -67,6 +68,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private final ModelResource<Repository> repositoryResource;
     private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
     private final ModelResource<System> assemblyResource;
+    private final ModelResource<Allocation> allocationResource;
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -80,11 +82,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
             final ModelResource<Repository> repositoryResource,
             final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> assemblyResource) {
+            final ModelResource<System> assemblyResource, final ModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.assemblyResource = assemblyResource;
+        this.allocationResource = allocationResource;
     }
 
     public OutputPort<AbstractTcpControlEvent> getOutputPort() {
@@ -145,7 +148,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
+        if (methodsToUpdate != null && element.getWhitelist() != null) {
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
                 for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
                     try {
@@ -194,23 +197,34 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         case EJB:
         case ASPECT_J:
             return this.computeAllocationComponentJavaSignature(allocation, operationSignature);
+        case DB:
+            return this.computeAllocationComponentDBSignature(allocation, operationSignature);
         default:
             throw new InternalError("Technology " + entry.getTechnology().getLiteral() + " not supported.");
         }
 
     }
 
-    private AllocationEntry findAllocationEntry(final AllocationContext allocation) {
+    private String computeAllocationComponentDBSignature(final AllocationContext allocation,
+            final OperationSignature operationSignature) {
+        return "db://" + allocation.getEntityName() + operationSignature.getEntityName();
+    }
+
+    private AllocationEntry findAllocationEntry(final AllocationContext allocation)
+            throws InvocationException, DBException {
         final List<AllocationEntry> allocations = this.correspondenceResource
                 .collectAllObjectsByType(AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY);
 
         for (final AllocationEntry entry : allocations) {
-            if (entry.getAllocation().getId().equals(allocation.getId())) {
+            final AllocationContext entryAllocation = this.allocationResource.resolve(entry.getAllocation());
+            this.logger.debug("XXXXX entry id {} name {} / ac id {} name {}", entryAllocation.getId(),
+                    entryAllocation.getEntityName(), allocation.getId(), allocation.getEntityName());
+            if (entryAllocation.getId().equals(allocation.getId())) {
                 return entry;
             }
         }
 
-        return null;
+        throw new InternalError("Correspondence entry missing for " + allocation.getEntityName());
     }
 
     private String computeAllocationComponentServletId(final AllocationEntry entry, final AllocationContext allocation,
