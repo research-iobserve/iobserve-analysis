@@ -35,15 +35,26 @@ public class ProbeManagementData {
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
     private Map<AllocationContext, Set<OperationSignature>> methodsToUpdate;
 
+    private Map<AllocationContext, Set<OperationSignature>> warnedMethods;
+
     private List<String> whitelist = null;
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
-        this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>());
+        this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>(),
+                new HashMap<AllocationContext, Set<OperationSignature>>());
     }
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
+            final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+        this(methodsToActivate, methodsToDeactivate, warnedMethods,
+                new HashMap<AllocationContext, Set<OperationSignature>>());
+    }
+
+    public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
+            final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
+            final Map<AllocationContext, Set<OperationSignature>> warnedMethods,
             final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
@@ -56,6 +67,14 @@ public class ProbeManagementData {
 
     public Map<AllocationContext, Set<OperationSignature>> getMethodsToDeactivate() {
         return this.methodsToDeactivate;
+    }
+
+    public Map<AllocationContext, Set<OperationSignature>> getWarnedMethods() {
+        return this.warnedMethods;
+    }
+
+    public void setWarnedMethods(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+        this.warnedMethods = warnedMethods;
     }
 
     public void setMethodsToUpdate(final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {

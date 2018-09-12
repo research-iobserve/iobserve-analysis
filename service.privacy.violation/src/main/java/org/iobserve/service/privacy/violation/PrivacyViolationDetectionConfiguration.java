@@ -38,7 +38,7 @@ import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
-import org.iobserve.service.privacy.violation.filter.ModelProbeController;
+import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.privacy.violation.filter.WhitelistFilter;
@@ -134,7 +134,11 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             privacyWarner.declareActive();
 
             /** controlling probes. */
-            final ModelProbeController modelProbeController = new ModelProbeController();
+            // no (de-)activation in this one, just update
+            final NonAdaptiveModelProbeController modelProbeController = new NonAdaptiveModelProbeController(
+                    allocationResource, systemModelResource, repositoryResource);
+
+            // final ModelProbeController modelProbeController = new ModelProbeController();
             final WhitelistFilter whitelistFilter = new WhitelistFilter(allocationResource,
                     resourceEnvironmentResource);
             // final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource,

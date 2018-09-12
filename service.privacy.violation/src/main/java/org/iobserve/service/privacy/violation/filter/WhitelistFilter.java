@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import teetime.framework.AbstractConsumerStage;
@@ -31,6 +32,7 @@ import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
@@ -60,13 +62,13 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
      */
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        final List<String> whitelist = this.computeWhitelist(element);
+        final List<String> whitelist = this.computeWhitelist(element.getWarnedMethods());
         element.setWhitelist(whitelist);
         this.outputPort.send(element);
     }
 
-    private List<String> computeWhitelist(final ProbeManagementData element) {
-        final Set<String> blacklist = this.computeForbiddenIps(element);
+    private List<String> computeWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+        final Set<String> blacklist = this.computeForbiddenIps(warnedMethods);
         final Set<String> allIps = this.computeAvailableIps();
         final Set<String> whitelist = new HashSet<>(allIps);
         whitelist.removeAll(blacklist);
@@ -96,10 +98,9 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         return availableIps;
     }
 
-    private Set<String> computeForbiddenIps(final ProbeManagementData element) {
+    private Set<String> computeForbiddenIps(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
         final Set<AllocationContext> allocationSet = new LinkedHashSet<>();
-        allocationSet.addAll(element.getMethodsToActivate().keySet());
-        allocationSet.addAll(element.getMethodsToDeactivate().keySet());
+        allocationSet.addAll(warnedMethods.keySet());
         final Set<String> blacklistSet = new HashSet<>();
 
         for (final AllocationContext allocation : allocationSet) {
