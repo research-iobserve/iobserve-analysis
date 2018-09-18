@@ -66,7 +66,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
         ElbowMethod.LOGGER.info("Starting ElbowMethod");
 
         // Calculate sum of square error for each number of clusters.
-        final List<Double> ess = new ArrayList<>();
+        final List<Double> wss = new ArrayList<>();
         for (int i = 1; i <= this.instances.numInstances(); i++) {
 
             try {
@@ -79,24 +79,24 @@ public class ElbowMethod implements IClusterSelectionMethods {
                 // Print AssignmentsString for debugging.
                 this.printAssignmentString(assignments);
 
-                // Calculate the error sum-of-squares for each cluster.
+                // Calculate the within-cluster sum-of-square for each cluster.
                 double s = 0.0;
                 for (int cluster = 0; cluster < numberOfClusters; cluster++) {
                     if (!assignments.get(cluster).isEmpty()) {
-                        s += this.calcESS(assignments.get(cluster));
+                        s += this.calcWSS(assignments.get(cluster));
                     }
                 }
-                ess.add(i - 1, s);
+                wss.add(i - 1, s);
 
-                ElbowMethod.LOGGER.info(ess.toString() + "\n");
+                // ElbowMethod.LOGGER.info(wss.toString() + "\n");
 
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 ElbowMethod.LOGGER.error("Hierarchical clustering failed.", e);
             }
         }
 
-        // Find a "good" number of clusters by finding the elbow of the ESS.
-        final int goodClustereNumber = this.findElbow(ess);
+        // Find a "good" number of clusters by finding the elbow of the WSS.
+        final int goodClustereNumber = this.findElbow(wss);
 
         // Cluster instances with the "good" number of clusters.
         Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>();
@@ -110,7 +110,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
         }
 
         // Print clusteringResult
-        this.printClusteringResults(clusteringResults);
+        // this.printClusteringResults(clusteringResults);
 
         ElbowMethod.LOGGER.info("ElbowMethod done.");
         return clusteringResults;
@@ -125,18 +125,15 @@ public class ElbowMethod implements IClusterSelectionMethods {
      */
     private List<ArrayList<Integer>> buildClusterAssignmentsList(final int numberOfClusters) {
         // Assignments of each data point the clusters.
-        // final List<Integer>[] assignments = new ArrayList[numberOfClusters];
         final List<ArrayList<Integer>> assignments = new ArrayList<>();
         // Initialize assignments with empty vectors.
         for (int j = 0; j < numberOfClusters; j++) {
-            // assignments[j] = new ArrayList<>();
             assignments.add(j, new ArrayList<>());
         }
 
         for (int s = 0; s < this.instances.numInstances(); s++) {
             try {
                 final int assignedCluster = this.hierarchicalClusterer.clusterInstance(this.instances.instance(s));
-                // assignments[assignedCluster].add(s);
                 assignments.get(assignedCluster).add(s);
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 ElbowMethod.LOGGER.error("Clustering at ElbowMethod failed.", e);
@@ -146,27 +143,27 @@ public class ElbowMethod implements IClusterSelectionMethods {
     }
 
     /**
-     * Find the Elbow of the ESS data.
+     * Find the Elbow of the WSS data.
      *
-     * @param ess
+     * @param wss
      *            Error sum-of-squares array for all possible number of clusters.
      */
-    private int findElbow(final List<Double> ess) {
+    private int findElbow(final List<Double> wss) {
 
         // Filter zero values from the list.
-        ess.removeAll(Collections.singleton(0.0));
+        wss.removeAll(Collections.singleton(0.0));
 
-        final int essSize = ess.size();
+        final int wssSize = wss.size();
         final double startX = 1.0;
-        final double endX = essSize;
-        final double startY = ess.get(0);
-        final double endY = ess.get(essSize - 1);
+        final double endX = wssSize;
+        final double startY = wss.get(0);
+        final double endY = wss.get(wssSize - 1);
 
         double maxDistance = 0.0;
         int elbowIndex = 1;
-        for (int i = 0; i < (essSize - 1); i++) {
+        for (int i = 0; i < (wssSize - 1); i++) {
             final double refPointX = i + 1;
-            final double refPointY = ess.get(i);
+            final double refPointY = wss.get(i);
             // Calculate distance of a point to a line defined by two points (equation from wiki).
             final double distance = (Math
                     .abs(((((endY - startY) * refPointX) - ((endX - startX) * refPointY)) + (endX * startY))
@@ -180,21 +177,21 @@ public class ElbowMethod implements IClusterSelectionMethods {
             }
         }
 
-        System.out.println(maxDistance);
-        System.out.println(elbowIndex);
+        // System.out.println(maxDistance);
+        // System.out.println(elbowIndex);
 
         return elbowIndex;
     }
 
     // From HierarchicalClusterer
     /**
-     * Calculated error sum-of-squares for a given cluster.
+     * Calculate within-cluster sum-of-square (WSS) for a given cluster.
      *
      * @param cluster
-     *            Calculate the ESS for this cluster
-     * @return ESS
+     *            Calculate the WSS for this cluster
+     * @return WSS
      **/
-    public double calcESS(final List<Integer> cluster) {
+    public double calcWSS(final List<Integer> cluster) {
 
         final DistanceFunction distanceFunction = this.hierarchicalClusterer.getDistanceFunction();
         final double[] sumAttValues = new double[this.instances.numAttributes()];
@@ -206,7 +203,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
             }
         }
         // Get average value of each attribute value.
-        for (int j = 0; j < this.instances.numAttributes(); j++) {
+        for (int j = 0; j < sumAttValues.length; j++) {
             sumAttValues[j] /= cluster.size();
         }
 
@@ -218,13 +215,13 @@ public class ElbowMethod implements IClusterSelectionMethods {
         for (int j = 0; j < this.instances.numAttributes(); j++) {
             centroid.setValue(j, sumAttValues[j]);
         }
-        // Sum up distances of each data point in cluster to centroid to get ESS.
-        double clusterESS = 0.0;
+        // Sum up distances of each data point in cluster to centroid to get WSS.
+        double clusterWSS = 0.0;
         for (int i = 0; i < cluster.size(); i++) {
             final Instance instance = this.instances.instance(cluster.get(i));
-            clusterESS += distanceFunction.distance(centroid, instance);
+            clusterWSS += Math.pow(distanceFunction.distance(centroid, instance), 2);
         }
-        return clusterESS;
+        return clusterWSS;
     }
 
     /**

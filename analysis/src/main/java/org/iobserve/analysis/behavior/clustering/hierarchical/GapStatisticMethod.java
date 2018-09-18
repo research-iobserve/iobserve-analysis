@@ -38,7 +38,7 @@ import weka.core.Instances;
 public class GapStatisticMethod implements IClusterSelectionMethods {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
-    private static double numRefDataSet = 200;
+    private static double numRefDataSets = 3;
 
     private final HierarchicalClusterer hierarchicalClusterer;
     private final Instances instances;
@@ -49,7 +49,9 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      * Constructor.
      *
      * @param hierarchicalClusterer
+     *            Clusterer that performs hierarchical clustering.
      * @param instances
+     *            Input data.
      */
     public GapStatisticMethod(final HierarchicalClusterer hierarchicalClusterer, final Instances instances) {
         this.hierarchicalClusterer = hierarchicalClusterer;
@@ -70,15 +72,22 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
          */
         // Find min and max boundary values for each attribute of all instances.
         this.findBoundaryValues();
-        // Create new instances with random attribute values in range of the boundary values.
-        final Instances randomInstances = this.createRandomInstancesWithBoundaries();
-        final int sizeOfRefDataSet = randomInstances.numInstances();
-        // Calculate sum of square error for each number of clusters of randomInstances.
-        final List<Double> essListRandom = this.calcESSList(randomInstances, maxNumberOfClusters);
+        /*
+         * Create numRefDataSets-many data sets with new instances with random attribute values in
+         * range of the boundary values.
+         */
+        final List<Instances> uniformDistrDatasets = new ArrayList<>();
+        // Contains for every uniform distributed data set a ESS list.
+        final List<List<Double>> essListForEachUniformDataset = new ArrayList<>();
+        for (int i = 0; i < GapStatisticMethod.numRefDataSets; i++) {
+            final Instances uniformDistrDataSet = this.createRandomInstancesWithBoundaries();
+            uniformDistrDatasets.add(uniformDistrDataSet);
+            essListForEachUniformDataset.add(this.calcESSList(uniformDistrDataSet, maxNumberOfClusters));
+        }
 
         // Compute the estimated gap statistic.
-        final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = this.gapStatistics(essList, essListRandom,
-                sizeOfRefDataSet);
+        final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = this.gapStatistics(essList,
+                essListForEachUniformDataset);
 
         GapStatisticMethod.LOGGER.info("GapStatisticMethod done.");
 
@@ -93,7 +102,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      * @return
      */
     private Map<Integer, List<Pair<Instance, Double>>> gapStatistics(final List<Double> essList,
-            final List<Double> essListReference, final int sizeOfRefDataSet) {
+            final List<List<Double>> essListForEachUniformDataset) {
 
         final List<Double> gapStatistics = new ArrayList<>();
         // Calculate log of each ESS for calculating the Gap Statistic.
@@ -101,25 +110,30 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
         for (final Double entry : essList) {
             logESS.add(Math.log(entry));
         }
-        final List<Double> logESSRef = new ArrayList<>();
-        for (final Double entry : essListReference) {
-            logESSRef.add(Math.log(entry));
+        final List<List<Double>> logESSRef = new ArrayList<>();
+        for (final List<Double> essListUniform : essListForEachUniformDataset) {
+            final List<Double> hlpList = new ArrayList<>();
+            for (final Double entry : essListUniform) {
+                hlpList.add(Math.log(entry));
+            }
+            logESSRef.add(hlpList);
         }
 
-        // Calculate the Gap Statistic.
+        // Calculate the Gap Statistic for each number of clusters.
         final List<Double> wkbs = new ArrayList<>();
         for (int i = 0; i < essList.size(); i++) {
-            double wkb = 0.0; // within-dispersion measure of ref data
-            for (final Double e : logESSRef) {
-                wkb += e;
+            // within-dispersion measure of ref data for a spesific number of clusters.
+            double wkb = 0.0;
+            for (final List<Double> l : logESSRef) {
+                wkb += l.get(i); // here, i is the number of clusters.
             }
-            wkb /= sizeOfRefDataSet;
+            wkb /= GapStatisticMethod.numRefDataSets;
             wkbs.add(wkb);
             gapStatistics.add(wkb - logESS.get(i));
         }
 
         // Calculate the standard deviation.
-        final List<Double> sks = this.calcStandardDeviation(logESSRef, wkbs, sizeOfRefDataSet);
+        final List<Double> sks = this.calcStandardDeviation(logESSRef, wkbs);
 
         // Find good number of clusters.
         final int goodNumberOfClusters = this.findGoodNumberOfClusters(gapStatistics, sks);
@@ -141,29 +155,27 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
     /**
      * Calculate the standard deviation of a list of values.
      *
-     * @param BWkbs
-     * @param sizeOfRefDataSet
-     * @param Wkbs
-     * @return
+     * @param bWkbs
+     *            Total within-cluster sum of squares of reference data.
+     * @param wkbs
+     *            Total within-cluster sum of squares of actual user bahavior data.
+     * @return List of standard deviations for each number of clusters.
      */
-    private List<Double> calcStandardDeviation(final List<Double> BWkbs, final List<Double> Wkbs,
-            final int sizeOfRefDataSet) {
+    private List<Double> calcStandardDeviation(final List<List<Double>> bWkbs, final List<Double> wkbs) {
         final List<Double> sks = new ArrayList<>();
 
-        for (int i = 0; i < Wkbs.size(); i++) {
+        for (int i = 0; i < wkbs.size(); i++) {
             double res = 0.0;
 
-            // sqrt( 1/B * sum( (BWKbs - wbks)^2) )
-            // Double Double Double List
-            for (final Double w : BWkbs) {
+            for (final List<Double> w : bWkbs) {
                 double hlp = 0.0;
-                hlp = w - Wkbs.get(i);
+                hlp = w.get(i) - wkbs.get(i);
                 hlp *= hlp;
                 res += hlp;
             }
-            res /= sizeOfRefDataSet;
+            res /= GapStatisticMethod.numRefDataSets;
             final double sd = Math.sqrt(res);
-            final double sk = sd * Math.sqrt(1 + (1 / sizeOfRefDataSet));
+            final double sk = sd * Math.sqrt(1 + (1 / GapStatisticMethod.numRefDataSets));
             sks.add(sk);
         }
 
@@ -190,10 +202,13 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
     }
 
     /**
+     * Find the number of clusters with the biggest gap within standard deviation.
      *
      * @param gapStatistics
+     *            List of gap statistic for each number of clusters.
      * @param sks
-     * @return
+     *            List of standard deviation for each number of clusters.
+     * @return goodNumberOfClusters
      */
     private int findGoodNumberOfClusters(final List<Double> gapStatistics, final List<Double> sks) {
         int goodNumberOfClusters = 1;
@@ -203,7 +218,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
             final double gapKPlus1 = gapStatistics.get(k + 1);
 
             if (gapK >= (gapKPlus1 - sks.get(k + 1))) {
-                goodNumberOfClusters = k;
+                goodNumberOfClusters = k + 1;
                 break;
             }
         }
@@ -242,7 +257,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
                 }
                 ess.add(i - 1, s);
 
-                GapStatisticMethod.LOGGER.info(ess.toString() + "\n");
+                // GapStatisticMethod.LOGGER.info(ess.toString() + "\n");
 
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 GapStatisticMethod.LOGGER.error("Hierarchical clustering failed.", e);
@@ -259,16 +274,6 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      */
     private Instances createRandomInstancesWithBoundaries() {
         final Instances randomInstances = new Instances(this.instances);
-        /*
-         * Add NUMREFDATASETS many more instances to the reference data set for a more accurate
-         * result of the GapStatisticMethod.
-         */
-        final Instance instance = (Instance) this.instances.instance(0).copy();
-        for (int i = 0; i < GapStatisticMethod.numRefDataSet; i++) {
-            randomInstances.add(instance);
-        }
-
-        final int a = Integer.MAX_VALUE;
         for (int i = 0; i < randomInstances.numInstances(); i++) {
             for (int j = 0; j < randomInstances.numAttributes(); j++) {
                 final double minAttValue = this.minAttributeValues.get(j);
@@ -353,7 +358,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
             final Instance instance = this.instances.instance(cluster.get(i));
             clusterESS += distanceFunction.distance(centroid, instance);
         }
-        return clusterESS;
+        return clusterESS / cluster.size();
     }
 
     /**
@@ -361,14 +366,13 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      *
      * @param numberOfClusters
      *            number of total clusters of this clustering
-     * @return
+     * @return List that contains Clusters and their assigned instances.
      */
     private List<ArrayList<Integer>> buildClusterAssignmentsList(final int numberOfClusters) {
         // Assignments of each data point the clusters.
         final List<ArrayList<Integer>> assignments = new ArrayList<>();
         // Initialize assignments with empty vectors.
         for (int j = 0; j < numberOfClusters; j++) {
-            // assignments[j] = new ArrayList<>();
             assignments.add(j, new ArrayList<>());
         }
 

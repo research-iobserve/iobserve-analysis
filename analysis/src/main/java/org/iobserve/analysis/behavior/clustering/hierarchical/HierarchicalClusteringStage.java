@@ -51,22 +51,6 @@ public class HierarchicalClusteringStage extends AbstractConsumerStage<Instances
         final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = this.clustering
                 .clusterInstances(instances);
         this.getOutputPort().send(clusteringResults);
-
-        // final String clusteringMethodName =
-        // clusteringResults.map(ClusteringResults::getClusteringMethod).orElse(null);
-        // final int numOfClusters =
-        // clusteringResults.map(ClusteringResults::getNumberOfClusters).orElse(null);
-        //
-        // final FastVector f = new FastVector();
-        // for (int j = 0; j < instance.numAttributes(); j++) {
-        // attributes.addElement(instance.attribute(j));
-        // }
-        //
-        // clusteringResults.ifPresent(this::printInstances);
-        // clusteringResults
-        // .ifPresent(results ->
-        // this.getOutputPort().send(results.getClusteringMetrics().getCentroids()));
-
     }
 
     /**

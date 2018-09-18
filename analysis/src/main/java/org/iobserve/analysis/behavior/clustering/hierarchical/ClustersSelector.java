@@ -29,7 +29,7 @@ import weka.core.Instances;
  * @author SL
  *
  */
-public class NumOfClustersSelector {
+public class ClustersSelector {
 
     // Different available methods to find a "good" number of clusters.
     private static final String ELBOW = "elbow";
@@ -52,7 +52,7 @@ public class NumOfClustersSelector {
      * @param instances
      *            input data that is clustered
      */
-    public NumOfClustersSelector(final String strategy, final HierarchicalClusterer hierarchicalClusterer,
+    public ClustersSelector(final String strategy, final HierarchicalClusterer hierarchicalClusterer,
             final Instances instances) {
         this.strategy = strategy;
         this.hierarchicalClusterer = hierarchicalClusterer;

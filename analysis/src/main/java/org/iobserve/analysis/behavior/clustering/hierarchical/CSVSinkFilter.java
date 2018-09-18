@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class CSVSinkFilter {
      * @param data
      *            Data contains list of instances and their assigned cluster
      * @throws IOException
+     *             In case CSV file writing fails.
      */
     public void createCSVFromClusteringResult(final String outputPath, final Map<Double, List<Instance>> data)
             throws IOException {
@@ -64,13 +66,34 @@ public class CSVSinkFilter {
             writer.append(',');
             writer.append(String.valueOf(data.size()));
             writer.append('\n');
-            writer.append("Cluster");
+
+            // Write names of attributes to the file.
+            final Enumeration attributeNames = data.entrySet().iterator().next().getValue().get(0)
+                    .enumerateAttributes();
+            String attrNameString = "";
+            while (attributeNames.hasMoreElements()) {
+                String attrName = attributeNames.nextElement().toString();
+                attrName = attrName.replace("@attribute '><", "");
+                attrName = attrName.replace("' numeric", "");
+                attrNameString += attrName;
+                attrNameString += ", ";
+            }
+            writer.append(attrNameString);
+            writer.append('\n');
+
+            // Write the different clusters and their assigned instances to the file.
+            writer.append("ClusterID");
+            writer.append(',');
+            writer.append("# of instances");
             writer.append(',');
             writer.append("Assigned instances");
             writer.append('\n');
             for (final Entry<Double, List<Instance>> entry : data.entrySet()) {
                 // Write cluster
-                writer.append(String.valueOf(entry.getKey()));
+                writer.append(String.valueOf(entry.getKey().intValue()));
+                writer.append(',');
+                // Write number of instances in this cluster
+                writer.append(String.valueOf(entry.getValue().size()));
                 writer.append(',');
                 // Write list of instances which are assigned to this cluster.
                 writer.append("[");
@@ -95,7 +118,7 @@ public class CSVSinkFilter {
      * @param clusteringResults
      *            Contain the clusters and their assigned instances with a probability. The
      *            probability with hierarchical clustering is always 1.
-     * @return
+     * @return KV-Pair of clustering results.
      */
     public Map<Double, List<Instance>> convertClusteringResultsToKVPair(
             final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
