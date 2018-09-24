@@ -63,6 +63,8 @@ public final class PrivacyViolationDetectionServiceMain
 
     private File modelDatabaseDirectory;
 
+    private File modelDumpDirectory;
+
     /**
      * This is a simple main class which does not need to be instantiated.
      */
@@ -109,7 +111,8 @@ public final class PrivacyViolationDetectionServiceMain
 
             return new PrivacyViolationDetectionConfiguration(configuration, correspondenceModelResource,
                     repositoryModelResource, resourceEnvironmentModelResource, systemModelResource,
-                    allocationModelResource, privacyModelResource, this.warningFile, this.alarmsFile);
+                    allocationModelResource, privacyModelResource, this.warningFile, this.alarmsFile,
+                    this.modelDumpDirectory);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -169,6 +172,12 @@ public final class PrivacyViolationDetectionServiceMain
             this.warningFile = new File(configuration.getPathProperty(PrivacyConfigurationsKeys.WARNING_FILE_PATH));
             configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.warningFile.getParentFile(),
                     String.format("warnings location (%s)", PrivacyConfigurationsKeys.WARNING_FILE_PATH), commander);
+
+            this.modelDumpDirectory = new File(
+                    configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH));
+            configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.modelDumpDirectory.getParentFile(),
+                    String.format("model dump location (%s)", PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH),
+                    commander);
 
             return configurationGood;
         } catch (final IOException e) {

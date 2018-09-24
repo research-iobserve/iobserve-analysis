@@ -15,19 +15,15 @@
  ***************************************************************************/
 package org.iobserve.utility.tcp;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.common.record.remotecontrol.UpdateParameterEvent;
-import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
-import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
@@ -43,9 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author Marc Adolf
  *
  */
-public class TcpProbeController implements IProbeController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeController.class);
-    private static final int CONN_TIMEOUT_IN_MS = 100;
+public class DummyProbeController implements IProbeController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DummyProbeController.class);
 
     /**
      * Saves already established connections, the key pattern is "ip:port".
@@ -55,7 +50,7 @@ public class TcpProbeController implements IProbeController {
     /**
      * Create the probe controller.
      */
-    public TcpProbeController() {
+    public DummyProbeController() {
         // empty default constructor
     }
 
@@ -67,8 +62,10 @@ public class TcpProbeController implements IProbeController {
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
+    @Override
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
-        System.err.println("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
+        DummyProbeController.LOGGER.debug("control probe host=[{}] ip=[{}] port=[{}]", event.getHostname(),
+                event.getIp(), event.getPort());
 
         final String ip = event.getIp();
         final int port = event.getPort();
@@ -85,9 +82,7 @@ public class TcpProbeController implements IProbeController {
         } else if (event instanceof TcpDeactivationControlEvent) {
             this.deactivateMonitoredPattern(ip, port, hostname, pattern);
         } else {
-            if (TcpProbeController.LOGGER.isErrorEnabled()) {
-                TcpProbeController.LOGGER.error("Received Unknown TCP control event: " + event.getClass().getName());
-            }
+            DummyProbeController.LOGGER.error("Received Unknown TCP control event: {}", event.getClass().getName());
         }
 
     }
@@ -159,6 +154,15 @@ public class TcpProbeController implements IProbeController {
         final String[] parameterNames = parameters.keySet().toArray(new String[0]);
         final String[][] parameterArray = this.computeParameterArray(parameters);
 
+        for (int i = 0; i < parameterArray.length; i++) {
+            final String[] a = parameterArray[i];
+
+            DummyProbeController.LOGGER.debug(">> {}", parameterNames[i]);
+            for (final String b : a) {
+                DummyProbeController.LOGGER.debug("\t - {}", b);
+            }
+        }
+
         this.sendTcpCommand(ip, port, hostname, new ActivationParameterEvent(pattern, parameterNames, parameterArray));
     }
 
@@ -184,53 +188,27 @@ public class TcpProbeController implements IProbeController {
     private void sendTcpCommand(final String ip, final int port, final String hostname,
             final IRemoteControlEvent monitoringRecord) throws RemoteControlFailedException {
         final String writerKey = ip + ":" + port;
-        final SingleSocketTcpWriter tcpWriter;
 
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
         if (currentConnection == null || currentConnection.getHostname() != hostname) {
-            currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
+            currentConnection = new TcpControlConnection(ip, port, hostname, null);
             this.knownAddresses.put(writerKey, currentConnection);
         }
-        tcpWriter = currentConnection.getTcpWriter();
 
-        if (tcpWriter == null) {
-            throw new RemoteControlFailedException("TCP Writer was not found");
-        }
-        // currently we have no means to check if the write process was successful or the channel is
-        // still active
-        tcpWriter.writeMonitoringRecord(monitoringRecord);
-        if (TcpProbeController.LOGGER.isDebugEnabled()) {
-            TcpProbeController.LOGGER
-                    .debug("Send record " + monitoringRecord.getClass().getName() + " to " + ip + " on port: " + port);
-        }
-    }
+        DummyProbeController.LOGGER.debug("Event time={} size={} pattern={}", monitoringRecord.getLoggingTimestamp(),
+                monitoringRecord.getSize(), monitoringRecord.getPattern());
 
-    private SingleSocketTcpWriter createNewTcpWriter(final String hostname, final int port)
-            throws RemoteControlFailedException {
-        final Configuration configuration = new Configuration();
-
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, hostname);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, port);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
-                TcpProbeController.CONN_TIMEOUT_IN_MS);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 65535);
-        final SingleSocketTcpWriter tcpWriter;
-        try {
-            tcpWriter = new SingleSocketTcpWriter(configuration);
-            tcpWriter.onStarting();
-        } catch (final IOException | ConnectionTimeoutException e) {
-            // runtime exception is thrown after timeout
-            if (TcpProbeController.LOGGER.isDebugEnabled()) {
-                TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,
-                        e);
-            }
-            throw new RemoteControlFailedException("Could not create TCP connections to " + hostname + " on port "
-                    + port + ", writer was not created ");
+        for (final Class<?> type : monitoringRecord.getValueTypes()) {
+            DummyProbeController.LOGGER.debug("\t type={}", type.getCanonicalName());
         }
-        return tcpWriter;
+        for (final String value : monitoringRecord.getValueNames()) {
+            DummyProbeController.LOGGER.debug("\t value={}", value);
+        }
+
+        DummyProbeController.LOGGER.debug("Send record {} to {} on port: {}", monitoringRecord.getClass().getName(), ip,
+                port);
     }
 
     /**
@@ -257,7 +235,8 @@ public class TcpProbeController implements IProbeController {
             if (list.isEmpty()) {
                 parameterArray[i] = new String[0];
             } else {
-                parameterArray[i] = (String[]) list.toArray();
+                final String[] array = list.toArray(new String[list.size()]);
+                parameterArray[i] = array;
             }
         }
         return parameterArray;

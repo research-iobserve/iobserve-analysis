@@ -26,6 +26,7 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.stages.data.IErrorMessages;
 import org.iobserve.stages.tcp.ProbeControlFilter;
+import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.junit.After;
@@ -82,7 +83,7 @@ public class ProbeControlFilterTest {
                     ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOGGER, listener);
             new Thread(this.tcpReader).start();
 
-            this.probeControlFilter = new ProbeControlFilter();
+            this.probeControlFilter = new ProbeControlFilter(new TcpProbeController());
         }
     }
 
