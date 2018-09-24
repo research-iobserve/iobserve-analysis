@@ -24,21 +24,29 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
- * Container for transportation of the information, which methods (probes) monitoring should be
- * (de-)activated.
+ * Model to remember which monitoring probes should be (de-)activated for certain methods.
  *
  * @author Marc Adolf
  *
  */
 public class ProbeManagementData {
+
     private final Map<AllocationContext, Set<OperationSignature>> methodsToActivate;
+
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
+
     private Map<AllocationContext, Set<OperationSignature>> methodsToUpdate;
 
     private Map<AllocationContext, Set<OperationSignature>> warnedMethods;
 
-    private List<String> whitelist = null;
+    private List<String> whitelist = null; // NOPMD document null
 
+    /**
+     * Create a probe management model.
+     *
+     * @param methodsToActivate
+     * @param methodsToDeactivate
+     */
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
         this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>(),
@@ -52,7 +60,7 @@ public class ProbeManagementData {
                 new HashMap<AllocationContext, Set<OperationSignature>>());
     }
 
-    public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
+    private ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
             final Map<AllocationContext, Set<OperationSignature>> warnedMethods,
             final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
@@ -87,7 +95,7 @@ public class ProbeManagementData {
 
     /**
      *
-     * @return null, if there is no whitelist
+     * @return returns the whitelist or null, if there is no whitelist.
      */
     public List<String> getWhitelist() {
         return this.whitelist;

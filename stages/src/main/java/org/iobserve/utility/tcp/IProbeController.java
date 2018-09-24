@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.privacy.exceptions;
+package org.iobserve.utility.tcp;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 
 /**
- *
- * Is thrown if errors occur during the creation of a {@link AbstractTcpControlEvent control event}.
- *
- * @author Marc Adolf
+ * @author Reiner Jung
  *
  */
-public class ControlEventCreationFailedException extends Exception {
+public interface IProbeController {
 
-    private static final long serialVersionUID = 1L;
-
-    public ControlEventCreationFailedException(final String message) {
-        super(message);
-    }
+    void controlProbe(AbstractTcpControlEvent event) throws RemoteControlFailedException;
 
 }
