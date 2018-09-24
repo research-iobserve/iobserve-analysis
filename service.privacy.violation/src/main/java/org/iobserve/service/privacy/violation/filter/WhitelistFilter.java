@@ -103,7 +103,7 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         allocationSet.addAll(warnedMethods.keySet());
         final Set<String> blacklistSet = new HashSet<>();
 
-        for (final AllocationContext allocation : allocationContextSet) {
+        for (final AllocationContext allocation : allocationSet) {
             try {
                 blacklistSet.add(this.resourceEnvironmentResource
                         .resolve(allocation.getResourceContainer_AllocationContext()).getEntityName());
