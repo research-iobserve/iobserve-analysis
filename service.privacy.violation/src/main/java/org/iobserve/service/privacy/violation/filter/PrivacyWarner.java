@@ -75,8 +75,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
-
-
 /**
  * Privacy warner.
  *
@@ -331,7 +329,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent requiringComponent = this.repositoryResource
                         .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
-                if ((providingComponent != null) && (requiringComponent != null)) {
+                if (providingComponent != null && requiringComponent != null) {
                     final OperationProvidedRole providedRole = this.repositoryResource
                             .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
@@ -364,12 +362,12 @@ public class PrivacyWarner extends AbstractStage {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
 
-                if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
-                if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }
@@ -384,7 +382,7 @@ public class PrivacyWarner extends AbstractStage {
             final Vertex providingComponentVertex = this.vertices.get(providingComponent.getId());
             final Vertex requiringComponentVertex = this.vertices.get(requiringComponent.getId());
 
-            if ((providingComponentVertex != null) && (requiringComponentVertex != null)) {
+            if (providingComponentVertex != null && requiringComponentVertex != null) {
                 // Add Edges
                 if (inEdgePrivacyLevel != null) {
                     final Edge edge = new Edge(providingComponentVertex, requiringComponentVertex);
@@ -398,7 +396,7 @@ public class PrivacyWarner extends AbstractStage {
                     edge.setOperationSignature(operationSignature);
                     graph.addEdge(edge);
                 }
-                if ((inEdgePrivacyLevel == null) && (outEdgePrivacyLevel == null)) {
+                if (inEdgePrivacyLevel == null && outEdgePrivacyLevel == null) {
                     this.logger.error("Missing privacy level");
                 }
             }

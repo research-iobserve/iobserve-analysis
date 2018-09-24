@@ -26,6 +26,8 @@ import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.Part;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -74,14 +76,18 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      *            one deployment event to be processed
      * @throws NodeLookupException
      *             node lookup failed
+     * @throws DBException
+     *             on db error
+     * @throws InvocationException
+     *             on invocation errors
      */
     @Override
-    protected void execute(final PCMDeployedEvent event) throws NodeLookupException {
+    protected void execute(final PCMDeployedEvent event) throws NodeLookupException, InvocationException, DBException {
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
                 event.getAssemblyContext(), event.getResourceContainer(), event.getService());
-        final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
-                + event.getResourceContainer().getEntityName();
+        final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
+                event.getResourceContainer());
 
         final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndName(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
@@ -100,19 +106,25 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
 
             this.allocationModelResource.updatePartition(allocationModel);
 
+            final AllocationContext storedAllocationContext = this.allocationModelResource
+                    .resolve(newAllocationContext);
+
             /** create correspondence model entry. */
             final CorrespondenceModel correspondenceModel = this.correspondenceModelResource
                     .getModelRootNode(CorrespondenceModel.class, CorrespondencePackage.Literals.CORRESPONDENCE_MODEL);
             final Part part = this.findOrCreate(correspondenceModel, allocationModel);
 
             final AllocationEntry entry = CorrespondenceFactory.eINSTANCE.createAllocationEntry();
-            entry.setAllocation(newAllocationContext);
+            entry.setAllocation(storedAllocationContext);
             entry.setTechnology(event.getTechnology());
             entry.setImplementationId(event.getUrl());
 
             part.getEntries().add(entry);
 
             this.correspondenceModelResource.updatePartition(correspondenceModel);
+
+            this.logger.debug("PUSHED CORRESPONDENCE {} {} {}", newAllocationContext.getEntityName(),
+                    event.getTechnology().getLiteral(), event.getUrl());
         } else {
             this.logger.error("Deployment failed: Allocation Context {} already exists in allocation model.",
                     allocationContextName);

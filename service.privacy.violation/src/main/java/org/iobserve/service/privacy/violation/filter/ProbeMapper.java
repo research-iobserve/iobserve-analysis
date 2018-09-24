@@ -25,6 +25,7 @@ import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.model.correspondence.AllocationEntry;
+import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
@@ -32,13 +33,14 @@ import org.iobserve.model.correspondence.DataTypeEntry;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.service.privacy.exceptions.ControlEventCreationFailedException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.iobserve.service.privacy.violation.exceptions.ControlEventCreationFailedException;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpUpdateParameterEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
@@ -67,6 +69,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private final ModelResource<Repository> repositoryResource;
     private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
     private final ModelResource<System> assemblyResource;
+    private final ModelResource<Allocation> allocationResource;
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -80,11 +83,12 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
             final ModelResource<Repository> repositoryResource,
             final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> assemblyResource) {
+            final ModelResource<System> assemblyResource, final ModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.assemblyResource = assemblyResource;
+        this.allocationResource = allocationResource;
     }
 
     public OutputPort<AbstractTcpControlEvent> getOutputPort() {
@@ -102,11 +106,16 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
         if (methodsToActivate != null) {
+            this.logger.debug("methods to activate");
             for (final AllocationContext allocation : methodsToActivate.keySet()) {
+                this.logger.debug("AllocationContext to activate {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
+                    this.logger.debug("AllocationContext activate operation {}", operationSignature.getEntityName());
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext activate operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
                                 element.getWhitelist());
                         this.fillTcpControlEvent(currentEvent, allocation);
@@ -124,11 +133,15 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = element.getMethodsToDeactivate();
         if (methodsToDeactivate != null) {
+            this.logger.debug("methods to deactivate");
             for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
+                this.logger.debug("AllocationContext to deactivate {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext deactivate operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         // deactivation -> no parameters needed
                         final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
                         this.fillTcpControlEvent(currentEvent, allocation);
@@ -145,19 +158,24 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
+        if (methodsToUpdate != null && element.getWhitelist() != null) {
+            this.logger.debug("methods to update");
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
+                this.logger.debug("AllocationContext to update {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext update operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         final Map<String, List<String>> parameters = new HashMap<>();
                         parameters.put("whitelist", element.getWhitelist());
                         final TcpUpdateParameterEvent currentEvent = new TcpUpdateParameterEvent(pattern, parameters);
                         this.fillTcpControlEvent(currentEvent, allocation);
                         this.outputPort.send(currentEvent);
                     } catch (final ControlEventCreationFailedException e) {
-                        this.logger.error("Could not construct update event for: " + operationSignature.toString(), e);
+                        this.logger.error("Could not construct activation event for: {} {}",
+                                operationSignature.toString(), e.getLocalizedMessage());
                     }
                 }
             }
@@ -183,7 +201,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     }
 
-    private String computeAllocationComponentIdentifier(final AllocationContext allocation,
+    private String computeAllocationComponentIdentifierPattern(final AllocationContext allocation,
             final OperationSignature operationSignature)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final AllocationEntry entry = this.findAllocationEntry(allocation);
@@ -194,27 +212,55 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         case EJB:
         case ASPECT_J:
             return this.computeAllocationComponentJavaSignature(allocation, operationSignature);
+        case DB:
+            return this.computeAllocationComponentDBSignature(allocation, operationSignature);
         default:
             throw new InternalError("Technology " + entry.getTechnology().getLiteral() + " not supported.");
         }
 
     }
 
-    private AllocationEntry findAllocationEntry(final AllocationContext allocation) {
+    private String computeAllocationComponentDBSignature(final AllocationContext allocation,
+            final OperationSignature operationSignature) {
+        return "db://" + allocation.getEntityName() + operationSignature.getEntityName();
+    }
+
+    /**
+     * Find the corresponding AllocationEntry for an AllocationContext-
+     *
+     * @param allocation
+     *            the allocation context
+     * @return returns the AllocationEntry
+     * @throws InvocationException
+     * @throws DBException
+     */
+    private AllocationEntry findAllocationEntry(final AllocationContext allocation)
+            throws InvocationException, DBException {
         final List<AllocationEntry> allocations = this.correspondenceResource
                 .collectAllObjectsByType(AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY);
 
         for (final AllocationEntry entry : allocations) {
-            if (entry.getAllocation().getId().equals(allocation.getId())) {
+            final AllocationContext entryAllocation = this.allocationResource.resolve(entry.getAllocation());
+            if (entryAllocation.getId().equals(allocation.getId())) {
                 return entry;
             }
         }
 
-        return null;
+        throw new InternalError("Correspondence entry missing for " + allocation.getEntityName());
     }
 
+    /**
+     * Compute allocation component servlet id.
+     *
+     * @param entry
+     * @param allocation
+     * @param operationSignature
+     * @return
+     * @throws InvocationException
+     * @throws DBException
+     */
     private String computeAllocationComponentServletId(final AllocationEntry entry, final AllocationContext allocation,
-            final OperationSignature operationSignature) {
+            final OperationSignature operationSignature) throws InvocationException, DBException {
         final EList<Parameter> parameterList = operationSignature.getParameters__OperationSignature();
         String parameters = null;
         for (final Parameter parameter : parameterList) {
@@ -225,11 +271,24 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             }
         }
 
-        final String componentId = String.format("%s (%s)", entry.getImplementationId(), parameters);
+        final AssemblyContext assemblyContext = this.assemblyResource
+                .resolve(allocation.getAssemblyContext_AllocationContext());
 
-        this.logger.debug("Constructed method string: {}", componentId);
+        String component = "ERROR";
 
-        return componentId;
+        for (final AssemblyEntry assemblyEntry : this.correspondenceResource
+                .collectAllObjectsByType(AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY)) {
+            final AssemblyContext entryRelatedContext = this.assemblyResource.resolve(assemblyEntry.getAssembly());
+            if (entryRelatedContext.equals(assemblyContext)) {
+                component = assemblyEntry.getImplementationId();
+            }
+        }
+
+        final String methodId = String.format("%s.%s (%s)", component, operationSignature.getEntityName(), parameters);
+
+        this.logger.debug("Constructed method string: {}", methodId);
+
+        return methodId;
     }
 
     private String computeAllocationComponentJavaSignature(final AllocationContext allocation,

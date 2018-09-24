@@ -38,6 +38,7 @@ import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
+import org.iobserve.service.privacy.violation.filter.ModelSnapshotWriter;
 import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
@@ -49,6 +50,7 @@ import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.tcp.ProbeControlFilter;
+import org.iobserve.utility.tcp.DummyProbeController;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -83,6 +85,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *            warnings
      * @param alarmFile
      *            alarms
+     * @param modelDumpDirectory
+     *            where model revision shall be dumped
      * @throws IOException
      *             when files cannot be opened
      * @throws ConfigurationException
@@ -93,8 +97,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final ModelResource<Repository> repositoryResource,
             final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
             final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
-            final ModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile)
-            throws IOException, ConfigurationException {
+            final ModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile,
+            final File modelDumpDirectory) throws IOException, ConfigurationException {
 
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -144,12 +148,17 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             final WhitelistFilter whitelistFilter = new WhitelistFilter(allocationResource,
                     resourceEnvironmentResource);
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource, repositoryResource,
-                    resourceEnvironmentResource, systemModelResource);
+                    resourceEnvironmentResource, systemModelResource, allocationResource);
 
-            final ProbeControlFilter probeController = new ProbeControlFilter();
+            final ProbeControlFilter probeController = new ProbeControlFilter(new DummyProbeController());
+
+            // Model dumper
+            final ModelSnapshotWriter modelDumper = new ModelSnapshotWriter(modelDumpDirectory, correspondenceResource,
+                    repositoryResource, resourceEnvironmentResource, systemModelResource, allocationResource,
+                    privacyModelResource);
 
             // TODO remove for performance measurements
-            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(0);
+            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(100);
 
             try {
                 final AlarmSink alarmSink = new AlarmSink(alarmFile);
@@ -170,7 +179,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                     this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
 
-                    this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
+                    this.connectPorts(geoLocationStage.getOutputPort(), modelDumper.getInputPort());
+                    this.connectPorts(modelDumper.getOutputPort(), privacyWarner.getDeployedInputPort());
 
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
                             privacyWarner.getUndeployedInputPort());

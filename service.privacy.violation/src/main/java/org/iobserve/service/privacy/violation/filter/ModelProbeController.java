@@ -17,6 +17,7 @@ package org.iobserve.service.privacy.violation.filter;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,43 +50,63 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
      * Create an initialize the model probe controller.
      */
     public ModelProbeController() {
+        // empty
     }
 
     @Override
     protected void execute(final Warnings element) throws Exception {
-        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
-        final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
-                this.currentActiveWarnings);
-
-        if ((element.getWarningEdges() == null) || element.getWarningEdges().isEmpty()) {
+        if (element.getWarningEdges() == null || element.getWarningEdges().isEmpty()) {
             this.logger.error("Received warning with empty edge list");
             return;
+        } else {
+            final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this
+                    .computeReceivedWarnings(element.getWarningEdges());
+
+            final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
+                    this.currentActiveWarnings);
+            final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
+                    receivedWarnings);
+
+            this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
+                    probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
+
+            probeMethodInformation.setWarnedMethods(receivedWarnings);
+            probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
+
+            this.outputPort.send(probeMethodInformation);
         }
-        for (final Edge edge : element.getWarningEdges()) {
+    }
+
+    private Map<AllocationContext, Set<OperationSignature>> computeReceivedWarnings(final List<Edge> edges) {
+        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
+
+        this.logger.debug("Compute received warnings {}", edges.size());
+
+        for (final Edge edge : edges) {
+            this.logger.debug("Compute received warnings for edge={}", edge.getName());
             // multiple methods per allocation possible
             final AllocationContext allocation = edge.getSource().getAllocationContext();
-            Set<OperationSignature> methodSignatures = receivedWarnings.get(allocation);
-            // if not present, add new entry
-            if (methodSignatures == null) {
-                methodSignatures = new HashSet<>();
-            }
-            if (edge.getOperationSignature() != null) {
-                methodSignatures.add(edge.getOperationSignature());
-                receivedWarnings.put(allocation, methodSignatures);
+            if (allocation != null) {
+                this.logger.debug("Compute received warnings for {} {}", allocation.getEntityName(),
+                        edge.getOperationSignature().getEntityName());
+
+                Set<OperationSignature> methodSignatures = receivedWarnings.get(allocation);
+                // if not present, add new entry
+                if (methodSignatures == null) {
+                    methodSignatures = new HashSet<>();
+                }
+                if (edge.getOperationSignature() != null) {
+                    methodSignatures.add(edge.getOperationSignature());
+                    receivedWarnings.put(allocation, methodSignatures);
+                } else {
+                    this.logger.debug("Received warning without operation signature");
+                }
             } else {
-                this.logger.debug("Recevied warning without operation signature");
+                this.logger.debug("Compute received warnings No ALLOCATION for the specified edge {}", edge.getName());
             }
-
         }
-        final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
-                receivedWarnings);
 
-        this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
-                probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
-
-        probeMethodInformation.setWarnedMethods(receivedWarnings);
-        probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
-        this.outputPort.send(probeMethodInformation);
+        return receivedWarnings;
     }
 
     private ProbeManagementData computeWarningDifferences(
@@ -119,7 +140,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
                 }
             }
 
-            // the remaining entries are completly new warnings and allocations
+            // the remaining entries are completely new warnings and allocations
             newAllocationWarnings.remove(allocation);
 
         }
@@ -135,6 +156,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             final Map<AllocationContext, Set<OperationSignature>> addedWarnings,
             final Map<AllocationContext, Set<OperationSignature>> missingWarnings) {
         final Map<AllocationContext, Set<OperationSignature>> newWarningMap = new HashMap<>(currentWarnings);
+
         for (final AllocationContext allocation : missingWarnings.keySet()) {
             Set<OperationSignature> currentMethodSet = new HashSet<>();
             if (currentWarnings.get(allocation) != null) {
@@ -147,6 +169,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
                 newWarningMap.put(allocation, currentMethodSet);
             }
         }
+
         for (final AllocationContext allocation : addedWarnings.keySet()) {
             Set<OperationSignature> currentMethodSet = new HashSet<>();
             if (currentWarnings.get(allocation) != null) {

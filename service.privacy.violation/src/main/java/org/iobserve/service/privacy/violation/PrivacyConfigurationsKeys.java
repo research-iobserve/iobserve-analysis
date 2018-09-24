@@ -35,6 +35,8 @@ public final class PrivacyConfigurationsKeys {
 
     public static final String POLICY_LIST = PrivacyConfigurationsKeys.PREFIX + "policyList";
 
+    public static final String MODEL_DUMP_DIRECTORY_PATH = PrivacyConfigurationsKeys.PREFIX + "modelDumpDirectory";
+
     private PrivacyConfigurationsKeys() {
         // empty, factory
     }
