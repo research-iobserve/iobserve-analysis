@@ -118,6 +118,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
         final List<AllocationContext> allocations = this.allocationResource
                 .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT);
         final Map<AllocationContext, Set<OperationSignature>> availableProbes = new HashMap<>();
+        this.logger.debug("Found " + allocations.size() + " allocation context entries");
 
         for (final AllocationContext allocation : allocations) {
             final Set<OperationSignature> allocationMethods = new LinkedHashSet<>();
@@ -131,10 +132,13 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
                 final List<ProvidedRole> providingRoles = component.getProvidedRoles_InterfaceProvidingEntity();
 
                 for (final ProvidedRole providedRole : providingRoles) {
+                    this.logger.debug("Providing roles: " + providingRoles);
                     final String roleName = providedRole.getEntityName();
                     for (final Interface iface : repositoryModel.getInterfaces__Repository()) {
                         if (iface instanceof OperationInterface) {
-                            if (iface.getEntityName().equals(roleName)) {
+                            if (roleName.contains(iface.getEntityName())) {
+                                this.logger.debug("Matching operation interfaces: "
+                                        + ((OperationInterface) iface).getSignatures__OperationInterface());
                                 // found interface
                                 allocationMethods
                                         .addAll(((OperationInterface) iface).getSignatures__OperationInterface());

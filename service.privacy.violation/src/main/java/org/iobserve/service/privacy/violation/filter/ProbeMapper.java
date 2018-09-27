@@ -158,7 +158,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if (methodsToUpdate != null && element.getWhitelist() != null) {
+        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
             this.logger.debug("methods to update");
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
                 this.logger.debug("AllocationContext to update {}", allocation.getEntityName());
@@ -271,15 +271,21 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             }
         }
 
-        final AssemblyContext assemblyContext = this.assemblyResource
+        AssemblyContext assemblyContext = this.assemblyResource
                 .resolve(allocation.getAssemblyContext_AllocationContext());
+
+        assemblyContext = this.assemblyResource.resolve(assemblyContext);
 
         String component = "ERROR";
 
         for (final AssemblyEntry assemblyEntry : this.correspondenceResource
                 .collectAllObjectsByType(AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY)) {
             final AssemblyContext entryRelatedContext = this.assemblyResource.resolve(assemblyEntry.getAssembly());
-            if (entryRelatedContext.equals(assemblyContext)) {
+            // this.logger.debug(entryRelatedContext.getId() + " is proxy? " +
+            // entryRelatedContext.eIsProxy()
+            // + " <- compared to -> " + assemblyContext.getId() + " is proxy? " +
+            // assemblyContext.eIsProxy());
+            if (entryRelatedContext.getId().equals(assemblyContext.getId())) {
                 component = assemblyEntry.getImplementationId();
             }
         }
