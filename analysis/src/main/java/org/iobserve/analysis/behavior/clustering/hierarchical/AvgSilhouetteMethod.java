@@ -77,16 +77,11 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
                 // Assignments of each data point the clusters.
                 final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
 
-                // Print assignments for debugging.
-                // this.printAssignmentString(assignments);
-
                 /*
                  * Calculate the average dissimilarity of all data points in a cluster for all
                  * clusters.
                  */
                 avgSilhouettes.add(this.calcAvgSilhouettes(assignments));
-
-                // AvgSilhouetteMethod.LOGGER.info(avgSilhouettes.toString() + "\n");
 
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 AvgSilhouetteMethod.LOGGER.error("Hierarchical clustering failed.", e);
@@ -105,9 +100,6 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
         } catch (final Exception e) { // NOPMD NOCS api dependency
             AvgSilhouetteMethod.LOGGER.error("Clustering at AvgSilhouette failed.", e);
         }
-
-        // Print clusteringResult
-        // this.printClusteringResults(clusteringResults);
 
         AvgSilhouetteMethod.LOGGER.info("AvgSilhouetteMethod done.");
         return clusteringResults;
@@ -161,9 +153,6 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
                     } else {
                         silhouetteI = (minAvgDissimFromIToOtherClusters / avgDissimFromISameCluster) - 1;
                     }
-
-                    // silhouetteI = (minAvgDissimFromIToOtherClusters - avgDissimFromISameCluster)
-                    // / Math.max(avgDissimFromISameCluster, minAvgDissimFromIToOtherClusters);
 
                     // Add silhouette of i to silhouette list in order to calculate the average.
                     silhouetteList.add(silhouetteI);

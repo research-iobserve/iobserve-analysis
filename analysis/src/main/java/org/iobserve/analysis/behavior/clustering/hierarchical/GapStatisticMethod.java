@@ -179,25 +179,6 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
             sks.add(sk);
         }
 
-        // // Calculate mean value.
-        // double mean = 0.0;
-        // for (final Double gap : BWkbs) {
-        // mean += gap;
-        // }
-        // mean /= BWkbs.size();
-        //
-        // // Calculate variance.
-        // double variance = 0.0;
-        // for (Double var : BWkbs) {
-        // var -= mean;
-        // var *= var;
-        // variance += var;
-        // }
-        // variance /= (BWkbs.size() - 1);
-        //
-        // // Calculate standard deviation.
-        // standardDeviation = Math.sqrt(variance);
-
         return sks;
     }
 
@@ -256,8 +237,6 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
                     }
                 }
                 ess.add(i - 1, s);
-
-                // GapStatisticMethod.LOGGER.info(ess.toString() + "\n");
 
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 GapStatisticMethod.LOGGER.error("Hierarchical clustering failed.", e);

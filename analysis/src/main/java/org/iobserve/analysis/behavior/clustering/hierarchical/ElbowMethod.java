@@ -76,8 +76,6 @@ public class ElbowMethod implements IClusterSelectionMethods {
 
                 // Get the assignments of each data point to the clusters.
                 final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
-                // Print AssignmentsString for debugging.
-                this.printAssignmentString(assignments);
 
                 // Calculate the within-cluster sum-of-square for each cluster.
                 double s = 0.0;
@@ -87,8 +85,6 @@ public class ElbowMethod implements IClusterSelectionMethods {
                     }
                 }
                 wss.add(i - 1, s);
-
-                // ElbowMethod.LOGGER.info(wss.toString() + "\n");
 
             } catch (final Exception e) { // NOPMD NOCS api dependency
                 ElbowMethod.LOGGER.error("Hierarchical clustering failed.", e);
@@ -108,9 +104,6 @@ public class ElbowMethod implements IClusterSelectionMethods {
         } catch (final Exception e) { // NOPMD NOCS api dependency
             ElbowMethod.LOGGER.error("Clustering at ElbowMethod failed.", e);
         }
-
-        // Print clusteringResult
-        // this.printClusteringResults(clusteringResults);
 
         ElbowMethod.LOGGER.info("ElbowMethod done.");
         return clusteringResults;
@@ -176,9 +169,6 @@ public class ElbowMethod implements IClusterSelectionMethods {
                 elbowIndex = i + 1;
             }
         }
-
-        // System.out.println(maxDistance);
-        // System.out.println(elbowIndex);
 
         return elbowIndex;
     }
