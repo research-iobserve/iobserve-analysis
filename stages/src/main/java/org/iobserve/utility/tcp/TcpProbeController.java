@@ -67,8 +67,12 @@ public class TcpProbeController implements IProbeController {
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
+    @Override
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
-        System.err.println("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
+        if (TcpProbeController.LOGGER.isDebugEnabled()) {
+            TcpProbeController.LOGGER
+                    .debug("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
+        }
 
         final String ip = event.getIp();
         final int port = event.getPort();
@@ -189,7 +193,7 @@ public class TcpProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if (currentConnection == null || currentConnection.getHostname() != hostname) {
+        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }

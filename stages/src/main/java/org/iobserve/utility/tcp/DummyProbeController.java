@@ -23,12 +23,14 @@ import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
+import kieker.common.record.remotecontrol.IRemoteParameterControlEvent;
 import kieker.common.record.remotecontrol.UpdateParameterEvent;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
+import org.iobserve.utility.tcp.events.TcpUpdateParameterEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +83,8 @@ public class DummyProbeController implements IProbeController {
             }
         } else if (event instanceof TcpDeactivationControlEvent) {
             this.deactivateMonitoredPattern(ip, port, hostname, pattern);
+        } else if (event instanceof TcpUpdateParameterEvent) {
+            this.updateProbeParameter(ip, port, hostname, pattern, ((TcpUpdateParameterEvent) event).getParameters());
         } else {
             DummyProbeController.LOGGER.error("Received Unknown TCP control event: {}", event.getClass().getName());
         }
@@ -108,7 +112,6 @@ public class DummyProbeController implements IProbeController {
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
         final String[] parameterNames = parameters.keySet().toArray(new String[0]);
         final String[][] parameterArray = this.computeParameterArray(parameters);
-
         this.sendTcpCommand(ip, port, hostname, new UpdateParameterEvent(pattern, parameterNames, parameterArray));
     }
 
@@ -154,16 +157,8 @@ public class DummyProbeController implements IProbeController {
         final String[] parameterNames = parameters.keySet().toArray(new String[0]);
         final String[][] parameterArray = this.computeParameterArray(parameters);
 
-        for (int i = 0; i < parameterArray.length; i++) {
-            final String[] a = parameterArray[i];
-
-            DummyProbeController.LOGGER.debug(">> {}", parameterNames[i]);
-            for (final String b : a) {
-                DummyProbeController.LOGGER.debug("\t - {}", b);
-            }
-        }
-
         this.sendTcpCommand(ip, port, hostname, new ActivationParameterEvent(pattern, parameterNames, parameterArray));
+
     }
 
     /**
@@ -192,7 +187,7 @@ public class DummyProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if (currentConnection == null || currentConnection.getHostname() != hostname) {
+        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
             currentConnection = new TcpControlConnection(ip, port, hostname, null);
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -200,11 +195,26 @@ public class DummyProbeController implements IProbeController {
         DummyProbeController.LOGGER.debug("Event time={} size={} pattern={}", monitoringRecord.getLoggingTimestamp(),
                 monitoringRecord.getSize(), monitoringRecord.getPattern());
 
-        for (final Class<?> type : monitoringRecord.getValueTypes()) {
-            DummyProbeController.LOGGER.debug("\t type={}", type.getCanonicalName());
+        final Class<?>[] types = monitoringRecord.getValueTypes();
+        final String[] values = monitoringRecord.getValueNames();
+
+        DummyProbeController.LOGGER.debug("--------------- Provided attributes of the event ---------------");
+
+        for (int i = 0; i < types.length; i++) {
+            final Class<?> type = monitoringRecord.getValueTypes()[i];
+            DummyProbeController.LOGGER.debug("\t attribute type={}", type.getCanonicalName());
+            if (i < values.length) {
+                final String value = monitoringRecord.getValueNames()[i];
+                DummyProbeController.LOGGER.debug("\t attribute name={}", value);
+            }
         }
-        for (final String value : monitoringRecord.getValueNames()) {
-            DummyProbeController.LOGGER.debug("\t value={}", value);
+
+        if (monitoringRecord instanceof IRemoteParameterControlEvent) {
+            DummyProbeController.LOGGER.debug("--------------- Parameter Control Event ---------------");
+            this.printParameters(((IRemoteParameterControlEvent) monitoringRecord).getParameterNames(),
+                    ((IRemoteParameterControlEvent) monitoringRecord).getParameters());
+            DummyProbeController.LOGGER.debug("-------------------------------------------------------");
+
         }
 
         DummyProbeController.LOGGER.debug("Send record {} to {} on port: {}", monitoringRecord.getClass().getName(), ip,
@@ -242,4 +252,15 @@ public class DummyProbeController implements IProbeController {
         return parameterArray;
     }
 
+    private void printParameters(final String[] parameterNames, final String[][] parameterArray) {
+        for (int i = 0; i < parameterArray.length; i++) {
+            final String[] a = parameterArray[i];
+
+            DummyProbeController.LOGGER.debug(">> {}", parameterNames[i]);
+            for (final String b : a) {
+                DummyProbeController.LOGGER.debug("\t - {}", b);
+            }
+        }
+
+    }
 }
