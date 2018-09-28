@@ -26,8 +26,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author SL
+ * This class the chosen clustering selection method for hierarchichal clustering.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class ClustersSelector {
 
@@ -43,14 +45,14 @@ public class ClustersSelector {
     /**
      *
      * @param strategy
-     *            strategy which will be used to find the optimal number of clusters for the
-     *            initialCluster
+     *            Strategy which will be used to find the optimal number of clusters for the
+     *            initialCluster.
      *
      * @param hierarchicalClusterer
-     *            weka-clusterer that performs the hierarchical clustering
+     *            Weka-clusterer that performs the hierarchical clustering.
      *
      * @param instances
-     *            input data that is clustered
+     *            Input data that is clustered.
      */
     public ClustersSelector(final String strategy, final HierarchicalClusterer hierarchicalClusterer,
             final Instances instances) {
@@ -62,7 +64,7 @@ public class ClustersSelector {
     /**
      * Finds a "good" number of clusters for clustering the input data and clusters the input data.
      *
-     * @return clustering results with a "good" number of clusters.
+     * @return Clustering results with a "good" number of clusters.
      */
     public Map<Integer, List<Pair<Instance, Double>>> findGoodClustering() {
         Map<Integer, List<Pair<Instance, Double>>> resultClusters = null;

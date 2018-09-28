@@ -29,8 +29,11 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author SL
+ * Use Average Silhouette Method for selecting a "good" amount of clusters for a given input data
+ * set, and cluster this data accordingly.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class AvgSilhouetteMethod implements IClusterSelectionMethods {
 
@@ -88,10 +91,15 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
             }
         }
 
+        /*
+         * Find a "good" cluster number by looking for the clustering with the max average
+         * silhouette.
+         */
         final int goodClustereNumber = this.findMaxAvgSilhouetteIndex(avgSilhouettes);
 
         Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
 
+        // Cluster given input data accordingly.
         try {
             this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
             this.hierarchicalClusterer.buildClusterer(this.instances);
@@ -168,9 +176,12 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      * clusters.
      *
      * @param instanceI
+     *            Instance i to which we calculate the average dissimilarity to other clusters.
      * @param assignments
+     *            List of clusters and their assigned instances.
      * @param cluster
-     * @return
+     *            The cluster which contains instanceI.
+     * @return Minimum of the average dissimilarity of instance i to all other clusters.
      */
     private double calcMinAvgDissimOtherClusters(final Instance instanceI, final List<ArrayList<Integer>> assignments,
             final List<Integer> cluster) {
@@ -196,9 +207,13 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      * cluster. Can be interpreted as how well instance i is assigned to its cluster.
      *
      * @param i
+     *            Index of instanceI.
      * @param instanceI
+     *            Instance for which to calculate the average dissimilarity to other instances of
+     *            the same cluster.
      * @param cluster
-     * @return
+     *            Cluster that contains instanceI and maybe other instances.
+     * @return Average dissimilarity of instanceI to all other instances of the same cluster.
      */
     private double calcAvgDissimSameCluster(final int i, final Instance instanceI, final List<Integer> cluster) {
         double avgDissim = 0.0;
@@ -242,24 +257,12 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
         return maxIndex;
     }
 
-    // Calculates the average value of a List<Double>.
-    private double calculateAverageOfList(final List<Double> list) {
-        double sum = 0.0;
-        if (!list.isEmpty()) {
-            for (final double entry : list) {
-                sum += entry;
-            }
-            sum /= list.size();
-        }
-        return sum;
-    }
-
     /**
      * Returns a list which i-th entry is the number of the assigned cluster of the i-th instance.
      *
      * @param numberOfClusters
-     *            number of total clusters of this clustering
-     * @return
+     *            Number of total clusters of this clustering.
+     * @return List of clusters and their assigned instances.
      */
     private List<ArrayList<Integer>> buildClusterAssignmentsList(final int numberOfClusters) {
         // Assignments of each data point the clusters.
@@ -278,6 +281,18 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
             }
         }
         return assignments;
+    }
+
+    // Calculates the average value of a List<Double>.
+    private double calculateAverageOfList(final List<Double> list) {
+        double sum = 0.0;
+        if (!list.isEmpty()) {
+            for (final double entry : list) {
+                sum += entry;
+            }
+            sum /= list.size();
+        }
+        return sum;
     }
 
     /**

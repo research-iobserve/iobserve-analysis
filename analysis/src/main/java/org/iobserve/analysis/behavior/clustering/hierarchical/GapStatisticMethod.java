@@ -32,8 +32,11 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author SL
+ * Use Gap Statistic Method for selecting a "good" amount of clusters for a given input data set,
+ * and cluster this data accordingly.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class GapStatisticMethod implements IClusterSelectionMethods {
 
@@ -98,8 +101,10 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      * Calculate the Gap Statistic for each number of clusters.
      *
      * @param essList
+     *            List with sum of square errors for each clustering of the input data.
      * @param essListReference
-     * @return
+     *            List with sum of square errors for each clustering of the reference data.
+     * @return Clustering result of input data with a "good" amout of clusters.
      */
     private Map<Integer, List<Pair<Instance, Double>>> gapStatistics(final List<Double> essList,
             final List<List<Double>> essListForEachUniformDataset) {
@@ -158,7 +163,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      * @param bWkbs
      *            Total within-cluster sum of squares of reference data.
      * @param wkbs
-     *            Total within-cluster sum of squares of actual user bahavior data.
+     *            Total within-cluster sum of squares of actual user behavior data.
      * @return List of standard deviations for each number of clusters.
      */
     private List<Double> calcStandardDeviation(final List<List<Double>> bWkbs, final List<Double> wkbs) {
@@ -301,7 +306,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
 
     // From HierarchicalClusterer
     /**
-     * Calculated error sum-of-squares for a given cluster.
+     * Calculated error sum-of-squares (ESS) for a given cluster.
      *
      * @param cluster
      *            Calculate the ESS for this cluster
@@ -370,7 +375,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      * Builds a String of the instance-to-cluster assignments for debugging.
      *
      * @param assignments
-     * @return
+     *            List of clusters and their assigned instances.
      */
     private void printAssignmentString(final List<ArrayList<Integer>> assignments) {
         String assignmentString = "";

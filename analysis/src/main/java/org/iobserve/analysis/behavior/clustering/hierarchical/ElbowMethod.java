@@ -32,9 +32,11 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author SL
+ * Use Elbow Method for selecting a "good" amount of clusters for a given input data set, and
+ * cluster this data accordingly.
  *
- *         Elbow method for selecting a "good" number of clusters after clustering.
+ * @author SL
+ * @since 0.0.3
  */
 public class ElbowMethod implements IClusterSelectionMethods {
 
@@ -46,9 +48,9 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * Constructor.
      *
      * @param hierarchicalClusterer
-     *            Clusterer that performs hierarchical clustering
+     *            Clusterer that performs hierarchical clustering.
      * @param instances
-     *            Input data
+     *            Input data to be clustered.
      */
     public ElbowMethod(final HierarchicalClusterer hierarchicalClusterer, final Instances instances) {
         this.hierarchicalClusterer = hierarchicalClusterer;
@@ -58,7 +60,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
     /**
      * Find a "good" clustering for the input data.
      *
-     * @return a "good" clustering according to the Elbow method
+     * @return a "good" clustering according to the Elbow method.
      */
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> analyze() {
@@ -113,8 +115,8 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * Returns a list which i-th entry is the number of the assigned cluster of the i-th instance.
      *
      * @param numberOfClusters
-     *            number of total clusters of this clustering
-     * @return
+     *            Number of total clusters of this clustering.
+     * @return List of clusteres and their assigned instances.
      */
     private List<ArrayList<Integer>> buildClusterAssignmentsList(final int numberOfClusters) {
         // Assignments of each data point the clusters.
@@ -178,7 +180,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * Calculate within-cluster sum-of-square (WSS) for a given cluster.
      *
      * @param cluster
-     *            Calculate the WSS for this cluster
+     *            Calculate the WSS for this cluster.
      * @return WSS
      **/
     public double calcWSS(final List<Integer> cluster) {
@@ -218,7 +220,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
      * Builds a String of the instance-to-cluster assignments for debugging.
      *
      * @param assignments
-     * @return
+     *            List of clusters and their assigned instances.
      */
     private void printAssignmentString(final List<ArrayList<Integer>> assignments) {
         String assignmentString = "";

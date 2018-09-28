@@ -28,8 +28,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author Stephan Lenga
+ * Stage class for the Hierarchical Clustering.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class HierarchicalClusteringStage extends AbstractConsumerStage<Instances> {
 
@@ -37,10 +39,10 @@ public class HierarchicalClusteringStage extends AbstractConsumerStage<Instances
     private final OutputPort<Map<Integer, List<Pair<Instance, Double>>>> outputPort = this.createOutputPort();
 
     /**
-     * constructor.
+     * Constructor.
      *
      * @param clustering
-     *            clustering used
+     *            Chosen cluster selection method.
      */
     public HierarchicalClusteringStage(final IHierarchicalClustering clustering) {
         this.clustering = clustering;
@@ -54,7 +56,7 @@ public class HierarchicalClusteringStage extends AbstractConsumerStage<Instances
     }
 
     /**
-     * getter.
+     * Getter.
      *
      * @return output port
      */

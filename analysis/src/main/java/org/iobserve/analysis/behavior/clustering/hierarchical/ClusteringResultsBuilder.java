@@ -30,28 +30,29 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author SL
+ * Utility class for building clustering results for further use.
  *
- *         Utility class for building clustering results to write into a file.
+ * @author SL
+ * @since 0.0.3
  */
 public final class ClusteringResultsBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 
-    private ClusteringResultsBuilder() {
-        throw new UnsupportedOperationException();
+    private ClusteringResultsBuilder() { // NOCS empty constructor
+        // empty constructor of builder
     }
 
     /**
+     * Build clustering result list of clustered instances and their assigned clusters.
      *
      * @param instances
-     *            input data that is clustered
+     *            Input data that is clustered.
      *
      * @param hierarchicalClusterer
-     *            weka-clusterer that performs the hierarchical clustering
+     *            Weka-clusterer that performs the hierarchical clustering.
      *
      * @return clusteringResults
-     * @throws Exception
      */
     public static Map<Integer, List<Pair<Instance, Double>>> buildClusteringResults(final Instances instances,
             final HierarchicalClusterer hierarchicalClusterer) {

@@ -25,18 +25,20 @@ import org.iobserve.analysis.behavior.filter.ClusterMerger;
 import weka.core.Instances;
 
 /**
- * @author Stephan Lenga
+ * Process class for the Hierarchical clustering.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class HierarchicalClusteringProcess extends CompositeStage {
     private final InputPort<Instances> inputPort;
     private final OutputPort<Instances> outputPort;
 
     /**
-     * constructor.
+     * Constructor.
      *
      * @param clustering
-     *            clustering algorithm
+     *            Chosen cluster selection method.
      */
     public HierarchicalClusteringProcess(final IHierarchicalClustering clustering) {
         final HierarchicalClusteringStage clusteringFilter = new HierarchicalClusteringStage(clustering);
@@ -47,10 +49,20 @@ public class HierarchicalClusteringProcess extends CompositeStage {
         this.connectPorts(clusteringFilter.getOutputPort(), merger.getInputPort());
     }
 
+    /**
+     * Getter for input port.
+     *
+     * @return input port
+     */
     public InputPort<Instances> getInputPort() {
         return this.inputPort;
     }
 
+    /**
+     * Getter for output port.
+     *
+     * @return output port
+     */
     public OutputPort<Instances> getOutputPort() {
         return this.outputPort;
     }

@@ -36,8 +36,10 @@ import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * @author Stephan Lenga
+ * Composite Stage for the Hierarchical Clustering Behavior.
  *
+ * @author SL
+ * @since 0.0.3
  */
 @ReceiveUnfilteredConfiguration
 public class HierarchicalBehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
@@ -62,9 +64,9 @@ public class HierarchicalBehaviorCompositeStage extends CompositeStage implement
      * Create hierarchical behavior clustering composite stage.
      *
      * @param configuration
-     *            configuration for all stages
+     *            Configuration for all stages.
      * @throws ConfigurationException
-     *             on errors with the configuration
+     *             On errors with the configuration.
      */
     public HierarchicalBehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");

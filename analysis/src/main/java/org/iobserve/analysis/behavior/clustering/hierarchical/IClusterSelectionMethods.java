@@ -24,10 +24,11 @@ import org.eclipse.net4j.util.collection.Pair;
 import weka.core.Instance;
 
 /**
- * @author SL
+ * Interface for ClusterSelectionMethods that select a "good" number of clusters of a hierarchical
+ * clustering.
  *
- *         Interface for ClusterSelectionMethods, that select a "good" number of clusters of a
- *         hierarchical clustering.
+ * @author SL
+ * @since 0.0.3
  */
 public interface IClusterSelectionMethods {
 

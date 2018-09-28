@@ -26,10 +26,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * interface for hierarchical clustering usable by {@link HierarchicalClusteringStage}.
+ * Interface for hierarchical clustering usable by {@link HierarchicalClusteringStage}.
  *
  * @author SL
- *
+ * @since 0.0.3
  */
 
 public interface IHierarchicalClustering extends IClustering {

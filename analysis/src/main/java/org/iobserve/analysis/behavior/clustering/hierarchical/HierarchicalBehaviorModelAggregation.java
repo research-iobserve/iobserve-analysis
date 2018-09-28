@@ -27,8 +27,10 @@ import org.iobserve.analysis.sink.BehaviorModelSink;
 import weka.core.Instances;
 
 /**
- * @author Stephan Lenga
+ * Model Aggregatioon for the Hierarchical Clustering Behavior.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class HierarchicalBehaviorModelAggregation extends CompositeStage {
     private final HierarchicalClusteringProcess hierClustering;
@@ -37,17 +39,17 @@ public class HierarchicalBehaviorModelAggregation extends CompositeStage {
      * Constructor configuration of the aggregation filters.
      *
      * @param namePrefix
-     *            name prefix
+     *            Name prefix.
      * @param visualizationUrl
-     *            path or url for the sink
+     *            Path or url for the sink.
      * @param signatureCreationStrategy
-     *            signature creation strategy
+     *            Signature creation strategy.
      * @param distanceMetric
-     *            used distance metric for hierarchical clustering
+     *            Used distance metric for hierarchical clustering.
      * @param clusterSelectionMethod
-     *            used method for selecting a "good" number of clusters from clustering
+     *            Used method for selecting a "good" number of clusters from clustering.
      * @param linkage
-     *            used linkage for hierarchical clustering
+     *            Used linkage for hierarchical clustering.
      */
     public HierarchicalBehaviorModelAggregation(final String namePrefix, final String visualizationUrl,
             final ISignatureCreationStrategy signatureCreationStrategy, final String distanceMetric,

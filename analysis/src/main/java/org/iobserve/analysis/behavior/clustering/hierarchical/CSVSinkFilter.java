@@ -32,10 +32,10 @@ import org.eclipse.net4j.util.collection.Pair;
 import weka.core.Instance;
 
 /**
+ * Writes the hierarchical clustering results to a CSV file.
  *
  * @author SL
- *
- *         Writes the hierarchical clustering results to a CSV file.
+ * @since 0.0.3
  */
 public class CSVSinkFilter {
 

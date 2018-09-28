@@ -34,8 +34,11 @@ import weka.core.ManhattanDistance;
 import weka.core.SelectedTag;
 
 /**
- * @author Stephan Lenga
+ * This class manages the finding of a good clustering of a given input data set and the
+ * agglomerative hierarchical clustering using a WEKA hierarchical clusterer.
  *
+ * @author SL
+ * @since 0.0.3
  */
 public class HierarchicalClustering implements IHierarchicalClustering {
 
@@ -52,7 +55,6 @@ public class HierarchicalClustering implements IHierarchicalClustering {
      *
      * @param distanceMetric
      *            Used distance metric for hierarchical clustering.
-     *
      * @param clusterSelectionMethod
      *            Used method for selecting a "good" number of clusters from clustering.
      * @param linkage
@@ -68,6 +70,12 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         this.outputPath = outputPath;
     }
 
+    /**
+     * Manage the finding and creation of a "good" clustering of a given input data set.
+     *
+     * @param instances
+     *            Input data set.
+     */
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
         Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
@@ -118,10 +126,21 @@ public class HierarchicalClustering implements IHierarchicalClustering {
         }
     }
 
+    /**
+     * Getter for distance function.
+     *
+     * @return distance function.
+     */
     public DistanceFunction getDistanceFunction() {
         return this.distanceFunction;
     }
 
+    /**
+     * Setter for distance function.
+     *
+     * @param distanceType
+     *            Chosen distance function.
+     */
     private void setDistanceFunction(final String distanceType) {
         switch (distanceType) {
         case "manhatten":
