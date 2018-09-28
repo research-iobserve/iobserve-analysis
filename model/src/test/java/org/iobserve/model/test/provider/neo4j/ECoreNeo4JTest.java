@@ -18,7 +18,6 @@ package org.iobserve.model.test.provider.neo4j;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -26,24 +25,24 @@ import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.storage.EnumValueExample;
-import org.iobserve.model.test.storage.Other;
-import org.iobserve.model.test.storage.OtherInterface;
-import org.iobserve.model.test.storage.Root;
-import org.iobserve.model.test.storage.SpecialA;
-import org.iobserve.model.test.storage.SpecialB;
-import org.iobserve.model.test.storage.StorageFactory;
+import org.hamcrest.core.Is;
+import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.test.storage.one.EnumValueExample;
+import org.iobserve.model.test.storage.one.OneFactory;
+import org.iobserve.model.test.storage.one.OnePackage;
+import org.iobserve.model.test.storage.one.Other;
+import org.iobserve.model.test.storage.one.OtherInterface;
+import org.iobserve.model.test.storage.one.Root;
+import org.iobserve.model.test.storage.one.SpecialA;
+import org.iobserve.model.test.storage.one.SpecialB;
+import org.iobserve.model.test.storage.two.Link;
+import org.iobserve.model.test.storage.two.Two;
+import org.iobserve.model.test.storage.two.TwoFactory;
+import org.iobserve.model.test.storage.two.TwoPackage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.ResourceIterable;
-import org.neo4j.graphdb.Transaction;
 
 /**
  *
@@ -51,7 +50,19 @@ import org.neo4j.graphdb.Transaction;
  *
  * @since 0.0.3
  */
-public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
+public class ECoreNeo4JTest {
+
+    private String prefix;
+    private Root modelOne;
+    private Two modelTwo;
+
+    private Other firstOther;
+    private Other secondOther;
+
+    private OneFactory oneFactory;
+    private TwoFactory twoFactory;
+
+    private final CompareModelPartitions equalityHelper = new CompareModelPartitions();
 
     /**
      * Setup test.
@@ -59,30 +70,12 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      * @throws Exception
      *             on error
      */
-    @Override
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
 
-        final StorageFactory storageFactory = StorageFactory.eINSTANCE;
-        this.factory = storageFactory;
-        this.clazz = Root.class;
-
-        this.testModel = storageFactory.createRoot();
-        this.testModel.setEnumerate(EnumValueExample.B);
-        this.testModel.setFixed("fixed value");
-        this.testModel.setName("root name");
-
-        this.testModel.getLabels().add("label 1");
-        this.testModel.getLabels().add("label 2");
-        this.testModel.getLabels().add("label 3");
-
-        final Other firstOther = this.createOther(storageFactory, "first other");
-        this.testModel.getOthers().add(firstOther);
-        this.testModel.getOthers().add(this.createOther(storageFactory, "second other"));
-
-        this.testModel.getIfaceOthers().add(this.createSpecialA(storageFactory, firstOther));
-        this.testModel.getIfaceOthers().add(this.createSpecialB(storageFactory));
+        this.createModelOne();
+        this.createModelTwo();
 
         final Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
@@ -92,32 +85,67 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
             final ResourceSet resourceSet = new ResourceSetImpl();
             resourceSet.setResourceFactoryRegistry(resourceRegistry);
             final Resource resource = resourceSet.createResource(URI.createFileURI("storage-example.storage"));
-            resource.getContents().add(this.testModel);
+            resource.getContents().add(this.modelOne);
             resource.save(null);
         } catch (final IOException e) {
             Assert.fail(e.getLocalizedMessage());
         }
     }
 
-    private OtherInterface createSpecialB(final StorageFactory factory) {
-        final SpecialA subspecial = factory.createSpecialA();
+    private void createModelTwo() {
+        this.twoFactory = TwoFactory.eINSTANCE;
 
-        final SpecialB special = factory.createSpecialB();
+        this.modelTwo = this.twoFactory.createTwo();
+
+        this.modelTwo.getLinks().add(this.createLink(this.firstOther));
+    }
+
+    private Link createLink(final Other other) {
+        final Link link = this.twoFactory.createLink();
+        link.setReference(other);
+        return link;
+    }
+
+    private void createModelOne() {
+        this.oneFactory = OneFactory.eINSTANCE;
+
+        this.modelOne = this.oneFactory.createRoot();
+        this.modelOne.setEnumerate(EnumValueExample.B);
+        this.modelOne.setFixed("fixed value");
+        this.modelOne.setName("root name");
+
+        this.modelOne.getLabels().add("label 1");
+        this.modelOne.getLabels().add("label 2");
+        this.modelOne.getLabels().add("label 3");
+
+        this.firstOther = this.createOther("first other");
+        this.secondOther = this.createOther("second other");
+        this.modelOne.getOthers().add(this.firstOther);
+        this.modelOne.getOthers().add(this.secondOther);
+
+        this.modelOne.getIfaceOthers().add(this.createSpecialA(this.firstOther));
+        this.modelOne.getIfaceOthers().add(this.createSpecialB());
+    }
+
+    private OtherInterface createSpecialB() {
+        final SpecialA subspecial = this.oneFactory.createSpecialA();
+
+        final SpecialB special = this.oneFactory.createSpecialB();
         special.setNext(subspecial);
         return special;
     }
 
-    private OtherInterface createSpecialA(final StorageFactory factory, final Other other) {
-        final SpecialB subspecial = factory.createSpecialB();
+    private OtherInterface createSpecialA(final Other other) {
+        final SpecialB subspecial = this.oneFactory.createSpecialB();
 
-        final SpecialA special = factory.createSpecialA();
+        final SpecialA special = this.oneFactory.createSpecialA();
         special.setNext(subspecial);
         special.setRelate(other);
         return special;
     }
 
-    private Other createOther(final StorageFactory factory, final String string) {
-        final Other other = factory.createOther();
+    private Other createOther(final String string) {
+        final Other other = this.oneFactory.createOther();
         other.setName(string);
 
         return other;
@@ -127,79 +155,86 @@ public class ECoreNeo4JTest extends AbstractModelProviderTest<Root> {
      * Test whether the model is stored correctly.
      */
     @Test
-    public void testStoreGraphCreate() {
-        final Graph graph = this.prepareGraph("testStoreGraphCreate");
+    public void testStoreResourceCreate() {
+        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
+                TwoPackage.eINSTANCE);
 
-        final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
+        resource.storeModelPartition(this.modelOne);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.clearResource();
 
-        modelProvider.clearGraph();
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
      * Test whether the model is stored correctly.
      */
     @Test
-    public void testStoreGraphAndRead() {
-        final Graph graph = this.prepareGraph("testStoreGraphAndRead");
+    public void testStoreResourceAndRead() {
+        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
+                this.prefix, OnePackage.eINSTANCE);
 
-        final ModelProvider<Root> modelProvider = new ModelProvider<>(graph, "name", null);
+        resource.storeModelPartition(this.modelOne);
 
-        modelProvider.storeModelPartition(this.testModel);
+        final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, OnePackage.Literals.ROOT, "name",
+                this.modelOne.getName());
 
-        final GraphDatabaseService service = modelProvider.getGraph().getGraphDatabaseService();
+        Assert.assertTrue(
+                this.equalityHelper.comparePartition(this.modelOne, readModel.get(0), this.modelOne.eClass()));
 
-        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            final ResourceIterable<Node> nodes = service.getAllNodes();
+        resource.getGraphDatabaseService().shutdown();
+    }
 
-            for (final Node node : nodes) {
-                System.err.println("id " + node.getId());
-                for (final Entry<String, Object> property : node.getAllProperties().entrySet()) {
-                    System.err.println("\tp " + property.getKey() + " = " + property.getValue());
-                }
-                for (final Label label : node.getLabels()) {
-                    System.err.println("\tlabel " + label.toString());
-                }
-                for (final Relationship relationship : node.getRelationships()) {
-                    System.err.println("\trel " + relationship.getId() + " " + relationship.getEndNodeId() + " "
-                            + relationship.getStartNodeId());
-                }
-            }
+    /**
+     * Test create, clone and read sequence.
+     */
+    @Test
+    public void createThenCloneThenRead() {
+        final ModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
+                this.prefix, OnePackage.eINSTANCE);
 
-            tx.success();
-        }
+        storeResource.storeModelPartition(this.modelOne);
+        storeResource.getGraphDatabaseService().shutdown();
 
-        final List<Root> readModel = modelProvider.readObjectsByName(Root.class, this.testModel.getName());
+        final ModelResource<Root> newVersionResource = ModelProviderUtil
+                .createNewModelResourceVersion(OnePackage.eINSTANCE, storeResource);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel.get(0)));
+        final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
+        newVersionResource.getGraphDatabaseService().shutdown();
 
-        graph.getGraphDatabaseService().shutdown();
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.modelOne, clonedModel, clonedModel.eClass()));
     }
 
     @Test
-    public void createThenCloneThenRead() {
-        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
+    public void createWithReferenceThenUpdate() throws Exception {
+        final ModelResource<Root> oneResource = ModelProviderTestUtils
+                .prepareResource("createWithReferenceThenUpdate-one", this.prefix, OnePackage.eINSTANCE);
+        final ModelResource<Two> twoResource = ModelProviderTestUtils
+                .prepareResource("createWithReferenceThenUpdate-two", this.prefix, TwoPackage.eINSTANCE);
 
-        final ModelProvider<Root> storeModelProvider = new ModelProvider<>(storeGraph, "name", null);
+        oneResource.storeModelPartition(this.modelOne);
+        twoResource.storeModelPartition(this.modelTwo);
 
-        storeModelProvider.storeModelPartition(this.testModel);
-        storeGraph.getGraphDatabaseService().shutdown();
+        this.modelTwo.getLinks().add(this.createLink(this.secondOther));
 
-        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(StorageFactory.eINSTANCE);
+        twoResource.updatePartition(this.modelTwo);
 
-        final ModelProvider<Root> cloneModelProvider = new ModelProvider<>(cloneGraph, "name", null);
+        final Two two = twoResource.getModelRootNode(Two.class, TwoPackage.Literals.TWO);
 
-        final Root clonedModel = cloneModelProvider.readRootNode(Root.class);
-        cloneGraph.getGraphDatabaseService().shutdown();
+        Assert.assertThat("Different number of links", two.getLinks().size(), Is.is(this.modelTwo.getLinks().size()));
+        for (int i = 0; i < two.getLinks().size(); i++) {
+            final Link newLink = two.getLinks().get(i);
+            final Link oldLink = this.modelTwo.getLinks().get(i);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
+            oneResource.resolve(newLink.getReference());
+
+            Assert.assertThat("Links differ", newLink.getReference().getName(),
+                    Is.is(oldLink.getReference().getName()));
+        }
     }
 
 }

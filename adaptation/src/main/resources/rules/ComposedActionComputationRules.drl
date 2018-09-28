@@ -1,0 +1,133 @@
+package org.iobserve.adaptation.droolsstages
+
+import org.iobserve.adaptation.data.AssemblyContextActionFactory
+import org.iobserve.adaptation.data.ResourceContainerActionFactory
+import org.iobserve.adaptation.data.graph.ComponentNode
+import org.iobserve.adaptation.data.graph.DeploymentNode
+import org.iobserve.adaptation.data.graph.ModelGraphRevision
+import org.iobserve.adaptation.stages.ComposedActionComputation
+import org.iobserve.planning.systemadaptation.SystemAdaptation
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ASSEMBLY CONTEXT ACTION RULES                                                                                      //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule "Create replication action"
+	salience 0
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT)
+    
+    not ComponentNode(revision == ModelGraphRevision.RUNTIME, allocationContextID == $redplNode.getAllocationContextID())
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
+    	 repositoryComponentID == $redplNode.getRepositoryComponentID()) 
+then
+	ComposedActionComputation.LOGGER.info("Found a replication: " + $redplNode.getAssemblyName() + " ("
+		+ $redplNode.getAllocationContextID() + ") @ " + $redplNode.getHostServer().getResourceContainerName()
+			+ " (" + $redplNode.getHostServer().getResourceContainerID() + ")");
+    
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
+end
+
+
+rule "Create dereplication action"
+	salience 0
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		allocationContextID == $runtimeNode.getAllocationContextID())
+then
+	ComposedActionComputation.LOGGER.info("Found a dereplication: " + $runtimeNode.getAssemblyName() + " ("
+		+ $runtimeNode.getAllocationContextID() + ") @ " + $runtimeNode.getHostServer().getResourceContainerName()
+			+ " (" + $runtimeNode.getHostServer().getResourceContainerID() + ")");
+    
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
+end
+
+
+rule "Create migration action"
+	salience 0
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		allocationContextID == $runtimeNode.getAllocationContextID(),
+    		hostServer.getResourceContainerID() != $runtimeNode.getHostServer().getResourceContainerID())
+then
+	ComposedActionComputation.LOGGER.info("Found a migration: " +  $runtimeNode.getAssemblyName() + " ("
+		+ $runtimeNode.getAllocationContextID() + ") @ " + $runtimeNode.getHostServer().getResourceContainerName() 
+			+ " (" + $runtimeNode.getHostServer().getResourceContainerID() + ") => " + $redplNode.getAssemblyName() 
+				+ " (" + $redplNode.getAllocationContextID() + ") @ " 
+					+ $redplNode.getHostServer().getResourceContainerName() + " (" 
+						+ $redplNode.getHostServer().getResourceContainerID() + ")");
+    
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
+end
+
+rule "Create change repository component action"
+	salience 0
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		allocationContextID == $runtimeNode.getAllocationContextID(), 
+    		repositoryComponentID != $runtimeNode.getRepositoryComponentID())
+then
+	ComposedActionComputation.LOGGER.info("Found a change of repository component: " 
+		+ $runtimeNode.getRepositoryComponentID() + " @ " + $runtimeNode.getAssemblyName() + " (" 
+			+ $runtimeNode.getAllocationContextID() + ") => " + $redplNode.getRepositoryComponentID() + " @ " 
+				+ $redplNode.getAssemblyName() + " (" + $redplNode.getAllocationContextID() + ")");
+    
+    $systemAdaptationModel.getActions().add(AssemblyContextActionFactory
+    		.generateChangeRepositoryComponentAction($runtimeNode, $redplNode));
+end
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RESOURCE CONTAINER ACTION RULES                                                                                    //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule "Create allocation action"
+	salience 1
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $redplNode : DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT)
+    
+    not DeploymentNode(revision == ModelGraphRevision.RUNTIME, resourceContainerID == $redplNode.getResourceContainerID)
+then
+	ComposedActionComputation.LOGGER.info("Found an allocation: " + $redplNode.getResourceContainerName() + " (" 
+		+ $redplNode.getResourceContainerID() + ")");
+    
+    $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createAllocateAction($redplNode));
+end
+
+rule "Create deallocation action"
+	salience -1
+when
+	$systemAdaptationModel : SystemAdaptation()
+    
+    $runtimeNode : DeploymentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    not DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    	resourceContainerID == $runtimeNode.getResourceContainerID)
+then
+	ComposedActionComputation.LOGGER.info("Found a deallocation: " + $runtimeNode.getResourceContainerName() + " (" 
+		+ $runtimeNode.getResourceContainerID() + ")");
+    
+    $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createDeallocateAction($runtimeNode));
+end

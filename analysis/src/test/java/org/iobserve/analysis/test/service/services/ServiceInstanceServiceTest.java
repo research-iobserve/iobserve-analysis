@@ -24,7 +24,7 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +34,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Tests for {@link ServiceInstanceService}.
@@ -49,7 +51,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 
@@ -92,8 +94,10 @@ public class ServiceInstanceServiceTest { // NOCS test
                 .add("nodeId", this.nodeId).build();
 
         // stubbing
-        Mockito.when(this.mockedSystemModelGraphProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
-                this.testAssemblyContext.getId())).thenReturn(this.noAssemblyConnectors);
+        Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                this.mockedSystemModelGraphProvider.getInternalId(this.testAssemblyContext)))
+                .thenReturn(this.noAssemblyConnectors);
     }
 
     /**

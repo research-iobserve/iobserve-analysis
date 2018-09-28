@@ -15,21 +15,29 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.List;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Transforms {@link EntryCallEvent}s to model level {@link PCMEntryCallEvent}s.
@@ -41,75 +49,87 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
 
     private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
-    private final IModelProvider<ComponentEntry> componentEntryProvider;
+    private final ModelResource<CorrespondenceModel> correspondenceResource;
 
-    private final ModelProvider<OperationEntry> operationSignatureEntryProvider;
+    private final ModelResource<Allocation> allocationResource;
 
-    private final ModelProvider<AllocationEntry> allocationEntryProvider;
+    private final ModelResource<System> assemblyResource;
 
-    private final ModelProvider<AllocationContext> allocationContextProvider;
-
-    private final ModelProvider<RepositoryComponent> componentProvider;
-
-    private final ModelProvider<OperationSignature> operationSignatureProvider;
-
-    private final ModelProvider<AssemblyContext> assemblyContextProvider;
+    private final ModelResource<Repository> repositoryResource;
 
     /**
      * Entry event mapper.
      *
-     * @param correspondenceModelGraph
+     * @param correspondenceResource
      *            correspondence model graph
-     * @param repositoryGraph
+     * @param repositoryResource
      *            repository model graph
-     * @param assemblyGraph
+     * @param assemblyResource
      *            assembly model graph
-     * @param allocationGraph
+     * @param allocationResource
      *            allocation model graph
      */
-    public EntryEventMapperStage(final Graph correspondenceModelGraph, final Graph repositoryGraph,
-            final Graph assemblyGraph, final Graph allocationGraph) {
-        this.componentEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-        this.operationSignatureEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-        this.allocationEntryProvider = new ModelProvider<>(correspondenceModelGraph, null,
-                ModelProvider.IMPLEMENTATION_ID);
-
-        this.componentProvider = new ModelProvider<>(repositoryGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.operationSignatureProvider = new ModelProvider<>(repositoryGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.assemblyContextProvider = new ModelProvider<>(assemblyGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        this.allocationContextProvider = new ModelProvider<>(allocationGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+    public EntryEventMapperStage(final ModelResource<CorrespondenceModel> correspondenceResource,
+            final ModelResource<Repository> repositoryResource, final ModelResource<System> assemblyResource,
+            final ModelResource<Allocation> allocationResource) {
+        this.correspondenceResource = correspondenceResource;
+        this.repositoryResource = repositoryResource;
+        this.assemblyResource = assemblyResource;
+        this.allocationResource = allocationResource;
     }
 
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
-        final ComponentEntry componentEntry = this.componentEntryProvider.readObjectById(ComponentEntry.class,
-                event.getClassSignature());
-        final OperationEntry operationEntry = this.operationSignatureEntryProvider
-                .readObjectById(OperationEntry.class, event.getOperationSignature());
-        final AllocationEntry allocationEntry = this.allocationEntryProvider
-                .readObjectById(AllocationEntry.class, event.getHostname());
+        // TODO correct key names?
+        final List<ComponentEntry> entries = this.correspondenceResource.findObjectsByTypeAndName(ComponentEntry.class,
+                CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId", event.getClassSignature());
+        if (!entries.isEmpty()) {
+            final ComponentEntry componentEntry = entries.get(0);
+            final OperationEntry operationEntry = this.correspondenceResource
+                    .findObjectsByTypeAndName(OperationEntry.class, CorrespondencePackage.Literals.OPERATION_ENTRY,
+                            "implementationId", event.getOperationSignature())
+                    .get(0);
 
+            if (operationEntry != null) {
+                final AllocationEntry allocationEntry = this.correspondenceResource.findObjectsByTypeAndName(
+                        AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY, "implementationId",
+                        event.getHostname()).get(0);
+                if (allocationEntry != null) {
+                    this.computePcmEntryCallEvent(componentEntry, operationEntry, allocationEntry, event);
+                } else {
+                    this.logger.debug("No corresponding allocation for entry call {}", event.toString());
+                }
+            } else {
+                this.logger.debug("No corresponding component for entry call {}", event.toString());
+            }
+        } else {
+            this.logger.debug("No corresponding component for entry call {}", event.toString());
+        }
+    }
+
+    private void computePcmEntryCallEvent(final ComponentEntry componentEntry, final OperationEntry operationEntry,
+            final AllocationEntry allocationEntry, final EntryCallEvent event) {
         /** retrieve PCM model elements from mapping. */
-        final AllocationContext allocationContext = this.allocationContextProvider
-                .readObjectById(AllocationContext.class, allocationEntry.getAllocation().getId());
-        final OperationSignature operationSignature = this.operationSignatureProvider
-                .readObjectByIdAndLock(OperationSignature.class, operationEntry.getOperation().getId());
-        final RepositoryComponent component = this.componentProvider.readObjectById(RepositoryComponent.class,
-                componentEntry.getComponent().getId());
+        final AllocationContext allocationContext = this.allocationResource.findObjectByTypeAndId(
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT,
+                this.allocationResource.getInternalId(allocationEntry.getAllocation()));
+        final OperationSignature operationSignature = this.repositoryResource.findAndLockObjectById(
+                OperationSignature.class, RepositoryPackage.Literals.OPERATION_SIGNATURE,
+                this.repositoryResource.getInternalId(operationEntry.getOperation()));
+        final RepositoryComponent component = this.repositoryResource.findObjectByTypeAndId(RepositoryComponent.class,
+                RepositoryPackage.Literals.REPOSITORY_COMPONENT,
+                this.repositoryResource.getInternalId(componentEntry.getComponent()));
+
         /** assembly is inferred from allocation. */
-        final AssemblyContext assemblyContext = this.assemblyContextProvider.readObjectById(
-                AssemblyContext.class, allocationContext.getAssemblyContext_AllocationContext().getId());
+        final AssemblyContext assemblyContext = this.assemblyResource.findObjectByTypeAndId(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                this.assemblyResource.getInternalId(allocationContext.getAssemblyContext_AllocationContext()));
 
         /** assemble event. */
         final PCMEntryCallEvent mappedEvent = new PCMEntryCallEvent(event.getEntryTime(), event.getExitTime(),
                 component, operationSignature, assemblyContext, allocationContext);
+
         this.outputPort.send(mappedEvent);
     }
 

@@ -15,19 +15,17 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.userbehavior;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +70,11 @@ public final class UserBehaviorTransformationTest {
     // @Test
     public void testBranchWithinLoop() throws IOException {
 
-        final ICorrespondence correspondenceModel = null; // TODO load that model
-        final GraphLoader graphLoader = new GraphLoader(null); // TODO fix location
-        final Graph graph = graphLoader.createModelGraph(RepositoryFactory.eINSTANCE);
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph,
-                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelResource<Repository> repositoryModelProvider = new ModelResource<>(RepositoryPackage.eINSTANCE,
+                new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
-                repositoryModelProvider.readRootNodeAndLock(Repository.class));
+                repositoryModelProvider.getAndLockModelRootNode(Repository.class,
+                        RepositoryPackage.Literals.REPOSITORY));
 
         final int numberOfIterations = 500;
         final int stepSize = 1;
@@ -91,12 +87,12 @@ public final class UserBehaviorTransformationTest {
             final boolean isClosedWorkload = UserBehaviorTransformationTest.CLOSED_WORKLOAD;
 
             final ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryLookupModel, correspondenceModel,
-                    thinkTime, isClosedWorkload);
+                    UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryLookupModel, null, thinkTime,
+                    isClosedWorkload);
 
             final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups,
-                    isClosedWorkload, thinkTime, repositoryLookupModel, correspondenceModel);
+                    isClosedWorkload, thinkTime, repositoryLookupModel, null);
 
             behaviorModeling.modelUserBehavior();
 

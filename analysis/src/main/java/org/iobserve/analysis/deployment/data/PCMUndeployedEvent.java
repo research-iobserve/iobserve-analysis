@@ -22,11 +22,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public class PCMUndeployedEvent {
+public class PCMUndeployedEvent implements IPCMDeploymentEvent {
 
     private final String service;
     private final AssemblyContext assemblyContext;
-    private ResourceContainer resourceContainer;
+    private final ResourceContainer resourceContainer;
+    private final long timestamp;
 
     /**
      * Create an model level undeployed event.
@@ -35,25 +36,36 @@ public class PCMUndeployedEvent {
      *            the deployed service
      * @param assemblyContext
      *            the correspondent for the component to be removed
+     * @param resourceContainer
+     *            resource container
+     * @param timestamp
+     *            observation timestamp
      */
-    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext) {
+    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
+            final ResourceContainer resourceContainer, final long timestamp) {
         this.service = service;
         this.assemblyContext = assemblyContext;
+        this.resourceContainer = resourceContainer;
+        this.timestamp = timestamp;
     }
 
+    @Override
     public final String getService() {
         return this.service;
     }
 
+    @Override
     public final AssemblyContext getAssemblyContext() {
         return this.assemblyContext;
     }
 
-    public void setResourceContainer(final ResourceContainer resourceContainer) {
-        this.resourceContainer = resourceContainer;
-    }
-
+    @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 }

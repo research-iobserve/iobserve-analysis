@@ -15,56 +15,153 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.service.privacy.violation.data.IProbeManagement;
-import org.iobserve.stages.data.Warnings;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
+import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of
  * probe activation and deactivation. Therefore, it requires internal knowledge of previous probe
  * activations.
  *
+ * @author Marc Adolf -- first complete class
  * @author Reiner Jung -- initial
  *
  */
 public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
-    private final OutputPort<IProbeManagement> outputPort = this.createOutputPort(IProbeManagement.class);
-    private final IModelProvider<Allocation> allocationModelGraphProvider;
-    private final IModelProvider<System> systemModelGraphProvider;
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
+
+    // Allocation and list of method names
+    private Map<AllocationContext, Set<OperationSignature>> currentActiveWarnings = new HashMap<>();
 
     /**
      * Create an initialize the model probe controller.
-     *
-     * @param allocationModelGraphProvider
-     *            allocation model provider
-     * @param systemModelGraphProvider
-     *            system model provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            resource environment model provider
      */
-    public ModelProbeController(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.systemModelGraphProvider = systemModelGraphProvider;
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public ModelProbeController() {
     }
 
     @Override
     protected void execute(final Warnings element) throws Exception {
-        // TODO Auto-generated method stub
+        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
+        final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
+                this.currentActiveWarnings);
+
+        if ((element.getWarningEdges() == null) || element.getWarningEdges().isEmpty()) {
+            this.logger.error("Received warning with empty edge list");
+            return;
+        }
+        for (final Edge edge : element.getWarningEdges()) {
+            // multiple methods per allocation possible
+            final AllocationContext allocation = edge.getSource().getAllocationContext();
+            Set<OperationSignature> methodSignatures = receivedWarnings.get(allocation);
+            // if not present, add new entry
+            if (methodSignatures == null) {
+                methodSignatures = new HashSet<>();
+            }
+            if (edge.getOperationSignature() != null) {
+                methodSignatures.add(edge.getOperationSignature());
+                receivedWarnings.put(allocation, methodSignatures);
+            } else {
+                this.logger.debug("Recevied warning without operation signature");
+            }
+
+        }
+        final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
+                receivedWarnings);
+
+        this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
+                probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
+
+        probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
+        this.outputPort.send(probeMethodInformation);
+    }
+
+    private ProbeManagementData computeWarningDifferences(
+            final Map<AllocationContext, Set<OperationSignature>> currentWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> receivedWarnings) {
+        Map<AllocationContext, Set<OperationSignature>> missingWarnings = new HashMap<>();
+        Map<AllocationContext, Set<OperationSignature>> addedWarnings = new HashMap<>();
+
+        missingWarnings = new HashMap<>();
+        addedWarnings = new HashMap<>();
+        final Map<AllocationContext, Set<OperationSignature>> newAllocationWarnings = new HashMap<>(receivedWarnings);
+        // already existing allocations
+        for (final AllocationContext allocation : currentWarnings.keySet()) {
+            final Set<OperationSignature> newMethodSet = receivedWarnings.get(allocation);
+            final Set<OperationSignature> currentMethods = currentWarnings.get(allocation);
+            // no new allocation -> all old methods have to be deactivated
+            if (newMethodSet == null) {
+                missingWarnings.put(allocation, currentMethods);
+            } else {
+                // current - new = missing methods = deactivate
+                final Set<OperationSignature> missingMethods = new HashSet<>(currentMethods);
+                missingMethods.removeAll(newMethodSet);
+                // new - current = added methods = activate
+                final Set<OperationSignature> addedMethods = new HashSet<>(newMethodSet);
+                addedMethods.removeAll(currentMethods);
+                if (!missingMethods.isEmpty()) {
+                    missingWarnings.put(allocation, missingMethods);
+                }
+                if (!addedMethods.isEmpty()) {
+                    addedWarnings.put(allocation, addedMethods);
+                }
+            }
+
+            // the remaining entries are completly new warnings and allocations
+            newAllocationWarnings.remove(allocation);
+
+        }
+
+        addedWarnings.putAll(newAllocationWarnings);
+
+        return new ProbeManagementData(addedWarnings, missingWarnings);
 
     }
 
-    public OutputPort<IProbeManagement> getOutputPort() {
+    private Map<AllocationContext, Set<OperationSignature>> computeNewWarningMap(
+            final Map<AllocationContext, Set<OperationSignature>> currentWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> addedWarnings,
+            final Map<AllocationContext, Set<OperationSignature>> missingWarnings) {
+        final Map<AllocationContext, Set<OperationSignature>> newWarningMap = new HashMap<>(currentWarnings);
+        for (final AllocationContext allocation : missingWarnings.keySet()) {
+            Set<OperationSignature> currentMethodSet = new HashSet<>();
+            if (currentWarnings.get(allocation) != null) {
+                currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            }
+            currentMethodSet.removeAll(missingWarnings.get(allocation));
+            if (currentMethodSet.isEmpty()) {
+                newWarningMap.remove(allocation);
+            } else {
+                newWarningMap.put(allocation, currentMethodSet);
+            }
+        }
+        for (final AllocationContext allocation : addedWarnings.keySet()) {
+            Set<OperationSignature> currentMethodSet = new HashSet<>();
+            if (currentWarnings.get(allocation) != null) {
+                currentMethodSet = new HashSet<>(currentWarnings.get(allocation));
+            }
+            currentMethodSet.addAll(addedWarnings.get(allocation));
+            if (currentMethodSet.isEmpty()) {
+                newWarningMap.remove(allocation);
+            } else {
+                newWarningMap.put(allocation, currentMethodSet);
+            }
+        }
+        return newWarningMap;
+    }
+
+    public OutputPort<ProbeManagementData> getOutputPort() {
         return this.outputPort;
     }
 

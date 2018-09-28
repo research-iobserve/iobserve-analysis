@@ -15,16 +15,23 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
+import java.util.Optional;
+
+import kieker.monitoring.core.controller.MonitoringController;
+import kieker.monitoring.timer.ITimeSource;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.EventConfigurationException;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * The filter checks if there exists an ResourceContainer for the deployment specified in the
@@ -44,8 +51,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
+    private static final ITimeSource TIME_SOURCE = MonitoringController.getInstance().getTimeSource();
+
     /** reference to resource environment model provider. */
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
@@ -54,31 +63,41 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     /**
      * Create an allocation event synthesizer stage.
      *
-     * @param resourceEnvironmentModelGraphProvider
+     * @param resourceEnvironmentModelResource
      *            the resource environment which is tested for a proper allocation
      */
-    public SynthesizeAllocationEventStage(
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+    public SynthesizeAllocationEventStage(final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource) {
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
     }
 
     @Override
-    protected void execute(final PCMDeployedEvent event) throws Exception {
-        final ResourceContainer resourceContainer = ResourceEnvironmentModelFactory.getResourceContainerByName(
-                this.resourceEnvironmentModelGraphProvider.readRootNode(ResourceEnvironment.class),
-                event.getService()).get();
+    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException {
+        if (event.getAssemblyContext() == null) {
+            throw new EventConfigurationException("Missing assembly context in PCMDeployedEvent");
+        }
+        this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
+                event.getAssemblyContext().getEntityName(), event.getCountryCode(), event.getResourceContainer(),
+                event.getService(), event.getUrl());
 
-        if (resourceContainer != null) {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
+        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
+                .getResourceContainerByName(resourceEnvironment, event.getService());
+
+        if (resourceContainer.isPresent()) {
+            this.logger.debug("Resource container {} exists.", event.getService());
             /** execution environment exists. Can deploy. */
-            event.setResourceContainer(resourceContainer);
+            event.setResourceContainer(resourceContainer.get());
             this.deployedOutputPort.send(event);
         } else {
+            this.logger.debug("Resource container {} missing, create allocation event", event.getService());
             /**
              * If the resource container with this serverName is not available, send an event to
              * TAllocation (creating the resource container) and forward the deployment event to
              * TDeployment (deploying on created resource container).
              */
-            this.allocationOutputPort.send(new ContainerAllocationEvent(event.getService()));
+            this.allocationOutputPort.send(new ContainerAllocationEvent(
+                    SynthesizeAllocationEventStage.TIME_SOURCE.getTime(), event.getService()));
             this.deployedRelayOutputPort.send(event);
         }
     }

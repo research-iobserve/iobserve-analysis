@@ -17,25 +17,22 @@ package org.iobserve.model.test.provider.neo4j;
 
 import java.util.List;
 
-import de.uka.ipd.sdq.stoex.DoubleLiteral;
-
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
+import org.iobserve.model.test.data.UsageModelDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
-import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * Test cases for the model provider using an usage model.
@@ -53,90 +50,114 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
-        this.testModel = this.testModelBuilder.getUsageModel();
-        this.factory = UsagemodelFactory.eINSTANCE;
+        this.testModel = this.usageModel;
+        this.ePackage = UsagemodelPackage.eINSTANCE;
         this.clazz = UsageModel.class;
+        this.eClass = UsagemodelPackage.Literals.USAGE_MODEL;
     }
 
+    /**
+     * Test whether we can create and send search for it by type.
+     */
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final List<String> collectedIds = modelProvider2.collectAllObjectIdsByType(UsageScenario.class);
+        final List<Long> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class,
+                UsagemodelPackage.Literals.USAGE_SCENARIO);
+
+        final long id = resource.getInternalId(writtenScenario);
 
         // There is only one usage scenario in the test model
         Assert.assertTrue(collectedIds.size() == 1);
 
-        Assert.assertTrue(writtenScenario.getId().equals(collectedIds.get(0)));
+        Assert.assertTrue(collectedIds.get(0).equals(id));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create and then read an object including containing elements.
+     */
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph("createThenReadContaining");
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final UsageModel readModel = (UsageModel) modelProvider.readOnlyContainingComponentById(UsageScenario.class,
-                writtenScenario.getId());
+        final UsageModel readModel = (UsageModel) resource.findContainingObjectById(UsageScenario.class,
+                UsagemodelPackage.Literals.USAGE_SCENARIO, resource.getInternalId(writtenScenario));
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether creating and then reading referencing objects works.
+     */
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadReferencing");
-
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
+                this.prefix, this.ePackage);
 
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         // Using usage scenario because usage model does not have an id
-        final List<EObject> readReferencingComponents = modelProvider
-                .readOnlyReferencingComponentsById(UsageScenario.class, writtenScenario.getId());
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+                UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
+                resource.getInternalId(writtenScenario));
+
+        final EObject buyABookBehavior = UsageModelDataFactory.findBehavior(this.usageModel,
+                UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
+        final EObject closedWorkload = UsageModelDataFactory
+                .findUsageScenario(this.usageModel, UsageModelDataFactory.USAGE_SCENARIO_GROUP_0)
+                .getWorkload_UsageScenario();
 
         // Only the scenario behavior and the closed workload reference the usage scenario
         for (final EObject readReferencingComponent : readReferencingComponents) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModelBuilder.getBuyBookScenarioBehaviour(),
-                    readReferencingComponent)
-                    || this.equalityHelper.equals(this.testModelBuilder.getClosedWorkload(), readReferencingComponent));
+            Assert.assertTrue(this.equalityHelper.comparePartition(buyABookBehavior, readReferencingComponent,
+                    buyABookBehavior.eClass())
+                    || this.equalityHelper.comparePartition(closedWorkload, readReferencingComponent,
+                            closedWorkload.eClass()));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create, update and then read the object for the DB with committed
+     * correctly.
+     *
+     * @throws NodeLookupException
+     */
     @Test
-    public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils
+                .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        final UsageScenario writtenUsageScenarioGroup0 = this.testModelBuilder.getUsageScenarioGroup0();
-        final ScenarioBehaviour writtenBuyBookScenarioBehaviour = this.testModelBuilder.getBuyBookScenarioBehaviour();
-        final EntryLevelSystemCall writtenGetQueryCall = this.testModelBuilder.getGetQueryCall();
-        final EntryLevelSystemCall writtenGetPriceCall = this.testModelBuilder.getGetPriceCall();
-
-        modelProvider.storeModelPartition(this.testModel);
+        final UsageScenario writtenUsageScenarioGroup0 = UsageModelDataFactory.findUsageScenario(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0);
+        final ScenarioBehaviour writtenBuyBookScenarioBehaviour = UsageModelDataFactory.findBehavior(this.usageModel,
+                UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
+        final EntryLevelSystemCall writtenGetQueryCall = UsageModelDataFactory.findSystemCallbyName(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0, UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR,
+                UsageModelDataFactory.QUERY_CALL);
+        final EntryLevelSystemCall writtenGetPriceCall = UsageModelDataFactory.findSystemCallbyName(this.usageModel,
+                UsageModelDataFactory.USAGE_SCENARIO_GROUP_0, UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR,
+                UsageModelDataFactory.PRICE_CALL);
+        resource.storeModelPartition(this.testModel);
 
         // Update the model by adding a loop for choosing several books
         final Loop shoppingLoop = UsagemodelFactory.eINSTANCE.createLoop();
@@ -161,62 +182,72 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         loopIteration.setLoop_LoopIteration(shoppingLoop);
         loopIteration.setSpecification("2");
 
-        modelProvider.updateObject(UsageModel.class, this.testModel);
+        resource.updatePartition(this.testModel);
 
-        final UsageModel readModel = modelProvider.readRootNode(UsageModel.class);
+        final UsageModel readModel = resource.getModelRootNode(UsageModel.class, this.eClass);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test create with subsequent delete sequence.
+     */
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        new ModelProvider<UsageScenario>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                .deleteObjectById(UsageScenario.class, writtenScenario.getId());
+        resource.deleteObject(writtenScenario);
 
         // Manually delete the root node (as it has no id), the double literal node (as it is not
         // contained anywhere) and the proxy nodes (as they are no containments in this graph)
-        try (final Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService().execute("MATCH (m:`" + UsageModel.class.getCanonicalName() + "`), (n:`"
-                    + DoubleLiteral.class.getCanonicalName() + "`), (o:`" + OperationSignature.class.getCanonicalName()
-                    + "`), (p:`" + OperationProvidedRole.class.getCanonicalName() + "`) DELETE n, m, o, p");
-            tx.success();
-        }
+        // try (final Transaction tx = graph.getGraphDatabaseService().beginTx()) {
+        // graph.getGraphDatabaseService().execute("MATCH (m:`" +
+        // UsageModel.class.getCanonicalName() + "`), (n:`"
+        // + DoubleLiteral.class.getCanonicalName() + "`), (o:`" +
+        // OperationSignature.class.getCanonicalName()
+        // + "`), (p:`" + OperationProvidedRole.class.getCanonicalName() + "`) DELETE n, m, o, p");
+        // tx.success();
+        // }
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        // Assert.assertTrue(this.isGraphEmpty(modelProvider));
 
-        graph.getGraphDatabaseService().shutdown();
+        final List<?> scenarios = resource.collectAllObjectsByType(UsageScenario.class,
+                UsagemodelPackage.Literals.USAGE_SCENARIO);
+
+        Assert.assertEquals("Usage scenario should all have been deleted.", scenarios.size(), 0);
+
+        resource.getGraphDatabaseService().shutdown();
     }
 
+    /**
+     * Test whether we can create and then delete the object including its data types correctly.
+     */
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
+        final ModelResource<UsageModel> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final UsageScenario writtenScenario = this.testModel.getUsageScenario_UsageModel().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        new ModelProvider<UsageScenario>(graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
-                .deleteObjectByIdAndDatatypes(UsageScenario.class, writtenScenario.getId(), true);
+        resource.deleteObjectByIdAndDatatype(UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
+                resource.getInternalId(writtenScenario), true);
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
 }

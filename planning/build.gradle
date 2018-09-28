@@ -1,14 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.PlanningMain'
-
-if (version.isEmpty()) {
-	System.err.println("version not set")
-}
-if (group.isEmpty()) {
-	System.err.println("group not set")
-}
+mainClassName = 'org.iobserve.planning.PlanningMain'
 
 dependencies {
 	compile project(":adaptationdata")
@@ -24,6 +17,8 @@ dependencies {
     compile 'commons-io:commons-io:2.5'
     compile 'org.json:json:20170516'
 
+    // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
+    // testCompile 'com.sun.net.httpserver:http:20070405'
 }
 
 clover {

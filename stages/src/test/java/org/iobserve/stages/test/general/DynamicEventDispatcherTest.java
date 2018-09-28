@@ -132,7 +132,7 @@ public class DynamicEventDispatcherTest { // NOCS, NOPMD test
                         DynamicEventDispatcherTest.TIME_UNIT, DynamicEventDispatcherTest.NUMBER_OF_RECORDS));
 
         /** allocation. */
-        this.allocationRecords.add(new ContainerAllocationEvent(DynamicEventDispatcherTest.URL));
+        this.allocationRecords.add(new ContainerAllocationEvent(0, DynamicEventDispatcherTest.URL));
 
         /** declare deployment records. */
         this.deploymentRecords.add(new ServletDeployedEvent(this.time++, DynamicEventDispatcherTest.SERVICE,
@@ -176,7 +176,7 @@ public class DynamicEventDispatcherTest { // NOCS, NOPMD test
                 DynamicEventDispatcherTest.CONTEXT, DynamicEventDispatcherTest.DEPLOYMENT_ID));
 
         /** allocation. */
-        this.deallocationRecords.add(new ContainerDeallocationEvent(DynamicEventDispatcherTest.URL));
+        this.deallocationRecords.add(new ContainerDeallocationEvent(0, DynamicEventDispatcherTest.URL));
 
         /** other records. */
         this.otherRecords.add(new GCRecord(this.time++, DynamicEventDispatcherTest.HOSTNAME,

@@ -26,7 +26,8 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
@@ -35,6 +36,7 @@ import org.junit.BeforeClass;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.powermock.api.mockito.PowerMockito;
 
 /**
@@ -51,10 +53,11 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationNoResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
+    private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
     /** stage under test. */
     private AllocationStage allocationStage;
@@ -71,35 +74,38 @@ public class AllocationNoResourceContainerTest {
     /**
      * Define the test situation in which a {@link ContainerAllocationEvent} is defined as input and
      * the specified {@link ResourceContainer} does not exist in the {@link ResourceEnvironment}.
+     *
+     * @throws NodeLookupException
      */
     @SuppressWarnings("unchecked")
     @Before
-    public void stubMocksNoResourceContainer() {
+    public void stubMocksNoResourceContainer() throws NodeLookupException {
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         /** mock for new graph provider */
         AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
-                .mock(ModelProvider.class);
+                .mock(ModelResource.class);
 
         this.allocationStage = new AllocationStage(
                 AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readRootNode(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT))
+                .thenReturn(AllocationNoResourceContainerTest.resourceEnvironment);
 
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
-                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
+                AllocationNoResourceContainerTest.resourceEnvironment, ImplementationLevelDataFactory.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
         Mockito.when(ResourceEnvironmentModelFactory.createResourceContainer(
-                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER);
+                AllocationNoResourceContainerTest.resourceEnvironment, ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(AllocationNoResourceContainerTest.resourceEnvironment
+                        .getResourceContainer_ResourceEnvironment().get(0));
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateObject(ResourceEnvironment.class, ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .updatePartition(AllocationNoResourceContainerTest.resourceEnvironment);
     }
 
     /**
@@ -121,7 +127,8 @@ public class AllocationNoResourceContainerTest {
         Assert.assertEquals("Wrong number of ResourceContainers relayed", 1, allocationFinishedEvents.size());
         Assert.assertEquals("Wrong number of create operations", 1, allocationEvents.size());
 
-        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
+        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(AllocationNoResourceContainerTest.resourceEnvironment
+                .getResourceContainer_ResourceEnvironment().get(0)));
         Assert.assertThat(allocationEvents.get(0), Is.is(ImplementationLevelDataFactory.CONTAINER_ALLOCATION_EVENT));
     }
 

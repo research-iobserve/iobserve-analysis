@@ -19,36 +19,35 @@ import java.io.File;
 import java.io.IOException;
 
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
+import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarationsPackage;
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.costPackage;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.file.FileModelHandler;
 import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.provider.file.AllocationModelHandler;
-import org.iobserve.model.provider.file.CloudProfileModelHandler;
-import org.iobserve.model.provider.file.CorrespondenceModelHandler;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.DesignDecisionModelHandler;
-import org.iobserve.model.provider.file.PrivacyModelHandler;
-import org.iobserve.model.provider.file.QMLDeclarationsModelHandler;
-import org.iobserve.model.provider.file.RepositoryModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
-import org.iobserve.model.provider.file.SystemModelHandler;
-import org.iobserve.model.provider.file.UsageModelHandler;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Giusa
  * @author Reiner Jung
  */
-public final class ModelImporter {
+public final class ModelImporter implements IModelImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelImporter.class);
 
@@ -91,78 +90,81 @@ public final class ModelImporter {
 
         final File[] files = modelsDirectory.listFiles();
 
-        URI uri = this.getUriFileModelType(files, RepositoryModelHandler.SUFFIX, false);
-        this.repositoryModel = new RepositoryModelHandler(this.resourceSet).load(uri);
+        this.repositoryModel = this.readRequiredModel(files, RepositoryPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, ResourceEnvironmentModelHandler.SUFFIX, false);
-        this.resourceEnvironmentModel = new ResourceEnvironmentModelHandler(this.resourceSet).load(uri);
+        this.resourceEnvironmentModel = this.readRequiredModel(files, ResourceenvironmentPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, SystemModelHandler.SUFFIX, false);
-        this.systemModel = new SystemModelHandler(this.resourceSet).load(uri);
+        this.systemModel = this.readRequiredModel(files, SystemPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, AllocationModelHandler.SUFFIX, false);
-        this.allocationModel = new AllocationModelHandler(this.resourceSet).load(uri);
+        this.allocationModel = this.readRequiredModel(files, AllocationPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, UsageModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.usageModel = new UsageModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.usageModel = null;
-        }
+        this.usageModel = this.readOptionalModel(files, UsagemodelPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, CorrespondenceModelHandler.SUFFIX, false);
-        this.correspondenceModel = new CorrespondenceModelHandler(this.resourceSet).load(uri);
+        this.cloudProfileModel = this.readOptionalModel(files, CloudprofilePackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, CloudProfileModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.cloudProfileModel = new CloudProfileModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.cloudProfileModel = null;
-        }
+        this.costModel = this.readOptionalModel(files, costPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, CostModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.costModel = new CostModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.costModel = null;
-        }
+        this.designDecisionModel = this.readOptionalModel(files, designdecisionPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, DesignDecisionModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.designDecisionModel = new DesignDecisionModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.designDecisionModel = null;
-        }
+        this.qmlDeclarationsModel = this.readOptionalModel(files, QMLDeclarationsPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, QMLDeclarationsModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.qmlDeclarationsModel = new QMLDeclarationsModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.qmlDeclarationsModel = null;
-        }
+        this.privacyModel = this.readOptionalModel(files, PrivacyPackage.eINSTANCE);
 
-        uri = this.getUriFileModelType(files, PrivacyModelHandler.SUFFIX, true);
-        if (uri != null) {
-            this.privacyModel = new PrivacyModelHandler(this.resourceSet).load(uri);
-        } else {
-            this.privacyModel = null;
-        }
+        this.correspondenceModel = this.readRequiredModel(files, CorrespondencePackage.eINSTANCE);
 
         EcoreUtil.resolveAll(this.resourceSet);
     }
 
-    private URI getUriFileModelType(final File[] files, final String suffix, final boolean optional)
+    /**
+     * Read a model form the array of files which contains a model specified by the given package.
+     *
+     * @param files
+     *            array
+     * @param ePackage
+     *            the model's root package
+     * @return returns the loaded model, if such model exists, else null
+     * @throws IOException
+     *             on io errors
+     */
+    private <T extends EObject> T readOptionalModel(final File[] files, final EPackage ePackage) throws IOException {
+        final URI uri = this.getUriFileModelType(files, ePackage.getName(), false);
+        if (uri != null) {
+            return new FileModelHandler<T>(this.resourceSet, ePackage).load(uri);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Read a model form the array of files which contains a model specified by the given package.
+     *
+     * @param files
+     *            array
+     * @param ePackage
+     *            the model's root package
+     * @return returns the loaded model
+     * @throws IOException
+     *             on io errors
+     */
+    private <T extends EObject> T readRequiredModel(final File[] files, final EPackage ePackage) throws IOException {
+        final URI uri = this.getUriFileModelType(files, ePackage.getName(), true);
+
+        return new FileModelHandler<T>(this.resourceSet, ePackage).load(uri);
+    }
+
+    private URI getUriFileModelType(final File[] files, final String suffix, final boolean required)
             throws IOException {
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
             if (suffix.equals(extension)) {
-                ModelImporter.LOGGER.debug("Reading model {}", nextFile.toString());
+                ModelImporter.LOGGER.info("Reading model {}", nextFile.toString());
                 return this.getUri(nextFile);
             }
         }
-        if (optional) {
+        if (!required) {
             return null;
         } else {
+            ModelImporter.LOGGER.error("Missing {} model.", suffix);
             throw new IOException("Missing " + suffix + " model.");
         }
     }
@@ -174,6 +176,7 @@ public final class ModelImporter {
     /**
      * @return allocation model
      */
+    @Override
     public Allocation getAllocationModel() {
         return this.allocationModel;
     }
@@ -181,6 +184,7 @@ public final class ModelImporter {
     /**
      * @return resource environment model
      */
+    @Override
     public ResourceEnvironment getResourceEnvironmentModel() {
         return this.resourceEnvironmentModel;
     }
@@ -188,6 +192,7 @@ public final class ModelImporter {
     /**
      * @return system model
      */
+    @Override
     public System getSystemModel() {
         return this.systemModel;
     }
@@ -195,6 +200,7 @@ public final class ModelImporter {
     /**
      * @return usage model
      */
+    @Override
     public UsageModel getUsageModel() {
         return this.usageModel;
     }
@@ -202,6 +208,7 @@ public final class ModelImporter {
     /**
      * @return correspondence model
      */
+    @Override
     public CorrespondenceModel getCorrespondenceModel() {
         return this.correspondenceModel;
     }
@@ -209,6 +216,7 @@ public final class ModelImporter {
     /**
      * @return repository model provider
      */
+    @Override
     public Repository getRepositoryModel() {
         return this.repositoryModel;
     }
@@ -216,6 +224,7 @@ public final class ModelImporter {
     /**
      * @return cloud profile model provider
      */
+    @Override
     public CloudProfile getCloudProfileModel() {
         return this.cloudProfileModel;
     }
@@ -223,6 +232,7 @@ public final class ModelImporter {
     /**
      * @return cost model
      */
+    @Override
     public CostRepository getCostModel() {
         return this.costModel;
     }
@@ -230,6 +240,7 @@ public final class ModelImporter {
     /**
      * @return design decision model
      */
+    @Override
     public DecisionSpace getDesignDecisionModel() {
         return this.designDecisionModel;
     }
@@ -237,6 +248,7 @@ public final class ModelImporter {
     /**
      * @return QML declarations model provider
      */
+    @Override
     public QMLDeclarations getQMLDeclarationsModel() {
         return this.qmlDeclarationsModel;
     }
@@ -254,17 +266,27 @@ public final class ModelImporter {
      * @param fileLocationURI
      *            the location directory for the snapshot
      */
+    @Override
     public void save(final URI fileLocationURI) {
-        new AllocationModelHandler(this.resourceSet).save(fileLocationURI, this.allocationModel);
-        new CloudProfileModelHandler(this.resourceSet).save(fileLocationURI, this.cloudProfileModel);
-        new CostModelHandler(this.resourceSet).save(fileLocationURI, this.costModel);
-        new DesignDecisionModelHandler(this.resourceSet).save(fileLocationURI, this.designDecisionModel);
-        new RepositoryModelHandler(this.resourceSet).save(fileLocationURI, this.repositoryModel);
-        new ResourceEnvironmentModelHandler(this.resourceSet).save(fileLocationURI, this.resourceEnvironmentModel);
-        new SystemModelHandler(this.resourceSet).save(fileLocationURI, this.systemModel);
-        new UsageModelHandler(this.resourceSet).save(fileLocationURI, this.usageModel);
-        new QMLDeclarationsModelHandler(this.resourceSet).save(fileLocationURI, this.qmlDeclarationsModel);
-        new PrivacyModelHandler(this.resourceSet).save(fileLocationURI, this.privacyModel);
+        new FileModelHandler<Allocation>(this.resourceSet, AllocationPackage.eINSTANCE).save(fileLocationURI,
+                this.allocationModel);
+        new FileModelHandler<CloudProfile>(this.resourceSet, CloudprofilePackage.eINSTANCE).save(fileLocationURI,
+                this.cloudProfileModel);
+        new FileModelHandler<CostRepository>(this.resourceSet, costPackage.eINSTANCE).save(fileLocationURI,
+                this.costModel);
+        new FileModelHandler<DecisionSpace>(this.resourceSet, designdecisionPackage.eINSTANCE).save(fileLocationURI,
+                this.designDecisionModel);
+        new FileModelHandler<Repository>(this.resourceSet, RepositoryPackage.eINSTANCE).save(fileLocationURI,
+                this.repositoryModel);
+        new FileModelHandler<ResourceEnvironment>(this.resourceSet, ResourceenvironmentPackage.eINSTANCE)
+                .save(fileLocationURI, this.resourceEnvironmentModel);
+        new FileModelHandler<System>(this.resourceSet, SystemPackage.eINSTANCE).save(fileLocationURI, this.systemModel);
+        new FileModelHandler<UsageModel>(this.resourceSet, UsagemodelPackage.eINSTANCE).save(fileLocationURI,
+                this.usageModel);
+        new FileModelHandler<QMLDeclarations>(this.resourceSet, QMLDeclarationsPackage.eINSTANCE).save(fileLocationURI,
+                this.qmlDeclarationsModel);
+        new FileModelHandler<PrivacyModel>(this.resourceSet, PrivacyPackage.eINSTANCE).save(fileLocationURI,
+                this.privacyModel);
     }
 
     /**
@@ -289,59 +311,4 @@ public final class ModelImporter {
         return URI.createFileURI(file.getAbsolutePath());
     }
 
-    public void printModelParititionAsTree(final EObject object, final String offset) {
-        java.lang.System.err.println(offset + "object " + object.eClass().getInstanceTypeName());
-        for (final EAttribute attr : object.eClass().getEAllAttributes()) {
-            final Object value = object.eGet(attr);
-            if (value != null) {
-                java.lang.System.err.println(offset + "\tattr " + attr.getName() + " " + value.toString());
-            }
-        }
-
-        for (final EReference ref : object.eClass().getEAllReferences()) {
-            if (ref.isContainment()) {
-                this.iterateContainment(object, ref, offset);
-            } else {
-                this.iterateReference(object, ref, offset);
-            }
-        }
-    }
-
-    private void iterateReference(final EObject object, final EReference ref, final String offset) {
-        final Object refRepresentation = object.eGet(ref);
-        if (refRepresentation instanceof EList<?>) {
-            final EList<?> refs = (EList<?>) object.eGet(ref);
-            for (int i = 0; i < refs.size(); i++) {
-                java.lang.System.err.println(offset + "\tref " + ref.getName() + "[" + i + "]" + " " + ref.eIsProxy());
-                this.iterateAttributes((EObject) refs.get(i), offset + "\t\t");
-            }
-        } else if (refRepresentation != null) {
-            java.lang.System.err.println(offset + "\tref " + ref.getName() + " " + ref.eIsProxy());
-            this.iterateAttributes((EObject) refRepresentation, offset + "\t\t");
-        }
-    }
-
-    private void iterateAttributes(final EObject object, final String offset) {
-        java.lang.System.err.println(offset + "object " + object.eClass().getInstanceTypeName());
-        for (final EAttribute attr : object.eClass().getEAllAttributes()) {
-            final Object value = object.eGet(attr);
-            if (value != null) {
-                java.lang.System.err.println(offset + "\tattr " + attr.getName() + " " + value.toString());
-            }
-        }
-    }
-
-    private void iterateContainment(final EObject object, final EReference ref, final String offset) {
-        final Object refRepresentation = object.eGet(ref);
-        if (refRepresentation instanceof EList<?>) {
-            final EList<?> refs = (EList<?>) object.eGet(ref);
-            for (int i = 0; i < refs.size(); i++) {
-                java.lang.System.err.println(offset + "\tcon " + ref.getName() + "[" + i + "]" + " " + ref.eIsProxy());
-                this.printModelParititionAsTree((EObject) refs.get(i), offset + "\t\t");
-            }
-        } else if (refRepresentation != null) {
-            java.lang.System.err.println(offset + "\tcon " + ref.getName() + " " + ref.eIsProxy());
-            this.printModelParititionAsTree((EObject) refRepresentation, offset + "\t\t");
-        }
-    }
 }

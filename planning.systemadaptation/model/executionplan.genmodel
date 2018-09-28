@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/planning.systemadaptation/src/gen/java" editDirectory="/planning.systemadaptation.edit/src/gen/java"
+    editorDirectory="/planning.systemadaptation.editor/src/gen/java" modelPluginID="planning.systemadaptation"
+    modelName="Executionplan" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    reflectiveDelegation="true" testsDirectory="/planning.systemadaptation.tests/src/gen/java"
+    importerID="org.eclipse.emf.importer.ecore" featureDelegation="Reflective" complianceLevel="8.0"
+    copyrightFields="false" usedGenPackages="../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
+    importOrganizing="true">
+  <foreignModel>executionplan.ecore</foreignModel>
+  <genPackages prefix="Executionplan" basePackage="org.iobserve.adaptation" resource="XMI"
+      disposableProviderFactory="true" ecorePackage="executionplan.ecore#/">
+    <genClasses ecoreClass="executionplan.ecore#//ExecutionPlan">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference executionplan.ecore#//ExecutionPlan/actions"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//Action"/>
+    <genClasses ecoreClass="executionplan.ecore#//AssemblyContextAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//AssemblyContextAction/targetAllocationContext"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//ResourceContainerAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//ResourceContainerAction/targetResourceContainer"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//DeployComponentAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//UndeployComponentAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//MigrateComponentStateAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//MigrateComponentStateAction/sourceAllocationContext"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//ConnectComponentAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//ConnectComponentAction/targetConnectors"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//BlockRequestsToComponentAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//DisconnectComponentAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//DisconnectComponentAction/targetConnectors"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//FinishComponentAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//AllocateNodeAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//DeallocateNodeAction"/>
+    <genClasses ecoreClass="executionplan.ecore#//ConnectNodeAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference executionplan.ecore#//ConnectNodeAction/targetConnectors"/>
+    </genClasses>
+    <genClasses ecoreClass="executionplan.ecore#//DisconnectNodeAction"/>
+  </genPackages>
+</genmodel:GenModel>

@@ -19,16 +19,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.CorrespondentFactory;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.AssemblyContextDataFactory;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +35,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Tests for {@link UndeploymentVisualizationStage}.
@@ -63,21 +62,15 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
     private static final String TEST_NODE_ID = "test_nodeId";
 
-    /** test correspondent. */
-    private static Correspondent testCorrespondent;
-    private static Optional<Correspondent> optTestCorrespondent;
-
     /** stage under test. */
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelResource<System> mockedSystemModelGraphProvider;
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
-    @Mock
-    private ICorrespondence mockedCorrespondenceModel;
+    private CorrespondenceModel mockedCorrespondenceModel;
 
     /** input events. */
     private final List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
@@ -105,22 +98,21 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
 
         this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(changelogURL,
                 UndeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
-                this.mockedAssemblyContextModelProvider, this.mockedSystemModelGraphProvider);
+                this.mockedSystemModelGraphProvider);
 
+        // TODO reimplement for current filters
         /** test correspondent */
-        UndeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
-                "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
-        UndeploymentVisualizationStageTest.optTestCorrespondent = Optional
-                .of(UndeploymentVisualizationStageTest.testCorrespondent);
+        // UndeploymentVisualizationStageTest.testCorrespondent =
+        // CorrespondentFactory.newInstance("test.org.pcm.entity",
+        // "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
+        // UndeploymentVisualizationStageTest.optTestCorrespondent = Optional
 
         /** test events */
         final String urlContext = UndeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
         final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
-
-        undeployedEvent.setResourceContainer(this.testResourceContainer);
+                null /* AssemblyContextDataFactory.ASSEMBLY_CONTEXT */, this.testResourceContainer, 0);
 
         /** input events */
         this.inputEvents.add(undeployedEvent);
@@ -137,17 +129,20 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.readObjectsByName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
+                ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
                 UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
-        Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
-                .thenReturn(UndeploymentVisualizationStageTest.optTestCorrespondent);
+        // TODO fix this
+        // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
+        // .thenReturn(UndeploymentVisualizationStageTest.optTestCorrespondent);
 
-        final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
-                + UndeploymentVisualizationStageTest.SERVICE;
-        Mockito.when(
-                this.mockedAssemblyContextModelProvider.readObjectsByName(AssemblyContext.class, asmContextName))
-                .thenReturn(this.testAssemblyContexts);
+        // final String asmContextName =
+        // UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
+        // + UndeploymentVisualizationStageTest.SERVICE;
+        // Mockito.when(this.mockedSystemModelGraphProvider.findObjectsByTypeAndName(AssemblyContext.class,
+        // CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
+        // .thenReturn(this.testAssemblyContexts);
 
     }
 

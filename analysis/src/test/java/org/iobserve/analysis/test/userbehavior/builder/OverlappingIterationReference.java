@@ -16,19 +16,20 @@
 package org.iobserve.analysis.test.userbehavior.builder;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.test.userbehavior.ReferenceElements;
 import org.iobserve.analysis.test.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.test.userbehavior.TestHelper;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -71,8 +72,8 @@ public final class OverlappingIterationReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
-            throws IOException {
+            final RepositoryLookupModelProvider repositoryLookupModelProvider,
+            final CorrespondenceModel correspondenceModel) throws IOException {
 
         // Creates a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -289,14 +290,15 @@ public final class OverlappingIterationReference {
      * @return return this call
      */
     private static AbstractUserAction createEntryLevelSystemCall(
-            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel,
-            final int index, final AbstractUserAction lastAction, final ScenarioBehaviour scenarioBehaviour) {
-        final Optional<Correspondent> correspondent = correspondenceModel.getCorrespondent(
-                ReferenceUsageModelBuilder.CLASS_SIGNATURE[index],
+            final RepositoryLookupModelProvider repositoryLookupModelProvider,
+            final CorrespondenceModel correspondenceModel, final int index, final AbstractUserAction lastAction,
+            final ScenarioBehaviour scenarioBehaviour) {
+        final OperationSignature operationSignature = CorrespondenceUtility.findModelElementForOperation(
+                correspondenceModel, Repository.class, ReferenceUsageModelBuilder.CLASS_SIGNATURE[index],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[index]);
-        if (correspondent.isPresent()) {
+        if (operationSignature != null) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent.get());
+                    .createEntryLevelSystemCall(repositoryLookupModelProvider, operationSignature);
             UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
             UsageModelFactory.connect(lastAction, entryLevelSystemCall);
 

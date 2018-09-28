@@ -30,60 +30,56 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author Melf Lorenzen
- * Implements the 4. phase of the
- * birch algorithm. The original
- * instances are clustered around
- * the centroids found through
- * previous clustering.
+ * @author Melf Lorenzen Implements the 4. phase of the birch algorithm. The original instances are
+ *         clustered around the centroids found through previous clustering.
  */
 public class Refinement extends AbstractConsumerStage<Object> {
-   
+
     private final OutputPort<Instances> outputPort = this.createOutputPort();
-    
-	private Instances instances;
-	
+
+    private Instances instances;
+
     private List<ClusteringFeature> clustering;
-    	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void execute(final Object object) throws Exception {
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void execute(final Object object) throws Exception {
         if (object instanceof Instances) {
             this.instances = (Instances) object;
         } else if (object instanceof List<?>) {
             this.clustering = (List<ClusteringFeature>) object;
         }
-        
+
         if (this.clustering != null && this.instances != null) {
-        	refineClustering();
+            this.refineClustering();
         }
-	}
-	
-	private void refineClustering() {
-		final Map<ClusteringFeature, ClusteringFeature> finalClustering = new HashMap<>();
-		for (ClusteringFeature cf : this.clustering) {
-			finalClustering.put(cf, new ClusteringFeature(cf.getDimension()));
-		}
-		for (int i = 0; i < this.instances.numInstances(); i++) {
-			final ClusteringFeature cf = new ClusteringFeature(this.instances.instance(i));
-			/** find cfs NN in clustering */
-			final NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<>();
-			for (ClusteringFeature centroid : this.clustering) {
-					ranking.put(centroid.compare(cf), centroid);
-			}
-			final ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
-			/** add to correct cluster */
-			finalClustering.get(nearestNeighbor).add(cf);
-		}
-    	instances.delete();
-    	for (ClusteringFeature cf : finalClustering.values()) {
-    		instances.add(new Instance(1.0, cf.getCentroid()));
-    	}
-    	this.outputPort.send(instances);
-	}
-    
-	public OutputPort<Instances> getOutputPort() {
-		return outputPort;
-	}
+    }
+
+    private void refineClustering() {
+        final Map<ClusteringFeature, ClusteringFeature> finalClustering = new HashMap<>();
+        for (final ClusteringFeature clusteringFeature : this.clustering) {
+            finalClustering.put(clusteringFeature, new ClusteringFeature(clusteringFeature.getDimension()));
+        }
+        for (int i = 0; i < this.instances.numInstances(); i++) {
+            final ClusteringFeature cf = new ClusteringFeature(this.instances.instance(i));
+            /** find cfs NN in clustering */
+            final NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<>();
+            for (final ClusteringFeature centroid : this.clustering) {
+                ranking.put(centroid.compare(cf), centroid);
+            }
+            final ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
+            /** add to correct cluster */
+            finalClustering.get(nearestNeighbor).add(cf);
+        }
+        this.instances.delete();
+        for (final ClusteringFeature cf : finalClustering.values()) {
+            this.instances.add(new Instance(1.0, cf.getCentroid()));
+        }
+        this.outputPort.send(this.instances);
+    }
+
+    public OutputPort<Instances> getOutputPort() {
+        return this.outputPort;
+    }
 
 }

@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="storage" nsURI="http://local/storage" nsPrefix="storage">
-  <eClassifiers xsi:type="ecore:EClass" name="Root">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="labels" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fixed" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="enumerate" eType="#//EnumValueExample"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="others" upperBound="-1"
-        eType="#//Other" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ifaceOthers" upperBound="-1"
-        eType="#//OtherInterface" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Other">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="OtherSubType" eSuperTypes="#//Other">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="label" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="other" eType="#//Other"
-        containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="OtherInterface" abstract="true" interface="true">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="next" eType="#//OtherInterface"
-        containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SpecialA" eSuperTypes="#//OtherInterface">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relate" eType="#//Other"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SpecialB" eSuperTypes="#//OtherInterface"/>
-  <eClassifiers xsi:type="ecore:EEnum" name="EnumValueExample">
-    <eLiterals name="A"/>
-    <eLiterals name="B" value="1"/>
-  </eClassifiers>
+  <eSubpackages name="two" nsURI="http://local/storage/two" nsPrefix="two">
+    <eClassifiers xsi:type="ecore:EClass" name="Two">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="links" upperBound="-1"
+          eType="#//two/Link" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Link">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="reference" eType="#//one/Other"/>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages name="one" nsURI="http://local/storage/one" nsPrefix="one">
+    <eClassifiers xsi:type="ecore:EClass" name="Root">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="labels" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="fixed" lowerBound="1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="enumerate" eType="#//one/EnumValueExample"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="others" upperBound="-1"
+          eType="#//one/Other" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ifaceOthers" upperBound="-1"
+          eType="#//one/OtherInterface" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Other">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OtherSubType" eSuperTypes="#//one/Other">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="label" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="other" eType="#//one/Other"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OtherInterface" abstract="true" interface="true">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="next" eType="#//one/OtherInterface"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="SpecialA" eSuperTypes="#//one/OtherInterface">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="relate" eType="#//one/Other"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="SpecialB" eSuperTypes="#//one/OtherInterface"/>
+    <eClassifiers xsi:type="ecore:EEnum" name="EnumValueExample">
+      <eLiterals name="A"/>
+      <eLiterals name="B" value="1"/>
+    </eClassifiers>
+  </eSubpackages>
 </ecore:EPackage>

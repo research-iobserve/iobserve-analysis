@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.planning.peropteryx;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +31,9 @@ public abstract class AbstractExecutionWrapper {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutionWrapper.class);
 
-    private final URI inputModelDir;
-    private final URI perOpteryxDir;
-    private final URI lqnsDir;
+    private final File inputModelDir;
+    private final File perOpteryxDir;
+    private final File lqnsDir;
 
     /**
      * The constructor.
@@ -45,7 +45,7 @@ public abstract class AbstractExecutionWrapper {
      * @param lqnsDir
      *            layered queuing networks directory
      */
-    public AbstractExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) {
+    public AbstractExecutionWrapper(final File inputModelDir, final File perOpteryxDir, final File lqnsDir) {
         this.inputModelDir = inputModelDir;
         this.perOpteryxDir = perOpteryxDir;
         this.lqnsDir = lqnsDir;
@@ -96,18 +96,18 @@ public abstract class AbstractExecutionWrapper {
     /**
      * @return the inputModelDir
      */
-    protected URI getInputModelDir() {
+    protected File getInputModelDir() {
         return this.inputModelDir;
     }
 
     /**
      * @return the perOpteryxDir
      */
-    protected URI getPerOpteryxDir() {
+    protected File getPerOpteryxDir() {
         return this.perOpteryxDir;
     }
 
-    protected URI getLQNSDir() {
+    protected File getLQNSDir() {
         return this.lqnsDir;
     }
 }

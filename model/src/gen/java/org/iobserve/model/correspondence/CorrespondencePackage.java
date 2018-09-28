@@ -4,6 +4,7 @@ package org.iobserve.model.correspondence;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -101,7 +102,90 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getPart()
      * @generated
      */
-    int PART = 1;
+    int PART = 2;
+
+    /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.AbstractEntryImpl <em>Abstract Entry</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.impl.AbstractEntryImpl
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAbstractEntry()
+     * @generated
+     */
+    int ABSTRACT_ENTRY = 3;
+
+    /**
+     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY__IMPLEMENTATION_ID = 0;
+
+    /**
+     * The number of structural features of the '<em>Abstract Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY_FEATURE_COUNT = 1;
+
+    /**
+     * The number of operations of the '<em>Abstract Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_ENTRY_OPERATION_COUNT = 0;
+
+    /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.DataTypeEntryImpl <em>Data Type Entry</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.impl.DataTypeEntryImpl
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getDataTypeEntry()
+     * @generated
+     */
+    int DATA_TYPE_ENTRY = 1;
+
+    /**
+     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY__IMPLEMENTATION_ID = ABSTRACT_ENTRY__IMPLEMENTATION_ID;
+
+    /**
+     * The feature id for the '<em><b>Data Type Entry</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY__DATA_TYPE_ENTRY = ABSTRACT_ENTRY_FEATURE_COUNT + 0;
+
+    /**
+     * The number of structural features of the '<em>Data Type Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+
+    /**
+     * The number of operations of the '<em>Data Type Entry</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATA_TYPE_ENTRY_OPERATION_COUNT = ABSTRACT_ENTRY_OPERATION_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Model Type</b></em>' reference.
@@ -140,43 +224,6 @@ public interface CorrespondencePackage extends EPackage {
     int PART_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.correspondence.impl.AbstractEntryImpl <em>Abstract Entry</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.iobserve.model.correspondence.impl.AbstractEntryImpl
-     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAbstractEntry()
-     * @generated
-     */
-    int ABSTRACT_ENTRY = 2;
-
-    /**
-     * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY__IMPLEMENTATION_ID = 0;
-
-    /**
-     * The number of structural features of the '<em>Abstract Entry</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY_FEATURE_COUNT = 1;
-
-    /**
-     * The number of operations of the '<em>Abstract Entry</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int ABSTRACT_ENTRY_OPERATION_COUNT = 0;
-
-    /**
      * The meta object id for the '{@link org.iobserve.model.correspondence.impl.ComponentEntryImpl <em>Component Entry</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -184,7 +231,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getComponentEntry()
      * @generated
      */
-    int COMPONENT_ENTRY = 3;
+    int COMPONENT_ENTRY = 4;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -230,7 +277,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAllocationEntry()
      * @generated
      */
-    int ALLOCATION_ENTRY = 4;
+    int ALLOCATION_ENTRY = 5;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -251,13 +298,22 @@ public interface CorrespondencePackage extends EPackage {
     int ALLOCATION_ENTRY__ALLOCATION = ABSTRACT_ENTRY_FEATURE_COUNT + 0;
 
     /**
+     * The feature id for the '<em><b>Technology</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ALLOCATION_ENTRY__TECHNOLOGY = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+
+    /**
      * The number of structural features of the '<em>Allocation Entry</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ALLOCATION_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 1;
+    int ALLOCATION_ENTRY_FEATURE_COUNT = ABSTRACT_ENTRY_FEATURE_COUNT + 2;
 
     /**
      * The number of operations of the '<em>Allocation Entry</em>' class.
@@ -276,7 +332,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getAssemblyEntry()
      * @generated
      */
-    int ASSEMBLY_ENTRY = 5;
+    int ASSEMBLY_ENTRY = 6;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -322,7 +378,7 @@ public interface CorrespondencePackage extends EPackage {
      * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getOperationEntry()
      * @generated
      */
-    int OPERATION_ENTRY = 6;
+    int OPERATION_ENTRY = 7;
 
     /**
      * The feature id for the '<em><b>Implementation Id</b></em>' attribute.
@@ -362,6 +418,17 @@ public interface CorrespondencePackage extends EPackage {
 
 
     /**
+     * The meta object id for the '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getEServiceTechnology()
+     * @generated
+     */
+    int ESERVICE_TECHNOLOGY = 8;
+
+
+    /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.CorrespondenceModel <em>Model</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -381,6 +448,27 @@ public interface CorrespondencePackage extends EPackage {
      * @generated
      */
     EReference getCorrespondenceModel_Parts();
+
+    /**
+     * Returns the meta object for class '{@link org.iobserve.model.correspondence.DataTypeEntry <em>Data Type Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Data Type Entry</em>'.
+     * @see org.iobserve.model.correspondence.DataTypeEntry
+     * @generated
+     */
+    EClass getDataTypeEntry();
+
+    /**
+     * Returns the meta object for the reference '{@link org.iobserve.model.correspondence.DataTypeEntry#getDataTypeEntry <em>Data Type Entry</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the reference '<em>Data Type Entry</em>'.
+     * @see org.iobserve.model.correspondence.DataTypeEntry#getDataTypeEntry()
+     * @see #getDataTypeEntry()
+     * @generated
+     */
+    EReference getDataTypeEntry_DataTypeEntry();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.Part <em>Part</em>}'.
@@ -478,6 +566,17 @@ public interface CorrespondencePackage extends EPackage {
     EReference getAllocationEntry_Allocation();
 
     /**
+     * Returns the meta object for the attribute '{@link org.iobserve.model.correspondence.AllocationEntry#getTechnology <em>Technology</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Technology</em>'.
+     * @see org.iobserve.model.correspondence.AllocationEntry#getTechnology()
+     * @see #getAllocationEntry()
+     * @generated
+     */
+    EAttribute getAllocationEntry_Technology();
+
+    /**
      * Returns the meta object for class '{@link org.iobserve.model.correspondence.AssemblyEntry <em>Assembly Entry</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -520,6 +619,16 @@ public interface CorrespondencePackage extends EPackage {
     EReference getOperationEntry_Operation();
 
     /**
+     * Returns the meta object for enum '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for enum '<em>EService Technology</em>'.
+     * @see org.iobserve.model.correspondence.EServiceTechnology
+     * @generated
+     */
+    EEnum getEServiceTechnology();
+
+    /**
      * Returns the factory that creates the instances of the model.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -559,6 +668,24 @@ public interface CorrespondencePackage extends EPackage {
          * @generated
          */
         EReference CORRESPONDENCE_MODEL__PARTS = eINSTANCE.getCorrespondenceModel_Parts();
+
+        /**
+         * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.DataTypeEntryImpl <em>Data Type Entry</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.model.correspondence.impl.DataTypeEntryImpl
+         * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getDataTypeEntry()
+         * @generated
+         */
+        EClass DATA_TYPE_ENTRY = eINSTANCE.getDataTypeEntry();
+
+        /**
+         * The meta object literal for the '<em><b>Data Type Entry</b></em>' reference feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference DATA_TYPE_ENTRY__DATA_TYPE_ENTRY = eINSTANCE.getDataTypeEntry_DataTypeEntry();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.PartImpl <em>Part</em>}' class.
@@ -641,6 +768,14 @@ public interface CorrespondencePackage extends EPackage {
         EReference ALLOCATION_ENTRY__ALLOCATION = eINSTANCE.getAllocationEntry_Allocation();
 
         /**
+         * The meta object literal for the '<em><b>Technology</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute ALLOCATION_ENTRY__TECHNOLOGY = eINSTANCE.getAllocationEntry_Technology();
+
+        /**
          * The meta object literal for the '{@link org.iobserve.model.correspondence.impl.AssemblyEntryImpl <em>Assembly Entry</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -675,6 +810,16 @@ public interface CorrespondencePackage extends EPackage {
          * @generated
          */
         EReference OPERATION_ENTRY__OPERATION = eINSTANCE.getOperationEntry_Operation();
+
+        /**
+         * The meta object literal for the '{@link org.iobserve.model.correspondence.EServiceTechnology <em>EService Technology</em>}' enum.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.model.correspondence.EServiceTechnology
+         * @see org.iobserve.model.correspondence.impl.CorrespondencePackageImpl#getEServiceTechnology()
+         * @generated
+         */
+        EEnum ESERVICE_TECHNOLOGY = eINSTANCE.getEServiceTechnology();
 
     }
 
