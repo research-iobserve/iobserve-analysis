@@ -21,7 +21,7 @@ import teetime.framework.InputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -32,8 +32,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  */
 public interface IContainerManagementSinkStage {
 
-    Class<?>[] SIGNATURE = { Configuration.class, IModelProvider.class, IModelProvider.class, IModelProvider.class,
-            IModelProvider.class };
+    Class<?>[] SIGNATURE = { Configuration.class, ModelResource.class, ModelResource.class, ModelResource.class,
+            ModelResource.class };
 
     /**
      *

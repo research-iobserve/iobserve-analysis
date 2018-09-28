@@ -110,7 +110,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #PayloadAwareEntryCallEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public PayloadAwareEntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -128,7 +128,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #PayloadAwareEntryCallEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected PayloadAwareEntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -165,7 +165,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -236,7 +236,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

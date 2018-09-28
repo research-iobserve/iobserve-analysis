@@ -47,7 +47,7 @@ public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControl
         try {
             this.probeController.controlProbe(event);
         } catch (final RemoteControlFailedException e) {
-            final String alarmMessage = "could not send probe control event " + e.getMessage();
+            final String alarmMessage = "Could not send probe control event " + e.getMessage();
             final Alarms alarms = new Alarms();
             alarms.addMessage(alarmMessage);
             this.outputPort.send(alarms);

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.stages.data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,10 @@ import java.util.List;
  *
  */
 public interface IErrorMessages {
+
+    Date getDate();
+
+    void setDate(Date date);
 
     /**
      * Returns the list of saved messages.

@@ -21,8 +21,10 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -37,7 +39,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to system model provider. */
-    private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private final ModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -45,11 +47,11 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param allocationContextModelGraphProvider
+     * @param allocationModelResource
      *            system model access
      */
-    public UndeploymentModelUpdater(final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
-        this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
+    public UndeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
+        this.allocationModelResource = allocationModelResource;
     }
 
     /**
@@ -60,16 +62,18 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) {
+        this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
+                event.getResourceContainer());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
-                .readObjectsByName(AllocationContext.class, allocationContextName);
+        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndName(
+                AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
+                allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
-            this.allocationContextModelGraphProvider.deleteObjectById(AllocationContext.class,
-                    allocationContext.getId());
+            this.allocationModelResource.deleteObject(allocationContext);
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",

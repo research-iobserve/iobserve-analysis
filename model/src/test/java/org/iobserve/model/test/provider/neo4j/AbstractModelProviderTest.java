@@ -15,17 +15,20 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import java.io.File;
-
-import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.model.test.data.AllocationDataFactory;
+import org.iobserve.model.test.data.RepositoryModelDataFactory;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
+import org.iobserve.model.test.data.SystemDataFactory;
+import org.iobserve.model.test.data.UsageModelDataFactory;
 import org.junit.Before;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.ResourceIterator;
-import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * @author Reiner Jung
@@ -36,14 +39,19 @@ import org.neo4j.graphdb.Transaction;
  */
 public abstract class AbstractModelProviderTest<T extends EObject> {
 
-    protected final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+    protected final CompareModelPartitions equalityHelper = new CompareModelPartitions();
 
-    protected final TestModelBuilder testModelBuilder = new TestModelBuilder();
+    protected Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
+    protected System system = SystemDataFactory.createSystem(this.repository);
+    protected ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
+    protected Allocation allocation = AllocationDataFactory.createAllocation(this.system, this.resourceEnvironment);
+    protected UsageModel usageModel = UsageModelDataFactory.createUsageModel();
 
     protected String prefix;
+    protected EPackage ePackage;
     protected T testModel;
-    protected EFactory factory;
     protected Class<T> clazz;
+    protected EClass eClass;
 
     /**
      * Clears the graph db for the next test.
@@ -51,59 +59,4 @@ public abstract class AbstractModelProviderTest<T extends EObject> {
     @Before
     abstract void setUp();
 
-    /**
-     * Checks whether the graph of a given {@link ModelProvider} is empty.
-     *
-     * @param modelProvider
-     *            A model provider, containing a graph
-     * @return True if the graph is empty, false otherwise
-     */
-    protected boolean isGraphEmpty(final ModelProvider<T> modelProvider) {
-        boolean isEmpty = false;
-
-        try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
-            final ResourceIterator<Node> iterator = modelProvider.getGraph().getGraphDatabaseService().getAllNodes()
-                    .iterator();
-
-            isEmpty = !iterator.hasNext();
-            tx.success();
-        }
-
-        return isEmpty;
-    }
-
-    /**
-     * Prepare graph for model.
-     *
-     * @param name
-     *            test directory name
-     *
-     * @return the prepared graph
-     */
-    protected Graph prepareGraph(final String name) {
-        final File graphBaseDir = new File(
-                "./testdb/" + this.prefix + "." + this.factory.eClass().getName() + "." + name);
-
-        this.removeDirectory(graphBaseDir);
-
-        final GraphLoader graphLoader = new GraphLoader(graphBaseDir);
-        return graphLoader.createModelGraph(this.factory);
-    }
-
-    /**
-     * Delete directory tree.
-     *
-     * @param dir
-     *            directory
-     */
-    protected void removeDirectory(final File dir) {
-        if (dir.isDirectory()) {
-            for (final File file : dir.listFiles()) {
-                this.removeDirectory(file);
-            }
-            dir.delete();
-        } else {
-            dir.delete();
-        }
-    }
 }

@@ -19,19 +19,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
+import org.iobserve.model.test.data.RepositoryModelDataFactory;
+import org.iobserve.model.test.data.SystemDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.system.System;
-import org.palladiosimulator.pcm.system.SystemFactory;
+import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * Test cases for the model provider using a System model.
@@ -49,187 +52,200 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
     @Before
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
-        this.testModel = this.testModelBuilder.getSystem();
-        this.factory = SystemFactory.eINSTANCE;
+        this.testModel = this.system;
+        this.ePackage = SystemPackage.eINSTANCE;
         this.clazz = System.class;
+        this.eClass = SystemPackage.Literals.SYSTEM;
     }
 
     @Override
     @Test
     public void createThenReadByType() {
-        final Graph graph = this.prepareGraph("createThenReadByType");
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<String> collectedIds = modelProvider.collectAllObjectIdsByType(System.class);
-
-        for (final String id : collectedIds) {
-            Assert.assertTrue(this.testModel.getId().equals(id));
-        }
+        resource.storeModelPartition(this.testModel);
+        // TODO add actual test
 
     }
 
     @Override
     @Test
     public void createThenReadContaining() {
-        final Graph graph = this.prepareGraph("createThenReadContaining");
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
         final AssemblyContext ac = this.testModel.getAssemblyContexts__ComposedStructure().get(0);
 
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
-        final System readModel = (System) modelProvider.readOnlyContainingComponentById(AssemblyContext.class,
-                ac.getId());
+        final System readModel = (System) resource.findContainingObjectById(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(ac));
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Graph graph = this.prepareGraph("createThenReadReferencing");
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         final List<EObject> expectedReferencingComponents = new LinkedList<>();
         final List<EObject> readReferencingComponents;
 
-        expectedReferencingComponents.add(this.testModelBuilder.getBusinessQueryInputConnector());
-        expectedReferencingComponents.add(this.testModelBuilder.getBusinessPayConnector());
+        final Connector businessQueryConnector = SystemDataFactory.findConnector(this.system,
+                SystemDataFactory.BUSINESS_QUERY_CONNECTOR);
+        final Connector businessPayConnector = SystemDataFactory.findConnector(this.system,
+                SystemDataFactory.BUSINESS_PAY_CONNECTOR);
 
-        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
-                this.testModelBuilder.getBusinessOrderAssemblyContext().getId());
+        expectedReferencingComponents.add(businessQueryConnector);
+        expectedReferencingComponents.add(businessPayConnector);
+
+        final AssemblyContext context = SystemDataFactory.findAssemblyContext(this.system,
+                SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT);
+
+        readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
         // businessOrderContext
         Assert.assertTrue(readReferencingComponents.size() == 2);
 
-        Assert.assertTrue(this.equalityHelper.equals(expectedReferencingComponents, readReferencingComponents));
+        Assert.assertTrue(this.equalityHelper.comparePartitions(expectedReferencingComponents,
+                readReferencingComponents, readReferencingComponents.get(0).eClass()));
 
     }
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() {
-        final Graph graph = this.prepareGraph("createThenUpdateThenReadUpdated");
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-
-        modelProvider.storeModelPartition(this.testModel);
+        resource.storeModelPartition(this.testModel);
 
         // Update the model by renaming and removing the business context
         this.testModel.setEntityName("MyVideoOnDemandService");
 
-        this.testModel.getAssemblyContexts__ComposedStructure()
-                .remove(this.testModelBuilder.getBusinessOrderAssemblyContext());
-        this.testModel.getConnectors__ComposedStructure()
-                .remove(this.testModelBuilder.getBusinessQueryInputConnector());
-        this.testModel.getConnectors__ComposedStructure().remove(this.testModelBuilder.getBusinessPayConnector());
+        final AssemblyContext businessQueryAssemblyContext = SystemDataFactory.findAssemblyContext(this.system,
+                SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT);
+        final Connector businessQueryConnector = SystemDataFactory.findConnector(this.system,
+                SystemDataFactory.BUSINESS_QUERY_CONNECTOR);
+        final Connector businessPayConnector = SystemDataFactory.findConnector(this.system,
+                SystemDataFactory.BUSINESS_PAY_CONNECTOR);
+
+        this.testModel.getAssemblyContexts__ComposedStructure().remove(businessQueryAssemblyContext);
+        this.testModel.getConnectors__ComposedStructure().remove(businessQueryConnector);
+        this.testModel.getConnectors__ComposedStructure().remove(businessPayConnector);
 
         // Replace the business context by a context for groups of people placing an order
         final AssemblyContext sharedOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-        final AssemblyConnector sharedQueryInputConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
-        final AssemblyConnector sharedPayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
-
         sharedOrderContext.setEntityName("sharedOrderContext_org.myvideoondemandservice.orderComponent");
+        sharedOrderContext.setEncapsulatedComponent__AssemblyContext(RepositoryModelDataFactory
+                .findComponentByName(this.repository, RepositoryModelDataFactory.ORDER_COMPONENT));
 
+        final AssemblyContext queryInputAssemblyContext = SystemDataFactory.findAssemblyContext(this.system,
+                SystemDataFactory.QUERY_ASSEMBLY_CONTEXT);
+        final OperationProvidedRole providedInputRole = RepositoryModelDataFactory.findProvidedRole(
+                sharedOrderContext.getEncapsulatedComponent__AssemblyContext(),
+                RepositoryModelDataFactory.QUERY_PROVIDED_ROLE);
+        final OperationRequiredRole requiredInputRole = RepositoryModelDataFactory.findRequiredRole(
+                queryInputAssemblyContext.getEncapsulatedComponent__AssemblyContext(),
+                RepositoryModelDataFactory.QUERY_REQUIRED_ROLE);
+
+        final AssemblyConnector sharedQueryInputConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
         sharedQueryInputConnector.setEntityName("sharedQueryInput");
-        sharedQueryInputConnector.setProvidedRole_AssemblyConnector(this.testModelBuilder.getProvidedInputOperation());
-        sharedQueryInputConnector.setRequiredRole_AssemblyConnector(this.testModelBuilder.getRequiredInputOperation());
+        sharedQueryInputConnector.setProvidedRole_AssemblyConnector(providedInputRole);
+        sharedQueryInputConnector.setRequiredRole_AssemblyConnector(requiredInputRole);
         sharedQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(sharedOrderContext);
-        sharedQueryInputConnector
-                .setRequiringAssemblyContext_AssemblyConnector(this.testModelBuilder.getQueryInputAssemblyContext());
+        sharedQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(queryInputAssemblyContext);
 
+        final AssemblyContext paymentAssemblyContext = SystemDataFactory.findAssemblyContext(this.system,
+                SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT);
+        final OperationProvidedRole providedPayRole = RepositoryModelDataFactory.findProvidedRole(
+                paymentAssemblyContext.getEncapsulatedComponent__AssemblyContext(),
+                RepositoryModelDataFactory.PAYMENT_PROVIDED_ROLE);
+        final OperationRequiredRole requiredPayRole = RepositoryModelDataFactory.findRequiredRole(
+                sharedOrderContext.getEncapsulatedComponent__AssemblyContext(),
+                RepositoryModelDataFactory.PAYMENT_REQUIRED_ROLE);
+
+        final AssemblyConnector sharedPayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
         sharedPayConnector.setEntityName("sharedPayment");
-        sharedPayConnector.setProvidedRole_AssemblyConnector(this.testModelBuilder.getProvidedPayOperation());
-        sharedPayConnector.setRequiredRole_AssemblyConnector(this.testModelBuilder.getRequiredPayOperation());
-        sharedPayConnector
-                .setProvidingAssemblyContext_AssemblyConnector(this.testModelBuilder.getPaymentAssemblyContext());
+
+        sharedPayConnector.setProvidedRole_AssemblyConnector(providedPayRole);
+        sharedPayConnector.setRequiredRole_AssemblyConnector(requiredPayRole);
+        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(paymentAssemblyContext);
         sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
 
         this.testModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
         this.testModel.getConnectors__ComposedStructure().add(sharedQueryInputConnector);
         this.testModel.getConnectors__ComposedStructure().add(sharedPayConnector);
 
-        modelProvider.updateObject(System.class, this.testModel);
+        resource.updatePartition(this.testModel);
 
-        final System readModel = modelProvider.readRootNode(System.class);
+        final System readModel = resource.getModelRootNode(System.class, this.eClass);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
 
     @Override
     @Test
     public void createThenDeleteObject() {
-        final Graph graph = this.prepareGraph("createThenDeleteObject");
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
-        final System writtenModel = this.testModelBuilder.getSystem();
+        final System writtenModel = this.system;
 
-        modelProvider.storeModelPartition(writtenModel);
+        resource.storeModelPartition(writtenModel);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        modelProvider.deleteObjectById(System.class, writtenModel.getId());
+        resource.deleteObject(writtenModel);
 
-        // Manually delete the proxy nodes from the repository model
-        try (Transaction tx = graph.getGraphDatabaseService().beginTx()) {
-            graph.getGraphDatabaseService().execute("MATCH (n:`" + OperationProvidedRole.class.getCanonicalName()
-                    + "`), (m:`" + OperationRequiredRole.class.getCanonicalName() + "`) DELETE n, m");
-            tx.success();
-        }
+        final List<Long> collection = resource.collectAllObjectIdsByType(System.class, SystemPackage.Literals.SYSTEM);
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertEquals("The system should be deleted.", 0, collection.size());
     }
 
     @Override
     @Test
     public void createThenDeleteObjectAndDatatypes() {
-        final Graph graph = this.prepareGraph("createThenDeleteObjectAndDatatypes");
+        final ModelResource<System> resource = ModelProviderTestUtils
+                .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.deleteObjectByIdAndDatatype(System.class, SystemPackage.Literals.SYSTEM,
+                resource.getInternalId(this.testModel), true);
 
-        modelProvider.deleteObjectByIdAndDatatypes(System.class, this.testModel.getId(), true);
-
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
     }
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readObjectsByName(Class, String)} and asserts that it is equal to the
-     * one written to the graph.
+     * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
      */
     @Test
     public final void createThenReadByName() {
-        final Graph graph = this.prepareGraph("createThenReadByName");
+        final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByName",
+                this.prefix, this.ePackage);
 
-        final ModelProvider<System> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
-
-        final List<System> readModels = modelProvider.readObjectsByName(this.clazz, this.testModel.getEntityName());
+        final List<System> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
+                this.testModel.getEntityName());
 
         for (final System readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
+            Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
         }
 
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
 }

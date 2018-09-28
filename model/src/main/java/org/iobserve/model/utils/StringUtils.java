@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 /**
  * Utility class for string related stuff.
  *
- * TODO this class should not be necessary, as
+ * TODO this class should not be necessary
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa

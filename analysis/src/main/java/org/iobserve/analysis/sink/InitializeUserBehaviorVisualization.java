@@ -19,13 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * @author Josefine Wegert -- initial contribution
@@ -34,9 +36,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public class InitializeUserBehaviorVisualization {
 
-    private final IModelProvider<UsageModel> usageModelProvider;
+    private final ModelResource<UsageModel> usageModelProvider;
     private Object usageScenarios;
-    private final IModelProvider<System> systemModelProvider;
+    private final ModelResource<System> systemModelProvider;
 
     /**
      * Create the user bevahor visualization.
@@ -46,8 +48,8 @@ public class InitializeUserBehaviorVisualization {
      * @param usageModelGraphProvider
      *            usage model provier
      */
-    public InitializeUserBehaviorVisualization(final IModelProvider<System> systemModelGraphProvider,
-            final IModelProvider<UsageModel> usageModelGraphProvider) {
+    public InitializeUserBehaviorVisualization(final ModelResource<System> systemModelGraphProvider,
+            final ModelResource<UsageModel> usageModelGraphProvider) {
         this.systemModelProvider = systemModelGraphProvider;
         this.usageModelProvider = usageModelGraphProvider;
     }
@@ -68,10 +70,11 @@ public class InitializeUserBehaviorVisualization {
         for (int m = 0; m < entryLevelSystemCalls.size(); m++) {
             final EntryLevelSystemCall userStep = entryLevelSystemCalls.get(m);
 
-            final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
+            final Long providedRoleId = this.systemModelProvider
+                    .getInternalId(userStep.getProvidedRole_EntryLevelSystemCall());
 
-            final List<EObject> usergroupConnectors = this.systemModelProvider
-                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
+            final List<EObject> usergroupConnectors = this.systemModelProvider.collectReferencingObjectsByTypeAndId(
+                    OperationProvidedRole.class, RepositoryPackage.Literals.OPERATION_PROVIDED_ROLE, providedRoleId);
             final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
                     .get(0);
 
@@ -82,7 +85,7 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.readObjectByIdAndLock(UsageModel.class, "0");
+            this.usageModelProvider.findAndLockObjectById(UsageModel.class, UsagemodelPackage.Literals.USAGE_MODEL, 0L);
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

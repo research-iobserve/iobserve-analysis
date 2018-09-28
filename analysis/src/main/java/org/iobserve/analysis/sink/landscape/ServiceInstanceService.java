@@ -22,9 +22,11 @@ import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This class prepares data such that the visualization element serviceInstance is created. It has
@@ -85,12 +87,12 @@ public class ServiceInstanceService {
      */
 
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,
-            final String nodeId,
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final String nodeId, final ModelResource<System> systemModelGraphProvider) {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
-        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider
-                .readOnlyReferencingComponentsById(AssemblyContext.class, assemblyContext.getId());
+        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndId(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                systemModelGraphProvider.getInternalId(assemblyContext));
         // if so, delete all communicationInstances
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {

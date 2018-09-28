@@ -32,8 +32,8 @@ public class EntryCallEdge {
      * constructor.
      */
     public EntryCallEdge() {
-        this.source = null;
-        this.target = null;
+        this.source = null; // NOPMD
+        this.target = null; // NOPMD
         this.calls = 0;
     }
 
@@ -122,8 +122,7 @@ public class EntryCallEdge {
 
     @Override
     public int hashCode() {
-        // TODO Auto-generated method stub
-        return super.hashCode();
+        return new Double(this.calls).hashCode() + this.source.hashCode() + this.target.hashCode();
     }
 
     /**

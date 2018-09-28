@@ -33,6 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Composite stage designed to read one or more Kieker log directories. The stage provides one
+ * output port.
+ *
+ * TODO: Please note the filter uses deprecated stages. There is a better setup available in Kieker
+ * 1.15
+ *
  * @author Reiner Jung
  *
  */

@@ -23,15 +23,19 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +59,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final IModelProvider<Allocation> allocationModelProvider;
+    private final ModelResource<Allocation> allocationModelResource;
     /** reference to system model provider. */
-    private final IModelProvider<System> systemModelProvider;
+    private final ModelResource<System> systemModelResource;
     /** reference to resource environment model provider. */
-    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     /**
      * Create new TNetworkLink filter.
@@ -71,12 +75,12 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final IModelProvider<Allocation> allocationModelProvider,
-            final IModelProvider<System> systemModelProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
-        this.allocationModelProvider = allocationModelProvider;
-        this.systemModelProvider = systemModelProvider;
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    public NetworkLink(final ModelResource<Allocation> allocationModelProvider,
+            final ModelResource<System> systemModelProvider,
+            final ModelResource<ResourceEnvironment> resourceEnvironmentModelProvider) {
+        this.allocationModelResource = allocationModelProvider;
+        this.systemModelResource = systemModelProvider;
+        this.resourceEnvironmentModelResource = resourceEnvironmentModelProvider;
     }
 
     /**
@@ -84,14 +88,16 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      *
      * @param event
      *            event to use
+     * @throws NodeLookupException
      */
     @Override
-    protected void execute(final TraceMetadata event) {
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
-                .readRootNodeAndLock(ResourceEnvironment.class);
+    protected void execute(final TraceMetadata event) throws NodeLookupException {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource.getAndLockModelRootNode(
+                ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
 
-        final System system = this.systemModelProvider.readRootNode(System.class);
-        final Allocation allocation = this.allocationModelProvider.readRootNode(Allocation.class);
+        final System system = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);
+        final Allocation allocation = this.allocationModelResource.getModelRootNode(Allocation.class,
+                AllocationPackage.Literals.ALLOCATION);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
@@ -102,7 +108,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        this.resourceEnvironmentModelProvider.updateObject(ResourceEnvironment.class, resourceEnvironment);
+        this.resourceEnvironmentModelResource.updatePartition(resourceEnvironment);
     }
 
     /**

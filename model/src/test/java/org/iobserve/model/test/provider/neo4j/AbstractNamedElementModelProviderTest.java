@@ -15,8 +15,9 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.NamedElement;
@@ -30,37 +31,41 @@ import org.palladiosimulator.pcm.core.entity.NamedElement;
 public abstract class AbstractNamedElementModelProviderTest<T extends NamedElement>
         extends AbstractModelProviderTest<T> {
 
+    public static final String CREATE_THEN_CLONE_THEN_READ = "createThenCloneThenRead";
+    public static final String CREATE_THEN_CLEAR_GRAPH = "createThenClearGraph";
+    public static final String CREATE_THEN_READ_ROOT = "createThenReadRoot";
+
     /**
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
      * one written to the graph.
      */
-    @Test
-    abstract void createThenReadByType();
+    protected abstract void createThenReadByType();
 
     /**
      * Writes a model to the graph, reads the container of a certain model component from the graph
-     * using {@link ModelProvider#readOnlyContainingComponentById(Class, String)} and asserts that
-     * it is equal to the container from the original model.
+     * using {@link ModelProvider#readContainingObjectById(Class, String)} and asserts that it is
+     * equal to the container from the original model.
      */
-    @Test
-    abstract void createThenReadContaining();
+    protected abstract void createThenReadContaining();
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
-     * {@link ModelProvider#readOnlyReferencingComponentsById(Class, String)} and asserts that it is
-     * equal to the referencing components from the original model.
+     * {@link ModelProvider#collectReferencingObjectsByTypeAndId(Class, String)} and asserts that it
+     * is equal to the referencing components from the original model.
      */
     @Test
     abstract void createThenReadReferencing();
 
     /**
      * Writes a model to the graph, modifies the original model, updates it in the graph using
-     * {@link ModelProvider#updateObject(Class, org.eclipse.emf.ecore.EObject)}, reads the updated
-     * model from the graph and asserts that it is equal to the modified original model.
+     * {@link ModelProvider#updatePartition(Class, org.eclipse.emf.ecore.EObject)}, reads the
+     * updated model from the graph and asserts that it is equal to the modified original model.
+     *
+     * @throws NodeLookupException
      */
     @Test
-    abstract void createThenUpdateThenReadUpdated();
+    abstract void createThenUpdateThenReadUpdated() throws NodeLookupException;
 
     /**
      * Create, store and delete objects.
@@ -81,67 +86,59 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() {
-        final Graph storeGraph = this.prepareGraph("createThenCloneThenRead");
+        final ModelResource<T> storeResource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.ePackage);
 
-        final ModelProvider<T> storeModelProvider = new ModelProvider<>(storeGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        storeResource.storeModelPartition(this.testModel);
 
-        storeModelProvider.storeModelPartition(this.testModel);
+        final ModelResource<T> newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
+                storeResource);
 
-        final Graph cloneGraph = storeModelProvider.cloneNewGraphVersion(this.factory);
+        final T clonedModel = newRevisionResource.getModelRootNode(this.clazz, this.eClass);
+        newRevisionResource.getGraphDatabaseService().shutdown();
 
-        final ModelProvider<T> cloneModelProvider = new ModelProvider<>(cloneGraph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, clonedModel, clonedModel.eClass()));
 
-        final T clonedModel = cloneModelProvider.readRootNode(this.clazz);
-        cloneGraph.getGraphDatabaseService().shutdown();
-
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, clonedModel));
-
-        storeGraph.getGraphDatabaseService().shutdown();
+        storeResource.getGraphDatabaseService().shutdown();
     }
 
     /**
-     * Writes a model to the graph, clears the graph using {@link ModelProvider#clearGraph()} and
+     * Writes a model to the graph, clears the graph using {@link ModelProvider#clearResource()} and
      * asserts that the graph is empty afterwards.
      */
     @Test
-    public final void createThenClearGraph() {
-        final Graph graph = this.prepareGraph("createThenClearGraph");
+    public final void createThenClearResource() {
+        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.ePackage);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        resource.clearResource();
 
-        modelProvider.clearGraph();
+        Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
     /**
      * Writes a model to the graph, reads it from the graph using
-     * {@link ModelProvider#readRootNode(Class)} and asserts that it is equal to the one written to
-     * the graph.
+     * {@link ModelProvider#getModelRootNode(Class)} and asserts that it is equal to the one written
+     * to the graph.
      */
     @Test
     public final void createThenReadRoot() {
-        final Graph graph = this.prepareGraph("createThenReadRoot");
+        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
+                AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.ePackage);
 
-        final ModelProvider<T> modelProvider = new ModelProvider<>(graph, ModelProvider.PCM_ENTITY_NAME,
-                ModelProvider.PCM_ID);
+        resource.storeModelPartition(this.testModel);
 
-        modelProvider.storeModelPartition(this.testModel);
+        final T readModel = resource.getModelRootNode(this.clazz, this.eClass);
 
-        final T readModel = modelProvider.readRootNode(this.clazz);
+        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
-        Assert.assertTrue(this.equalityHelper.equals(this.testModel, readModel));
-
-        graph.getGraphDatabaseService().shutdown();
+        resource.getGraphDatabaseService().shutdown();
     }
 
 }

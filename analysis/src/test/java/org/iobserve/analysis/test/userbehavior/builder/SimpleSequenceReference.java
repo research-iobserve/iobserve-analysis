@@ -19,18 +19,21 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+
+import kieker.analysis.repository.annotation.Repository;
 
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.test.userbehavior.ReferenceElements;
 import org.iobserve.analysis.test.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.test.userbehavior.TestHelper;
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.Part;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -78,7 +81,7 @@ public final class SimpleSequenceReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel,
+            final RepositoryLookupModelProvider repositoryLookupModel, final CorrespondenceModel correspondenceModel,
             final int thinkTime, final boolean isClosedWorkload) throws IOException {
 
         // Creates a random number of user sessions and random model element parameters. The user
@@ -101,19 +104,22 @@ public final class SimpleSequenceReference {
 
         AbstractUserAction lastAction = start;
 
-        Optional<Correspondent> correspondent;
         // According to the randomly set length of the call sequence, EntryLevelSystemCalls are
         // created
         for (int i = 0; i < numberOfCalls; i++) {
+            final OperationSignature operation;
             if (i >= 0 && i < 5) {
-                correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
+                final Part part = CorrespondenceUtility.findPart(Repository.class, correspondenceModel);
+
+                operation = CorrespondenceUtility.findModelElementForOperation(part,
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
             } else {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (correspondent.isPresent()) {
+            if (operation != null) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryLookupModel, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModel, operation);
                 UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

@@ -25,14 +25,16 @@ import teetime.framework.test.StageTester;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.test.service.suites.VisualizationHttpTestServer;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Tests for {@link AllocationVisualizationStage}.
@@ -56,7 +58,7 @@ public class AllocationVisualizationStageTest {
 
     /** test parameters for stage under test. */
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
 
     /** input events. */
     private final List<ResourceContainer> inputEvents = new ArrayList<>();
@@ -92,7 +94,8 @@ public class AllocationVisualizationStageTest {
         this.inputEvents.add(testResourceContainer);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.readObjectsByName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
+                ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
                 AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
 
     }

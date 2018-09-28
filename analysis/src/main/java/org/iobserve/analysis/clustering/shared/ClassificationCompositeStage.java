@@ -63,71 +63,37 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
          * Create Clock. Default value of -1 was selected because the method getLongProperty states
          * it will return "null" if no value was specified, but long is a primitive type ...
          */
-        final Long triggerInterval = configuration.getLongProperty(ConfigurationKeys.TRIGGER_INTERVAL, -1);
-        if (triggerInterval < 0) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
-            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
-        }
         /** Get base URL for BehaviourVisualization */
-        final String visualizationURL = configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_VISUALIZATION_URL);
-        if (visualizationURL.isEmpty()) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No sink visualization URL specified.");
-            throw new ConfigurationException("Initialization incomplete: No sink visualization URL specified.");
-        }
+        final String visualizationURL = this.getRequiredStringProperty(configuration,
+                ConfigurationKeys.BEHAVIOR_VISUALIZATION_URL, "No sink visualization URL specified.");
+        configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_VISUALIZATION_URL);
 
         /** Get base URL for BehaviourModelSink */
-        final String baseURL = configuration.getStringProperty(ConfigurationKeys.SINK_BASE_URL);
-        if (baseURL.isEmpty()) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No sink base URL specified.");
-            throw new ConfigurationException("Initialization incomplete: No sink base URL specified.");
-        }
+        final String baseURL = this.getRequiredStringProperty(configuration, ConfigurationKeys.SINK_BASE_URL,
+                "No sink base URL specified.");
 
         /** Get keep time for user sessions */
-        final long keepTime = configuration.getLongProperty(ConfigurationKeys.KEEP_TIME, -1);
-        if (keepTime < 0) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No keep time interval specified.");
-            throw new ConfigurationException("Initialization incomplete: No keep time interval specified.");
-        }
+        final long keepTime = this.getRequiredLongProperty(configuration, ConfigurationKeys.KEEP_TIME,
+                "No keep time interval specified.", -1);
 
-        final int minCollectionSize = configuration.getIntProperty(ConfigurationKeys.MIN_SIZE, -1);
-        if (minCollectionSize < 0) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No min size for user sessions specified.");
-            throw new ConfigurationException("Initialization incomplete: No min size for user sessions specified.");
-        }
+        final int minCollectionSize = this.getRequiredIntProperty(configuration, ConfigurationKeys.MIN_SIZE,
+                "No min size for user sessions specified.", -1);
 
-        final double leafThresholdValue = configuration.getDoubleProperty(ConfigurationKeys.LEAF_TH, -1.0);
-        if (leafThresholdValue < 0) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No threshold for leafs specified.");
-            throw new ConfigurationException("Initialization incomplete: No threshold for leafs specified.");
-        }
+        final double leafThresholdValue = this.getRequiredDoubleProperty(configuration, ConfigurationKeys.LEAF_TH,
+                "No threshold for leafs specified.", -1);
 
-        final int maxLeafSize = configuration.getIntProperty(ConfigurationKeys.MAX_LEAF_SIZE, 7);
-        if (maxLeafSize < 0) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No max leaf size specified.");
-            throw new ConfigurationException("Initialization incomplete: No max leaf size specified.");
-        }
+        final int maxLeafSize = this.getRequiredIntProperty(configuration, ConfigurationKeys.MAX_LEAF_SIZE,
+                "No max leaf size specified.", 7);
 
-        final int maxNodeSize = configuration.getIntProperty(ConfigurationKeys.MAX_NODE_SIZE, -1);
-        if (maxNodeSize < 0) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No max node size specified.");
-            throw new ConfigurationException("Initialization incomplete: No max node size specified..");
-        }
+        final int maxNodeSize = this.getRequiredIntProperty(configuration, ConfigurationKeys.MAX_NODE_SIZE,
+                "No max node size specified.", -1);
 
-        final int maxLeafEntries = configuration.getIntProperty(ConfigurationKeys.MAX_LEAF_ENTRIES, -1);
-        if (maxLeafEntries < 0) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No max number of leaf entries specified.");
-            throw new ConfigurationException("Initialization incomplete: No max number of leaf entries specified.");
-        }
-        ClassificationCompositeStage.LOGGER.debug("Max leaf entries: " + maxLeafEntries);
-        final int expectedNumberOfClusters = configuration.getIntProperty(ConfigurationKeys.EXP_NUM_OF_CLUSTERS, -1);
-        if (expectedNumberOfClusters < 0) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No expected numbers of clusters specified.");
-            throw new ConfigurationException("Initialization incomplete: No expected numbers of clusters specified.");
-        }
+        final int maxLeafEntries = this.getRequiredIntProperty(configuration, ConfigurationKeys.MAX_LEAF_ENTRIES,
+                "No max number of leaf entries specified.", -1);
+        ClassificationCompositeStage.LOGGER.debug("Max leaf entries: {}", maxLeafEntries);
+
+        final int expectedNumberOfClusters = this.getRequiredIntProperty(configuration,
+                ConfigurationKeys.EXP_NUM_OF_CLUSTERS, "No expected numbers of clusters specified.", -1);
 
         /** Create remaining stages and connect them */
         final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(
@@ -144,10 +110,56 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
         this.eventBasedTraceInputPort = userSessionGeneratorCompositeStage.getTraceInputPort();
         this.sessionEventInputPort = userSessionGeneratorCompositeStage.getSessionEventInputPort();
 
-        this.connectPorts(userSessionGeneratorCompositeStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
+        this.connectPorts(userSessionGeneratorCompositeStage.getSessionOutputPort(),
+                classificationStage.getSessionInputPort());
         /** reconnect once SessionsToInstances filter has been modified */
-        this.connectPorts(userSessionGeneratorCompositeStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+        this.connectPorts(userSessionGeneratorCompositeStage.getTimerOutputPort(),
+                classificationStage.getTimerInputPort());
         this.connectPorts(classificationStage.getOutputPort(), behaviorModelSinkStage.getInputPort());
+    }
+
+    private String getRequiredStringProperty(final Configuration configuration, final String key, final String message)
+            throws ConfigurationException {
+        final String value = configuration.getStringProperty(key);
+        if (value.isEmpty()) {
+            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: {}", message);
+            throw new ConfigurationException("Initialization incomplete: " + message);
+        } else {
+            return value;
+        }
+    }
+
+    private int getRequiredIntProperty(final Configuration configuration, final String key, final String message,
+            final int defaultValue) throws ConfigurationException {
+        final int value = configuration.getIntProperty(key, defaultValue);
+        if (value < 0) {
+            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: {}", message);
+            throw new ConfigurationException("Initialization incomplete: " + message);
+        } else {
+            return value;
+        }
+    }
+
+    private long getRequiredLongProperty(final Configuration configuration, final String key, final String message,
+            final long defaultValue) throws ConfigurationException {
+        final long value = configuration.getLongProperty(key, defaultValue);
+        if (value < 0) {
+            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: {}", message);
+            throw new ConfigurationException("Initialization incomplete: " + message);
+        } else {
+            return value;
+        }
+    }
+
+    private double getRequiredDoubleProperty(final Configuration configuration, final String key, final String message,
+            final double defaultValue) throws ConfigurationException {
+        final double value = configuration.getDoubleProperty(key, defaultValue);
+        if (value < 0) {
+            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: {}", message);
+            throw new ConfigurationException("Initialization incomplete: " + message);
+        } else {
+            return value;
+        }
     }
 
     @Override

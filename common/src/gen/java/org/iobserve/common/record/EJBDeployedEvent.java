@@ -18,11 +18,13 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.EJBDescriptor;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.common.record.EJBDescriptor;
 
 /**
  * @author Reiner Jung
@@ -30,7 +32,7 @@ import org.iobserve.common.record.IDeployedEvent;
  * 
  * @since 0.0.2
  */
-public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {			
+public class EJBDeployedEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IDeployedEvent, EJBDescriptor {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
@@ -44,7 +46,11 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		String.class, // EJBDescriptor.deploymentId
 	};
 	
-	private static final long serialVersionUID = -5298761021303334329L;
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -2004438408341989115L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -54,6 +60,11 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		"deploymentId",
 	};
 	
+	/** property declarations. */
+	private final long timestamp;
+	private final String service;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -68,7 +79,10 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 *            deploymentId
 	 */
 	public EJBDeployedEvent(final long timestamp, final String service, final String context, final String deploymentId) {
-		super(timestamp, service, context, deploymentId);
+		this.timestamp = timestamp;
+		this.service = service == null?"":service;
+		this.context = context == null?"":context;
+		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
 
 	/**
@@ -78,11 +92,15 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public EJBDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	/**
@@ -93,11 +111,15 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected EJBDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	
@@ -108,13 +130,16 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 *            when the record could not be deserialized
 	 */
 	public EJBDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
+		this.service = deserializer.getString();
+		this.context = deserializer.getString();
+		this.deploymentId = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -165,7 +190,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -206,6 +231,25 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		}
 		
 		return true;
+	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	
+	public final String getService() {
+		return this.service;
+	}
+	
+	
+	public final String getContext() {
+		return this.context;
+	}
+	
+	
+	public final String getDeploymentId() {
+		return this.deploymentId;
 	}
 	
 }

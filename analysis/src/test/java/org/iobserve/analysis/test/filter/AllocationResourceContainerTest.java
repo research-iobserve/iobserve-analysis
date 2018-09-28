@@ -26,7 +26,7 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.powermock.api.mockito.PowerMockito;
 
 /**
@@ -49,7 +50,9 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+
+    private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
     /** stage under test. */
     private AllocationStage allocationStage;
@@ -75,21 +78,21 @@ public class AllocationResourceContainerTest {
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         /** mock for new graph provider */
-        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
+        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
 
         this.allocationStage = new AllocationStage(
                 AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readRootNode(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT))
+                .thenReturn(AllocationResourceContainerTest.resourceEnvironment);
 
-        Mockito.when(
-                ResourceEnvironmentModelFactory.getResourceContainerByName(
-                        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                                .readRootNode(ResourceEnvironment.class),
-                        ImplementationLevelDataFactory.SERVICE))
-                .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
+        Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
+                AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider.getModelRootNode(
+                        ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT),
+                ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(Optional.of(AllocationResourceContainerTest.resourceEnvironment
+                        .getResourceContainer_ResourceEnvironment().get(0)));
     }
 
     /**

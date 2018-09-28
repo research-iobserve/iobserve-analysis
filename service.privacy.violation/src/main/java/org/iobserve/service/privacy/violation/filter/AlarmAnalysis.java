@@ -30,6 +30,9 @@ public class AlarmAnalysis extends AbstractConsumerStage<Object> {
 
     private final OutputPort<Alarms> outputPort = this.createOutputPort(Alarms.class);
 
+    /**
+     * Create a new alarm analysis.
+     */
     public AlarmAnalysis() {
         // empty default constructor
     }

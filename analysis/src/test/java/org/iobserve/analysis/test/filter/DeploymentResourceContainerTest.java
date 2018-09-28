@@ -23,14 +23,16 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.analysis.test.data.ModelLevelDataFactory;
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
-import org.iobserve.model.test.data.AssemblyContextDataFactory;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
-import org.iobserve.model.test.data.ModelLevelData;
+import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.iobserve.model.test.data.SystemDataFactory;
 import org.junit.Assert;
@@ -41,9 +43,13 @@ import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
 import org.powermock.api.mockito.PowerMockito;
 
 /**
@@ -62,13 +68,17 @@ public class DeploymentResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelProvider<AllocationContext> allocationContextModelGraphProvider;
+    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelResource<Allocation> mockedAllocationModelGraphProvider;
     @Mock
-    private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
-    @Mock
-    private static ModelProvider<CorrespondenceModel> mockedCorrespondence;
+    private static ModelResource<CorrespondenceModel> mockedCorrespondence;
+
+    private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
+    private static Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
+    private static System system = SystemDataFactory.createSystem(DeploymentResourceContainerTest.repository);
+    private static Allocation allocation = AllocationDataFactory.createAllocation(
+            DeploymentResourceContainerTest.system, DeploymentResourceContainerTest.resourceEnvironment);
 
     /** stage under test. */
     private DeploymentModelUpdater deploymentModelUpdater;
@@ -81,29 +91,29 @@ public class DeploymentResourceContainerTest {
     public static void setUp() {
 
         /** mocks for model graph provider */
-        DeploymentResourceContainerTest.allocationContextModelGraphProvider = Mockito.mock(ModelProvider.class);
-        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
-        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelProvider.class);
+        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
+        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelResource.class);
 
         /** mock for correspondence model */
-        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ModelProvider.class);
+        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ModelResource.class);
     }
 
     /**
      * Define the test situation in which the needed {@link ResourceContainer} exists in the given
      * {@link ResourceEnvironment} model.
+     *
+     * @throws NodeLookupException
      */
     @Before
-    public void stubMocksResourceContainer() {
+    public void stubMocksResourceContainer() throws NodeLookupException {
 
         /** mock for ModelBuilder */
         // use PowerMockito for calling static methods of these final classes
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         PowerMockito.mockStatic(SystemModelFactory.class);
 
-        this.deploymentModelUpdater = new DeploymentModelUpdater(
-                DeploymentResourceContainerTest.mockedAllocationModelGraphProvider,
-                DeploymentResourceContainerTest.allocationContextModelGraphProvider);
+        this.deploymentModelUpdater = new DeploymentModelUpdater(DeploymentResourceContainerTest.mockedCorrespondence,
+                DeploymentResourceContainerTest.mockedAllocationModelGraphProvider);
 
         /** get models */
         // this makes no sense anymore
@@ -112,11 +122,12 @@ public class DeploymentResourceContainerTest {
         // .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
         Mockito.when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider
-                .readRootNode(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
+                .getModelRootNode(Allocation.class, AllocationPackage.Literals.ALLOCATION))
+                .thenReturn(DeploymentResourceContainerTest.allocation);
 
         Mockito.when(DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                .readRootNode(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
+                .getModelRootNode(ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT))
+                .thenReturn(DeploymentResourceContainerTest.resourceEnvironment);
 
         // TODO fix this
         // Mockito.when(DeploymentResourceContainerTest.allocationContextModelGraphProvider
@@ -124,23 +135,27 @@ public class DeploymentResourceContainerTest {
 
         /** get part of models */
 
-        Mockito.when(SystemModelFactory.getAssemblyContextByName(SystemDataFactory.SYSTEM,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT_NAME))
-                .thenReturn(Optional.of(AssemblyContextDataFactory.ASSEMBLY_CONTEXT));
+        Mockito.when(SystemModelFactory.getAssemblyContextByName(DeploymentResourceContainerTest.system,
+                DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0).getEntityName()))
+                .thenReturn(Optional
+                        .of(DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0)));
 
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
-                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
-                .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
+                DeploymentResourceContainerTest.resourceEnvironment, ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(Optional.of(DeploymentResourceContainerTest.resourceEnvironment
+                        .getResourceContainer_ResourceEnvironment().get(0)));
 
         /** interaction with graphs */
-        Mockito.when(SystemModelFactory.createAssemblyContextsIfAbsent(SystemDataFactory.SYSTEM,
-                ImplementationLevelDataFactory.SERVICE)).thenReturn(AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
+        Mockito.when(SystemModelFactory.createAssemblyContextsIfAbsent(DeploymentResourceContainerTest.system,
+                ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0));
 
-        this.addAllocationContext(AllocationDataFactory.ALLOCATION, ResourceEnvironmentDataFactory.RESOURCE_CONTAINER,
-                AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
+        this.addAllocationContext(DeploymentResourceContainerTest.allocation,
+                DeploymentResourceContainerTest.resourceEnvironment.getResourceContainer_ResourceEnvironment().get(0),
+                DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0));
 
         Mockito.doNothing().when(DeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updateObject(Allocation.class, AllocationDataFactory.ALLOCATION);
+                .updatePartition(DeploymentResourceContainerTest.allocation);
     }
 
     /**
@@ -171,7 +186,9 @@ public class DeploymentResourceContainerTest {
     public void checkNoDeploymentNeeded() {
 
         /** input deployment event */
-        final PCMDeployedEvent deploymentEvent = ModelLevelData.PCM_DEPLOYED_EVENT;
+        final PCMDeployedEvent deploymentEvent = ModelLevelDataFactory.createPCMDeployedEvent(
+                ISOCountryCode.EVIL_EMPIRE,
+                DeploymentResourceContainerTest.system.getAssemblyContexts__ComposedStructure().get(0));
         final List<PCMDeployedEvent> inputEvents = new ArrayList<>();
         inputEvents.add(deploymentEvent);
 
