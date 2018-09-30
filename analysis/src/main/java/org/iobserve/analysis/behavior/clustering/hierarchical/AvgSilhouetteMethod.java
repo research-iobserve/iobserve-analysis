@@ -58,7 +58,6 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
     public Map<Integer, List<Pair<Instance, Double>>> analyze() {
 
         AvgSilhouetteMethod.LOGGER.info("Starting AvgSilhouetteMethod");
-
         /*
          * AvgSil needs a maximum of clusters which is smaller that the number of instances in order
          * to work. Otherwise it will always chose the number of instances as the number of clusters
@@ -66,49 +65,53 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
          * each instance is perfectly clustered in their own cluster and therefore has a silhouette
          * of 1.
          */
-        final int maxNumOfClusters = this.instances.numInstances() / 4;
+        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+        if (this.instances != null) {
 
-        // Average silhouette for each cluster.
-        final List<Double> avgSilhouettes = new ArrayList<>();
-        for (int i = 1; i <= maxNumOfClusters; i++) {
+            /* Set this if the data set is very big to improve the result and the performance. */
+            // final int maxNumOfClusters = (int) Math.ceil((double) this.instances.numInstances() /
+            // 4);
+            final int maxNumOfClusters = (int) Math.ceil((double) this.instances.numInstances() / 2);
 
+            // Average silhouette for each cluster.
+            final List<Double> avgSilhouettes = new ArrayList<>();
+            for (int i = 1; i <= maxNumOfClusters; i++) {
+
+                try {
+                    final int numberOfClusters = i;
+                    this.hierarchicalClusterer.setNumClusters(numberOfClusters);
+                    this.hierarchicalClusterer.buildClusterer(this.instances);
+
+                    // Assignments of each data point the clusters.
+                    final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
+
+                    /*
+                     * Calculate the average dissimilarity of all data points in a cluster for all
+                     * clusters.
+                     */
+                    avgSilhouettes.add(this.calcAvgSilhouettes(assignments));
+
+                } catch (final Exception e) { // NOPMD NOCS api dependency
+                    AvgSilhouetteMethod.LOGGER.error("Hierarchical clustering failed.", e);
+                }
+            }
+
+            /*
+             * Find a "good" cluster number by looking for the clustering with the max average
+             * silhouette.
+             */
+            final int goodClustereNumber = this.findMaxAvgSilhouetteIndex(avgSilhouettes);
+
+            // Cluster given input data accordingly.
             try {
-                final int numberOfClusters = i;
-                this.hierarchicalClusterer.setNumClusters(numberOfClusters);
+                this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
                 this.hierarchicalClusterer.buildClusterer(this.instances);
-
-                // Assignments of each data point the clusters.
-                final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
-
-                /*
-                 * Calculate the average dissimilarity of all data points in a cluster for all
-                 * clusters.
-                 */
-                avgSilhouettes.add(this.calcAvgSilhouettes(assignments));
-
+                clusteringResults = ClusteringResultsBuilder.buildClusteringResults(this.instances,
+                        this.hierarchicalClusterer);
             } catch (final Exception e) { // NOPMD NOCS api dependency
-                AvgSilhouetteMethod.LOGGER.error("Hierarchical clustering failed.", e);
+                AvgSilhouetteMethod.LOGGER.error("Clustering at AvgSilhouette failed.", e);
             }
         }
-
-        /*
-         * Find a "good" cluster number by looking for the clustering with the max average
-         * silhouette.
-         */
-        final int goodClustereNumber = this.findMaxAvgSilhouetteIndex(avgSilhouettes);
-
-        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
-
-        // Cluster given input data accordingly.
-        try {
-            this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
-            this.hierarchicalClusterer.buildClusterer(this.instances);
-            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(this.instances,
-                    this.hierarchicalClusterer);
-        } catch (final Exception e) { // NOPMD NOCS api dependency
-            AvgSilhouetteMethod.LOGGER.error("Clustering at AvgSilhouette failed.", e);
-        }
-
         AvgSilhouetteMethod.LOGGER.info("AvgSilhouetteMethod done.");
         return clusteringResults;
     }
@@ -250,7 +253,7 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
                 final double oldMaxValue = maxValue;
                 maxValue = Math.max(oldMaxValue, avgSil);
                 if (maxValue > oldMaxValue) {
-                    maxIndex = i;
+                    maxIndex = i + 1;
                 }
             }
         }

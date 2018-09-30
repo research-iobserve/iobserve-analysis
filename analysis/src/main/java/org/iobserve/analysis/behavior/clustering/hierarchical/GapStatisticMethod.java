@@ -65,33 +65,35 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
     public Map<Integer, List<Pair<Instance, Double>>> analyze() {
 
         GapStatisticMethod.LOGGER.info("Starting GapStatisticMethod");
-        // Calculate sum of square error for each number of clusters.
-        final int maxNumberOfClusters = this.instances.numInstances();
-        final List<Double> essList = this.calcESSList(this.instances, maxNumberOfClusters);
+        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+        if (this.instances != null) {
 
-        /*
-         * Generate reference data sets with a random uniform distribution. For that, find min and
-         * max values for each attribute which will be the boundaries of possible values.
-         */
-        // Find min and max boundary values for each attribute of all instances.
-        this.findBoundaryValues();
-        /*
-         * Create numRefDataSets-many data sets with new instances with random attribute values in
-         * range of the boundary values.
-         */
-        final List<Instances> uniformDistrDatasets = new ArrayList<>();
-        // Contains for every uniform distributed data set a ESS list.
-        final List<List<Double>> essListForEachUniformDataset = new ArrayList<>();
-        for (int i = 0; i < GapStatisticMethod.numRefDataSets; i++) {
-            final Instances uniformDistrDataSet = this.createRandomInstancesWithBoundaries();
-            uniformDistrDatasets.add(uniformDistrDataSet);
-            essListForEachUniformDataset.add(this.calcESSList(uniformDistrDataSet, maxNumberOfClusters));
+            // Calculate sum of square error for each number of clusters.
+            final int maxNumberOfClusters = this.instances.numInstances();
+            final List<Double> essList = this.calcESSList(this.instances, maxNumberOfClusters);
+
+            /*
+             * Generate reference data sets with a random uniform distribution. For that, find min
+             * and max values for each attribute which will be the boundaries of possible values.
+             */
+            // Find min and max boundary values for each attribute of all instances.
+            this.findBoundaryValues();
+            /*
+             * Create numRefDataSets-many data sets with new instances with random attribute values
+             * in range of the boundary values.
+             */
+            final List<Instances> uniformDistrDatasets = new ArrayList<>();
+            // Contains for every uniform distributed data set a ESS list.
+            final List<List<Double>> essListForEachUniformDataset = new ArrayList<>();
+            for (int i = 0; i < GapStatisticMethod.numRefDataSets; i++) {
+                final Instances uniformDistrDataSet = this.createRandomInstancesWithBoundaries();
+                uniformDistrDatasets.add(uniformDistrDataSet);
+                essListForEachUniformDataset.add(this.calcESSList(uniformDistrDataSet, maxNumberOfClusters));
+            }
+
+            // Compute the estimated gap statistic.
+            clusteringResults = this.gapStatistics(essList, essListForEachUniformDataset);
         }
-
-        // Compute the estimated gap statistic.
-        final Map<Integer, List<Pair<Instance, Double>>> clusteringResults = this.gapStatistics(essList,
-                essListForEachUniformDataset);
-
         GapStatisticMethod.LOGGER.info("GapStatisticMethod done.");
 
         return clusteringResults;
@@ -113,7 +115,11 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
         // Calculate log of each ESS for calculating the Gap Statistic.
         final List<Double> logESS = new ArrayList<>();
         for (final Double entry : essList) {
-            logESS.add(Math.log(entry));
+            if (entry == 0.0) {
+                logESS.add(0.0);
+            } else {
+                logESS.add(Math.log(entry));
+            }
         }
         final List<List<Double>> logESSRef = new ArrayList<>();
         for (final List<Double> essListUniform : essListForEachUniformDataset) {
@@ -231,8 +237,6 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
 
                 // Get the assignments of each data point to the clusters.
                 final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
-                // Print AssignmentsString for debugging.
-                this.printAssignmentString(assignments);
 
                 // Calculate the error sum-of-squares for each cluster.
                 double s = 0.0;
@@ -314,6 +318,9 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      **/
     public double calcESS(final List<Integer> cluster) {
 
+        if ((cluster.size() == 0) || (cluster.size() == 1)) {
+            return 0.0;
+        }
         final DistanceFunction distanceFunction = this.hierarchicalClusterer.getDistanceFunction();
         final double[] sumAttValues = new double[this.instances.numAttributes()];
         for (int i = 0; i < cluster.size(); i++) {

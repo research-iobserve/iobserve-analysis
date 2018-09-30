@@ -17,7 +17,6 @@
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,47 +65,47 @@ public class ElbowMethod implements IClusterSelectionMethods {
     public Map<Integer, List<Pair<Instance, Double>>> analyze() {
 
         ElbowMethod.LOGGER.info("Starting ElbowMethod");
+        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>(); // NOPMD
+        if (this.instances != null) {
+            // Calculate sum of square error for each number of clusters.
+            final List<Double> wss = new ArrayList<>();
+            for (int i = 0; i < this.instances.numInstances(); i++) {
 
-        // Calculate sum of square error for each number of clusters.
-        final List<Double> wss = new ArrayList<>();
-        for (int i = 1; i <= this.instances.numInstances(); i++) {
+                try {
+                    final int numberOfClusters = i + 1;
+                    this.hierarchicalClusterer.setNumClusters(numberOfClusters);
+                    this.hierarchicalClusterer.buildClusterer(this.instances);
 
-            try {
-                final int numberOfClusters = i;
-                this.hierarchicalClusterer.setNumClusters(numberOfClusters);
-                this.hierarchicalClusterer.buildClusterer(this.instances);
+                    // Get the assignments of each data point to the clusters.
+                    final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
 
-                // Get the assignments of each data point to the clusters.
-                final List<ArrayList<Integer>> assignments = this.buildClusterAssignmentsList(numberOfClusters);
-
-                // Calculate the within-cluster sum-of-square for each cluster.
-                double s = 0.0;
-                for (int cluster = 0; cluster < numberOfClusters; cluster++) {
-                    if (!assignments.get(cluster).isEmpty()) {
-                        s += this.calcWSS(assignments.get(cluster));
+                    // Calculate the within-cluster sum-of-square for each cluster.
+                    double s = 0.0;
+                    for (int cluster = 0; cluster < numberOfClusters; cluster++) {
+                        if (!assignments.get(cluster).isEmpty()) {
+                            s += this.calcWSS(assignments.get(cluster));
+                        }
                     }
-                }
-                wss.add(i - 1, s);
+                    wss.add(i, s);
 
+                } catch (final Exception e) { // NOPMD NOCS api dependency
+                    ElbowMethod.LOGGER.error("Hierarchical clustering failed.", e);
+                }
+            }
+
+            // Find a "good" number of clusters by finding the elbow of the WSS.
+            final int goodClustereNumber = this.findElbow(wss);
+
+            // Cluster instances with the "good" number of clusters.
+            try {
+                this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
+                this.hierarchicalClusterer.buildClusterer(this.instances);
+                clusteringResults = ClusteringResultsBuilder.buildClusteringResults(this.instances,
+                        this.hierarchicalClusterer);
             } catch (final Exception e) { // NOPMD NOCS api dependency
-                ElbowMethod.LOGGER.error("Hierarchical clustering failed.", e);
+                ElbowMethod.LOGGER.error("Clustering at ElbowMethod failed.", e);
             }
         }
-
-        // Find a "good" number of clusters by finding the elbow of the WSS.
-        final int goodClustereNumber = this.findElbow(wss);
-
-        // Cluster instances with the "good" number of clusters.
-        Map<Integer, List<Pair<Instance, Double>>> clusteringResults = new HashMap<>();
-        try {
-            this.hierarchicalClusterer.setNumClusters(goodClustereNumber);
-            this.hierarchicalClusterer.buildClusterer(this.instances);
-            clusteringResults = ClusteringResultsBuilder.buildClusteringResults(this.instances,
-                    this.hierarchicalClusterer);
-        } catch (final Exception e) { // NOPMD NOCS api dependency
-            ElbowMethod.LOGGER.error("Clustering at ElbowMethod failed.", e);
-        }
-
         ElbowMethod.LOGGER.info("ElbowMethod done.");
         return clusteringResults;
     }
@@ -146,7 +145,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
     private int findElbow(final List<Double> wss) {
 
         // Filter zero values from the list.
-        wss.removeAll(Collections.singleton(0.0));
+        // wss.removeAll(Collections.singleton(0.0));
 
         final int wssSize = wss.size();
         final double startX = 1.0;
