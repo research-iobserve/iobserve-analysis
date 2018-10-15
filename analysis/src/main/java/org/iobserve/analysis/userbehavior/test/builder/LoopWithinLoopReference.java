@@ -69,7 +69,7 @@ public final class LoopWithinLoopReference {
      * @throws IOException
      *             on error
      */
-    public ReferenceElements getLoopWithinLoopReferenceModel(final String referenceUsageModelFileName,
+    public static ReferenceElements getModel(final String referenceUsageModelFileName,
             final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
             throws IOException {
 

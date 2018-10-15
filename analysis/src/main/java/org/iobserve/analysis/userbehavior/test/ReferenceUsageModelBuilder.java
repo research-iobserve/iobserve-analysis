@@ -34,17 +34,18 @@ package org.iobserve.analysis.userbehavior.test;
 public final class ReferenceUsageModelBuilder {
 
     // EntryCallEvents used to create the PCM EntryLevelSystemCalls
-    public static final String[] CLASS_SIGNATURE = { "de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale",
-            "tradingsystem_inventory_application_store.ejb.ITradingSystem_Inventory_Application_Store",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryStoreById",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryStockItem",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryLowStockItemsWithRespectToIncomingProducts", };
+    public static final String[] CLASS_SIGNATURE = { 
+    		"org.cocome.cloud.logic.webservice.store.StoreManager",
+            "org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk",
+            "org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk",
+            "org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk",
+            "org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner", };
     public static final String[] OPERATION_SIGNATURE = {
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale.Get ()",
-            "tradingsystem_inventory_application_store.ejb.ITradingSystem_Inventory_Application_Store.storeIf_flushDatabase9()",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryStoreById.Get()",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryStockItem.Get()",
-            "de.kit.ipd.cocome.cloud.serviceadapter.Services.queryLowStockItemsWithRespectToIncomingProducts.Get()", };
+            "public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO)",
+            "public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long)",
+            "public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String)",
+            "public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long)",
+            "public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long)", };
 
     /**
      * Utility class.

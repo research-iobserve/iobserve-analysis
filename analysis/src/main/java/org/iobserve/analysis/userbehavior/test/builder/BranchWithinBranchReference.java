@@ -72,8 +72,8 @@ public final class BranchWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final RepositoryModelProvider repositoryModelProvider,
-            final ICorrespondence correspondenceModel) throws IOException {
+    		final RepositoryModelProvider repositoryModelProvider,
+    		final ICorrespondence correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -96,10 +96,9 @@ public final class BranchWithinBranchReference {
         BranchWithinBranchReference.createUserSessions(branchTransitionCounter, listOfbranchTransitionCounterInterior,
                 numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, entryCallSequenceModel);
 
-        final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(usageModelBuilder,
-                repositoryModelProvider, correspondenceModel, numberOfTransitionsOfExteriorBranch,
-                numberOfTransitionsOfInteriorBranches, numberOfConcurrentUsers, branchTransitionCounter,
-                listOfbranchTransitionCounterInterior);
+        final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(repositoryModelProvider, 
+        		correspondenceModel, numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, 
+        		numberOfConcurrentUsers, branchTransitionCounter, listOfbranchTransitionCounterInterior);
 
         // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
         // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
@@ -193,11 +192,10 @@ public final class BranchWithinBranchReference {
      * @param listOfbranchTransitionCounterInterior
      * @return
      */
-    private static UsageModel createTheReferenceModel(final UsageModelBuilder usageModelBuilder,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
-            final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
-            final int numberOfConcurrentUsers, final List<Integer> branchTransitionCounter,
-            final List<List<Integer>> listOfbranchTransitionCounterInterior) {
+    private static UsageModel createTheReferenceModel(final RepositoryModelProvider repositoryModelProvider, 
+    		final ICorrespondence correspondenceModel, final int numberOfTransitionsOfExteriorBranch,
+    		final int numberOfTransitionsOfInteriorBranches, final int numberOfConcurrentUsers, 
+    		final List<Integer> branchTransitionCounter, final List<List<Integer>> listOfbranchTransitionCounterInterior) {
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
         Optional<Correspondent> optionCorrespondent;

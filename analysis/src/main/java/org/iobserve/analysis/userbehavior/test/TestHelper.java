@@ -111,15 +111,15 @@ public final class TestHelper {
      * @throws IOException
      *             on error
      */
-    public static void writeAccuracyResults(final List<AccuracyResults> accuracyResults) throws IOException {
+    public static void writeAccuracyResults(final List<AccuracyResults> accuracyResults, String outputPath) throws IOException {
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/AccuracyEvaluationResults");
-        writer.append("jc,srcc");
+        final FileWriter writer = new FileWriter(outputPath + ".csv");
+        writer.append("jc;srcc");
         writer.append('\n');
 
         for (final AccuracyResults accuracyResult : accuracyResults) {
             writer.append(String.valueOf(accuracyResult.getJc()));
-            writer.append(',');
+            writer.append(';');
             writer.append(String.valueOf(accuracyResult.getSrcc()));
             writer.append('\n');
         }
@@ -136,22 +136,24 @@ public final class TestHelper {
      * @throws IOException
      *             on error
      */
-    public static void writeRME(final List<Double> accuracyResults) throws IOException {
+    public static void writeRME(final List<Double> accuracyResults, String outputPath) throws IOException {
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/RMEResults");
+        final FileWriter writer = new FileWriter(outputPath + ".csv");
         writer.append("rme");
         writer.append('\n');
 
         double avg = 0;
 
         for (final Double rme : accuracyResults) {
-            writer.append(String.valueOf(rme));
+            writer.append(Double.toString(rme));
             writer.append('\n');
             avg += rme;
         }
 
         avg = avg / accuracyResults.size();
-        writer.append(String.valueOf(avg));
+        writer.append("average");
+        writer.append('\n');
+        writer.append(Double.toString(avg));
         writer.append('\n');
 
         writer.flush();

@@ -36,24 +36,38 @@ import org.iobserve.analysis.userbehavior.UserGroupExtraction;
  * @author David Peter, Robert Heinrich
  */
 public class ClusteringEvaluation {
-
-    // The number of user sessions of each user group defines the user group mix
-    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER = 2000;
-    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER = 2000;
-    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER = 4000;
     private static final String CUSTOMER_TAG = "Customer";
     private static final String STOCK_MANAGER_TAG = "StockManager";
     private static final String STORE_MANAGER_TAG = "StoreManager";
-    private static final int VARIANCE_VALUE = 10;
-    private static final int NUMBER_OF_EVALUATION_ITERATIONS = 1;
-
+    
     private EntryCallSequenceModel entryCallSequenceModel;
-    private List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter = new ArrayList<>();
+    
+    // Total number of sessions should equal 8000
+    private int numberOfSessionsOfGroupCustomer; // 2000 or 4000
+    private int numberOfSessionsOfGroupStockManager; // 2000 or 4000
+    private int numberOfSessionsOfGroupStoreManager; // 2000 or 4000
+    private int varianceValue; // 0 or 10
+    private int evaluationIterations;
+    private List<Integer> groupSplit;
+    private String outputPath;
 
     /**
      * Default constructor.
      */
-    public ClusteringEvaluation() {
+    public ClusteringEvaluation(int customerCount, int stockManagerCount, int storeManagerCount, int varianceValue, int evaluationIterations) {
+        // The number of user sessions of each user group defines the user group mix
+    	this.numberOfSessionsOfGroupCustomer = customerCount;
+    	this.numberOfSessionsOfGroupStockManager = stockManagerCount;
+    	this.numberOfSessionsOfGroupStoreManager = storeManagerCount;
+    	this.varianceValue = varianceValue;
+    	this.evaluationIterations = evaluationIterations;
+    	this.groupSplit = new ArrayList<>();
+    	int sessionCount = customerCount + stockManagerCount + storeManagerCount;
+    	this.groupSplit.add((customerCount * 100) / sessionCount );
+    	this.groupSplit.add((stockManagerCount * 100) / sessionCount);
+    	this.groupSplit.add((storeManagerCount * 100) / sessionCount);
+    	
+    	this.outputPath = "D:\\Dokumente\\Uni\\HiWi\\UsageBehaviourTransformationTest\\ClusteringEvaluation\\varianceOfUserGroups = " + varianceValue + "\\";
     }
 
     /**
@@ -63,19 +77,26 @@ public class ClusteringEvaluation {
      *             on error
      */
     public void evaluateTheClustering() throws IOException {
-
+    	String partitioningString = "" + this.groupSplit.get(0) + this.groupSplit.get(1) + this.groupSplit.get(2);
+    	String varianceString = " Variance " + this.varianceValue + " ";
+    	String iterationString = this.evaluationIterations + " Iterations";
+    	System.out.println("Start clustering evaluation " + partitioningString + varianceString + iterationString);
+    	final List<List<ClusterAssignmentsCounter>> clusteringResults = new ArrayList<>();
         final List<Double> sseValues = new ArrayList<>();
         final List<Double> mcValues = new ArrayList<>();
 
-        for (int j = 0; j < ClusteringEvaluation.NUMBER_OF_EVALUATION_ITERATIONS; j++) {
+        for (int j = 0; j < this.evaluationIterations; j++) {
             this.createCallSequenceModelWithVaryingUserGroups();
-            final double sse = this.performClustering();
+            List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter = new ArrayList<>();
+            final double sse = this.performClustering(listOfClusterAssignmentsCounter);
             sseValues.add(sse);
-            final double mc = this.calculateMC();
+            clusteringResults.add(listOfClusterAssignmentsCounter);
+            //refering to clusteringResults value that was set in performClustering();
+            final double mc = this.calculateMC(clusteringResults.get(j));
             mcValues.add(mc);
         }
 
-        this.writeResults(sseValues, mcValues);
+        this.writeResults(clusteringResults, sseValues, mcValues);
     }
 
     /**
@@ -85,7 +106,7 @@ public class ClusteringEvaluation {
      *
      * @return the calculated missclassification rate
      */
-    private double calculateMC() {
+    private double calculateMC(List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter) {
         double mc = 0;
 
         final List<Integer> assignmentsOfUserGroupCustomer = new ArrayList<>();
@@ -93,7 +114,7 @@ public class ClusteringEvaluation {
         final List<Integer> assignmentsOfUserGroupStoreManager = new ArrayList<>();
         // Counts the assignments of user sessions to the clusters
         // Thus, for each user group it is known to which clusters its user sessions are assigned
-        for (final ClusterAssignmentsCounter assignmentCounts : this.listOfClusterAssignmentsCounter) {
+        for (final ClusterAssignmentsCounter assignmentCounts : listOfClusterAssignmentsCounter) {
             if (assignmentCounts.getNumberOfUserGroupCustomer() > 0) {
                 assignmentsOfUserGroupCustomer.add(assignmentCounts.getNumberOfUserGroupCustomer());
             }
@@ -156,35 +177,81 @@ public class ClusteringEvaluation {
         }
 
         // Calculates the mean missclassification rate over all user groups
-        mc = mc / (ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER
-                + ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER
-                + ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER);
+        mc = mc / (this.numberOfSessionsOfGroupCustomer
+                + this.numberOfSessionsOfGroupStockManager
+                + this.numberOfSessionsOfGroupStoreManager);
 
         return mc * 100;
     }
 
-    private void writeResults(final List<Double> sseValues, final List<Double> mcValues) throws IOException {
+    private void writeResults(List<List<ClusterAssignmentsCounter>> clusteringResults, 
+    		List<Double> sseValues, List<Double> mcValues) throws IOException {
+    	
+    	String partitioningString = "" + this.groupSplit.get(0) + this.groupSplit.get(1) + this.groupSplit.get(2) + ".csv";
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/ClusteringEvaluationResults");
-        writer.append(
-                "NumberOfUserSessionsOfUserGroupCustomer,NumberOfUserSessionsOfUserGroupStockManager,NumberOfUserSessionsOfUserGroupStoreManager,SSE,MC");
-        writer.append('\n');
+        final FileWriter metricResultWriter = new FileWriter(this.outputPath + "ClusteringMetrics" + partitioningString);
+        metricResultWriter.append("SSE;MC");
+        metricResultWriter.append('\n');
+        
+        double sseValuesAverage = 0;
+        double mcValuesAverage = 0;
 
-        for (int j = 0; j < ClusteringEvaluation.NUMBER_OF_EVALUATION_ITERATIONS; j++) {
-            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER));
-            writer.append(',');
-            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER));
-            writer.append(',');
-            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER));
-            writer.append(',');
-            writer.append(String.valueOf(sseValues.get(j)));
-            writer.append(',');
-            writer.append(String.valueOf(mcValues.get(j)));
-            writer.append('\n');
+        for (int j = 0; j < this.evaluationIterations; j++) {
+        	metricResultWriter.append(String.valueOf(sseValues.get(j)));
+        	sseValuesAverage += sseValues.get(j);
+        	metricResultWriter.append(';');
+        	metricResultWriter.append(String.valueOf(mcValues.get(j)));
+        	mcValuesAverage += mcValues.get(j);
+        	metricResultWriter.append('\n');
         }
+        
+        sseValuesAverage = sseValuesAverage / this.evaluationIterations;
+        mcValuesAverage = mcValuesAverage / this.evaluationIterations;
+        
+        metricResultWriter.append("average");
+        metricResultWriter.append('\n');
+        metricResultWriter.append(Double.toString(sseValuesAverage));
+        metricResultWriter.append(';');
+        metricResultWriter.append(Double.toString(mcValuesAverage));
+        metricResultWriter.append('\n');
 
-        writer.flush();
-        writer.close();
+        metricResultWriter.flush();
+        metricResultWriter.close();
+        
+        final FileWriter clusteringResultWriter = new FileWriter(this.outputPath + "ClusteringResults" + partitioningString);
+  
+        //Not beautiful, but only way to force output
+    	for (List<ClusterAssignmentsCounter> clustering : clusteringResults) {
+    		clusteringResultWriter.append("UG;UGM");
+    		for(int i = 1; i <= clustering.size(); i++){
+            	clusteringResultWriter.append(";C" + i);
+            }
+            clusteringResultWriter.append('\n');
+    		for(int k = 0; k < 3; k++) {
+    			if(k == 0) {
+            		clusteringResultWriter.append("CR;" + this.groupSplit.get(k) + "%;");
+            	} else if (k == 1) {
+            		clusteringResultWriter.append("SKM;" + this.groupSplit.get(k) + "%;");
+            	} else if (k == 2) {
+            		clusteringResultWriter.append("SEM;" + this.groupSplit.get(k) + "%;");
+            	}
+    			for(ClusterAssignmentsCounter assignmentCounts : clustering) {
+    				if(k == 0) {
+                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupCustomer()));
+                	} else if (k == 1) {
+                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStockManager()));
+                	} else if (k == 2) {
+                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStoreManager()));
+                	}
+    				clusteringResultWriter.append(';');
+    			}
+    			clusteringResultWriter.append('\n');
+    		}
+    		clusteringResultWriter.append('\n');
+    	}
+        
+        clusteringResultWriter.flush();
+        clusteringResultWriter.close();
     }
 
     /**
@@ -196,13 +263,13 @@ public class ClusteringEvaluation {
     private void createCallSequenceModelWithVaryingUserGroups() throws IOException {
 
         final List<UserSession> userSessionsOfGroupCustomer = this.getUserSessions(
-                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER, ClusteringEvaluation.CUSTOMER_TAG);
+        		this.numberOfSessionsOfGroupCustomer, CUSTOMER_TAG);
         final List<UserSession> userSessionsOfGroupStockManager = this.getUserSessions(
-                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER,
-                ClusteringEvaluation.STOCK_MANAGER_TAG);
+        		this.numberOfSessionsOfGroupStockManager,
+                STOCK_MANAGER_TAG);
         final List<UserSession> userSessionsOfGroupStoreManager = this.getUserSessions(
-                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER,
-                ClusteringEvaluation.STORE_MANAGER_TAG);
+        		this.numberOfSessionsOfGroupStoreManager,
+                STORE_MANAGER_TAG);
         this.createCallSequencesForUserGroupCustomer(userSessionsOfGroupCustomer);
         this.createCallSequencesForUserGroupStockManager(userSessionsOfGroupStockManager);
         this.createCallSequencesForUserGroupStoreManager(userSessionsOfGroupStoreManager);
@@ -225,29 +292,28 @@ public class ClusteringEvaluation {
      * @return the sum of squared error of the executed clustering
      * @throws IOException
      */
-    private double performClustering() throws IOException {
+    private double performClustering(List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter) throws IOException {
 
         final UserGroupExtraction userGroupExtraction = new UserGroupExtraction(this.entryCallSequenceModel, 3,
-                ClusteringEvaluation.VARIANCE_VALUE, true);
+        		varianceValue, true);
         userGroupExtraction.extractUserGroups();
         final List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = userGroupExtraction
                 .getEntryCallSequenceModelsOfUserGroups();
-        this.listOfClusterAssignmentsCounter = new ArrayList<>();
 
         for (int i = 0; i < entryCallSequenceModelsOfUserGroups.size(); i++) {
             final ClusterAssignmentsCounter clusterAssignments = new ClusterAssignmentsCounter();
-            this.listOfClusterAssignmentsCounter.add(clusterAssignments);
+            listOfClusterAssignmentsCounter.add(clusterAssignments);
         }
 
         int index = 0;
         for (final EntryCallSequenceModel entryCallSequence : entryCallSequenceModelsOfUserGroups) {
             for (final UserSession userSession : entryCallSequence.getUserSessions()) {
-                if (userSession.getSessionId().equals(ClusteringEvaluation.CUSTOMER_TAG)) {
-                    this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupCustomer();
-                } else if (userSession.getSessionId().equals(ClusteringEvaluation.STORE_MANAGER_TAG)) {
-                    this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStoreManager();
-                } else if (userSession.getSessionId().equals(ClusteringEvaluation.STOCK_MANAGER_TAG)) {
-                    this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStockManager();
+                if (userSession.getSessionId().equals(CUSTOMER_TAG)) {
+                    listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupCustomer();
+                } else if (userSession.getSessionId().equals(STORE_MANAGER_TAG)) {
+                    listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStoreManager();
+                } else if (userSession.getSessionId().equals(STOCK_MANAGER_TAG)) {
+                    listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStockManager();
                 }
             }
             index++;
