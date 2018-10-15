@@ -56,9 +56,17 @@ public class UserSessionModelAggregator extends AbstractStage {
         if (timeTrigger != null) {
             // TODO please note this is a temporary measure, in future, we might just send the list
             // or stream of sessions.
-            this.userSessions.stream().filter(
-                    userSession -> userSession.getEntryTime() > timeTrigger - UserSessionModelAggregator.SLIDING_WINDOW)
-                    .forEach(userSession -> this.userSessions.remove(userSession));
+            for (int i = 0; i < this.userSessions.size(); i++) {
+                final UserSession userSession = this.userSessions.get(i);
+                if (userSession != null) {
+                    final Long entryTime = userSession.getEntryTime();
+                    final Long lowerBoundary = timeTrigger - UserSessionModelAggregator.SLIDING_WINDOW;
+                    if (entryTime < lowerBoundary) {
+                        this.userSessions.remove(i);
+                    }
+                }
+            }
+
             final UserSessionCollectionModel model = new UserSessionCollectionModel(this.userSessions);
             this.outputPort.send(model);
         }
