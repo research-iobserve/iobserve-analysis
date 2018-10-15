@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<one:Root xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:one="http://local/storage/one" name="root name" fixed="fixed value" enumerate="B">
+  <labels>label 1</labels>
+  <labels>label 2</labels>
+  <labels>label 3</labels>
+  <others name="first other"/>
+  <others name="second other"/>
+  <ifaceOthers xsi:type="one:SpecialA" relate="//@others.0">
+    <next xsi:type="one:SpecialB"/>
+  </ifaceOthers>
+  <ifaceOthers xsi:type="one:SpecialB">
+    <next xsi:type="one:SpecialA"/>
+  </ifaceOthers>
+</one:Root>
