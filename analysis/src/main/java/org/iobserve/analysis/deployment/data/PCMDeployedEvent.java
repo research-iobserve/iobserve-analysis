@@ -15,48 +15,65 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment.data;
 
-import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.model.correspondence.EServiceTechnology;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * @author Reiner Jung
  *
  */
-public class PCMDeployedEvent {
+public class PCMDeployedEvent implements IPCMDeploymentEvent {
 
+    private final EServiceTechnology technology;
     private final String service;
-    private final Correspondent correspondent;
+    private final AssemblyContext assemblyContext;
     private final String url;
     private ResourceContainer resourceContainer;
-    private final short countryCode; // NOPMD country code is short
+    private final ISOCountryCode countryCode;
+    private final long timestamp;
 
     /**
      * Create a deployment event which initialized values for service, correspondent, url, and
      * countryCode.
      *
+     * @param technology
+     *            type of service technology
      * @param service
      *            the service on which the component is deployed
-     * @param correspondent
-     *            the corresponding elemen in the PCM
+     * @param assemblyContext
+     *            the corresponding element in the PCM
      * @param url
      *            the service URL
-     * @param countryCode
+     * @param isoCountryCode
      *            the country code of the service in case that is available.
+     * @param timestamp
+     *            observation timestamp
      */
-    public PCMDeployedEvent(final String service, final Correspondent correspondent, final String url,
-            final short countryCode) { // NOPMD country code is short
+    public PCMDeployedEvent(final EServiceTechnology technology, final String service,
+            final AssemblyContext assemblyContext, final String url, final ISOCountryCode isoCountryCode,
+            final long timestamp) {
+        this.technology = technology;
         this.service = service;
-        this.correspondent = correspondent;
+        this.assemblyContext = assemblyContext;
         this.url = url;
-        this.countryCode = countryCode;
+        this.countryCode = isoCountryCode;
+        this.timestamp = timestamp;
     }
 
+    public final EServiceTechnology getTechnology() {
+        return this.technology;
+    }
+
+    @Override
     public final String getService() {
         return this.service;
     }
 
-    public final Correspondent getCorrespondent() {
-        return this.correspondent;
+    @Override
+    public final AssemblyContext getAssemblyContext() {
+        return this.assemblyContext;
     }
 
     public final String getUrl() {
@@ -67,12 +84,18 @@ public class PCMDeployedEvent {
         this.resourceContainer = resourceContainer;
     }
 
+    @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
     }
 
-    public final short getCountryCode() { // NOPMD NOCS country code is short
+    public final ISOCountryCode getCountryCode() {
         return this.countryCode;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
 }

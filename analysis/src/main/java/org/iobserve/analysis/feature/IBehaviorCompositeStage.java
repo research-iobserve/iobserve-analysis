@@ -16,9 +16,9 @@
 package org.iobserve.analysis.feature;
 
 import teetime.framework.InputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 
 /**
  * Generic interface for behavior analysis.
@@ -33,7 +33,7 @@ public interface IBehaviorCompositeStage {
      *
      * @return returns the trace port
      */
-    InputPort<EventBasedTrace> getEventBasedTracePort();
+    InputPort<EventBasedTrace> getEventBasedTraceInputPort();
 
     /**
      * get session input port.

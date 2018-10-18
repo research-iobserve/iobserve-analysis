@@ -15,11 +15,20 @@
  ***************************************************************************/
 package org.iobserve.adaptation.configurations;
 
+import java.io.File;
+
 import teetime.framework.Configuration;
 
-import org.iobserve.adaptation.AdaptationCalculation;
-import org.iobserve.adaptation.AdaptationPlanning;
-import org.iobserve.adaptation.SystemAdaptation;
+import org.iobserve.adaptation.stages.AdaptationDataCreator;
+import org.iobserve.adaptation.stages.AdaptationResultDistributor;
+import org.iobserve.adaptation.stages.AtomicActionComputation;
+import org.iobserve.adaptation.stages.ComposedActionComputation;
+import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
+import org.iobserve.adaptation.stages.ExecutionPlanSerialization;
+import org.iobserve.stages.model.ModelDir2ModelFilesStage;
+import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
+import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
+import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
 /**
  * Configuration for the stages of the adaptation service.
@@ -29,13 +38,89 @@ import org.iobserve.adaptation.SystemAdaptation;
  */
 public class AdaptationConfiguration extends Configuration {
 
-    public AdaptationConfiguration() {
-        final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-                new AdaptationPlanning());
+    /**
+     * Create an AdaptationConfiguration.
+     * 
+     * @param runtimeModelInputPort
+     *            runtime model input port
+     * @param redeploymentModelInputPort
+     *            redeployment model input port
+     * @param runtimeModelDirectory
+     *            runtime model directory
+     * @param redeploymentModelDirectory
+     *            redeployment model directory
+     * @param executionPlanURI
+     *            execution plan URI
+     * @param executionHostname
+     *            execution hostname
+     * @param executionPlanOutputPort
+     *            execution plan input port
+     * @param executionRuntimeModelOutputPort
+     *            execution runtime model input port
+     * @param executionRedeploymentModelOutputPort
+     *            execution redeployment model input port
+     */
+    public AdaptationConfiguration(final int runtimeModelInputPort, final int redeploymentModelInputPort,
+            final File runtimeModelDirectory, final File redeploymentModelDirectory, final File executionPlanURI,
+            final String executionHostname, final int executionPlanOutputPort,
+            final int executionRuntimeModelOutputPort, final int executionRedeploymentModelOutputPort) {
 
-        // TODO for lbl: Implement a way to pass data to the following stages
-        // Path Adaptation => Execution
-        // this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
+        final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
+                runtimeModelInputPort, runtimeModelDirectory);
+        final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
+                redeploymentModelInputPort, redeploymentModelDirectory);
+
+        final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
+        final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
+
+        final AdaptationDataCreator adaptationDataCreator = new AdaptationDataCreator();
+        final ComposedActionFactoryInitialization actionFactoryInitializer = new ComposedActionFactoryInitialization();
+        final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
+        final AtomicActionComputation atomicActionComputation = new AtomicActionComputation();
+        final ExecutionPlanSerialization executionPlanSerializer = new ExecutionPlanSerialization(executionPlanURI);
+        final AdaptationResultDistributor adaptationResultDistributor = new AdaptationResultDistributor(
+                runtimeModelDirectory, redeploymentModelDirectory);
+
+        final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+
+        final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
+                executionPlanOutputPort);
+        final SingleConnectionTcpWriterStage runtimeModelWriter = new SingleConnectionTcpWriterStage(executionHostname,
+                executionRuntimeModelOutputPort);
+        final SingleConnectionTcpWriterStage redeploymentModelWriter = new SingleConnectionTcpWriterStage(
+                executionHostname, executionRedeploymentModelOutputPort);
+
+        // TCP readers -> model collectors
+        this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());
+        this.connectPorts(redeploymentModelReader.getOutputPort(), redeploymentModelCollector.getInputPort());
+
+        // Model collectors -> adaptation data creation
+        this.connectPorts(runtimeModelCollector.getOutputPort(), adaptationDataCreator.getRuntimeModelInputPort());
+        this.connectPorts(redeploymentModelCollector.getOutputPort(),
+                adaptationDataCreator.getRedeploymentModelInputPort());
+
+        // Adaptation data creation -> action factory initialization
+        this.connectPorts(adaptationDataCreator.getOutputPort(), actionFactoryInitializer.getInputPort());
+
+        // Action factory initialization -> composed action computation
+        this.connectPorts(actionFactoryInitializer.getOutputPort(), composedActionComputation.getInputPort());
+
+        // Composed action computation -> atomic action computation (result: execution plan)
+        this.connectPorts(composedActionComputation.getOutputPort(), atomicActionComputation.getInputPort());
+
+        // Serialize execution plan in file
+        this.connectPorts(atomicActionComputation.getOutputPort(), executionPlanSerializer.getInputPort());
+
+        // Distribute adaptation results (execution plan and models) and send them to execution
+        this.connectPorts(executionPlanSerializer.getOutputPort(), adaptationResultDistributor.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getExecutionPlanOutputPort(), executionPlanWriter.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRuntimeModelDirectoryOutputPort(),
+                runtimeModelDir2ModelFiles.getInputPort());
+        this.connectPorts(adaptationResultDistributor.getRedeploymentModelDirectoryOutputPort(),
+                redeploymentModelDir2ModelFiles.getInputPort());
+        this.connectPorts(runtimeModelDir2ModelFiles.getOutputPort(), runtimeModelWriter.getInputPort());
+        this.connectPorts(redeploymentModelDir2ModelFiles.getOutputPort(), redeploymentModelWriter.getInputPort());
     }
 
 }

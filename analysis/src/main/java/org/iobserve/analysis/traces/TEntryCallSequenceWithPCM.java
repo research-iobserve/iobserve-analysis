@@ -23,10 +23,12 @@ import java.util.stream.Collectors;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.CorrespondenceUtility;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -43,11 +45,11 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
     private static final int USER_SESSION_THRESHOLD = 0;
 
     /** reference to the correspondence model. */
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModel correspondenceModel;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** output ports. */
-    private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    private final OutputPort<UserSessionCollectionModel> outputPort = this.createOutputPort();
 
     /**
      * Create this filter.
@@ -55,14 +57,15 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
      * @param correspondenceModel
      *            reference to the correspondence model
      */
-    public TEntryCallSequenceWithPCM(final ICorrespondence correspondenceModel) {
+    public TEntryCallSequenceWithPCM(final CorrespondenceModel correspondenceModel) {
         this.correspondenceModel = correspondenceModel;
     }
 
     @Override
     protected void execute(final PayloadAwareEntryCallEvent event) {
         /** check if operationEvent is from an known object */
-        if (this.correspondenceModel.containsCorrespondent(event.getClassSignature(), event.getOperationSignature())) {
+        if (CorrespondenceUtility.findModelElementForOperation(this.correspondenceModel, Repository.class,
+                event.getClassSignature(), event.getOperationSignature()) != null) {
 
             // add the event to the corresponding user session
             // in case the user session is not yet available, create one
@@ -83,7 +86,7 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
                     .collect(Collectors.toList());
 
             if (!listToSend.isEmpty()) {
-                this.outputPort.send(new EntryCallSequenceModel(listToSend));
+                this.outputPort.send(new UserSessionCollectionModel(listToSend));
             }
         }
     }
@@ -91,7 +94,7 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
     /**
      * @return output port
      */
-    public OutputPort<EntryCallSequenceModel> getOutputPort() {
+    public OutputPort<UserSessionCollectionModel> getOutputPort() {
         return this.outputPort;
     }
 

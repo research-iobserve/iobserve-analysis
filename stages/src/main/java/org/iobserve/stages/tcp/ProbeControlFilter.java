@@ -20,6 +20,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.stages.data.Alarms;
 import org.iobserve.stages.data.IErrorMessages;
+import org.iobserve.utility.tcp.IProbeController;
 import org.iobserve.utility.tcp.RemoteControlFailedException;
 import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
@@ -32,14 +33,14 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
  *
  */
 public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControlEvent> {
-    private final TcpProbeController probeController;
+    private final IProbeController probeController;
     private final OutputPort<IErrorMessages> outputPort = this.createOutputPort();
 
     /**
      * Initiates the filter with a new {@link TcpProbeController}.
      */
-    public ProbeControlFilter() {
-        this.probeController = new TcpProbeController();
+    public ProbeControlFilter(final IProbeController probeController) {
+        this.probeController = probeController;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControl
         try {
             this.probeController.controlProbe(event);
         } catch (final RemoteControlFailedException e) {
-            final String alarmMessage = "could not send probe control event " + e.getMessage();
+            final String alarmMessage = "Could not send probe control event " + e.getMessage();
             final Alarms alarms = new Alarms();
             alarms.addMessage(alarmMessage);
             this.outputPort.send(alarms);

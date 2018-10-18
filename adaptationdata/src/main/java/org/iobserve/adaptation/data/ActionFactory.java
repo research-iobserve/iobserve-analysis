@@ -15,10 +15,15 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.model.PCMModelHandler;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.iobserve.model.IModelImporter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
@@ -31,24 +36,27 @@ import org.palladiosimulator.pcm.system.System;
  *
  * @author Philipp Weimann
  * @author Reiner Jung - fix naming and api change
+ * @author Lars Bluemke - added getAllocationContextContainingAssemblyContext(),
+ *         getProvidingAssemblyContexts(), getRequiringAssemblyContexts() and
+ *         getConnectedLinkingResources
  */
 public final class ActionFactory {
 
-    private static PCMModelHandler runtimeModelHandler;
-    private static PCMModelHandler redeploymentModelHandler;
+    private static IModelImporter runtimeModelHandler;
+    private static IModelImporter redeploymentModelHandler;
 
     private ActionFactory() {
 
     }
 
     /**
-     * TODO .
+     * Returns the assembly context with the given ID from the system model.
      *
      * @param contextID
-     *            .
+     *            The ID
      * @param systemModel
-     *            .
-     * @return .
+     *            The system model
+     * @return The assembly context
      */
     public static AssemblyContext getAssemblyContext(final String contextID, final System systemModel) {
         return systemModel.getAssemblyContexts__ComposedStructure().stream().filter(s -> s.getId().equals(contextID))
@@ -56,13 +64,13 @@ public final class ActionFactory {
     }
 
     /**
-     * ToDo .
+     * Returns the allocation context with the given ID form the allocation model.
      *
      * @param allocationID
-     *            .
+     *            The ID
      * @param allocationModel
-     *            .
-     * @return .
+     *            The allocation model
+     * @return The allocation context
      */
     public static AllocationContext getAllocationContext(final String allocationID, final Allocation allocationModel) {
         return allocationModel.getAllocationContexts_Allocation().stream().filter(s -> s.getId().equals(allocationID))
@@ -70,13 +78,65 @@ public final class ActionFactory {
     }
 
     /**
-     * ToDo .
+     * Returns the allocation context containing the assembly context with the given ID from the
+     * allocation model.
+     *
+     * @param assemblyID
+     *            The ID
+     * @param allocationModel
+     *            The allocation model
+     * @return The allocation context
+     */
+    public static AllocationContext getAllocationContextContainingAssemblyContext(final String assemblyID,
+            final Allocation allocationModel) {
+        return allocationModel.getAllocationContexts_Allocation().stream()
+                .filter(alc -> alc.getAssemblyContext_AllocationContext().getId().equals(assemblyID)).findFirst().get();
+    }
+
+    /**
+     * Returns a list of assembly contexts providing something to the one with the given ID from the
+     * system model.
+     *
+     * @param assemblyID
+     *            The ID
+     * @param systemModel
+     *            The system model
+     * @return The providing assembly contexts
+     */
+    public static List<AssemblyContext> getProvidingAssemblyContexts(final String assemblyID,
+            final System systemModel) {
+        return systemModel.getConnectors__ComposedStructure().stream().filter(c -> c instanceof AssemblyConnector)
+                .map(c -> (AssemblyConnector) c)
+                .filter(c -> c.getRequiringAssemblyContext_AssemblyConnector().getId().equals(assemblyID))
+                .map(c -> c.getProvidingAssemblyContext_AssemblyConnector()).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a list of assembly contexts requiring something to the one with the given ID from the
+     * system model.
+     *
+     * @param assemblyID
+     *            The ID
+     * @param systemModel
+     *            The system model
+     * @return The requiring assembly contexts
+     */
+    public static List<AssemblyContext> getRequiringAssemblyContexts(final String assemblyID,
+            final System systemModel) {
+        return systemModel.getConnectors__ComposedStructure().stream().filter(c -> c instanceof AssemblyConnector)
+                .map(c -> (AssemblyConnector) c)
+                .filter(c -> c.getProvidingAssemblyContext_AssemblyConnector().getId().equals(assemblyID))
+                .map(c -> c.getRequiringAssemblyContext_AssemblyConnector()).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the resource container with the given ID from the resource environment model.
      *
      * @param resourceContainerID
-     *            .
+     *            The ID
      * @param resEnvModel
-     *            .
-     * @return .
+     *            The resource environment model
+     * @return The resource container
      */
     public static ResourceContainer getResourceContainer(final String resourceContainerID,
             final ResourceEnvironment resEnvModel) {
@@ -84,19 +144,35 @@ public final class ActionFactory {
                 .filter(s -> s.getId().equals(resourceContainerID)).findFirst().get();
     }
 
-    public static PCMModelHandler getRuntimeModels() {
+    /**
+     * Returns a list of linking resources connected to the given resource container.
+     *
+     * @param resourceContainer
+     *            The resource container
+     * @param resEnvModel
+     *            The resource environment model
+     * @return The connected linking resources
+     */
+    public static List<LinkingResource> getConnectedLinkingResources(final ResourceContainer resourceContainer,
+            final ResourceEnvironment resEnvModel) {
+        return resEnvModel.getLinkingResources__ResourceEnvironment().stream()
+                .filter(lr -> lr.getConnectedResourceContainers_LinkingResource().contains(resourceContainer))
+                .collect(Collectors.toList());
+    }
+
+    public static IModelImporter getRuntimeModels() {
         return ActionFactory.runtimeModelHandler;
     }
 
-    public static void setRuntimeModels(final PCMModelHandler runtimeModels) {
+    public static void setRuntimeModels(final IModelImporter runtimeModels) {
         ActionFactory.runtimeModelHandler = runtimeModels;
     }
 
-    public static PCMModelHandler getRedeploymentModels() {
+    public static IModelImporter getRedeploymentModels() {
         return ActionFactory.redeploymentModelHandler;
     }
 
-    public static void setRedeploymentModels(final PCMModelHandler redeploymentModels) {
+    public static void setRedeploymentModels(final IModelImporter redeploymentModels) {
         ActionFactory.redeploymentModelHandler = redeploymentModels;
     }
 }

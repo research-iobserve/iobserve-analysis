@@ -154,7 +154,7 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
 
     @Override
     protected void shutdownService() {
-
+        // nothing special to shutdown
     }
 
 }

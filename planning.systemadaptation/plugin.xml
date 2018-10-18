@@ -33,6 +33,22 @@
       <!-- @generated systemadaptation -->
       <parser
             type="systemadaptation"
-            class="org.iobserve.planning.systemadaptation.util.systemadaptationResourceFactoryImpl"/>
+            class="org.iobserve.planning.systemadaptation.util.SystemadaptationResourceFactoryImpl"/>
    </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated executionplan -->
+      <package
+            uri="http://iobserve.org/ExecutionPlan"
+            class="org.iobserve.adaptation.executionplan.ExecutionplanPackage"
+            genModel="model/executionplan.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated executionplan -->
+      <parser
+            type="executionplan"
+            class="org.iobserve.adaptation.executionplan.util.ExecutionplanResourceFactoryImpl"/>
+   </extension>
+
 </plugin>

@@ -60,7 +60,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
      *            array of host names
      */
     public Splitter(final String[] hostnames) {
-        this.hostnames = hostnames;
+        this.hostnames = hostnames.clone();
         final int numOfPorts = hostnames.length;
         for (int i = 0; i < numOfPorts; i++) {
             this.outputPorts.add(this.createOutputPort());
@@ -71,42 +71,49 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord element) {
         this.recordCount++;
         if (element instanceof TraceMetadata) {
-            final TraceMetadata traceMetadata = (TraceMetadata) element;
-            this.traceRegisterMap.put(traceMetadata.getTraceId(), traceMetadata);
-
-            boolean send = false;
-            for (int i = 0; i < this.hostnames.length; i++) {
-                if (this.hostnames[i].equals(traceMetadata.getHostname())) {
-                    this.outputPorts.get(i).send(element);
-                    send = true;
-                }
-            }
-            if (!send) {
-                for (int i = 0; i < this.hostnames.length; i++) {
-                    this.outputPorts.get(i).send(element);
-                }
-            }
+            this.processTraceMetadata((TraceMetadata) element);
         } else if (element instanceof ITraceRecord) {
-            final TraceMetadata metadata = this.traceRegisterMap.get(((ITraceRecord) element).getTraceId());
-
-            boolean send = false;
-            for (int i = 0; i < this.hostnames.length; i++) {
-                if (this.hostnames[i].equals(metadata.getHostname())) {
-                    this.outputPorts.get(i).send(element);
-                    send = true;
-                }
-            }
-            if (!send) {
-                for (int i = 0; i < this.hostnames.length; i++) {
-                    this.outputPorts.get(i).send(element);
-                }
-            }
+            this.processITraceRecord((ITraceRecord) element);
         } else if (element instanceof KiekerMetadataRecord) {
             /** ignore. */
             Splitter.LOGGER.debug("Metadata record {}.", element);
         } else {
             for (int i = 0; i < this.hostnames.length; i++) {
                 this.outputPorts.get(i).send(element);
+            }
+        }
+    }
+
+    private void processITraceRecord(final ITraceRecord element) {
+        final TraceMetadata metadata = this.traceRegisterMap.get(element.getTraceId());
+
+        boolean send = false;
+        for (int i = 0; i < this.hostnames.length; i++) {
+            if (this.hostnames[i].equals(metadata.getHostname())) {
+                this.outputPorts.get(i).send(element);
+                send = true;
+            }
+        }
+        if (!send) {
+            for (int i = 0; i < this.hostnames.length; i++) {
+                this.outputPorts.get(i).send(element);
+            }
+        }
+    }
+
+    private void processTraceMetadata(final TraceMetadata traceMetadata) {
+        this.traceRegisterMap.put(traceMetadata.getTraceId(), traceMetadata);
+
+        boolean send = false;
+        for (int i = 0; i < this.hostnames.length; i++) {
+            if (this.hostnames[i].equals(traceMetadata.getHostname())) {
+                this.outputPorts.get(i).send(traceMetadata);
+                send = true;
+            }
+        }
+        if (!send) {
+            for (int i = 0; i < this.hostnames.length; i++) {
+                this.outputPorts.get(i).send(traceMetadata);
             }
         }
     }

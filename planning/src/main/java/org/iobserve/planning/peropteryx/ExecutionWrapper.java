@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
-
 /**
  * Wrapper for executing headless PerOpteryx.
  *
@@ -48,7 +46,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
      * @throws IOException
      *             on io error reading files
      */
-    public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
+    public ExecutionWrapper(final File inputModelDir, final File perOpteryxDir, final File lqnsDir) throws IOException {
         super(inputModelDir, perOpteryxDir, lqnsDir);
 
         if (this.isWindows()) {
@@ -58,14 +56,13 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
         } else {
             this.execEnvironment = "/bin/bash";
             this.execEnvironmentParam = "-c";
-            this.execCommand = "./peropteryx-headless";
+            this.execCommand = "./eclipse";
         }
 
     }
 
     private boolean isWindows() {
-        final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-        return isWindows;
+        return System.getProperty("os.name").startsWith("Windows");
     }
 
     @Override
@@ -107,22 +104,22 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
         if (AbstractExecutionWrapper.LOGGER.isInfoEnabled()) {
             AbstractExecutionWrapper.LOGGER.info("Starting optimization process...");
         }
-        final String modelDir = this.getInputModelDir().toFileString();
+        final String modelDir = this.getInputModelDir().getAbsolutePath();
 
         final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
                 this.execCommand + " -w " + modelDir);
 
-        final String perOpteryxDir = this.getPerOpteryxDir().toFileString();
+        final String perOpteryxDir = this.getPerOpteryxDir().getAbsolutePath();
         final Map<String, String> env = builder.environment();
 
         String path;
         if (this.isWindows()) {
             path = env.get("Path");
-            path = this.getLQNSDir().toFileString() + ";" + path;
+            path = this.getLQNSDir().getAbsolutePath() + ";" + path;
             env.put("Path", path);
         } else {
             path = env.get("PATH");
-            path = this.getLQNSDir().toFileString() + ":" + path;
+            path = this.getLQNSDir().getAbsolutePath() + ":" + path;
             env.put("PATH", path);
         }
 

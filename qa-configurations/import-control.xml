@@ -10,6 +10,8 @@
 	<allow pkg="teetime"/>
 
 	<allow pkg="de.uka.ipd.sdq"/>
+	
+	<allow pkg="io.fabric8.kubernetes"/>
 
 	<allow pkg="org.apache"/>
     <allow pkg="org.codehaus"/>
@@ -17,8 +19,10 @@
     <allow pkg="org.hamcrest"/>
     <allow pkg="org.junit"/>
     <allow pkg="org.json"/>
+    <allow pkg="org.kie"/>
     <allow pkg="org.mockito"/>
     <allow pkg="org.neo4j"/>
+    <allow pkg="org.osgi"/>
 	<allow pkg="org.palladiosimulator"/>
     <allow pkg="org.powermock"/>
     <allow pkg="org.slf4j"/>
@@ -26,6 +30,8 @@
     <allow pkg="org.xml.sax"/>
     <allow pkg="fi.iki.elonen"/>
     <allow pkg="org.jclouds"/>
+    <allow pkg="org.tukaani.xz"/>
+    <allow pkg="org.aspectj"/>
 
 	<allow pkg="weka"/>
     

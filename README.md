@@ -48,30 +48,44 @@ Depending on your local setup you may use:
 
 ## Execution
 
-After compilation, you may find in `analysis.cli/build/distributions/`
-Archives containing executables.
-- `analysis.cli-0.0.2-SNAPSHOT.tar`
-- `analysis.cli-0.0.2-SNAPSHOT.zip`
+After compilation, you may find in various folders packages containing executables, including the `analysis`, the `replayer`, the session `reconstructor`, etc. The process to use them is quite similar. In the following we introduce the most common tools.
+
+Alongside all executables we have example configurations placed in the respective sub project folder with the suffix `config`.
+All executables support an environment variable `project_OPTS` where `project` must be substituted by the executable name. for `analysis` it is `ANALYSIS_OPTS`. Through this mechanisms further parameter can be specified which is quite helpful.
+
+To activate logging use: `export ANALYSIS_OPTS="-Dlog4j.configuration=file:///full/qualified/pathname/log4j.cfg"`
+Please note that you have to adjust path and file name to your setup.
+
+### Analysis
+
+The `analysis` is located in `analysis/build/distributions/`
+You may find two archives containing executables.
+- `analysis-0.0.3-SNAPSHOT.tar`
+- `analysis-0.0.3-SNAPSHOT.zip`
 Choose your preferred kind of archive and extract it in our analysis
 directory (preferably outside of the directory of the git repository).
 After extraction you can start the analysis with:
-- `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli`  (linux, mac, etc.)
-- `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli.bat` (windows)
+- `analysis.cli-0.0.3-SNAPSHOT/bin/analysis`  (linux, mac, etc.)
+- `analysis.cli-0.0.3-SNAPSHOT/bin/analysis.bat` (windows)
 
 usage: iobserve-analysis
  -h,--help                            show usage information
- -i,--input <arg>                     a Kieker logfile directory
- -p,--pcm <arg>                       directory containing all PCM models
- -t,--think-time <arg>                Variance of user groups for the
-                                      clustering
- -v,--variance-of-user-groups <arg>   Variance of user groups for the
-                                      clustering
- -c,--closed-workload                 Closed workload
+ -c <configuration file>              configuration file
 
 For a minimal analysis, type:
-`analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -v 2 -c`
+`analysis-0.0.3-SNAPSHOT/bin/analysis -c analysis.config`
 
+### Collector
 
+Usage: <main class> [options]
+  Options:
+  * -c, --configuration   Configuration file.
+
+### Log-Replayer
+
+### Session Reconstructor
+
+### Service Privacy Violation
 
 
 

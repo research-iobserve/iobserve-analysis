@@ -25,6 +25,9 @@ import com.beust.jcommander.IStringConverter;
  */
 public class HostPortConverter implements IStringConverter<ConnectionData> {
 
+    /**
+     * default constructor.
+     */
     public HostPortConverter() {
         // empty default constructor
     }

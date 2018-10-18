@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractServiceMain<T extends Configuration> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceMain.class);
-    protected boolean help = false;
+    protected boolean help = false; // NOPMD this is set to false for documentation purposes
 
     /**
      * Configure and execute the evaluation tool.
@@ -59,14 +59,7 @@ public abstract class AbstractServiceMain<T extends Configuration> {
         final JCommander commander = new JCommander(this);
         try {
             commander.parse(args);
-            final kieker.common.configuration.Configuration configuration;
-            if (this.getConfigurationFile() != null) {
-                configuration = ConfigurationFactory
-                        .createConfigurationFromFile(this.getConfigurationFile().getAbsolutePath());
-            } else {
-                configuration = null;
-            }
-            this.execute(configuration, commander, label);
+            this.execute(commander, label);
         } catch (final ParameterException e) {
             AbstractServiceMain.LOGGER.error(e.getLocalizedMessage());
             commander.usage();
@@ -76,34 +69,37 @@ public abstract class AbstractServiceMain<T extends Configuration> {
         }
     }
 
-    private void execute(final kieker.common.configuration.Configuration configuration, final JCommander commander,
-            final String label) throws ConfigurationException {
+    private void execute(final JCommander commander, final String label) throws ConfigurationException {
         if (this.checkParameters(commander)) {
             if (this.help) {
                 commander.usage();
                 System.exit(1);
             } else {
+                final kieker.common.configuration.Configuration configuration = this.readConfiguration();
+
                 if (this.checkConfiguration(configuration, commander)) {
                     final Execution<T> execution = new Execution<>(this.createConfiguration(configuration));
 
                     this.shutdownHook(execution);
 
-                    if (AbstractServiceMain.LOGGER.isDebugEnabled()) {
-                        AbstractServiceMain.LOGGER.debug("Running " + label);
-                    }
+                    AbstractServiceMain.LOGGER.debug("Running {}", label);
 
                     execution.executeBlocking();
                     this.shutdownService();
 
-                    if (AbstractServiceMain.LOGGER.isDebugEnabled()) {
-                        AbstractServiceMain.LOGGER.debug("Done");
-                    }
+                    AbstractServiceMain.LOGGER.debug("Done");
                 }
             }
         } else {
-            if (AbstractServiceMain.LOGGER.isErrorEnabled()) {
-                AbstractServiceMain.LOGGER.error("Configuration Error");
-            }
+            AbstractServiceMain.LOGGER.error("Configuration Error");
+        }
+    }
+
+    private kieker.common.configuration.Configuration readConfiguration() {
+        if (this.getConfigurationFile() != null) {
+            return ConfigurationFactory.createConfigurationFromFile(this.getConfigurationFile().getAbsolutePath());
+        } else {
+            return null;
         }
     }
 
@@ -113,7 +109,7 @@ public abstract class AbstractServiceMain<T extends Configuration> {
             public void run() {
                 try {
                     synchronized (execution) {
-                        execution.abortEventually();
+                        execution.abortEventually(); // TODO replace by different termination logic
                         AbstractServiceMain.this.shutdownService();
                     }
                 } catch (final Exception e) { // NOCS NOPMD

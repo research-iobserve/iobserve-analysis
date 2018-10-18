@@ -16,17 +16,17 @@
 package org.iobserve.evaluation.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.CallInformation;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
 
@@ -139,8 +139,8 @@ public class ModelComparisonStage extends AbstractStage {
             result.setAdditionalEdgeCount(additionalEdgeCount);
 
             /** Forget models after processing to be able to process the next elements. */
-            this.referenceModel = null;
-            this.testModel = null;
+            this.referenceModel = null; // NOPMD necessary to forget data
+            this.testModel = null; // NOPMD necessary to forget data
 
             /** Add baseline and testModelNodes */
 
@@ -157,7 +157,7 @@ public class ModelComparisonStage extends AbstractStage {
      *            source edge
      * @return returns the matching edge or null when no match was found
      */
-    private EntryCallEdge findMatchingModelEdge(final Set<EntryCallEdge> entryCallEdges,
+    private EntryCallEdge findMatchingModelEdge(final Collection<EntryCallEdge> entryCallEdges,
             final EntryCallEdge sourceEdge) {
         for (final EntryCallEdge entryCallEdge : entryCallEdges) {
             if (sourceEdge.getSource().getSignature().equals(entryCallEdge.getSource().getSignature())
@@ -175,8 +175,8 @@ public class ModelComparisonStage extends AbstractStage {
      * @param testModelCallInformationSet
      * @return list of missing call information
      */
-    private List<CallInformation> computeAdditionalInformation(final Set<CallInformation> firstCallInformationSet,
-            final Set<CallInformation> lastCallInformationSet) {
+    private List<CallInformation> computeAdditionalInformation(final CallInformation[] firstCallInformationSet,
+            final CallInformation[] lastCallInformationSet) {
         final List<CallInformation> result = new ArrayList<>();
         for (final CallInformation firstCallInformation : firstCallInformationSet) {
             boolean found = false;
@@ -202,7 +202,7 @@ public class ModelComparisonStage extends AbstractStage {
      *            the baseline node
      * @return the matching test model node, or null on fail
      */
-    private EntryCallNode findMatchingModelNode(final Set<EntryCallNode> entryCallNodes,
+    private EntryCallNode findMatchingModelNode(final Collection<EntryCallNode> entryCallNodes,
             final EntryCallNode baselineNode) {
         for (final EntryCallNode testModelNode : entryCallNodes) {
             if (testModelNode.getSignature().equals(baselineNode.getSignature())) {

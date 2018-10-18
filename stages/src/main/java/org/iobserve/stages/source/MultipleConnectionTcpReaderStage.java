@@ -18,6 +18,7 @@ package org.iobserve.stages.source;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -141,22 +142,23 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     }
 
     private void processBuffer(final Connection connection) throws IOException {
-        connection.getBuffer().flip();
+        final ByteBuffer buffer = connection.getBuffer();
+
+        buffer.flip();
 
         try {
-            while (connection.getBuffer().hasRemaining()) {
-                connection.getBuffer().mark();
+            while (buffer.position() + 4 < buffer.limit()) {
+                buffer.mark();
                 if (!this.onBufferReceived(connection)) {
-                    connection.getBuffer().reset();
-                    connection.getBuffer().compact();
                     return;
                 }
             }
-            connection.getBuffer().clear();
+            buffer.mark();
+            buffer.compact();
         } catch (final BufferUnderflowException ex) {
             this.logger.warn("Unexpected buffer underflow. Resetting and compacting buffer.", ex);
-            connection.getBuffer().reset();
-            connection.getBuffer().compact();
+            buffer.reset();
+            buffer.compact();
         }
     }
 
@@ -178,12 +180,20 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         // identify string identifier and string length
         if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES
                 + MultipleConnectionTcpReaderStage.INT_BYTES) {
+            // incomplete record, move back
+            connection.getBuffer().reset();
+            connection.getBuffer().compact();
+
             return false;
         } else {
             final int id = connection.getBuffer().getInt();
             final int stringLength = connection.getBuffer().getInt();
 
             if (connection.getBuffer().remaining() < stringLength) {
+                // incomplete record, move back
+                connection.getBuffer().reset();
+                connection.getBuffer().compact();
+
                 return false;
             } else {
                 final byte[] strBytes = new byte[stringLength];
@@ -201,6 +211,10 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
 
         // identify logging timestamp
         if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.LONG_BYTES) {
+            // incomplete record, move back
+            connection.getBuffer().reset();
+            connection.getBuffer().compact();
+
             return false;
         } else {
             final long loggingTimestamp = connection.getBuffer().getLong();
@@ -208,6 +222,10 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             // identify record data
             final IRecordFactory<? extends IMonitoringRecord> recordFactory = this.recordFactories.get(recordClassName);
             if (connection.getBuffer().remaining() < recordFactory.getRecordSizeInBytes()) {
+                // incomplete record, move back
+                connection.getBuffer().reset();
+                connection.getBuffer().compact();
+
                 return false;
             } else {
                 try {
@@ -217,6 +235,9 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                     return true;
                 } catch (final RecordInstantiationException ex) {
                     super.logger.error("Failed to create: " + recordClassName, ex);
+                    // incomplete record, move back
+                    connection.getBuffer().reset();
+                    connection.getBuffer().compact();
                     return false;
                 }
             }

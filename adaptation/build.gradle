@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.AdaptationMain'
+mainClassName = 'org.iobserve.adaptation.AdaptationMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")
@@ -11,11 +11,11 @@ if (group.isEmpty()) {
 }
 
 dependencies {
-	compile project(":adaptationdata")
-	compile project(":service")
+    compile project(":adaptationdata")
+    compile project(":service")
     compile project(":stages")
 
-	clover 'org.openclover:clover:4.2.0'
+    clover 'org.openclover:clover:4.2.0'
 
     compile 'commons-daemon:commons-daemon:1.0.15'
     compile 'javax.json:javax.json-api:1.0'
@@ -23,23 +23,49 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'org.json', name: 'json', version: '20170516'
 
-    // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+    compile 'org.drools:drools-compiler:7.6.0.Final'
+    compile 'org.drools:drools-core:7.6.0.Final'
 }
 
+sourceSets {
+   main {
+      java {
+         exclude '**/package-info.java'
+      }
+   }
+   test {
+      java {
+         exclude '**/package-info.java'
+      }
+   }
+}
+
+
+
 clover {
-	report {
-		html=true
-	}
-	
+   excludes = [ '**/package-info.java' ]
+   testExcludes = [ '**/package-info.java' ]
+
+   debug = true
+
+   compiler {
+      debug = true   
+   }
+
+   report {
+      html=true
+   }
 }
 
 test {
-  println 'Starting unit tests.'
-  scanForTestClasses= false
-  include '**/service/suites/*'
-  exclude '**/service/services/*'
-  exclude '**/service/updater/*'
+  scanForTestClasses=true
+    
+  //include '**/service/suites/*'
+  //exclude '**/package-info.java'
+  //exclude '**/service/services/*'
+  //exclude '**/service/updater/*'
+  //exclude '**/*ActionComputationTest$__CLR4*' // otherwise clover fails with initialization error
+  //exclude '**/*ActionComputationTestConfig*' // otherwise clover fails with initialization error
 }
 
 install {

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,43 +18,47 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.ContainerEvent;
+import org.iobserve.common.record.AbstractContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IAllocationEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class ContainerAllocationEvent extends ContainerEvent implements IAllocationEvent {			
+public class ContainerAllocationEvent extends AbstractContainerEvent implements IAllocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING; // ContainerEvent.url
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+			 + TYPE_SIZE_STRING; // AbstractContainerEvent.service
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // ContainerEvent.url
+		long.class, // IEvent.timestamp
+		String.class, // AbstractContainerEvent.service
 	};
 	
-	private static final long serialVersionUID = -6028448119522385906L;
+	private static final long serialVersionUID = 6174419585510598093L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
-		"url",
+		"timestamp",
+		"service",
 	};
 	
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param url
-	 *            url
+	 * @param timestamp
+	 *            timestamp
+	 * @param service
+	 *            service
 	 */
-	public ContainerAllocationEvent(final String url) {
-		super(url);
+	public ContainerAllocationEvent(final long timestamp, final String service) {
+		super(timestamp, service);
 	}
 
 	/**
@@ -64,7 +68,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerAllocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ContainerAllocationEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -79,7 +83,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerAllocationEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ContainerAllocationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -100,30 +104,24 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl(),
+			this.getTimestamp(),
+			this.getService(),
 		};
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getUrl());
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
-		serializer.putString(this.getUrl());
+		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getService());
 	}
 	
 	/**
@@ -153,7 +151,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -180,7 +178,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
 			return false;
 		}
-		if (!this.getUrl().equals(castedRecord.getUrl())) {
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
 			return false;
 		}
 		

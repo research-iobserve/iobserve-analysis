@@ -49,13 +49,17 @@ public final class InstantiationFactory { // NOPMD
      *            classname
      * @param className
      *            The name of the class to be created.
+     * @param parameterTypes
+     *            the signature for the constructor
      * @param parameters
-     *            parameter for the constructor
+     *            the matching parameter values for the constructor
      *
      * @return A new and initializes class instance if everything went well.
      *
      * @param <C>
      *            The type of the returned class.
+     * @throws ConfigurationException
+     *             on configuration errors
      */
     public static <C> C create(final Class<C> implementedInterface, final String className,
             final Class<?>[] parameterTypes, final Object... parameters) throws ConfigurationException {
@@ -75,6 +79,53 @@ public final class InstantiationFactory { // NOPMD
                 InstantiationFactory.LOGGER
                         .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
             }
+            throw new ConfigurationException(e);
+        }
+    }
+
+    /**
+     * This is a helper method trying to find, create and initialize the given class, using its
+     * public constructor which accepts a single {@link Configuration}.
+     *
+     * @param implementedInterface
+     *            This class defines the expected result of the method call.
+     * @param className
+     *            The name of the class to be created.
+     * @param configuration
+     *            The configuration which will be used to initialize the class in question.
+     *
+     * @return A new and initializes class instance if everything went well.
+     *
+     * @param <C>
+     *            The type of the returned class.
+     * 
+     * @throws ConfigurationException
+     *             on configuration errors during instantiation
+     */
+    public static <C> C createWithConfiguration(final Class<C> implementedInterface, final String className,
+            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+        try {
+            final Class<?> clazz = Class.forName(className);
+            if (implementedInterface.isAssignableFrom(clazz)) {
+                // Choose the appropriate configuration to pass.
+                final kieker.common.configuration.Configuration configurationToPass;
+                if (clazz.isAnnotationPresent(ReceiveUnfilteredConfiguration.class)) {
+                    configurationToPass = configuration.flatten();
+                } else {
+                    configurationToPass = configuration.getPropertiesStartingWith(className);
+                }
+
+                final Class<?>[] parameterTypes = { kieker.common.configuration.Configuration.class };
+                return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes,
+                        configurationToPass);
+            } else {
+                InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className,
+                        implementedInterface.getSimpleName());
+                throw new ConfigurationException("Requested class does not match interface.");
+            }
+        } catch (final ClassNotFoundException e) {
+            InstantiationFactory.LOGGER.error("{}: Class '{}' not found: {}", implementedInterface.getSimpleName(),
+                    className, e.getLocalizedMessage());
             throw new ConfigurationException(e);
         }
     }
@@ -127,50 +178,6 @@ public final class InstantiationFactory { // NOPMD
             InstantiationFactory.LOGGER.error(
                     "{}: Class '{}' has to implement a (public) constructor that accepts the signature {}.",
                     implementedInterface.getSimpleName(), clazz.getName(), parameterTypeNames.toString(), e);
-            throw new ConfigurationException(e);
-        }
-    }
-
-    /**
-     * This is a helper method trying to find, create and initialize the given class, using its
-     * public constructor which accepts a single {@link Configuration}.
-     *
-     * @param implementedInterface
-     *            This class defines the expected result of the method call.
-     * @param className
-     *            The name of the class to be created.
-     * @param configuration
-     *            The configuration which will be used to initialize the class in question.
-     *
-     * @return A new and initializes class instance if everything went well.
-     *
-     * @param <C>
-     *            The type of the returned class.
-     */
-    public static <C> C createWithConfiguration(final Class<C> implementedInterface, final String className,
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
-        try {
-            final Class<?> clazz = Class.forName(className);
-            if (implementedInterface.isAssignableFrom(clazz)) {
-                // Choose the appropriate configuration to pass.
-                final kieker.common.configuration.Configuration configurationToPass;
-                if (clazz.isAnnotationPresent(ReceiveUnfilteredConfiguration.class)) {
-                    configurationToPass = configuration.flatten();
-                } else {
-                    configurationToPass = configuration.getPropertiesStartingWith(className);
-                }
-
-                final Class<?>[] parameterTypes = { kieker.common.configuration.Configuration.class };
-                return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes,
-                        configurationToPass);
-            } else {
-                InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className,
-                        implementedInterface.getSimpleName());
-                throw new ConfigurationException("Requested class does not match interface.");
-            }
-        } catch (final ClassNotFoundException e) {
-            InstantiationFactory.LOGGER.error("{}: Class '{}' not found: {}", implementedInterface.getSimpleName(),
-                    className, e.getLocalizedMessage());
             throw new ConfigurationException(e);
         }
     }

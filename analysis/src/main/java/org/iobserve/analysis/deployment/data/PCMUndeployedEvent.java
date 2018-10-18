@@ -15,45 +15,57 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment.data;
 
-import org.iobserve.model.correspondence.Correspondent;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * @author Reiner Jung
  *
  */
-public class PCMUndeployedEvent {
+public class PCMUndeployedEvent implements IPCMDeploymentEvent {
 
     private final String service;
-    private final Correspondent correspondent;
-    private ResourceContainer resourceContainer;
+    private final AssemblyContext assemblyContext;
+    private final ResourceContainer resourceContainer;
+    private final long timestamp;
 
     /**
      * Create an model level undeployed event.
      *
      * @param service
      *            the deployed service
-     * @param correspondent
+     * @param assemblyContext
      *            the correspondent for the component to be removed
+     * @param resourceContainer
+     *            resource container
+     * @param timestamp
+     *            observation timestamp
      */
-    public PCMUndeployedEvent(final String service, final Correspondent correspondent) {
+    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext,
+            final ResourceContainer resourceContainer, final long timestamp) {
         this.service = service;
-        this.correspondent = correspondent;
+        this.assemblyContext = assemblyContext;
+        this.resourceContainer = resourceContainer;
+        this.timestamp = timestamp;
     }
 
+    @Override
     public final String getService() {
         return this.service;
     }
 
-    public final Correspondent getCorrespondent() {
-        return this.correspondent;
+    @Override
+    public final AssemblyContext getAssemblyContext() {
+        return this.assemblyContext;
     }
 
-    public void setResourceContainer(final ResourceContainer resourceContainer) {
-        this.resourceContainer = resourceContainer;
-    }
-
+    @Override
     public final ResourceContainer getResourceContainer() {
         return this.resourceContainer;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 }

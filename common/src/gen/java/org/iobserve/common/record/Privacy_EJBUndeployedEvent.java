@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,32 @@ import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.Privacy;
 
 /**
  * @author Generic Kieker
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
- * @since 1.13
+ * @since 1.14
  */
 public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
-			 + TYPE_SIZE_SHORT; // GeoLocation.countryCode
+			 + TYPE_SIZE_INT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId
-		short.class, // GeoLocation.countryCode
+		ISOCountryCode.class, // GeoLocation.countryCode
 	};
 	
-	/** default constants. */
-	public static final short COUNTRY_CODE = 49;
-	private static final long serialVersionUID = -6804603248511972839L;
+	private static final long serialVersionUID = 558619872261869010L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -61,7 +58,7 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	};
 	
 	/** property declarations. */
-	private final short countryCode;
+	private final ISOCountryCode countryCode;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -77,7 +74,7 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 * @param countryCode
 	 *            countryCode
 	 */
-	public Privacy_EJBUndeployedEvent(final long timestamp, final String service, final String context, final String deploymentId, final short countryCode) {
+	public Privacy_EJBUndeployedEvent(final long timestamp, final String service, final String context, final String deploymentId, final ISOCountryCode countryCode) {
 		super(timestamp, service, context, deploymentId);
 		this.countryCode = countryCode;
 	}
@@ -89,12 +86,12 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_EJBUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public Privacy_EJBUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.countryCode = (Short) values[4];
+		this.countryCode = (ISOCountryCode) values[4];
 	}
 
 	/**
@@ -105,12 +102,12 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_EJBUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected Privacy_EJBUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.countryCode = (Short) values[4];
+		this.countryCode = (ISOCountryCode) values[4];
 	}
 
 	
@@ -122,13 +119,13 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 */
 	public Privacy_EJBUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
-		this.countryCode = deserializer.getShort();
+		this.countryCode = deserializer.getEnumeration(ISOCountryCode.class);
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -145,23 +142,13 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getService());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getService());
 		serializer.putString(this.getContext());
 		serializer.putString(this.getDeploymentId());
-		serializer.putShort(this.getCountryCode());
+		serializer.putInt(this.getCountryCode().ordinal());
 	}
 	
 	/**
@@ -191,7 +178,7 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -237,7 +224,7 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 		return true;
 	}
 	
-	public final short getCountryCode() {
+	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;
 	}
 	

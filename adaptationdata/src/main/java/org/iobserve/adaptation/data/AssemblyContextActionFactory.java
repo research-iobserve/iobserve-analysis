@@ -15,17 +15,15 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.data.graph.ComponentNode;
-import org.iobserve.planning.systemadaptation.AllocateAction;
+import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
-import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
+import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This class provides a factory for system adaption Actions. It provides all basic functions.
@@ -33,41 +31,87 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  * this class.
  *
  * @author Philipp Weimann
+ * @author Lars Bluemke (Refactoring of system adaptation model: terminology: "(de-)allocate" ->
+ *         "(de-)replicate", changes to sources and targets of actions, addition of new attributes)
  */
 public final class AssemblyContextActionFactory {
 
+    /**
+     * Empty default constructor.
+     */
     private AssemblyContextActionFactory() {
         // empty private factory
     }
 
-    private static AssemblyContextAction setSourceAssemblyContext(final AssemblyContextAction action,
-            final String assemblyContextID) {
-        final org.palladiosimulator.pcm.system.System systemModel = ActionFactory.getRuntimeModels().getSystemModel();
-        final AssemblyContext assemblyContext = ActionFactory.getAssemblyContext(assemblyContextID, systemModel);
-        action.setSourceAssemblyContext(assemblyContext);
+    /**
+     * Initializes the targetAllocationContext, targetProvidingAllocationContexts and
+     * targetRequiringAllocationContexts of the abstract {@link AssemblyContextAction} superclass.
+     *
+     * @param action
+     *            the action
+     * @param targetNode
+     *            the action's target node (may be a runtime or a redeployment node)
+     * @param targetAllocation
+     *            the target allocation model
+     * @param targetSystem
+     *            the target system model
+     */
+    private static void initializeAssemblyContextAction(final AssemblyContextAction action,
+            final ComponentNode targetNode, final Allocation targetAllocation, final System targetSystem) {
+
+        action.setTargetAllocationContext(
+                ActionFactory.getAllocationContext(targetNode.getAllocationContextID(), targetAllocation));
+
+        // target providing allocation contexts
+        ActionFactory.getProvidingAssemblyContexts(targetNode.getAssemblyContextID(), targetSystem)
+                .forEach(ac -> action.getTargetProvidingAllocationContexts().add(
+                        ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), targetAllocation)));
+
+        // target requiring allocation contexts
+        ActionFactory.getRequiringAssemblyContexts(targetNode.getAssemblyContextID(), targetSystem)
+                .forEach(ac -> action.getTargetRequiringAllocationContexts().add(
+                        ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), targetAllocation)));
+    }
+
+    /**
+     * Create an replication action.
+     *
+     * @param runtimeNode
+     *            node to be replicated
+     * @param reDeploymentNode
+     *            target node of replication
+     * @return returns the replication action
+     */
+    public static ReplicateAction generateReplicateAction(final ComponentNode runtimeNode,
+            final ComponentNode reDeploymentNode) {
+        final ReplicateAction action = SystemadaptationFactory.eINSTANCE.createReplicateAction();
+        final Allocation runtimeAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
+        final Allocation redeploymentAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
+        final System redeploymentSystem = ActionFactory.getRedeploymentModels().getSystemModel();
+
+        AssemblyContextActionFactory.initializeAssemblyContextAction(action, reDeploymentNode, redeploymentAllocation,
+                redeploymentSystem);
+
+        action.setSourceAllocationContext(
+                ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runtimeAllocation));
+
         return action;
     }
 
     /**
-     * Create a change repository component action.
+     * Create a dereplication action.
      *
      * @param runtimeNode
-     *            node to be changed
-     * @param reDeploymentNode
-     *            target node
-     * @return returns the composed action
+     *            node to be deallocated
+     * @return returns the dereplication action
      */
-    public static ChangeRepositoryComponentAction generateChangeRepositoryComponentAction(
-            final ComponentNode runtimeNode, final ComponentNode reDeploymentNode) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final ChangeRepositoryComponentAction action = factory.createChangeRepositoryComponentAction();
+    public static DereplicateAction generateDereplicateAction(final ComponentNode runtimeNode) {
+        final DereplicateAction action = SystemadaptationFactory.eINSTANCE.createDereplicateAction();
+        final Allocation runtimeAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
+        final System runtimeSystem = ActionFactory.getRuntimeModels().getSystemModel();
 
-        AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
-
-        final Repository repositoryModel = ActionFactory.getRedeploymentModels().getRepositoryModel();
-        final RepositoryComponent repositoryComponent = repositoryModel.getComponents__Repository().stream()
-                .filter(s -> s.getId().equals(reDeploymentNode.getRepositoryComponentID())).findFirst().get();
-        action.setNewRepositoryComponent(repositoryComponent);
+        AssemblyContextActionFactory.initializeAssemblyContextAction(action, runtimeNode, runtimeAllocation,
+                runtimeSystem);
 
         return action;
     }
@@ -83,67 +127,55 @@ public final class AssemblyContextActionFactory {
      */
     public static MigrateAction generateMigrateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final MigrateAction action = factory.createMigrateAction();
+        final MigrateAction action = SystemadaptationFactory.eINSTANCE.createMigrateAction();
+        final Allocation runtimeAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
+        final Allocation redeploymentAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
+        final System runtimeSystem = ActionFactory.getRuntimeModels().getSystemModel();
+        final System redeploymentSystem = ActionFactory.getRedeploymentModels().getSystemModel();
 
-        AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
+        AssemblyContextActionFactory.initializeAssemblyContextAction(action, reDeploymentNode, redeploymentAllocation,
+                redeploymentSystem);
 
-        final Allocation runAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
         action.setSourceAllocationContext(
-                ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runAllocation));
+                ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runtimeAllocation));
 
-        final Allocation reDeplAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
-        action.setNewAllocationContext(
-                ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), reDeplAllocation));
-        return action;
-    }
+        // source providing allocation contexts
+        ActionFactory.getProvidingAssemblyContexts(runtimeNode.getAssemblyContextID(), runtimeSystem)
+                .forEach(ac -> action.getSourceProvidingAllocationContexts().add(
+                        ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), runtimeAllocation)));
 
-    /**
-     * Create a deallocation action.
-     *
-     * @param runtimeNode
-     *            node to be deallocated
-     * @return returns the deallocation action
-     */
-    public static DeallocateAction generateDeallocateAction(final ComponentNode runtimeNode) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final DeallocateAction action = factory.createDeallocateAction();
-
-        AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
-
-        final Allocation runAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
-        action.setOldAllocationContext(
-                ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runAllocation));
+        // source requiring allocation contexts
+        ActionFactory.getRequiringAssemblyContexts(runtimeNode.getAssemblyContextID(), runtimeSystem)
+                .forEach(ac -> action.getSourceRequiringAllocationContexts().add(
+                        ActionFactory.getAllocationContextContainingAssemblyContext(ac.getId(), runtimeAllocation)));
 
         return action;
     }
 
     /**
-     * Create an allocation action.
+     * Create a change repository component action.
      *
      * @param runtimeNode
-     *            node to be allocated
+     *            node to be changed
      * @param reDeploymentNode
-     *            node to be deployed
-     * @return returns the allocation action
+     *            target node
+     * @return returns the composed action
      */
-    public static AllocateAction generateAllocateAction(final ComponentNode runtimeNode,
-            final ComponentNode reDeploymentNode) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final AllocateAction action = factory.createAllocateAction();
+    public static ChangeRepositoryComponentAction generateChangeRepositoryComponentAction(
+            final ComponentNode runtimeNode, final ComponentNode reDeploymentNode) {
+        final ChangeRepositoryComponentAction action = SystemadaptationFactory.eINSTANCE
+                .createChangeRepositoryComponentAction();
+        final Allocation runtimeAllocation = ActionFactory.getRuntimeModels().getAllocationModel();
+        final Allocation redeploymentAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
+        final System redeploymentSystem = ActionFactory.getRedeploymentModels().getSystemModel();
 
-        // Allcotaion has no runtime component
-        // AssemblyContextActionFactory.setSourceAssemblyContext(action,
-        // runtimeNode.getAssemblyContextID());
+        AssemblyContextActionFactory.initializeAssemblyContextAction(action, reDeploymentNode, redeploymentAllocation,
+                redeploymentSystem);
 
-        final org.palladiosimulator.pcm.system.System reDeplSystem = ActionFactory.getRedeploymentModels()
-                .getSystemModel();
-        action.setSourceAssemblyContext(
-                ActionFactory.getAssemblyContext(reDeploymentNode.getAssemblyContextID(), reDeplSystem));
+        action.setSourceAllocationContext(
+                ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runtimeAllocation));
 
-        final Allocation reDeplAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
-        action.setNewAllocationContext(
-                ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), reDeplAllocation));
         return action;
     }
+
 }

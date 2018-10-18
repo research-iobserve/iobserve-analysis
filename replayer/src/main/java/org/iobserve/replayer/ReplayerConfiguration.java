@@ -19,9 +19,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
+
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 import org.iobserve.stages.source.Dir2RecordsFilter;
 
@@ -47,16 +48,19 @@ public class ReplayerConfiguration extends Configuration {
      */
     public ReplayerConfiguration(final File dataLocation, final String hostname, final int outputPort) {
 
-        final List<File> directories = new ArrayList<File>();
+        final List<File> directories = new ArrayList<>();
         directories.add(dataLocation);
 
         final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
         final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
+        final DelayStage delayStage = new DelayStage(1000 * 1000);
+
         this.consumer = new DataSendStage(hostname, outputPort);
 
         this.connectPorts(files.getOutputPort(), reader.getInputPort());
-        this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
+        this.connectPorts(reader.getOutputPort(), delayStage.getInputPort());
+        this.connectPorts(delayStage.getOutputPort(), this.consumer.getInputPort());
     }
 
     public DataSendStage getCounter() {

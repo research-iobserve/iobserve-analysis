@@ -41,10 +41,12 @@ public class AlarmSink extends AbstractFileSink<Alarms> {
     @Override
     protected void execute(final Alarms element) throws Exception {
         AbstractFileSink.LOGGER.debug("Alarms");
-        for (final String alarms : element.getMessages()) {
-            AbstractFileSink.LOGGER.debug("\t {}", alarms);
-            this.output.println(alarms);
+        this.output.printf("Alarms %s\n", element.getDate());
+        for (final String alarm : element.getMessages()) {
+            AbstractFileSink.LOGGER.debug("\t {}", alarm);
+            this.output.printf("%s %s\n", element.getDate(), alarm);
         }
+        this.output.flush();
     }
 
 }

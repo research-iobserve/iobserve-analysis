@@ -1,7 +1,14 @@
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 apply plugin: 'java'
 
 mainClassName='org.iobserve.evaluation.EvaluationMain'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
@@ -10,17 +17,17 @@ dependencies {
 	compile project(":service")
 }
 
-clover {
-	report {
-		html=true
-	}	
-}
+// SHADOW
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
+//}
 
 test {
   println 'Starting unit tests.'
-  scanForTestClasses= false
-  include '**/evaluation/suites/*'
-  exclude '**/evaluation/filter/*'
+  scanForTestClasses = false
+  include '**/evaluation/test/suites/Test*.java'
+  exclude '**/evaluation/test/filter/*'
 }
 
 install {

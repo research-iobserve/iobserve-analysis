@@ -1,646 +1,509 @@
-/***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
+/**
+ */
 package org.iobserve.planning.systemadaptation.impl;
+
+import de.uka.ipd.sdq.identifier.IdentifierPackage;
+
+import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
+
+import de.uka.ipd.sdq.stoex.StoexPackage;
+
+import de.uka.ipd.sdq.units.UnitsPackage;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.iobserve.planning.systemadaptation.AcquireAction;
-import org.iobserve.planning.systemadaptation.Action;
+
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.iobserve.planning.systemadaptation.TerminateAction;
+
 import org.palladiosimulator.pcm.PcmPackage;
+
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- *
+ * <!-- begin-user-doc -->
+ * An implementation of the model <b>Package</b>.
+ * <!-- end-user-doc -->
  * @generated
  */
 public class SystemadaptationPackageImpl extends EPackageImpl implements SystemadaptationPackage {
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass systemAdaptationEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    private EClass actionEClass = null;
+    private EClass composedActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass assemblyContextActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass resourceContainerActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass changeRepositoryComponentActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass allocateActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass deallocateActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass migrateActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass acquireActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass terminateActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass replicateActionEClass = null;
 
     /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass dereplicateActionEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass migrateActionEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass allocateActionEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass deallocateActionEClass = null;
+
+    /**
      * Creates an instance of the model <b>Package</b>, registered with
-     * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package URI
-     * value.
-     * <p>
-     * Note: the correct way to create the package is via the static factory method {@link #init
-     * init()}, which also performs initialization of the package, or returns the registered
-     * package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package
+     * package URI value.
+     * <p>Note: the correct way to create the package is via the static
+     * factory method {@link #init init()}, which also performs
+     * initialization of the package, or returns the registered package,
+     * if one already exists.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#eNS_URI
      * @see #init()
      * @generated
      */
     private SystemadaptationPackageImpl() {
-        super(SystemadaptationPackage.eNS_URI, SystemadaptationFactory.eINSTANCE);
+        super(eNS_URI, SystemadaptationFactory.eINSTANCE);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private static boolean isInited = false;
 
     /**
-     * Creates, registers, and initializes the <b>Package</b> for this model, and for any others
-     * upon which it depends.
-     *
-     * <p>
-     * This method is used to initialize {@link SystemadaptationPackage#eINSTANCE} when that field
-     * is accessed. Clients should not invoke it directly. Instead, they should simply access that
-     * field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
+     * 
+     * <p>This method is used to initialize {@link SystemadaptationPackage#eINSTANCE} when that field is accessed.
+     * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
      * @generated
      */
     public static SystemadaptationPackage init() {
-        if (SystemadaptationPackageImpl.isInited) {
-            return (SystemadaptationPackage) EPackage.Registry.INSTANCE.getEPackage(SystemadaptationPackage.eNS_URI);
-        }
+        if (isInited) return (SystemadaptationPackage)EPackage.Registry.INSTANCE.getEPackage(SystemadaptationPackage.eNS_URI);
 
         // Obtain or create and register package
-        final SystemadaptationPackageImpl thesystemadaptationPackage = (SystemadaptationPackageImpl) (EPackage.Registry.INSTANCE
-                .get(SystemadaptationPackage.eNS_URI) instanceof SystemadaptationPackageImpl
-                        ? EPackage.Registry.INSTANCE.get(SystemadaptationPackage.eNS_URI)
-                        : new SystemadaptationPackageImpl());
+        SystemadaptationPackageImpl theSystemadaptationPackage = (SystemadaptationPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof SystemadaptationPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new SystemadaptationPackageImpl());
 
-        SystemadaptationPackageImpl.isInited = true;
+        isInited = true;
 
         // Initialize simple dependencies
+        IdentifierPackage.eINSTANCE.eClass();
         PcmPackage.eINSTANCE.eClass();
+        ProbfunctionPackage.eINSTANCE.eClass();
+        StoexPackage.eINSTANCE.eClass();
+        UnitsPackage.eINSTANCE.eClass();
 
         // Create package meta-data objects
-        thesystemadaptationPackage.createPackageContents();
+        theSystemadaptationPackage.createPackageContents();
 
         // Initialize created meta-data
-        thesystemadaptationPackage.initializePackageContents();
+        theSystemadaptationPackage.initializePackageContents();
 
         // Mark meta-data to indicate it can't be changed
-        thesystemadaptationPackage.freeze();
+        theSystemadaptationPackage.freeze();
 
+  
         // Update the registry and return the package
-        EPackage.Registry.INSTANCE.put(SystemadaptationPackage.eNS_URI, thesystemadaptationPackage);
-        return thesystemadaptationPackage;
+        EPackage.Registry.INSTANCE.put(SystemadaptationPackage.eNS_URI, theSystemadaptationPackage);
+        return theSystemadaptationPackage;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getSystemAdaptation() {
-        return this.systemAdaptationEClass;
+        return systemAdaptationEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EReference getSystemAdaptation_Actions() {
-        return (EReference) this.systemAdaptationEClass.getEStructuralFeatures().get(0);
+        return (EReference)systemAdaptationEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EClass getAction() {
-        return this.actionEClass;
+    public EClass getComposedAction() {
+        return composedActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getAction_ResourceContainer() {
-        return (EReference) this.actionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
     public EClass getAssemblyContextAction() {
-        return this.assemblyContextActionEClass;
+        return assemblyContextActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getAssemblyContextAction_SourceAssemblyContext() {
-        return (EReference) this.assemblyContextActionEClass.getEStructuralFeatures().get(0);
+    public EReference getAssemblyContextAction_TargetAllocationContext() {
+        return (EReference)assemblyContextActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
+    public EReference getAssemblyContextAction_TargetProvidingAllocationContexts() {
+        return (EReference)assemblyContextActionEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getAssemblyContextAction_TargetRequiringAllocationContexts() {
+        return (EReference)assemblyContextActionEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getResourceContainerAction() {
-        return this.resourceContainerActionEClass;
+        return resourceContainerActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getResourceContainerAction_SourceResourceContainer() {
-        return (EReference) this.resourceContainerActionEClass.getEStructuralFeatures().get(0);
+    public EReference getResourceContainerAction_TargetResourceContainer() {
+        return (EReference)resourceContainerActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
+    public EReference getResourceContainerAction_TargetLinkingResources() {
+        return (EReference)resourceContainerActionEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getChangeRepositoryComponentAction() {
-        return this.changeRepositoryComponentActionEClass;
+        return changeRepositoryComponentActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getChangeRepositoryComponentAction_NewRepositoryComponent() {
-        return (EReference) this.changeRepositoryComponentActionEClass.getEStructuralFeatures().get(0);
+    public EReference getChangeRepositoryComponentAction_SourceAllocationContext() {
+        return (EReference)changeRepositoryComponentActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EClass getAllocateAction() {
-        return this.allocateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getAllocateAction_NewAllocationContext() {
-        return (EReference) this.allocateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getDeallocateAction() {
-        return this.deallocateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getDeallocateAction_OldAllocationContext() {
-        return (EReference) this.deallocateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getMigrateAction() {
-        return this.migrateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getMigrateAction_NewAllocationContext() {
-        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getMigrateAction_SourceAllocationContext() {
-        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(1);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getAcquireAction() {
-        return this.acquireActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getTerminateAction() {
-        return this.terminateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
     public EClass getReplicateAction() {
-        return this.replicateActionEClass;
+        return replicateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getReplicateAction_NewResourceContainer() {
-        return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
     public EReference getReplicateAction_SourceAllocationContext() {
-        return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(1);
+        return (EReference)replicateActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EReference getReplicateAction_NewAllocationContext() {
-        return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(2);
+    public EClass getDereplicateAction() {
+        return dereplicateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public SystemadaptationFactory getsystemadaptationFactory() {
-        return (SystemadaptationFactory) this.getEFactoryInstance();
+    public EClass getMigrateAction() {
+        return migrateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getMigrateAction_SourceAllocationContext() {
+        return (EReference)migrateActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getMigrateAction_SourceProvidingAllocationContexts() {
+        return (EReference)migrateActionEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getMigrateAction_SourceRequiringAllocationContexts() {
+        return (EReference)migrateActionEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getAllocateAction() {
+        return allocateActionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getDeallocateAction() {
+        return deallocateActionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public SystemadaptationFactory getSystemadaptationFactory() {
+        return (SystemadaptationFactory)getEFactoryInstance();
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private boolean isCreated = false;
 
     /**
-     * Creates the meta-model objects for the package. This method is guarded to have no affect on
-     * any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * Creates the meta-model objects for the package.  This method is
+     * guarded to have no affect on any invocation but its first.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public void createPackageContents() {
-        if (this.isCreated) {
-            return;
-        }
-        this.isCreated = true;
+        if (isCreated) return;
+        isCreated = true;
 
         // Create classes and their features
-        this.systemAdaptationEClass = this.createEClass(SystemadaptationPackage.SYSTEM_ADAPTATION);
-        this.createEReference(this.systemAdaptationEClass, SystemadaptationPackage.SYSTEM_ADAPTATION__ACTIONS);
+        systemAdaptationEClass = createEClass(SYSTEM_ADAPTATION);
+        createEReference(systemAdaptationEClass, SYSTEM_ADAPTATION__ACTIONS);
 
-        this.actionEClass = this.createEClass(SystemadaptationPackage.ACTION);
-        this.createEReference(this.actionEClass, SystemadaptationPackage.ACTION__RESOURCE_CONTAINER);
+        composedActionEClass = createEClass(COMPOSED_ACTION);
 
-        this.assemblyContextActionEClass = this.createEClass(SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION);
-        this.createEReference(this.assemblyContextActionEClass,
-                SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION__SOURCE_ASSEMBLY_CONTEXT);
+        assemblyContextActionEClass = createEClass(ASSEMBLY_CONTEXT_ACTION);
+        createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT);
+        createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS);
 
-        this.resourceContainerActionEClass = this.createEClass(SystemadaptationPackage.RESOURCE_CONTAINER_ACTION);
-        this.createEReference(this.resourceContainerActionEClass,
-                SystemadaptationPackage.RESOURCE_CONTAINER_ACTION__SOURCE_RESOURCE_CONTAINER);
+        resourceContainerActionEClass = createEClass(RESOURCE_CONTAINER_ACTION);
+        createEReference(resourceContainerActionEClass, RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER);
+        createEReference(resourceContainerActionEClass, RESOURCE_CONTAINER_ACTION__TARGET_LINKING_RESOURCES);
 
-        this.changeRepositoryComponentActionEClass = this
-                .createEClass(SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION);
-        this.createEReference(this.changeRepositoryComponentActionEClass,
-                SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT);
+        changeRepositoryComponentActionEClass = createEClass(CHANGE_REPOSITORY_COMPONENT_ACTION);
+        createEReference(changeRepositoryComponentActionEClass, CHANGE_REPOSITORY_COMPONENT_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
-        this.allocateActionEClass = this.createEClass(SystemadaptationPackage.ALLOCATE_ACTION);
-        this.createEReference(this.allocateActionEClass,
-                SystemadaptationPackage.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT);
+        replicateActionEClass = createEClass(REPLICATE_ACTION);
+        createEReference(replicateActionEClass, REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
-        this.deallocateActionEClass = this.createEClass(SystemadaptationPackage.DEALLOCATE_ACTION);
-        this.createEReference(this.deallocateActionEClass,
-                SystemadaptationPackage.DEALLOCATE_ACTION__OLD_ALLOCATION_CONTEXT);
+        dereplicateActionEClass = createEClass(DEREPLICATE_ACTION);
 
-        this.migrateActionEClass = this.createEClass(SystemadaptationPackage.MIGRATE_ACTION);
-        this.createEReference(this.migrateActionEClass, SystemadaptationPackage.MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT);
-        this.createEReference(this.migrateActionEClass,
-                SystemadaptationPackage.MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
+        migrateActionEClass = createEClass(MIGRATE_ACTION);
+        createEReference(migrateActionEClass, MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
+        createEReference(migrateActionEClass, MIGRATE_ACTION__SOURCE_PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(migrateActionEClass, MIGRATE_ACTION__SOURCE_REQUIRING_ALLOCATION_CONTEXTS);
 
-        this.acquireActionEClass = this.createEClass(SystemadaptationPackage.ACQUIRE_ACTION);
+        allocateActionEClass = createEClass(ALLOCATE_ACTION);
 
-        this.terminateActionEClass = this.createEClass(SystemadaptationPackage.TERMINATE_ACTION);
-
-        this.replicateActionEClass = this.createEClass(SystemadaptationPackage.REPLICATE_ACTION);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__NEW_RESOURCE_CONTAINER);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT);
+        deallocateActionEClass = createEClass(DEALLOCATE_ACTION);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private boolean isInitialized = false;
 
     /**
-     * Complete the initialization of the package and its meta-model. This method is guarded to have
-     * no affect on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * Complete the initialization of the package and its meta-model.  This
+     * method is guarded to have no affect on any invocation but its first.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public void initializePackageContents() {
-        if (this.isInitialized) {
-            return;
-        }
-        this.isInitialized = true;
+        if (isInitialized) return;
+        isInitialized = true;
 
         // Initialize package
-        this.setName(SystemadaptationPackage.eNAME);
-        this.setNsPrefix(SystemadaptationPackage.eNS_PREFIX);
-        this.setNsURI(SystemadaptationPackage.eNS_URI);
+        setName(eNAME);
+        setNsPrefix(eNS_PREFIX);
+        setNsURI(eNS_URI);
 
         // Obtain other dependent packages
-        final ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage) EPackage.Registry.INSTANCE
-                .getEPackage(ResourceenvironmentPackage.eNS_URI);
-        final CompositionPackage theCompositionPackage = (CompositionPackage) EPackage.Registry.INSTANCE
-                .getEPackage(CompositionPackage.eNS_URI);
-        final RepositoryPackage theRepositoryPackage = (RepositoryPackage) EPackage.Registry.INSTANCE
-                .getEPackage(RepositoryPackage.eNS_URI);
-        final AllocationPackage theAllocationPackage = (AllocationPackage) EPackage.Registry.INSTANCE
-                .getEPackage(AllocationPackage.eNS_URI);
+        AllocationPackage theAllocationPackage = (AllocationPackage)EPackage.Registry.INSTANCE.getEPackage(AllocationPackage.eNS_URI);
+        ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage)EPackage.Registry.INSTANCE.getEPackage(ResourceenvironmentPackage.eNS_URI);
 
         // Create type parameters
 
         // Set bounds for type parameters
 
         // Add supertypes to classes
-        this.assemblyContextActionEClass.getESuperTypes().add(this.getAction());
-        this.resourceContainerActionEClass.getESuperTypes().add(this.getAction());
-        this.changeRepositoryComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.allocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.deallocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.migrateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.acquireActionEClass.getESuperTypes().add(this.getResourceContainerAction());
-        this.terminateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
-        this.replicateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+        assemblyContextActionEClass.getESuperTypes().add(this.getComposedAction());
+        resourceContainerActionEClass.getESuperTypes().add(this.getComposedAction());
+        changeRepositoryComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        replicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        dereplicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        migrateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        allocateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+        deallocateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
 
         // Initialize classes and features; add operations and parameters
-        this.initEClass(this.systemAdaptationEClass, SystemAdaptation.class, "SystemAdaptation",
-                !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getSystemAdaptation_Actions(), this.getAction(), null, "actions", null, 0, -1,
-                SystemAdaptation.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, EPackageImpl.IS_COMPOSITE, !EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(systemAdaptationEClass, SystemAdaptation.class, "SystemAdaptation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getSystemAdaptation_Actions(), this.getComposedAction(), null, "actions", null, 0, -1, SystemAdaptation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.actionEClass, Action.class, "Action", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getAction_ResourceContainer(), theResourceenvironmentPackage.getResourceContainer(),
-                null, "resourceContainer", null, 1, 1, Action.class, !EPackageImpl.IS_TRANSIENT,
-                !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
-                EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-                !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(composedActionEClass, ComposedAction.class, "ComposedAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-        this.initEClass(this.assemblyContextActionEClass, AssemblyContextAction.class, "AssemblyContextAction",
-                !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getAssemblyContextAction_SourceAssemblyContext(),
-                theCompositionPackage.getAssemblyContext(), null, "sourceAssemblyContext", null, 0, 1,
-                AssemblyContextAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(assemblyContextActionEClass, AssemblyContextAction.class, "AssemblyContextAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getAssemblyContextAction_TargetAllocationContext(), theAllocationPackage.getAllocationContext(), null, "targetAllocationContext", null, 1, 1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getAssemblyContextAction_TargetProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetProvidingAllocationContexts", null, 0, -1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getAssemblyContextAction_TargetRequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetRequiringAllocationContexts", null, 0, -1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.resourceContainerActionEClass, ResourceContainerAction.class, "ResourceContainerAction",
-                !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getResourceContainerAction_SourceResourceContainer(),
-                theResourceenvironmentPackage.getResourceContainer(), null, "sourceResourceContainer", null, 0, 1,
-                ResourceContainerAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(resourceContainerActionEClass, ResourceContainerAction.class, "ResourceContainerAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getResourceContainerAction_TargetResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "targetResourceContainer", null, 1, 1, ResourceContainerAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getResourceContainerAction_TargetLinkingResources(), theResourceenvironmentPackage.getLinkingResource(), null, "targetLinkingResources", null, 0, -1, ResourceContainerAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.changeRepositoryComponentActionEClass, ChangeRepositoryComponentAction.class,
-                "ChangeRepositoryComponentAction", !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE,
-                EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getChangeRepositoryComponentAction_NewRepositoryComponent(),
-                theRepositoryPackage.getRepositoryComponent(), null, "newRepositoryComponent", null, 1, 1,
-                ChangeRepositoryComponentAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
-                !EPackageImpl.IS_ORDERED);
+        initEClass(changeRepositoryComponentActionEClass, ChangeRepositoryComponentAction.class, "ChangeRepositoryComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getChangeRepositoryComponentAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1, ChangeRepositoryComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.allocateActionEClass, AllocateAction.class, "AllocateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getAllocateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
-                null, "newAllocationContext", null, 1, 1, AllocateAction.class, !EPackageImpl.IS_TRANSIENT,
-                !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
-                EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-                !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(replicateActionEClass, ReplicateAction.class, "ReplicateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getReplicateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.deallocateActionEClass, DeallocateAction.class, "DeallocateAction",
-                !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getDeallocateAction_OldAllocationContext(),
-                theAllocationPackage.getAllocationContext(), null, "oldAllocationContext", null, 0, 1,
-                DeallocateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(dereplicateActionEClass, DereplicateAction.class, "DereplicateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-        this.initEClass(this.migrateActionEClass, MigrateAction.class, "MigrateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getMigrateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
-                null, "newAllocationContext", null, 1, 1, MigrateAction.class, !EPackageImpl.IS_TRANSIENT,
-                !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
-                EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-                !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-        this.initEReference(this.getMigrateAction_SourceAllocationContext(),
-                theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1,
-                MigrateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE,
-                !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
-                EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(migrateActionEClass, MigrateAction.class, "MigrateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getMigrateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getMigrateAction_SourceProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "sourceProvidingAllocationContexts", null, 0, -1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getMigrateAction_SourceRequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "sourceRequiringAllocationContexts", null, 0, -1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        this.initEClass(this.acquireActionEClass, AcquireAction.class, "AcquireAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
+        initEClass(allocateActionEClass, AllocateAction.class, "AllocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-        this.initEClass(this.terminateActionEClass, TerminateAction.class, "TerminateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-        this.initEClass(this.replicateActionEClass, ReplicateAction.class, "ReplicateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getReplicateAction_NewResourceContainer(),
-                theResourceenvironmentPackage.getResourceContainer(), null, "newResourceContainer", null, 1, 1,
-                ReplicateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-        this.initEReference(this.getReplicateAction_SourceAllocationContext(),
-                theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, -1,
-                ReplicateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-        this.initEReference(this.getReplicateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
-                null, "newAllocationContext", null, 1, -1, ReplicateAction.class, !EPackageImpl.IS_TRANSIENT,
-                !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
-                EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-                !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        initEClass(deallocateActionEClass, DeallocateAction.class, "DeallocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         // Create resource
-        this.createResource(SystemadaptationPackage.eNS_URI);
+        createResource(eNS_URI);
     }
 
-} // systemadaptationPackageImpl
+} //SystemadaptationPackageImpl

@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2014 Kieker Project (http://kiekermonitoring.net)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@ package org.iobserve.common.record
 	 
 import kieker.common.record.flow.IEventRecord
 import org.iobserve.common.record.GeoLocation
+import org.iobserve.common.record.IEvent
 	 
 /** 
  * Marker interfaces for deployment and undeployment.	 
@@ -24,40 +25,41 @@ import org.iobserve.common.record.GeoLocation
 @author "Reiner Jung" @since "0.0.2"
 template IDeploymentChange
 @author "Reiner Jung" @since "0.0.2"
-template IDeployedEvent : IDeploymentChange
+template IDeployedEvent : IDeploymentChange, IEvent
 @author "Reiner Jung" @since "0.0.2"
-template IUndeployedEvent : IDeploymentChange
+template IUndeployedEvent : IDeploymentChange, IEvent
 	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event ServletDescriptor extends AbstractEvent { 
+template ServletDescriptor { 
 	string service
 	string context
 	string deploymentId
 }
 
 @author "Reiner Jung" @since "0.0.2"
-event ServletDeployedEvent extends ServletDescriptor : IDeployedEvent
+event ServletDeployedEvent : IDeployedEvent, ServletDescriptor
 @author "Reiner Jung" @since "0.0.2"
-event ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
+event ServletUndeployedEvent : IUndeployedEvent, ServletDescriptor
 
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.	 
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event EJBDescriptor extends AbstractEvent { 
+template EJBDescriptor { 
 	string service
 	string context
 	string deploymentId
 }
 
 @author "Reiner Jung" @since "0.0.2"
-event EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
+event EJBDeployedEvent : IDeployedEvent, EJBDescriptor
 @author "Reiner Jung" @since "0.0.2"
-event EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
+event EJBUndeployedEvent : IUndeployedEvent, EJBDescriptor
 
+/** defining the privacy extension for a set of events */
 model Deployment IDeployedEvent, IUndeployedEvent
 sub Privacy Deployment : GeoLocation
 

@@ -15,7 +15,10 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
-import org.iobserve.model.protocom.PcmEntity;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
 /**
  * @author Reiner Jung
@@ -24,10 +27,10 @@ import org.iobserve.model.protocom.PcmEntity;
 public class PCMEntryCallEvent {
     private final long entryTime;
     private final long exitTime;
-    private final PcmEntity entity;
-
-    private final String sessionId;
-    private final String hostname;
+    private final RepositoryComponent component;
+    private final OperationSignature operationSignature;
+    private final AssemblyContext assemblyContext;
+    private final AllocationContext allocationContext;
 
     /**
      * Create a new PCM entry call.
@@ -36,20 +39,24 @@ public class PCMEntryCallEvent {
      *            entry time
      * @param exitTime
      *            exit time
-     * @param entity
-     *            related pcm entity
-     * @param sessionId
-     *            session id
-     * @param hostname
-     *            hostname
+     * @param component
+     *            related component
+     * @param operationSignature
+     *            related operation signature
+     * @param assemblyContext
+     *            where this component is located in the architecture
+     * @param allocationContext
+     *            allocation
      */
-    public PCMEntryCallEvent(final long entryTime, final long exitTime, final PcmEntity entity, final String sessionId,
-            final String hostname) {
+    public PCMEntryCallEvent(final long entryTime, final long exitTime, final RepositoryComponent component,
+            final OperationSignature operationSignature, final AssemblyContext assemblyContext,
+            final AllocationContext allocationContext) {
         this.entryTime = entryTime;
         this.exitTime = exitTime;
-        this.entity = entity;
-        this.sessionId = sessionId;
-        this.hostname = hostname;
+        this.component = component;
+        this.operationSignature = operationSignature;
+        this.allocationContext = allocationContext;
+        this.assemblyContext = assemblyContext;
     }
 
     public final long getEntryTime() {
@@ -60,16 +67,20 @@ public class PCMEntryCallEvent {
         return this.exitTime;
     }
 
-    public final PcmEntity getEntity() {
-        return this.entity;
+    public final RepositoryComponent getComponent() {
+        return this.component;
     }
 
-    public final String getSessionId() {
-        return this.sessionId;
+    public final OperationSignature getOperationSignature() {
+        return this.operationSignature;
     }
 
-    public final String getHostname() {
-        return this.hostname;
+    public final AssemblyContext getAssemblyContext() {
+        return this.assemblyContext;
+    }
+
+    public final AllocationContext getAllocationContext() {
+        return this.allocationContext;
     }
 
 }

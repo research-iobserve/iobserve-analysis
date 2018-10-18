@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="correspondence" nsURI="https://www.iobserve-devops.net/model/0.0.3/correspondence"
+    nsPrefix="correspondence">
+  <eClassifiers xsi:type="ecore:EClass" name="CorrespondenceModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parts" upperBound="-1"
+        eType="#//Part" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DataTypeEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataTypeEntry" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/DataType"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Part">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modelType" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entries" upperBound="-1"
+        eType="#//AbstractEntry" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractEntry" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="implementationId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComponentEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="component" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/RepositoryComponent"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AllocationEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="allocation" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="technology" lowerBound="1"
+        eType="#//EServiceTechnology"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssemblyEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="assembly" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyContext"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OperationEntry" eSuperTypes="#//AbstractEntry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operation" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/OperationSignature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EServiceTechnology">
+    <eLiterals name="SERVLET"/>
+    <eLiterals name="EJB" value="1"/>
+    <eLiterals name="ASPECT_J" value="2"/>
+    <eLiterals name="DB" value="3" literal="DB"/>
+  </eClassifiers>
+</ecore:EPackage>

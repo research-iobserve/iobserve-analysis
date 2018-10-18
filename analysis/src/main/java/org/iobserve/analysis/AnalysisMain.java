@@ -17,8 +17,6 @@ package org.iobserve.analysis;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -26,21 +24,25 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.analysis.configurations.AnalysisConfiguration;
-import org.iobserve.analysis.configurations.ConfigurationKeys;
-import org.iobserve.model.PCMModelHandler;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.ModelImporter;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * Main class for starting the iObserve application.
@@ -53,6 +55,8 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguration> {
 
+    private static final String PALLADIO_PREFIX = "org.palladiosimulator";
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -64,7 +68,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
     private File modelDatabaseDirectory;
 
-    private URL containerManagementVisualizationBaseUrl;
+    private boolean pcmFeature;
 
     /**
      * Default constructor.
@@ -85,21 +89,33 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        /** process configuration parameter. */
-        this.modelInitDirectory = new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY));
-        this.modelDatabaseDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY));
-
-        this.containerManagementVisualizationBaseUrl = CommandLineParameterEvaluation.createURL(
-                configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
-                "Management visualization URL");
-
+        boolean configurationGood = true;
         try {
-            return CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory, "PCM startup model",
-                    commander)
-                    && CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
-                            "PCM database directory", commander)
-                    && this.containerManagementVisualizationBaseUrl != null;
+            this.pcmFeature = configuration.getBooleanProperty(ConfigurationKeys.PCM_FEATURE);
+            if (this.pcmFeature) {
+                /** process configuration parameter. */
+                this.modelInitDirectory = new File(
+                        configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY));
+                if (this.modelInitDirectory == null) {
+                    AbstractServiceMain.LOGGER.info("Reuse PCM model in database.");
+                } else {
+                    configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory,
+                            "PCM startup model", commander);
+                }
+
+                this.modelDatabaseDirectory = new File(
+                        configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY));
+                configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
+                        "PCM database directory", commander);
+            }
+
+            if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE)) {
+                configurationGood &= CommandLineParameterEvaluation.createURL(
+                        configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
+                        "Management visualization URL") != null;
+            }
+
+            return configurationGood;
         } catch (final IOException e) {
             return false;
         }
@@ -109,67 +125,58 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
     protected AnalysisConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
 
+        // TODO fix ModelResource types add Types for generics
         /** Configure model handling. */
-        // old model providers without neo4j
-        final PCMModelHandler modelFileHandler = new PCMModelHandler(this.modelInitDirectory);
+        if (this.pcmFeature) {
+            try {
+                final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
 
-        final ICorrespondence correspondenceModel = modelFileHandler.getCorrespondenceModel();
+                /** initialize neo4j graphs. */
+                final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
+                        CorrespondencePackage.eINSTANCE, new File(this.modelDatabaseDirectory, "correspondence"));
+                correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-        /** initialize neo4j graphs. */
-        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+                final ModelResource<Repository> repositoryModelResource = new ModelResource<>(
+                        RepositoryPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "repository"));
+                repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-        Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
-        Graph resourceEnvironmentGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
-        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
-        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
-        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
+                final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
+                        ResourceenvironmentPackage.eINSTANCE,
+                        new File(this.modelDatabaseDirectory, "resourceenvironment")); // add
 
-        /** load neo4j graphs. */
-        repositoryModelGraph = graphLoader.createRepositoryModelGraph();
-        resourceEnvironmentGraph = graphLoader.createResourceEnvironmentModelGraph();
-        allocationModelGraph = graphLoader.createAllocationModelGraph();
-        systemModelGraph = graphLoader.createSystemModelGraph();
-        usageModelGraph = graphLoader.createUsageModelGraph();
+                resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-        /** new graphModelProvider. */
-        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
-        final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph);
-        final IModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
-        final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
-                systemModelGraph);
-        final IModelProvider<UsageModel> usageModelProvider = new ModelProvider<>(usageModelGraph);
+                final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
+                        new File(this.modelDatabaseDirectory, "system"));
+                systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-        // get systemId
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+                final ModelResource<Allocation> allocationModelResource = new ModelResource<>(
+                        AllocationPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "allocation"));
+                allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-        final String systemId = systemModel.getId();
+                final ModelResource<UsageModel> usageModelResource = new ModelResource<>(UsagemodelPackage.eINSTANCE,
+                        new File(this.modelDatabaseDirectory, "usageModel"));
+                usageModelResource.storeModelPartition(modelHandler.getUsageModel());
 
-        try {
-            /** URLs for sending updates to the deployment visualization. */
-            // TODO this should be moved to the visualization sinks
-            final String[] sinks = configuration.getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK,
-                    ",");
+                final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
+                        new File(this.modelDatabaseDirectory, "privacy"));
+                privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
-            if (sinks.length > 0) {
-                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
-                        systemModelProvider, resourceEnvironmentModelProvider);
+                // get systemId
+                final System systemModel = systemModelResource.getModelRootNode(System.class,
+                        SystemPackage.Literals.SYSTEM);
 
-                deploymentVisualization.initialize();
+                configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
+
+                return new AnalysisConfiguration(configuration, repositoryModelResource,
+                        resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
+                        usageModelResource, correspondenceModelResource);
+            } catch (final IOException e) {
+                java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+                return null;
             }
-
-            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, usageModelProvider, correspondenceModel);
-
-        } catch (final MalformedURLException e) {
-            AbstractServiceMain.LOGGER.debug("URL construction for deployment visualization failed.", e);
-            return null;
-        } catch (final IOException e) {
-            AbstractServiceMain.LOGGER.debug("Deployment visualization could not connect to visualization service.", e);
-            return null;
+        } else {
+            return new AnalysisConfiguration(configuration);
         }
     }
 
@@ -185,7 +192,8 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
     @Override
     protected void shutdownService() {
         // No additional shutdown hooks necessary.
-        // In case runtime data must be serialized, this would be the right place to trigger
+        // In case runtime data must be serialized, this would be the right place to
+        // trigger
         // serialization
     }
 

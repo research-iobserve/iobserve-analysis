@@ -19,6 +19,8 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.sampler.ISampler;
 
+import org.iobserve.common.record.ISOCountryCode;
+
 /**
  * This is an abstract base for all geolocation sampler.
  *
@@ -58,7 +60,7 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
 
         final long timestamp = monitoringController.getTimeSource().getTime();
         final String hostname = monitoringController.getHostname();
-        final short countryCode = this.countryInvestigator.getServerGeoLocationCountry();
+        final ISOCountryCode countryCode = this.countryInvestigator.getServerGeoLocationCountry();
 
         final IMonitoringRecord geoLocationRecord = this.getGeoLocationRecord(timestamp, hostname, countryCode,
                 monitoringController);
@@ -84,6 +86,6 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
      *             on error in monitoring component
      */
     public abstract IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname,
-            short countryCode, final IMonitoringController monitoringCtr) throws Exception;
+            final ISOCountryCode countryCode, final IMonitoringController monitoringCtr) throws Exception;
 
 }

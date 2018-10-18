@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ITraceHelper;
 import kieker.common.record.flow.IFlowRecord;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
@@ -92,7 +91,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServletTraceHelper(final Object[] values) { // NOPMD (direct store of values)
@@ -111,7 +110,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServletTraceHelper(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -139,7 +138,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -151,15 +150,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 			this.getRequestURI(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getHost());
-		stringRegistry.get(this.getRequestURI());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -199,7 +189,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

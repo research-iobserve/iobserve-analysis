@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,34 +18,39 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.ServletDescriptor;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.common.record.ServletDescriptor;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class ServletUndeployedEvent extends ServletDescriptor implements IUndeployedEvent {			
+public class ServletUndeployedEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IUndeployedEvent, ServletDescriptor {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
 			 + TYPE_SIZE_STRING; // ServletDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // ServletDescriptor.service
 		String.class, // ServletDescriptor.context
 		String.class, // ServletDescriptor.deploymentId
 	};
 	
-	private static final long serialVersionUID = -1583363720229385908L;
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -4696040403040862593L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -55,6 +60,11 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 		"deploymentId",
 	};
 	
+	/** property declarations. */
+	private final long timestamp;
+	private final String service;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -69,7 +79,10 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 *            deploymentId
 	 */
 	public ServletUndeployedEvent(final long timestamp, final String service, final String context, final String deploymentId) {
-		super(timestamp, service, context, deploymentId);
+		this.timestamp = timestamp;
+		this.service = service == null?"":service;
+		this.context = context == null?"":context;
+		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
 
 	/**
@@ -79,11 +92,15 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServletUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	/**
@@ -94,11 +111,15 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletUndeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServletUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
+		this.service = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	
@@ -109,13 +130,16 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 *            when the record could not be deserialized
 	 */
 	public ServletUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
+		this.service = deserializer.getString();
+		this.context = deserializer.getString();
+		this.deploymentId = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -127,16 +151,6 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 			this.getDeploymentId(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getService());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -176,7 +190,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -217,6 +231,25 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 		}
 		
 		return true;
+	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	
+	public final String getService() {
+		return this.service;
+	}
+	
+	
+	public final String getContext() {
+		return this.context;
+	}
+	
+	
+	public final String getDeploymentId() {
+		return this.deploymentId;
 	}
 	
 }
