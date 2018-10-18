@@ -61,9 +61,9 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
         } else {
             final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this
                     .computeReceivedWarnings(element.getWarningEdges());
-
             final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
                     this.currentActiveWarnings);
+
             final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
                     receivedWarnings);
 

@@ -158,8 +158,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
-            this.logger.debug("methods to update");
+        if (methodsToUpdate != null && element.getWhitelist() != null) {
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
                 this.logger.debug("AllocationContext to update {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
@@ -241,6 +240,8 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
         for (final AllocationEntry entry : allocations) {
             final AllocationContext entryAllocation = this.allocationResource.resolve(entry.getAllocation());
+            this.logger.debug("XXXXX entry id {} name {} / ac id {} name {}", entryAllocation.getId(),
+                    entryAllocation.getEntityName(), allocation.getId(), allocation.getEntityName());
             if (entryAllocation.getId().equals(allocation.getId())) {
                 return entry;
             }

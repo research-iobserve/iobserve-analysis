@@ -73,7 +73,6 @@ public class TcpProbeController implements IProbeController {
             TcpProbeController.LOGGER
                     .debug("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
         }
-
         final String ip = event.getIp();
         final int port = event.getPort();
         final String hostname = event.getHostname();
@@ -193,7 +192,7 @@ public class TcpProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+        if (currentConnection == null || currentConnection.getHostname() != hostname) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }

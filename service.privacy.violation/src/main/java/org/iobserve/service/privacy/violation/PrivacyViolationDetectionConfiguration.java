@@ -147,6 +147,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
             // final ModelProbeController modelProbeController = new ModelProbeController();
             final WhitelistFilter whitelistFilter = new WhitelistFilter(allocationResource,
                     resourceEnvironmentResource);
+
             final ProbeMapper probeMapper = new ProbeMapper(correspondenceResource, repositoryResource,
                     resourceEnvironmentResource, systemModelResource, allocationResource);
 
@@ -189,8 +190,10 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                     this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                     this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
-                    this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());
-                    this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
+                    // this.connectPorts(whitelistFilter.getOutputPort(),
+                    // probeMapper.getInputPort());
+                    // this.connectPorts(probeMapper.getOutputPort(),
+                    // probeController.getInputPort());
 
                     /** Alarm event processing. */
                     // TODO Trace analysis has become obsolete and will be replaced by an alarm
