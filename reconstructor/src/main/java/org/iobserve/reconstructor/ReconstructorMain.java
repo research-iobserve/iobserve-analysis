@@ -23,11 +23,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
+import kieker.tools.common.AbstractTeetimeTool;
+import kieker.tools.common.ConfigurationException;
 
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.service.CommonConfigurationKeys;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * The collector allows to collect input from different input sources, including TCP and Kieker
@@ -35,7 +35,7 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  * @author Reiner Jung
  */
-public final class ReconstructorMain extends AbstractServiceMain<ReconstructorConfiguration> {
+public final class ReconstructorMain extends AbstractTeetimeTool<ReconstructorConfiguration, ReconstructorMain> {
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
@@ -55,13 +55,13 @@ public final class ReconstructorMain extends AbstractServiceMain<ReconstructorCo
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new ReconstructorMain().run("Reconstructor", "reconstructor", args);
+        final ReconstructorMain main = new ReconstructorMain();
+        System.exit(main.run("Reconstructor", "reconstructor", args, main));
     }
 
     @Override
-    protected ReconstructorConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
-        return new ReconstructorConfiguration(configuration);
+    protected ReconstructorConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        return new ReconstructorConfiguration(this.kiekerConfiguration);
     }
 
     @Override

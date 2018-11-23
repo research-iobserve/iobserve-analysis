@@ -33,11 +33,6 @@ public final class ExtendedAfterOperationEventFactory implements IRecordFactory<
 		return new ExtendedAfterOperationEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ExtendedAfterOperationEvent create(final Object[] values) {
-		return new ExtendedAfterOperationEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ExtendedAfterOperationEvent.SIZE;

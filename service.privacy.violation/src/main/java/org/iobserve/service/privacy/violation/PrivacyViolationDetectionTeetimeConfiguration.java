@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 
@@ -45,7 +46,6 @@ import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.privacy.violation.filter.WhitelistFilter;
 import org.iobserve.service.source.ISourceCompositeStage;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -62,7 +62,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Reiner Jung
  *
  */
-public class PrivacyViolationDetectionConfiguration extends Configuration {
+public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration {
 
     /**
      * Configuration for the JSS privacy violation detection service.
@@ -92,7 +92,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      * @throws ConfigurationException
      *             on configuration errors
      */
-    public PrivacyViolationDetectionConfiguration(final kieker.common.configuration.Configuration configuration,
+    public PrivacyViolationDetectionTeetimeConfiguration(final kieker.common.configuration.Configuration configuration,
             final ModelResource<CorrespondenceModel> correspondenceResource,
             final ModelResource<Repository> repositoryResource,
             final ModelResource<ResourceEnvironment> resourceEnvironmentResource,

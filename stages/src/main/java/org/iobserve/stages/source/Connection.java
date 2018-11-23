@@ -20,9 +20,7 @@ import java.nio.channels.SocketChannel;
 
 import kieker.common.record.io.BinaryValueDeserializer;
 import kieker.common.record.io.IValueDeserializer;
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.registry.reader.GetValueAdapter;
-import kieker.common.util.registry.reader.ReaderRegistry;
+import kieker.common.registry.reader.ReaderRegistry;
 
 /**
  * Represents one connection to read records from.
@@ -51,9 +49,8 @@ public class Connection {
      */
     public Connection(final SocketChannel channel, final int bufferSize) {
         this.channel = channel;
-        final IRegistry<String> stringRegistryWrapper = new GetValueAdapter<>(this.registry);
         this.buffer = ByteBuffer.allocateDirect(bufferSize);
-        this.deserializer = BinaryValueDeserializer.create(this.buffer, stringRegistryWrapper);
+        this.deserializer = BinaryValueDeserializer.create(this.buffer, this.registry);
     }
 
     public ReaderRegistry<String> getRegistry() {

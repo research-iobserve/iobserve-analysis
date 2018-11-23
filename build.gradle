@@ -53,7 +53,7 @@ apply plugin: 'com.bmuschko.clover'
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
         memoryMaximumSize = '4g'
-        jvmArgs = ['-XX:MaxPermSize=2048m', '-Xms2048m', '-Xmx4g']
+        jvmArgs = ['-XX:MaxPermSize=4048m', '-Xms4048m', '-Xmx8g']
     }
 }
 

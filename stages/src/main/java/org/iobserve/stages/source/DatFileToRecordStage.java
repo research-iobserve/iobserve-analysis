@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.CharBuffer;
 
-import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistry;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.analysisteetime.plugin.reader.filesystem.util.MappingException;
 import kieker.common.exception.MonitoringRecordException;
@@ -31,6 +30,7 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.factory.CachedRecordFactoryCatalog;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.TextValueDeserializer;
+import kieker.common.registry.reader.ReaderRegistry;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -67,7 +67,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
 
     @Override
     protected void execute(final File textFile) {
-        final ClassNameRegistry classNameRegistry = this.classNameRegistryRepository.get(textFile.getParentFile());
+        final ReaderRegistry<String> classNameRegistry = this.classNameRegistryRepository.get(textFile.getParentFile());
         try {
             final FileInputStream inputStream = new FileInputStream(textFile);
             if (inputStream != null) {
@@ -103,7 +103,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
      * @throws UnknownRecordTypeException
      *             if the type is not known
      */
-    private void processInputChannel(final ClassNameRegistry classNameRegistry, final InputStream inputStream)
+    private void processInputChannel(final ReaderRegistry<String> classNameRegistry, final InputStream inputStream)
             throws IOException, MappingException, MonitoringRecordException, UnknownRecordTypeException {
         final byte[] buffer = new byte[DatFileToRecordStage.BUFFER_SIZE];
 
@@ -149,7 +149,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
      * @throws UnknownRecordTypeException
      *             record type is unknown
      */
-    private int processBuffer(final ClassNameRegistry classNameRegistry, final byte[] buffer, final int offset,
+    private int processBuffer(final ReaderRegistry<String> classNameRegistry, final byte[] buffer, final int offset,
             final int numOfBufferedBytes)
             throws MappingException, MonitoringRecordException, UnknownRecordTypeException {
         int i = offset;
@@ -174,7 +174,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
         return mark;
     }
 
-    private void createRecord(final ClassNameRegistry classNameRegistry)
+    private void createRecord(final ReaderRegistry<String> classNameRegistry)
             throws MappingException, MonitoringRecordException, UnknownRecordTypeException {
         this.charBuffer.flip();
         final char lead = this.charBuffer.get();

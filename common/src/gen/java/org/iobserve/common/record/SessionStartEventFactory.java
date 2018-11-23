@@ -33,11 +33,6 @@ public final class SessionStartEventFactory implements IRecordFactory<SessionSta
 		return new SessionStartEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public SessionStartEvent create(final Object[] values) {
-		return new SessionStartEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return SessionStartEvent.SIZE;

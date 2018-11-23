@@ -23,7 +23,7 @@ import kieker.common.record.io.IValueDeserializer;
 /**
  * @author Generic Kieker
  * 
- * @since 1.14
+ * @since 1.15
  */
 public final class Privacy_EJBUndeployedEventFactory implements IRecordFactory<Privacy_EJBUndeployedEvent> {
 	
@@ -33,11 +33,6 @@ public final class Privacy_EJBUndeployedEventFactory implements IRecordFactory<P
 		return new Privacy_EJBUndeployedEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public Privacy_EJBUndeployedEvent create(final Object[] values) {
-		return new Privacy_EJBUndeployedEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return Privacy_EJBUndeployedEvent.SIZE;

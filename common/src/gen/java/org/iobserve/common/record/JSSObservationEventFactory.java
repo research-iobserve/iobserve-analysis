@@ -33,11 +33,6 @@ public final class JSSObservationEventFactory implements IRecordFactory<JSSObser
 		return new JSSObservationEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public JSSObservationEvent create(final Object[] values) {
-		return new JSSObservationEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return JSSObservationEvent.SIZE;

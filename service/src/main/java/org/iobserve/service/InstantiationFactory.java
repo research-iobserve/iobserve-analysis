@@ -18,10 +18,10 @@ package org.iobserve.service;
 import java.lang.reflect.InvocationTargetException;
 
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public final class InstantiationFactory { // NOPMD
      *
      * @param <C>
      *            The type of the returned class.
-     * 
+     *
      * @throws ConfigurationException
      *             on configuration errors during instantiation
      */

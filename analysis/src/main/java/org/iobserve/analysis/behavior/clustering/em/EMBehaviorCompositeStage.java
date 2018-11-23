@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.em;
 
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -31,7 +32,6 @@ import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * @author Reiner Jung
@@ -73,8 +73,8 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
 
-        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(modelGenerationFilter,
-                representativeStrategy, keepEmptyTransitions);
+        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(
+                modelGenerationFilter, representativeStrategy, keepEmptyTransitions);
 
         /** aggregation setup. */
         final String namePrefix = configuration.getStringProperty(EMBehaviorCompositeStage.NAME_PREFIX);

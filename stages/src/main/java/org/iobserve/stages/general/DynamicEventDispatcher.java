@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;

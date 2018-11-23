@@ -33,11 +33,6 @@ public final class EntryLevelBeforeOperationEventFactory implements IRecordFacto
 		return new EntryLevelBeforeOperationEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public EntryLevelBeforeOperationEvent create(final Object[] values) {
-		return new EntryLevelBeforeOperationEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return EntryLevelBeforeOperationEvent.SIZE;

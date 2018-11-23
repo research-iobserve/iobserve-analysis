@@ -25,11 +25,11 @@ import org.iobserve.common.record.IEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
+public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
@@ -54,22 +54,6 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	}
 
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected AbstractContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
-		this.service = (String) values[1];
-	}
 
 	
 	/**
@@ -84,16 +68,6 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	}
 	
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -122,6 +96,17 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getService().hashCode();
+		
+		return code;
 	}
 	
 	public final long getTimestamp() {
