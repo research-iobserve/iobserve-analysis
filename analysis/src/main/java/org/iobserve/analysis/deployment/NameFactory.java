@@ -31,6 +31,15 @@ public final class NameFactory {
 
     }
 
+    /**
+     * Create an allocation name.
+     *
+     * @param assemblyContext
+     *            assembly context
+     * @param resourceContainer
+     *            resource container
+     * @return return allocation name
+     */
     public static String createAllocationContextName(final AssemblyContext assemblyContext,
             final ResourceContainer resourceContainer) {
         return assemblyContext.getEntityName() + " : " + resourceContainer.getEntityName();

@@ -15,12 +15,13 @@
  ***************************************************************************/
 package org.iobserve.reconstructor;
 
+import kieker.tools.common.ConfigurationException;
+
 import teetime.framework.Configuration;
 
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.service.source.SourceStageFactory;
-import org.iobserve.stages.general.ConfigurationException;
-import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.DataSinkStage;
 
 /**
  * Analysis configuration for the data collector.
@@ -32,7 +33,7 @@ import org.iobserve.stages.sink.DataDumpStage;
  */
 public class ReconstructorConfiguration extends Configuration {
 
-    private final DataDumpStage consumer;
+    private final DataSinkStage consumer;
 
     /**
      * Configure analysis.
@@ -51,7 +52,7 @@ public class ReconstructorConfiguration extends Configuration {
 
         final EndSessionDetector endSessionDetector = new EndSessionDetector();
 
-        this.consumer = new DataDumpStage(configuration);
+        this.consumer = new DataSinkStage(configuration);
 
         this.connectPorts(sourceStage.getOutputPort(), fixTraceMetadata.getInputPort());
         this.connectPorts(fixTraceMetadata.getOutputPort(), startSessionDetector.getInputPort());
@@ -59,7 +60,7 @@ public class ReconstructorConfiguration extends Configuration {
         this.connectPorts(endSessionDetector.getOutputPort(), this.consumer.getInputPort());
     }
 
-    public DataDumpStage getCounter() {
+    public DataSinkStage getCounter() {
         return this.consumer;
     }
 }

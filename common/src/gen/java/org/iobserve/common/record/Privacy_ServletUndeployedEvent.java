@@ -26,9 +26,9 @@ import org.iobserve.common.record.Privacy;
 
 /**
  * @author Generic Kieker
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
- * @since 1.14
+ * @since 1.15
  */
 public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
@@ -79,36 +79,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		this.countryCode = countryCode;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public Privacy_ServletUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
-		this.countryCode = (ISOCountryCode) values[4];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected Privacy_ServletUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
-		this.countryCode = (ISOCountryCode) values[4];
-	}
 
 	
 	/**
@@ -122,22 +93,6 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		this.countryCode = deserializer.getEnumeration(ISOCountryCode.class);
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getTimestamp(),
-			this.getService(),
-			this.getContext(),
-			this.getDeploymentId(),
-			this.getCountryCode(),
-		};
-	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -175,16 +130,6 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -222,6 +167,20 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getService().hashCode();
+		code += this.getContext().hashCode();
+		code += this.getDeploymentId().hashCode();
+		code += this.getCountryCode().hashCode();
+		
+		return code;
 	}
 	
 	public final ISOCountryCode getCountryCode() {

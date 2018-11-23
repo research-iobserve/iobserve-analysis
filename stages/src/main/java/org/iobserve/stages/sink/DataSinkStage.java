@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * @author Reiner Jung
  *
  */
-public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
+public class DataSinkStage extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataDumpStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSinkStage.class);
 
     private final IMonitoringController ctrl;
 
@@ -45,8 +45,8 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
      * @param configuration
      *            kieker configuration containing the dump stage writer setup
      */
-    public DataDumpStage(final Configuration configuration) {
-        DataDumpStage.LOGGER.debug("Configuration complete.");
+    public DataSinkStage(final Configuration configuration) {
+        DataSinkStage.LOGGER.debug("Configuration complete.");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -56,7 +56,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
         if (this.count % 100000 == 0) {
-            DataDumpStage.LOGGER.info("Saved {} records.", this.count);
+            DataSinkStage.LOGGER.info("Saved {} records.", this.count);
         }
     }
 

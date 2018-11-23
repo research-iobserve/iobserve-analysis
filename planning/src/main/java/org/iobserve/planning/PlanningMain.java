@@ -22,10 +22,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.tools.common.AbstractTeetimeTool;
+import kieker.tools.common.ConfigurationException;
+
 import org.iobserve.planning.configurations.PlanningConfiguration;
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Main class for iObserve's planning service.
@@ -33,7 +34,7 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
+public class PlanningMain extends AbstractTeetimeTool<PlanningConfiguration, PlanningMain> {
     protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
@@ -51,7 +52,8 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMain().run("Planning Service", "planning", args);
+        final PlanningMain main = new PlanningMain();
+        System.exit(main.run("Planning Service", "planning", args, main));
     }
 
     @Override
@@ -92,22 +94,23 @@ public class PlanningMain extends AbstractServiceMain<PlanningConfiguration> {
     }
 
     @Override
-    protected PlanningConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
-            throws ConfigurationException {
-        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+    protected PlanningConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        final int runtimeModelInputPort = this.kiekerConfiguration
+                .getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
         final File perOpteryxHeadlessDir = new File(
-                configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
-        final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
-        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
-        final int adaptationRuntimeModelInputPort = configuration
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+        final File lqnsDir = new File(this.kiekerConfiguration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+        final String adaptationHostname = this.kiekerConfiguration
+                .getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
+        final int adaptationRuntimeModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
-        final int adaptationRedeploymentModelInputPort = configuration
+        final int adaptationRedeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
         runtimeModelDirectory.mkdir();

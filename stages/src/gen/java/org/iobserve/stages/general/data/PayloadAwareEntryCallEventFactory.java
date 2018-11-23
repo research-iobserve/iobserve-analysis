@@ -33,11 +33,6 @@ public final class PayloadAwareEntryCallEventFactory implements IRecordFactory<P
 		return new PayloadAwareEntryCallEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public PayloadAwareEntryCallEvent create(final Object[] values) {
-		return new PayloadAwareEntryCallEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return PayloadAwareEntryCallEvent.SIZE;

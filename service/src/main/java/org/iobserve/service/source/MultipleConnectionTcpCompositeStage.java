@@ -17,12 +17,12 @@ package org.iobserve.service.source;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.service.InstantiationFactory;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.source.ITraceMetadataRewriter;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;

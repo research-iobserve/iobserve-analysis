@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -27,7 +28,6 @@ import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.service.InstantiationFactory;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DecollectorStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

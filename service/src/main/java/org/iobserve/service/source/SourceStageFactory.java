@@ -16,10 +16,10 @@
 package org.iobserve.service.source;
 
 import kieker.common.configuration.Configuration;
+import kieker.tools.common.ConfigurationException;
 
 import org.iobserve.service.CommonConfigurationKeys;
 import org.iobserve.service.InstantiationFactory;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * @author Reiner Jung

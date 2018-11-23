@@ -17,9 +17,9 @@ package org.iobserve.common.record;
 
 /**
  * @author Generic Kieker
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
- * @since 1.14
+ * @since 1.15
  */
 public enum JSSObservationPoint {
 	DISPATCHER_ENTRY(0),

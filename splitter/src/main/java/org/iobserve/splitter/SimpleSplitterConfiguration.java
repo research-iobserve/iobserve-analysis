@@ -17,18 +17,14 @@ package org.iobserve.splitter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
+import kieker.analysisteetime.plugin.reader.filesystem.LogsReaderCompositeStage;
 import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.writer.filesystem.FileWriter;
 
 import teetime.framework.Configuration;
-import teetime.stage.InitialElementProducer;
 
-import org.iobserve.stages.sink.DataDumpStage;
-import org.iobserve.stages.source.Dir2RecordsFilter;
+import org.iobserve.stages.sink.DataSinkStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,30 +55,35 @@ public class SimpleSplitterConfiguration extends Configuration {
 
         SimpleSplitterConfiguration.LOGGER.debug("Read from {}", dataLocation);
 
-        final Collection<File> directories = new ArrayList<>();
+        final kieker.common.configuration.Configuration configuration = this.createSourceConfiguration(dataLocation);
 
-        directories.add(dataLocation);
-
-        final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
-        final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        final LogsReaderCompositeStage reader = new LogsReaderCompositeStage(configuration);
 
         final StripIObserveSpecificEventsFilter removeIObserveEventsFilter = new StripIObserveSpecificEventsFilter();
 
         final Splitter splitter = new Splitter(hostnames);
 
-        final DataDumpStage[] consumer = new DataDumpStage[hostnames.length];
+        final DataSinkStage[] consumer = new DataSinkStage[hostnames.length];
 
         for (int i = 0; i < hostnames.length; i++) {
-            consumer[i] = new DataDumpStage(this.createConfiguration(outputLocation.getCanonicalPath(), hostnames[i]));
+            consumer[i] = new DataSinkStage(
+                    this.createSinkConfiguration(outputLocation.getCanonicalPath(), hostnames[i]));
             this.connectPorts(splitter.getAllOutputPorts().get(i), consumer[i].getInputPort());
         }
 
-        this.connectPorts(files.getOutputPort(), reader.getInputPort());
         this.connectPorts(reader.getOutputPort(), removeIObserveEventsFilter.getInputPort());
         this.connectPorts(removeIObserveEventsFilter.getOutputPort(), splitter.getInputPort());
     }
 
-    private kieker.common.configuration.Configuration createConfiguration(final String canonicalPath,
+    private kieker.common.configuration.Configuration createSourceConfiguration(final File directory) {
+        final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
+
+        configuration.setProperty(LogsReaderCompositeStage.LOG_DIRECTORIES, directory.getAbsolutePath());
+
+        return configuration;
+    }
+
+    private kieker.common.configuration.Configuration createSinkConfiguration(final String canonicalPath,
             final String hostname) {
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 

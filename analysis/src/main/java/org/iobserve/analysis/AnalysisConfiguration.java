@@ -16,6 +16,7 @@
 package org.iobserve.analysis;
 
 import kieker.common.record.flow.IFlowRecord;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 import teetime.framework.OutputPort;
@@ -42,7 +43,6 @@ import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;

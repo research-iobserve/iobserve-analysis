@@ -33,11 +33,6 @@ public final class ServletTraceHelperFactory implements IRecordFactory<ServletTr
 		return new ServletTraceHelper(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ServletTraceHelper create(final Object[] values) {
-		return new ServletTraceHelper(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ServletTraceHelper.SIZE;

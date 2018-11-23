@@ -19,13 +19,12 @@ import java.io.File;
 import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
+
+import kieker.tools.common.AbstractTeetimeTool;
+import kieker.tools.common.ConfigurationException;
 
 import org.iobserve.adaptation.configurations.AdaptationConfiguration;
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Main class for iObserve's adaptation service.
@@ -33,16 +32,9 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration> {
+public class AdaptationMain extends AbstractTeetimeTool<AdaptationConfiguration, AdaptationSettings> {
     protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
-
-    @Parameter(names = "--help", help = true)
-    private boolean help; // NOPMD access through reflection
-
-    @Parameter(names = { "-c",
-            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
-    private File configurationFile;
 
     /**
      * Main function.
@@ -51,7 +43,7 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new AdaptationMain().run("Adaptation Service", "adaptation", args);
+        System.exit(new AdaptationMain().run("Adaptation Service", "adaptation", args, new AdaptationSettings()));
     }
 
     @Override
@@ -85,24 +77,27 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
     }
 
     @Override
-    protected AdaptationConfiguration createConfiguration(final kieker.common.configuration.Configuration configuration)
-            throws ConfigurationException {
-        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
-        final int redeploymentModelInputPort = configuration
+    protected AdaptationConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        final int runtimeModelInputPort = this.kiekerConfiguration
+                .getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 AdaptationMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 AdaptationMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-        final File executionPlanURI = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
-        final String executionHostname = configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
-        final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
-        final int executionRuntimeModelInputPort = configuration
+        final File executionPlanURI = new File(
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME));
+        final String executionHostname = this.kiekerConfiguration
+                .getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME);
+        final int executionPlanInputPort = this.kiekerConfiguration
+                .getIntProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT);
+        final int executionRuntimeModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT);
-        final int executionRedeploymentModelInputPort = configuration
+        final int executionRedeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT);
 
         runtimeModelDirectory.mkdir();
@@ -116,7 +111,7 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
+            return CommandLineParameterEvaluation.isFileReadable(this.getConfigurationFile(), "Configuration File");
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -129,7 +124,6 @@ public class AdaptationMain extends AbstractServiceMain<AdaptationConfiguration>
 
     @Override
     protected File getConfigurationFile() {
-        return this.configurationFile;
+        return this.parameterConfiguration.getConfigurationFile();
     }
-
 }

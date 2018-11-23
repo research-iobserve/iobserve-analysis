@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.xmeans;
 
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -32,7 +33,6 @@ import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * @author Reiner Jung
@@ -77,7 +77,6 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
         this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
-        userSessionModelAggregator.declareActive();
 
         final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(
                 modelGenerationFilter, representativeStrategy, keepEmptyTransitions);

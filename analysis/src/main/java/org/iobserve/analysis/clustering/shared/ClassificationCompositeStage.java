@@ -17,6 +17,7 @@ package org.iobserve.analysis.clustering.shared;
 
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -30,7 +31,6 @@ import org.iobserve.analysis.sink.BehaviorModelSink;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

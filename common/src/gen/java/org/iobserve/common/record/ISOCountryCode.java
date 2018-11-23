@@ -17,7 +17,7 @@ package org.iobserve.common.record;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.3
  */

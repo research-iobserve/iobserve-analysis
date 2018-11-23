@@ -33,11 +33,6 @@ public final class ContainerAllocationEventFactory implements IRecordFactory<Con
 		return new ContainerAllocationEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ContainerAllocationEvent.SIZE;

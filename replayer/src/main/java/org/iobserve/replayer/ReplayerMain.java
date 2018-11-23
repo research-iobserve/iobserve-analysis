@@ -24,10 +24,10 @@ import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.configuration.Configuration;
+import kieker.tools.common.AbstractTeetimeTool;
+import kieker.tools.common.ConfigurationException;
 
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  */
-public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguration> {
+public final class ReplayerMain extends AbstractTeetimeTool<ReplayerConfiguration, ReplayerMain> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplayerMain.class);
 
@@ -68,20 +68,21 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new ReplayerMain().run("Replayer", "replayer", args);
+        final ReplayerMain main = new ReplayerMain();
+        System.exit(main.run("Replayer", "replayer", args, main));
     }
 
     @Override
-    public void run(final String title, final String label, final String[] args) {
-        super.run(title, label, args);
+    public int run(final String title, final String label, final String[] args, final ReplayerMain main) {
+        final int result = super.run(title, label, args, main);
         if (this.configuration != null) {
             ReplayerMain.LOGGER.info("Records send {}", this.configuration.getCounter().getCount());
         }
+        return result;
     }
 
     @Override
-    protected ReplayerConfiguration createConfiguration(final Configuration kiekerConfiguration)
-            throws ConfigurationException {
+    protected ReplayerConfiguration createTeetimeConfiguration() throws ConfigurationException {
         this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
         return this.configuration;
     }

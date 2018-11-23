@@ -26,11 +26,11 @@ import kieker.common.record.io.IValueSerializer;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.3
  */
-public class JSSObservationEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
+public class JSSObservationEvent extends AbstractMonitoringRecord  {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // JSSObservationEvent.iObserveTime
 			 + TYPE_SIZE_INT // JSSObservationEvent.type
@@ -81,42 +81,7 @@ public class JSSObservationEvent extends AbstractMonitoringRecord implements IMo
 		this.timeOfObservedEvent = timeOfObservedEvent;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public JSSObservationEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.iObserveTime = (Long) values[0];
-		this.type = (JSSObservationPoint) values[1];
-		this.typeOfObservedEvent = (String) values[2];
-		this.timeOfObservedEvent = (Long) values[3];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected JSSObservationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.iObserveTime = (Long) values[0];
-		this.type = (JSSObservationPoint) values[1];
-		this.typeOfObservedEvent = (String) values[2];
-		this.timeOfObservedEvent = (Long) values[3];
-	}
 
 	
 	/**
@@ -132,21 +97,6 @@ public class JSSObservationEvent extends AbstractMonitoringRecord implements IMo
 		this.timeOfObservedEvent = deserializer.getLong();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getIObserveTime(),
-			this.getType(),
-			this.getTypeOfObservedEvent(),
-			this.getTimeOfObservedEvent(),
-		};
-	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -183,16 +133,6 @@ public class JSSObservationEvent extends AbstractMonitoringRecord implements IMo
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -227,6 +167,19 @@ public class JSSObservationEvent extends AbstractMonitoringRecord implements IMo
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getIObserveTime());
+		code += this.getType().hashCode();
+		code += this.getTypeOfObservedEvent().hashCode();
+		code += ((int)this.getTimeOfObservedEvent());
+		
+		return code;
 	}
 	
 	public final long getIObserveTime() {

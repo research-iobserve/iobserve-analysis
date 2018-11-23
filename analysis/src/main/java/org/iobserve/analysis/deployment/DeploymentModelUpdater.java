@@ -60,6 +60,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
+     * @param correspondenceModelResource
+     *            correspondence model resource
      * @param allocationModelResource
      *            allocation model provider
      */

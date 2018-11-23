@@ -33,11 +33,6 @@ public final class SessionEndEventFactory implements IRecordFactory<SessionEndEv
 		return new SessionEndEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public SessionEndEvent create(final Object[] values) {
-		return new SessionEndEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return SessionEndEvent.SIZE;

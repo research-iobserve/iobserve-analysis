@@ -22,12 +22,12 @@ import java.util.Collection;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
+import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 import teetime.stage.InitialElementProducer;
 
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
