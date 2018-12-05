@@ -70,7 +70,12 @@ public final class WorkloadEvaluation {
             // The RME is calculated by the mean inter arrival time that states an open workload
             final long usageModelWorkload = Long.valueOf(interArrivalTime).longValue();
             final long referenceWorkload = referenceElements.getMeanInterArrivalTime();
-            rme = ((1.0 * usageModelWorkload) - (1.0 * referenceWorkload)) / (1.0 * referenceWorkload);
+            // If reference workload is 0 calculation of RME would result in devision by zero -> NaN
+            if (referenceWorkload == 0) {
+            	rme = 1.0 * usageModelWorkload;
+            } else {
+            	rme = ((1.0 * usageModelWorkload) - (1.0 * referenceWorkload)) / (1.0 * referenceWorkload);
+            }
         }
 
         rme = Math.abs(rme) * 100;

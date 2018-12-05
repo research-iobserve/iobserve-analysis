@@ -306,7 +306,7 @@ public class ClusteringPrePostProcessing {
     private void calculateInterarrivalTime(final List<UserSession> sessions,
             final WorkloadIntensity workloadIntensity) {
         long interArrivalTime = 0;
-        if (sessions.size() > 0) {
+        if (sessions.size() > 1) {
             // sort user sessions
             Collections.sort(sessions, this.sortUserSessionByExitTime);
             long sum = 0;
@@ -315,9 +315,9 @@ public class ClusteringPrePostProcessing {
                 final long exitTimeU2 = sessions.get(i + 1).getEntryTime();
                 sum += exitTimeU2 - exitTimeU1;
             }
-            final long numberSessions = sessions.size() > 1 ? sessions.size() - 1 : 1;
-            interArrivalTime = sum / numberSessions;
-        }
+            // sessions.size() already checked for > 1
+            interArrivalTime = sum / (sessions.size() - 1);
+        } 
         workloadIntensity.setInterarrivalTimeOfUserSessions(interArrivalTime);
     }
 

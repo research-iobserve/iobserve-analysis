@@ -161,7 +161,11 @@ public final class SimpleSequenceReference {
         TestHelper.saveModel(usageModel, referenceUsageModelFileName);
         referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
         referenceElements.setUsageModel(usageModel);
-        referenceElements.setMeanInterArrivalTime(meanInterArrivalTime + (numberOfCalls * 2));
+        if(entryCallSequenceModel.getUserSessions().size() == 1) {
+        	referenceElements.setMeanInterArrivalTime(0);
+        } else {
+        	referenceElements.setMeanInterArrivalTime(meanInterArrivalTime + (numberOfCalls * 2));
+        }
         referenceElements.setMeanConcurrentUserSessions(
                 SimpleSequenceReference.calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions()));
 
