@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.reconstructor;
 
-import kieker.tools.common.ConfigurationException;
+import kieker.analysis.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 

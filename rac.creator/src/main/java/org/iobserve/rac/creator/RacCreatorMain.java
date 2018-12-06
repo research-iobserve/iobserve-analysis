@@ -26,9 +26,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  * @author Reiner Jung
  *
  */
-public class RacCreatorMain extends AbstractTeetimeTool<ObservationConfiguration, RacCreatorMain> {
+public class RacCreatorMain extends AbstractService<ObservationConfiguration, RacCreatorMain> {
 
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILENAME = "mapped.txt";

@@ -20,6 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
@@ -74,6 +75,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     @Override
     protected void execute(final IDeployedEvent event) throws InvocationException, DBException {
+        AnalysisExperimentLogging.measure(event, "code-to-model");
         this.logger.debug("Received deployment event {}", event);
         final ISOCountryCode countryCode;
         if (event instanceof Privacy) {

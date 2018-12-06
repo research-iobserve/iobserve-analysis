@@ -19,10 +19,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
-import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;

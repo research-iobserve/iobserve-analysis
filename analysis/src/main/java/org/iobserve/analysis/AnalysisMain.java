@@ -20,10 +20,10 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.AbstractTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractLegacyTool;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
@@ -53,7 +53,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  * @since 0.0.1
  */
-public final class AnalysisMain extends AbstractTeetimeTool<AnalysisConfiguration, AnalysisSettings> {
+public final class AnalysisMain extends AbstractService<AnalysisConfiguration, AnalysisSettings> {
 
     /**
      * Default constructor.
@@ -82,7 +82,7 @@ public final class AnalysisMain extends AbstractTeetimeTool<AnalysisConfiguratio
                 this.parameterConfiguration.setModelInitDirectory(
                         new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY)));
                 if (this.parameterConfiguration.getModelInitDirectory() == null) {
-                    AbstractTool.LOGGER.info("Reuse PCM model in database.");
+                    AbstractLegacyTool.LOGGER.info("Reuse PCM model in database.");
                 } else {
                     configurationGood &= CommandLineParameterEvaluation.checkDirectory(
                             this.parameterConfiguration.getModelInitDirectory(), "PCM startup model", commander);

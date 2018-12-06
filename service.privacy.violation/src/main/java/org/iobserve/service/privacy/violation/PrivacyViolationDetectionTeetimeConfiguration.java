@@ -18,9 +18,9 @@ package org.iobserve.service.privacy.violation;
 import java.io.File;
 import java.io.IOException;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
-import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 

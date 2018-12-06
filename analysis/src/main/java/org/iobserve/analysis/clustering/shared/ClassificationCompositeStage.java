@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.shared;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
-import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;

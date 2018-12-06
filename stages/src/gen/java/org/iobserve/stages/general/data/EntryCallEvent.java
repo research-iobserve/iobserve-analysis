@@ -195,21 +195,6 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 		
 		return true;
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		int code = 0;
-		code += ((int)this.getEntryTime());
-		code += ((int)this.getExitTime());
-		code += this.getOperationSignature().hashCode();
-		code += this.getClassSignature().hashCode();
-		code += this.getSessionId().hashCode();
-		code += this.getHostname().hashCode();
-		
-		return code;
-	}
 	
 	public final long getEntryTime() {
 		return this.entryTime;

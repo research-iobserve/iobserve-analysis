@@ -25,6 +25,9 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.common.record.EventTypes;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -71,6 +74,14 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
 
     @Override
     protected void execute(final Warnings element) throws Exception {
+        if (element.getEvent() instanceof PCMDeployedEvent) {
+            AnalysisExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
+                    "compute-probe-configuration");
+        } else {
+            AnalysisExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
+                    "compute-probe-configuration");
+        }
+
         final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this.computeReceivedWarnings(element);
 
         // no probe should be changed

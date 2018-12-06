@@ -24,9 +24,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import teetime.framework.ExecutionException;
 
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  */
-public final class EvaluationMain extends AbstractTeetimeTool<EvaluationConfiguration, EvaluationMain> {
+public final class EvaluationMain extends AbstractService<EvaluationConfiguration, EvaluationMain> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationMain.class);
 

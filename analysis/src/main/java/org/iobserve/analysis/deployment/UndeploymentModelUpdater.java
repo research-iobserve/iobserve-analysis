@@ -20,6 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
@@ -65,6 +66,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) throws DBException {
+        AnalysisExperimentLogging.measure(event, "model-update");
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "

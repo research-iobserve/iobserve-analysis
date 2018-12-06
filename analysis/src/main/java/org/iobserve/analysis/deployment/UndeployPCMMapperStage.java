@@ -20,6 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
@@ -74,6 +75,7 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     @Override
     protected void execute(final IUndeployedEvent event) throws InvocationException, DBException {
+        AnalysisExperimentLogging.measure(event, "code-to-model");
         this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);

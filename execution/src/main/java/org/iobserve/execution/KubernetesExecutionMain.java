@@ -22,9 +22,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -36,7 +36,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
  *
  */
 public class KubernetesExecutionMain
-        extends AbstractTeetimeTool<KubernetesExecutionConfiguration, KubernetesExecutionMain> {
+        extends AbstractService<KubernetesExecutionConfiguration, KubernetesExecutionMain> {
     private static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     private static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 

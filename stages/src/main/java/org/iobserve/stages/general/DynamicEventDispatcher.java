@@ -18,17 +18,14 @@ package org.iobserve.stages.general;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.record.IMonitoringRecord;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
-import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.IEvent;
-import org.iobserve.common.record.JSSObservationEvent;
-import org.iobserve.common.record.JSSObservationPoint;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +38,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.3
  */
 public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
-
-    // remove probes later
-    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicEventDispatcher.class);
 
@@ -111,13 +105,11 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
             // collecting event observation time (if possible); only for performance tests.
             final long observedTime;
             if (event instanceof IEvent) {
+                ExperimentLogging.measure((IEvent) event, "analysis-entry");
                 observedTime = ((IEvent) event).getTimestamp();
             } else {
                 observedTime = ((IMonitoringRecord) event).getLoggingTimestamp();
             }
-            DynamicEventDispatcher.CONTROLLER.newMonitoringRecord(
-                    new JSSObservationEvent(DynamicEventDispatcher.CONTROLLER.getTimeSource().getTime(),
-                            JSSObservationPoint.DISPATCHER_ENTRY, event.getClass().getCanonicalName(), observedTime));
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {
@@ -129,7 +121,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
+                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }

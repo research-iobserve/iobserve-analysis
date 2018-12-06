@@ -22,8 +22,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.analysis.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.planning.configurations.PlanningConfiguration;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -34,7 +34,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
  * @author Lars Bluemke
  *
  */
-public class PlanningMain extends AbstractTeetimeTool<PlanningConfiguration, PlanningMain> {
+public class PlanningMain extends AbstractService<PlanningConfiguration, PlanningMain> {
     protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 

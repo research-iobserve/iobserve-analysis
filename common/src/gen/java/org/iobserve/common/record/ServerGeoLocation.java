@@ -171,19 +171,6 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 		
 		return true;
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		int code = 0;
-		code += ((int)this.getTimestamp());
-		code += this.getCountryCode().hashCode();
-		code += this.getHostname().hashCode();
-		code += this.getAddress().hashCode();
-		
-		return code;
-	}
 	
 	public final long getTimestamp() {
 		return this.timestamp;
