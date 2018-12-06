@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.analysis.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.adaptation.configurations.AdaptationConfiguration;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -32,7 +32,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
  * @author Lars Bluemke
  *
  */
-public class AdaptationMain extends AbstractTeetimeTool<AdaptationConfiguration, AdaptationSettings> {
+public class AdaptationMain extends AbstractService<AdaptationConfiguration, AdaptationSettings> {
     protected static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     protected static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 

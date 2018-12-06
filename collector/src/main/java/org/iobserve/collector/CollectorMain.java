@@ -22,9 +22,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.service.CommonConfigurationKeys;
@@ -35,7 +35,7 @@ import org.iobserve.service.CommonConfigurationKeys;
  *
  * @author Reiner Jung
  */
-public final class CollectorMain extends AbstractTeetimeTool<CollectorConfiguration, CollectorMain> {
+public final class CollectorMain extends AbstractService<CollectorConfiguration, CollectorMain> {
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)

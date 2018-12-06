@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.stages.general.data
 
-
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent
 import kieker.common.record.flow.trace.operation.AfterOperationEvent
 import org.iobserve.common.record.IUserInformation 

@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.ConfigurationException;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;

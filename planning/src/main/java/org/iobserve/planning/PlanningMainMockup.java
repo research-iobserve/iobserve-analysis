@@ -22,8 +22,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.analysis.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import org.iobserve.planning.configurations.PlanningConfigurationMockup;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -34,7 +34,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
  * @author Lars Bluemke
  *
  */
-public class PlanningMainMockup extends AbstractTeetimeTool<PlanningConfigurationMockup, PlanningMainMockup> {
+public class PlanningMainMockup extends AbstractService<PlanningConfigurationMockup, PlanningMainMockup> {
 
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection

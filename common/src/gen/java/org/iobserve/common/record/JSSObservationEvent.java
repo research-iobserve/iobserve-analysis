@@ -168,19 +168,6 @@ public class JSSObservationEvent extends AbstractMonitoringRecord  {
 		
 		return true;
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		int code = 0;
-		code += ((int)this.getIObserveTime());
-		code += this.getType().hashCode();
-		code += this.getTypeOfObservedEvent().hashCode();
-		code += ((int)this.getTimeOfObservedEvent());
-		
-		return code;
-	}
 	
 	public final long getIObserveTime() {
 		return this.iObserveTime;

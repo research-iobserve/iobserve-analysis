@@ -179,21 +179,6 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		
 		return true;
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		int code = 0;
-		code += ((int)this.getTimestamp());
-		code += ((int)this.getTraceId());
-		code += ((int)this.getOrderIndex());
-		code += this.getOperationSignature().hashCode();
-		code += this.getClassSignature().hashCode();
-		code += this.getInformations().hashCode();
-		
-		return code;
-	}
 	
 	public final String getInformations() {
 		return this.informations;

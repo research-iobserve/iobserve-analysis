@@ -1,0 +1,14 @@
+package org.iobserve.common.record
+
+enum EventTypes {
+	DEPLOYMENT,
+	UNDEPLOYMENT,
+	NONE
+}
+
+entity MeasureEventOccurance {
+	long timestamp
+	long id
+	EventTypes type
+	string label
+}

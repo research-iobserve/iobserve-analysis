@@ -20,10 +20,10 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractTeetimeTool;
-import kieker.tools.common.AbstractTool;
-import kieker.tools.common.ConfigurationException;
+import kieker.tools.common.AbstractLegacyTool;
+import kieker.tools.common.AbstractService;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.ecore.EObject;
@@ -52,7 +52,7 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  * @author Reiner Jung
  */
 public final class PrivacyViolationDetectionServiceMain
-        extends AbstractTeetimeTool<PrivacyViolationDetectionTeetimeConfiguration, PrivacyViolationDetectionSettings> {
+        extends AbstractService<PrivacyViolationDetectionTeetimeConfiguration, PrivacyViolationDetectionSettings> {
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -153,7 +153,7 @@ public final class PrivacyViolationDetectionServiceMain
             final String modelInitDirectoryName = configuration
                     .getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY);
             if (modelInitDirectoryName == null) {
-                AbstractTool.LOGGER.info("Reuse PCM model in database.");
+                AbstractLegacyTool.LOGGER.info("Reuse PCM model in database.");
             } else {
                 this.parameterConfiguration.setModelInitDirectory(new File(modelInitDirectoryName));
                 configurationGood &= CommandLineParameterEvaluation.checkDirectory(
@@ -188,7 +188,7 @@ public final class PrivacyViolationDetectionServiceMain
 
             return configurationGood;
         } catch (final IOException e) {
-            AbstractTool.LOGGER.error("Evaluating command line parameter failed.", e);
+            AbstractLegacyTool.LOGGER.error("Evaluating command line parameter failed.", e);
             return false;
         }
     }

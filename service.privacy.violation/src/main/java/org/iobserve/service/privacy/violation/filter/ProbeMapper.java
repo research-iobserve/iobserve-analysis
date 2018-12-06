@@ -97,9 +97,11 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
+        PrivacyExperimentLogger.measure(element, "map-probe-model-to-code-entry");
         this.createMethodsToActivate(element);
         this.createMethodsToDeactivate(element);
         this.createMethodsToUpdate(element);
+        PrivacyExperimentLogger.measure(element, "map-probe-model-to-code-exit");
     }
 
     private void createMethodsToActivate(final ProbeManagementData element)
@@ -158,7 +160,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if (methodsToUpdate != null && element.getWhitelist() != null) {
+        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
                 this.logger.debug("AllocationContext to update {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
