@@ -25,6 +25,7 @@ import teetime.framework.test.StageTester;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.test.service.suites.VisualizationHttpTestServer;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -73,10 +74,11 @@ public class AllocationVisualizationStageTest {
      *
      * @throws MalformedURLException
      *             if the creation of the URL fails.
+     * @throws DBException
      *
      */
     // @Before
-    public void setupAndInitServer() throws MalformedURLException {
+    public void setupAndInitServer() throws MalformedURLException, DBException {
         final URL changelogURL = new URL("http://" + AllocationVisualizationStageTest.OUTPUT_HOSTNAME + ":"
                 + AllocationVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
                 + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");

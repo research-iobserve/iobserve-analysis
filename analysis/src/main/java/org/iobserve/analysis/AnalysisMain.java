@@ -28,6 +28,7 @@ import kieker.tools.common.ConfigurationException;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
@@ -159,7 +160,10 @@ public final class AnalysisMain extends AbstractTeetimeTool<AnalysisConfiguratio
                         resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
                         usageModelResource, correspondenceModelResource);
             } catch (final IOException e) {
-                java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+                java.lang.System.err.println("Cannot load all models " + e.getLocalizedMessage());
+                return null;
+            } catch (final DBException e) {
+                java.lang.System.err.println("Cannot store all models in DB " + e.getLocalizedMessage());
                 return null;
             }
         } else {

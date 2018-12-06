@@ -18,6 +18,8 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -56,7 +58,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenReadContaining() {
+    public void createThenReadContaining() throws DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
                 this.prefix, this.ePackage);
 
@@ -66,7 +68,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         resource.storeModelPartition(this.testModel);
 
         final Repository readModel = (Repository) resource.findContainingObjectById(OperationInterface.class,
-                RepositoryPackage.Literals.OPERATION_INTERFACE, resource.getInternalId(writtenInterface));
+                RepositoryPackage.Literals.OPERATION_INTERFACE, ModelGraphFactory.getIdentification(writtenInterface));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -77,10 +79,12 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
      * one written to the graph.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public final void createThenReadByType() {
+    public final void createThenReadByType() throws DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
                 this.prefix, this.ePackage);
 
@@ -92,7 +96,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenReadReferencing() {
+    public void createThenReadReferencing() throws DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
                 this.prefix, this.ePackage);
 
@@ -104,7 +108,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
         final OperationProvidedRole providedSearchRole = RepositoryModelDataFactory.findProvidedRole(object,
                 RepositoryModelDataFactory.CATALOG_SEARCH_PROVIDED_ROLE);
 
-        final Long id = resource.getInternalId(object);
+        final String id = ModelGraphFactory.getIdentification(object);
 
         final List<EObject> readReferencingObjects = resource.collectReferencingObjectsByTypeAndId(BasicComponent.class,
                 RepositoryPackage.Literals.BASIC_COMPONENT, id);
@@ -120,7 +124,7 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils
                 .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
@@ -155,10 +159,12 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
      * Writes a model to the graph, deletes it using
      * {@link ModelProvider#deleteObjectById(Class, String)} and asserts that the graph is empty
      * afterwards.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public final void createThenDeleteObject() {
+    public final void createThenDeleteObject() throws DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
                 this.prefix, this.ePackage);
 
@@ -177,9 +183,11 @@ public class RepositoryModelProviderTest extends AbstractEnityModelProviderTest<
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
      * the one written to the graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenReadByName() {
+    public final void createThenReadByName() throws DBException {
         final ModelResource<Repository> resource = ModelProviderTestUtils.prepareResource("createThenReadByName",
                 this.prefix, this.ePackage);
 

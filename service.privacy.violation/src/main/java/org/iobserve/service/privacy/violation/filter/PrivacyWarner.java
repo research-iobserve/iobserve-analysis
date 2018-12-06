@@ -234,8 +234,10 @@ public class PrivacyWarner extends AbstractStage {
 
     /**
      * Loads the root element for each model.
+     * 
+     * @throws DBException
      **/
-    private void loadRoots() {
+    private void loadRoots() throws DBException {
         this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class,
                 RepositoryPackage.Literals.REPOSITORY);
         this.systemRootElement = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);

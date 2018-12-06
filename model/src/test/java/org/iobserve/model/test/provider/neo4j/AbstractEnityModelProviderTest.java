@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,15 +41,17 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#findObjectByTypeAndId(Class, String)} and asserts that it is equal to
      * the one written to the graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenReadById() {
+    public final void createThenReadById() throws DBException {
         final ModelResource<T> resource = ModelProviderTestUtils
                 .prepareResource(AbstractEnityModelProviderTest.CREATE_THEN_READ_BY_ID, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final long id = resource.getInternalId(this.testModel);
+        final String id = ModelGraphFactory.getIdentification(this.testModel);
 
         final T readModel = resource.findObjectByTypeAndId(this.clazz, this.eClass, id);
 
@@ -60,9 +64,11 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
      * Writes a model to the graph, deletes it using
      * {@link ModelProvider#deleteComponentAndDatatypes(Class, String)} and asserts that the graph
      * is empty afterwards.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenDeleteComponentAndDatatypes() {
+    public final void createThenDeleteComponentAndDatatypes() throws DBException {
         final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractEnityModelProviderTest.CREATE_THEN_DELETE_COMPONENT_AND_DATATYPES, this.prefix, this.ePackage);
 
@@ -70,7 +76,8 @@ public abstract class AbstractEnityModelProviderTest<T extends Entity>
 
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
-        resource.deleteObjectByIdAndDatatype(this.clazz, this.eClass, resource.getInternalId(this.testModel), true);
+        resource.deleteObjectByIdAndDatatype(this.clazz, this.eClass,
+                ModelGraphFactory.getIdentification(this.testModel));
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 

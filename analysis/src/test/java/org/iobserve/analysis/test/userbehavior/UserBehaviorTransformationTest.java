@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -66,9 +67,10 @@ public final class UserBehaviorTransformationTest {
      *
      * @throws IOException
      *             when reading and writing files.
+     * @throws DBException
      */
     // @Test
-    public void testBranchWithinLoop() throws IOException {
+    public void testBranchWithinLoop() throws IOException, DBException {
 
         final ModelResource<Repository> repositoryModelProvider = new ModelResource<>(RepositoryPackage.eINSTANCE,
                 new File("x"));

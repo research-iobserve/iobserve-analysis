@@ -67,7 +67,8 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         this.outputPort.send(element);
     }
 
-    private List<String> computeWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+    private List<String> computeWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods)
+            throws DBException {
         final Set<String> blacklist = this.computeForbiddenIps(warnedMethods);
         final Set<String> allIps = this.computeAvailableIps();
         final Set<String> whitelist = new HashSet<>(allIps);
@@ -80,7 +81,7 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         return new LinkedList<>(whitelist);
     }
 
-    private Set<String> computeAvailableIps() {
+    private Set<String> computeAvailableIps() throws DBException {
         final List<AllocationContext> allocations = this.allocationResource
                 .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT);
         final Set<String> availableIps = new LinkedHashSet<>();

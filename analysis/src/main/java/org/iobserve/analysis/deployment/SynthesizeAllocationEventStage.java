@@ -28,6 +28,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -71,7 +72,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     }
 
     @Override
-    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException {
+    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException, DBException {
         if (event.getAssemblyContext() == null) {
             throw new EventConfigurationException("Missing assembly context in PCMDeployedEvent");
         }

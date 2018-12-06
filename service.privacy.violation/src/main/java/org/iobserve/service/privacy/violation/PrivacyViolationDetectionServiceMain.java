@@ -25,12 +25,14 @@ import kieker.tools.common.AbstractTeetimeTool;
 import kieker.tools.common.AbstractTool;
 import kieker.tools.common.ConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
@@ -102,12 +104,22 @@ public final class PrivacyViolationDetectionServiceMain
                     this.parameterConfiguration.getModelDumpDirectory());
         } catch (final IOException e) {
             throw new ConfigurationException(e);
+        } catch (final DBException e) {
+            throw new ConfigurationException(e);
         }
     }
 
-    private <T extends EObject> ModelResource<T> loadResourceAndInitDB(final EPackage ePackage, final EObject model) {
-        final ModelResource<T> resource = new ModelResource<>(ePackage,
-                new File(this.parameterConfiguration.getModelDatabaseDirectory(), ePackage.getName()));
+    private <T extends EObject> ModelResource<T> loadResourceAndInitDB(final EPackage ePackage, final EObject model)
+            throws DBException, IOException {
+        final File file = new File(this.parameterConfiguration.getModelDatabaseDirectory(), ePackage.getName());
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                FileUtils.deleteDirectory(file);
+            } else {
+                throw new IOException(String.format("%s is not a directory.", file.getAbsolutePath()));
+            }
+        }
+        final ModelResource<T> resource = new ModelResource<>(ePackage, file);
         resource.clearResource();
         resource.storeModelPartition(model);
         return resource;

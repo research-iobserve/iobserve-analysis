@@ -27,6 +27,7 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
@@ -84,8 +85,9 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
      * @param undeployment
      *            servlet undeployed event
      * @return array that contains a changelog for deleting a service instance
+     * @throws DBException
      */
-    private JsonArray createData(final PCMUndeployedEvent undeployment) {
+    private JsonArray createData(final PCMUndeployedEvent undeployment) throws DBException {
 
         final String serverName = undeployment.getService();
 

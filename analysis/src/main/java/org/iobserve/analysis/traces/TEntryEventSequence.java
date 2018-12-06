@@ -23,6 +23,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
@@ -96,7 +97,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     }
 
     @Override
-    protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
+    protected void execute(final UserSessionCollectionModel entryCallSequenceModel) throws DBException {
         // Resets the current usage model
         final UsageModel model = this.usageModelProvider.getAndLockModelRootNode(UsageModel.class,
                 UsagemodelPackage.Literals.USAGE_MODEL);
@@ -126,7 +127,11 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 
         // Sets the new usage model within iObserve
         this.usageModelProvider.clearResource();
-        this.usageModelProvider.storeModelPartition(model);
+        try {
+            this.usageModelProvider.storeModelPartition(model);
+        } catch (final DBException e) {
+            e.printStackTrace();
+        }
 
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         this.outputPortSnapshot.send(false);

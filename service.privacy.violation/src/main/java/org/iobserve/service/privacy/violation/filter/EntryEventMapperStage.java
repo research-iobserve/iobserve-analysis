@@ -25,6 +25,8 @@ import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
@@ -109,22 +111,22 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     }
 
     private void computePcmEntryCallEvent(final ComponentEntry componentEntry, final OperationEntry operationEntry,
-            final AllocationEntry allocationEntry, final EntryCallEvent event) {
+            final AllocationEntry allocationEntry, final EntryCallEvent event) throws DBException {
         /** retrieve PCM model elements from mapping. */
         final AllocationContext allocationContext = this.allocationResource.findObjectByTypeAndId(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT,
-                this.allocationResource.getInternalId(allocationEntry.getAllocation()));
+                ModelGraphFactory.getIdentification(allocationEntry.getAllocation()));
         final OperationSignature operationSignature = this.repositoryResource.findAndLockObjectById(
                 OperationSignature.class, RepositoryPackage.Literals.OPERATION_SIGNATURE,
-                this.repositoryResource.getInternalId(operationEntry.getOperation()));
+                ModelGraphFactory.getIdentification(operationEntry.getOperation()));
         final RepositoryComponent component = this.repositoryResource.findObjectByTypeAndId(RepositoryComponent.class,
                 RepositoryPackage.Literals.REPOSITORY_COMPONENT,
-                this.repositoryResource.getInternalId(componentEntry.getComponent()));
+                ModelGraphFactory.getIdentification(componentEntry.getComponent()));
 
         /** assembly is inferred from allocation. */
         final AssemblyContext assemblyContext = this.assemblyResource.findObjectByTypeAndId(AssemblyContext.class,
                 CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                this.assemblyResource.getInternalId(allocationContext.getAssemblyContext_AllocationContext()));
+                ModelGraphFactory.getIdentification(allocationContext.getAssemblyContext_AllocationContext()));
 
         /** assemble event. */
         final PCMEntryCallEvent mappedEvent = new PCMEntryCallEvent(event.getEntryTime(), event.getExitTime(),

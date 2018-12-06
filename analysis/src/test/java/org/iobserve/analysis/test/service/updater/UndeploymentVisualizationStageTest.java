@@ -24,6 +24,7 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,10 +88,11 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
      *
      * @throws MalformedURLException
      *             if the creation of the URL fails.
+     * @throws DBException
      *
      */
     @Before
-    public void setUp() throws MalformedURLException {
+    public void setUp() throws MalformedURLException, DBException {
 
         final URL changelogURL = new URL("http://" + UndeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
                 + UndeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"

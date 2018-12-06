@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
@@ -75,9 +76,11 @@ public class PCMNeo4JTest {
      *
      * @throws NodeLookupException
      *             on node lookup errors
+     * @throws DBException
+     *             on db errors
      */
     @Test
-    public void testUpdate() throws NodeLookupException {
+    public void testUpdate() throws NodeLookupException, DBException {
         /** store model in database. */
         this.repositoryResource.storeModelPartition(this.repository);
         this.resourceEnvironmentResource.storeModelPartition(this.resourceEnvironment);

@@ -30,6 +30,7 @@ import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.EServiceTechnology;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
@@ -90,8 +91,9 @@ public class PrivacyWarnerIntegrationTest {
      *            command line arguments
      * @throws IOException
      *             on io errors
+     * @throws DBException
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException, DBException {
         if (args.length == 2) {
             final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest(args[0], args[1]);
             test.initializePW();
@@ -103,8 +105,10 @@ public class PrivacyWarnerIntegrationTest {
 
     /**
      * Initialize database.
+     *
+     * @throws DBException
      */
-    public void initializePW() {
+    public void initializePW() throws DBException {
         this.clearDirectory(this.modelDatabaseDirectory);
         this.modelDatabaseDirectory.mkdirs();
 

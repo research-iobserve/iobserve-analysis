@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
@@ -32,6 +33,7 @@ import org.iobserve.analysis.sink.landscape.NodegroupService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
 import org.iobserve.analysis.sink.landscape.SystemService;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -115,18 +117,19 @@ public final class InitializeDeploymentVisualization {
      *
      * @throws IOException
      *             when post request fails
+     * @throws DBException
      */
-    public void initialize() throws IOException {
+    public void initialize() throws IOException, DBException {
         // set up the system model and take parts from it
         final System systemModel = this.systemModelGraphProvider.getModelRootNode(System.class,
                 SystemPackage.Literals.SYSTEM);
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
 
         // set up the allocation model and take parts from it
-        final List<Long> allocationIds = this.allocationModelGraphProvider.collectAllObjectIdsByType(Allocation.class,
+        final List<String> allocationIds = this.allocationModelGraphProvider.collectAllObjectIdsByType(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
         // an allocation model contains exactly one allocation, therefore .get(0)
-        final long allocationId = allocationIds.get(0);
+        final String allocationId = allocationIds.get(0);
         final Allocation allocation = this.allocationModelGraphProvider.findObjectByTypeAndId(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION, allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
@@ -217,13 +220,15 @@ public final class InitializeDeploymentVisualization {
      * @param linkingResources
      *            list of linking resources
      * @return technology used for communication, entity name of linking resource
+     * @throws DBException
      */
 
-    private String getTechnology(final AssemblyConnector connector, final List<LinkingResource> linkingResources) {
-        final Long assemblyContextSourceId = this.systemModelGraphProvider
-                .getInternalId(connector.getProvidingAssemblyContext_AssemblyConnector());
-        final Long assemblyContextTargetId = this.systemModelGraphProvider
-                .getInternalId(connector.getRequiringAssemblyContext_AssemblyConnector());
+    private String getTechnology(final AssemblyConnector connector, final List<LinkingResource> linkingResources)
+            throws DBException {
+        final String assemblyContextSourceId = EcoreUtil
+                .getIdentification(connector.getProvidingAssemblyContext_AssemblyConnector());
+        final String assemblyContextTargetId = EcoreUtil
+                .getIdentification(connector.getRequiringAssemblyContext_AssemblyConnector());
 
         /**
          * ID of resource container on which source (regarding communication) assembly context is
@@ -264,8 +269,9 @@ public final class InitializeDeploymentVisualization {
      * @param assemblyContextId
      *            the id of the assembly context.
      * @return the id or null if no such container exists
+     * @throws DBException
      */
-    private String findResourceIdByAssemblyContextId(final Long assemblyContextId) {
+    private String findResourceIdByAssemblyContextId(final String assemblyContextId) throws DBException {
         final List<EObject> allocationContexts = this.allocationModelGraphProvider.collectReferencingObjectsByTypeAndId(
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, assemblyContextId);
         if (allocationContexts.get(0) instanceof AllocationContext) {

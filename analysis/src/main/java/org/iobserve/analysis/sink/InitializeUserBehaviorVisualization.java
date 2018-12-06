@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
@@ -56,8 +58,10 @@ public class InitializeUserBehaviorVisualization {
 
     /**
      * Initialize the diagram.
+     *
+     * @throws DBException
      */
-    public void initialize() {
+    public void initialize() throws DBException {
         // TODO not working yet
 
         // map elements in entryLevelSystemCalls to assemblyContexts
@@ -70,8 +74,8 @@ public class InitializeUserBehaviorVisualization {
         for (int m = 0; m < entryLevelSystemCalls.size(); m++) {
             final EntryLevelSystemCall userStep = entryLevelSystemCalls.get(m);
 
-            final Long providedRoleId = this.systemModelProvider
-                    .getInternalId(userStep.getProvidedRole_EntryLevelSystemCall());
+            final String providedRoleId = ModelGraphFactory
+                    .getIdentification(userStep.getProvidedRole_EntryLevelSystemCall());
 
             final List<EObject> usergroupConnectors = this.systemModelProvider.collectReferencingObjectsByTypeAndId(
                     OperationProvidedRole.class, RepositoryPackage.Literals.OPERATION_PROVIDED_ROLE, providedRoleId);
@@ -85,7 +89,8 @@ public class InitializeUserBehaviorVisualization {
 
         if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
 
-            this.usageModelProvider.findAndLockObjectById(UsageModel.class, UsagemodelPackage.Literals.USAGE_MODEL, 0L);
+            // TODO object id missing
+            this.usageModelProvider.findAndLockObjectById(UsageModel.class, UsagemodelPackage.Literals.USAGE_MODEL, "");
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

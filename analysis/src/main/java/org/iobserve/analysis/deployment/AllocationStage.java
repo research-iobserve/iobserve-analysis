@@ -26,6 +26,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
@@ -88,10 +89,12 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      *             in case the allocation event is of an unknown type
      * @throws NodeLookupException
      *             node lookup exception
+     * @throws DBException
+     *             on database errors
      */
     @Override
     protected void execute(final IAllocationEvent event)
-            throws MalformedURLException, UnknownObjectException, NodeLookupException {
+            throws MalformedURLException, UnknownObjectException, NodeLookupException, DBException {
         final String service;
         if (event instanceof ContainerAllocationEvent) {
             service = ((ContainerAllocationEvent) event).getService();

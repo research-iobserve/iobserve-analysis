@@ -29,6 +29,7 @@ import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -89,8 +90,9 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      * @param deployment
      *            servlet deployed event
      * @return array that contains changelogs for creating a service and a service instance
+     * @throws DBException
      */
-    private JsonArray createData(final PCMDeployedEvent deployment) {
+    private JsonArray createData(final PCMDeployedEvent deployment) throws DBException {
         final String serverName = deployment.getService();
         final String nodeId = this.resourceEnvironmentModelResource
                 .findObjectsByTypeAndName(ResourceContainer.class,

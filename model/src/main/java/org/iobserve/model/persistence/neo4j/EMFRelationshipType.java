@@ -25,5 +25,5 @@ import org.neo4j.graphdb.RelationshipType;
  *
  */
 public enum EMFRelationshipType implements RelationshipType {
-    CONTAINS, IS_TYPE, REFERENCES
+    CONTAINS, REFERENCES
 }
