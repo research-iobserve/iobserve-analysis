@@ -29,11 +29,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelNeo4JUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
@@ -128,7 +129,10 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
                 revisionOutputDirectory);
 
         /** Resolve models. */
-        EcoreUtil.resolveAll(resourceSet);
+        Thread.sleep(1000);
+        ModelNeo4JUtil.resolveAll(resourceSet, this.correspondenceResource, this.repositoryResource,
+                this.resourceEnvironmentResource, this.assemblyResource, this.allocationResource,
+                this.privacyModelResource);
 
         /** store. */
         repositoryModelEMFResource.save(null);
@@ -144,8 +148,10 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
 
     private <T extends EObject> Resource loadModel(final ResourceSet resourceSet,
             final ModelResource<T> resourceHandler, final Class<T> clazz, final EClass eClass, final EPackage ePackage,
-            final File baseDirectory) {
+            final File baseDirectory) throws DBException {
         final T model = resourceHandler.getModelRootNode(clazz, eClass);
+
+        ModelNeo4JUtil.printModel(model);
 
         final URI writeModelURI = URI.createFileURI(
                 String.format("%s%sjpetstore", baseDirectory.toPath().toAbsolutePath().toString(), File.separator));

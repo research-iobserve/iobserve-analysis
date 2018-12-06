@@ -26,6 +26,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.EServiceTechnology;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -88,10 +89,11 @@ public class DeploymentVisualizationStageTest { // NOCS test
      *
      * @throws MalformedURLException
      *             if the creation of the URL fails.
+     * @throws DBException
      *
      */
     @Before
-    public void setUp() throws MalformedURLException {
+    public void setUp() throws MalformedURLException, DBException {
 
         final URL changelogURL = new URL("http://" + DeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
                 + DeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"

@@ -30,6 +30,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -65,9 +66,11 @@ public class DeploymentModelUpdaterTest {
     /**
      * Test method for
      * {@link org.iobserve.analysis.deployment.DeploymentModelUpdater#execute(org.iobserve.analysis.deployment.data.PCMDeployedEvent)}.
+     * 
+     * @throws DBException
      */
     @Test
-    public void testExecutePCMDeployedEvent() {
+    public void testExecutePCMDeployedEvent() throws DBException {
         this.initializationDatabase();
         final Allocation initDbAllocation = this.allocationResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
@@ -100,7 +103,7 @@ public class DeploymentModelUpdaterTest {
         }
     }
 
-    private void initializationDatabase() {
+    private void initializationDatabase() throws DBException {
         this.prepareGraph(RepositoryPackage.eINSTANCE, "testExecutePCMDeployedEvent-repository")
                 .storeModelPartition(this.repository);
         this.prepareGraph(SystemPackage.eINSTANCE, "testExecutePCMDeployedEvent-system")

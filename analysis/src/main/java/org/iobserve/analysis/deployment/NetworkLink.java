@@ -23,6 +23,7 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -89,9 +90,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param event
      *            event to use
      * @throws NodeLookupException
+     * @throws DBException
+     *             on db errors
      */
     @Override
-    protected void execute(final TraceMetadata event) throws NodeLookupException {
+    protected void execute(final TraceMetadata event) throws NodeLookupException, DBException {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource.getAndLockModelRootNode(
                 ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
 

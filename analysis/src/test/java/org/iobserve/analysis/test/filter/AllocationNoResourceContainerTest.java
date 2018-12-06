@@ -26,6 +26,7 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
@@ -76,10 +77,11 @@ public class AllocationNoResourceContainerTest {
      * the specified {@link ResourceContainer} does not exist in the {@link ResourceEnvironment}.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @SuppressWarnings("unchecked")
     @Before
-    public void stubMocksNoResourceContainer() throws NodeLookupException {
+    public void stubMocksNoResourceContainer() throws NodeLookupException, DBException {
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class

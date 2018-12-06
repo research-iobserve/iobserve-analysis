@@ -28,6 +28,7 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
@@ -103,9 +104,10 @@ public class DeploymentResourceContainerTest {
      * {@link ResourceEnvironment} model.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @Before
-    public void stubMocksResourceContainer() throws NodeLookupException {
+    public void stubMocksResourceContainer() throws NodeLookupException, DBException {
 
         /** mock for ModelBuilder */
         // use PowerMockito for calling static methods of these final classes

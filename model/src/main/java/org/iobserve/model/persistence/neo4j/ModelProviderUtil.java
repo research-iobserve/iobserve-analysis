@@ -25,12 +25,9 @@ import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
 import org.palladiosimulator.pcm.repository.ComponentType;
-import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
 import org.slf4j.Logger;
@@ -76,9 +73,11 @@ public final class ModelProviderUtil {
      *
      * @param <V>
      *            the type of the root element
+     * @throws DBException
+     *             on db errors
      */
     public <V extends EObject> void initializeModelGraph(final EPackage ePackage, final V model, final String nameLabel,
-            final String idLabel, final File baseDirectory) {
+            final String idLabel, final File baseDirectory) throws DBException {
         final ModelResource<V> resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
         resource.clearResource();
         resource.storeModelPartition(model);
@@ -115,40 +114,6 @@ public final class ModelProviderUtil {
     }
 
     /**
-     * Returns a {@link #PcmRelationshipType} for a given reference and the referenced object.
-     *
-     * @param ref
-     *            The reference
-     * @param refObj
-     *            The referenced object
-     * @return The proper relationship type
-     */
-    public static RelationshipType getRelationshipType(final EReference ref, final Object refObj) {
-
-        if (ref.isContainment()) {
-            return EMFRelationshipType.CONTAINS;
-        } else if (ModelProviderUtil.isDatatype(ref, refObj)) {
-            return EMFRelationshipType.IS_TYPE;
-        } else {
-            return EMFRelationshipType.REFERENCES;
-        }
-    }
-
-    /**
-     * Checks whether a referenced object is the referencer's data type.
-     *
-     * @param reference
-     *            The reference
-     * @param referenceObject
-     *            The referenced object
-     * @return True, if the referenced object is the referencer's data type, false otherwise
-     */
-    public static boolean isDatatype(final EReference reference, final Object referenceObject) {
-        return referenceObject instanceof DataType && !(reference.getName().equals("parentType_CompositeDataType")
-                || reference.getName().equals("compositeDataType_InnerDeclaration"));
-    }
-
-    /**
      * Clones and returns a new version from the current newest version of the model graph. If there
      * is none yet an empty graph is returned.
      *
@@ -156,7 +121,7 @@ public final class ModelProviderUtil {
      *            metamodel factory class
      * @param resource
      *            resource to be cloned
-     * 
+     *
      * @param <T>
      *            root object type
      *

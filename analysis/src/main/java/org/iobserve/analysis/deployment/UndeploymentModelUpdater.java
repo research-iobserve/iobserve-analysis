@@ -21,6 +21,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -59,9 +60,11 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      *
      * @param event
      *            undeployment event
+     * @throws DBException
+     *             on db errors
      */
     @Override
-    protected void execute(final PCMUndeployedEvent event) {
+    protected void execute(final PCMUndeployedEvent event) throws DBException {
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
@@ -39,23 +40,29 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#collectAllObjectIdsByType(Class)} and asserts that it is equal to the
      * one written to the graph.
+     *
+     * @throws DBException
      */
-    protected abstract void createThenReadByType();
+    protected abstract void createThenReadByType() throws DBException;
 
     /**
      * Writes a model to the graph, reads the container of a certain model component from the graph
      * using {@link ModelProvider#readContainingObjectById(Class, String)} and asserts that it is
      * equal to the container from the original model.
+     *
+     * @throws DBException
      */
-    protected abstract void createThenReadContaining();
+    protected abstract void createThenReadContaining() throws DBException;
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
      * {@link ModelProvider#collectReferencingObjectsByTypeAndId(Class, String)} and asserts that it
      * is equal to the referencing components from the original model.
+     *
+     * @throws DBException
      */
     @Test
-    abstract void createThenReadReferencing();
+    abstract void createThenReadReferencing() throws DBException;
 
     /**
      * Writes a model to the graph, modifies the original model, updates it in the graph using
@@ -63,29 +70,36 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      * updated model from the graph and asserts that it is equal to the modified original model.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @Test
-    abstract void createThenUpdateThenReadUpdated() throws NodeLookupException;
+    abstract void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException;
 
     /**
      * Create, store and delete objects.
+     *
+     * @throws DBException
      */
     @Test
-    abstract void createThenDeleteObject();
+    abstract void createThenDeleteObject() throws DBException;
 
     /**
      * Create, store and delete objects and data types.
+     * 
+     * @throws DBException
      */
     @Test
-    abstract void createThenDeleteObjectAndDatatypes();
+    abstract void createThenDeleteObjectAndDatatypes() throws DBException;
 
     /**
      * Writes a model to the graph, clones the graph using
      * {@link ModelProvider#cloneNewGraphVersion(Class)}, reads the model from the cloned graph and
      * asserts that it is equal to the one written to the first graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenCloneThenRead() {
+    public final void createThenCloneThenRead() throws DBException {
         final ModelResource<T> storeResource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.ePackage);
 
@@ -105,9 +119,11 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
     /**
      * Writes a model to the graph, clears the graph using {@link ModelProvider#clearResource()} and
      * asserts that the graph is empty afterwards.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenClearResource() {
+    public final void createThenClearResource() throws DBException {
         final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.ePackage);
 
@@ -126,9 +142,11 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#getModelRootNode(Class)} and asserts that it is equal to the one written
      * to the graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenReadRoot() {
+    public final void createThenReadRoot() throws DBException {
         final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.ePackage);
 

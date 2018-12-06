@@ -17,7 +17,6 @@ package org.iobserve.model.persistence.neo4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -40,12 +39,9 @@ public final class StoreModelFacility<R extends EObject> extends GenericModelFac
      *            the resource
      * @param graphDatabaseService
      *            the database
-     * @param objectNodeMap
-     *            the internal object node map
      */
-    public StoreModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService,
-            final Map<EObject, Node> objectNodeMap) {
-        super(resource, graphDatabaseService, objectNodeMap);
+    public StoreModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
+        super(resource, graphDatabaseService);
     }
 
     /**
@@ -53,28 +49,29 @@ public final class StoreModelFacility<R extends EObject> extends GenericModelFac
      *
      * @param storeableObject
      *            Object to save
+     * @throws DBException
+     *             on db errors
      */
-    public void storeAllNodesAndReferences(final EObject storeableObject) {
-        this.storeNodesRecursively(storeableObject, this.objectNodeMap);
-        this.createAllReferences(this.objectNodeMap);
+    public void storeAllNodesAndReferences(final EObject storeableObject) throws DBException {
+        this.createAllReferences(this.storeNodesRecursively(storeableObject, new ArrayList<EObject>()));
     }
 
     /**
      * Create all references for a model.
      *
-     * @param objectNodeMap
-     *            hashmap of all objects and their corresponding nodes
+     * @param objectList
+     *            list of objects
+     * @throws DBException
+     *             on db errors
      */
-    private void createAllReferences(final Map<EObject, Node> objectNodeMap) {
-        final List<EObject> objectList = new ArrayList<>(objectNodeMap.keySet());
+    private void createAllReferences(final List<EObject> objectList) throws DBException {
         for (final EObject sourceObject : objectList) {
             if (!sourceObject.eIsProxy()) {
-                final Node sourceNode = objectNodeMap.get(sourceObject);
                 for (final EReference reference : sourceObject.eClass().getEAllReferences()) {
                     if (reference.isContainment()) {
-                        this.createContainment(sourceObject, sourceNode, reference, objectNodeMap);
+                        this.createContainment(sourceObject, reference);
                     } else {
-                        this.createAssociation(sourceObject, sourceNode, reference, objectNodeMap);
+                        this.createAssociation(sourceObject, reference);
                     }
                 }
             }
@@ -84,70 +81,60 @@ public final class StoreModelFacility<R extends EObject> extends GenericModelFac
     /**
      * Create a containment reference.
      *
-     * @param sourceObject
+     * @param source
      *            source object
-     * @param sourceNode
-     *            source node
      * @param reference
      *            reference to be processed
-     * @param objectNodeMap
-     *            hashmap of existing nodes
+     * @throws DBException
+     *             on db errors
      */
-    private void createContainment(final EObject sourceObject, final Node sourceNode, final EReference reference,
-            final Map<EObject, Node> objectNodeMap) {
-        final Object referencedObject = sourceObject.eGet(reference);
+    @SuppressWarnings("unchecked")
+    private void createContainment(final EObject source, final EReference reference) throws DBException {
+        final Object referencedObject = source.eGet(reference);
         if (reference.isMany()) {
             int i = 0;
-            for (final Object element : (EList<?>) referencedObject) {
-                final Node targetNode = objectNodeMap.get(element);
-                if (targetNode == null) {
-                    throw new InternalError("Contained object has no node: " + element.toString());
-                }
-                ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) element, reference, i++);
+            for (final EObject target : (EList<EObject>) referencedObject) {
+                ModelGraphFactory.createRelationship(this.graphDatabaseService, source, target, reference, i++);
             }
         } else if (referencedObject != null) {
-            final Node targetNode = objectNodeMap.get(referencedObject);
-            if (targetNode == null) {
-                throw new InternalError("Contained object has no node: " + referencedObject.toString());
-            }
-            ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) referencedObject, reference, 0);
+            ModelGraphFactory.createRelationship(this.graphDatabaseService, source, (EObject) referencedObject,
+                    reference, 0);
         }
     }
 
     /**
      * Create an association reference.
      *
-     * @param sourceObject
+     * @param source
      *            source object
-     * @param sourceNode
-     *            source node
      * @param reference
      *            reference of the source object to be processed
-     * @param objectNodeMap
-     *            hashmap of all objects and their corresponding nodes
+     * @throws DBException
+     *             on db errors
      */
-    private void createAssociation(final EObject sourceObject, final Node sourceNode, final EReference reference,
-            final Map<EObject, Node> objectNodeMap) {
-        final Object referencedObject = sourceObject.eGet(reference);
+    @SuppressWarnings("unchecked")
+    private void createAssociation(final EObject source, final EReference reference) throws DBException {
+        final Object referencedObject = source.eGet(reference);
         if (reference.isMany()) {
             int i = 0;
-            for (final Object element : (EList<?>) referencedObject) {
-                Node targetNode = objectNodeMap.get(element);
-                if (targetNode == null) {
-                    targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, (EObject) element,
-                            this.resource.getNextId());
-                    objectNodeMap.put((EObject) element, targetNode);
-                }
-                ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) element, reference, i++);
+            for (final EObject target : (EList<EObject>) referencedObject) {
+                this.createAssociationReference(source, target, reference, i++);
             }
         } else if (referencedObject != null) {
-            Node targetNode = objectNodeMap.get(referencedObject);
-            if (targetNode == null) {
-                targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, (EObject) referencedObject,
-                        this.resource.getNextId());
-                objectNodeMap.put((EObject) referencedObject, targetNode);
-            }
-            ModelGraphFactory.createRelationship(sourceNode, targetNode, (EObject) referencedObject, reference, 0);
+            this.createAssociationReference(source, (EObject) referencedObject, reference, 0);
+        }
+    }
+
+    private void createAssociationReference(final EObject sourceObject, final EObject targetObject,
+            final EReference reference, final long i) throws DBException {
+        Node targetNode = ModelGraphFactory.findNode(this.graphDatabaseService, targetObject);
+        if (targetNode == null) { /** foreign model object, create proxy. */
+            targetNode = ModelGraphFactory.createProxyNode(this.graphDatabaseService, targetObject,
+                    ModelGraphFactory.getIdentification(targetObject));
+            ModelGraphFactory.createRelationship(this.graphDatabaseService,
+                    ModelGraphFactory.findNode(this.graphDatabaseService, sourceObject), targetNode, reference, i);
+        } else {
+            ModelGraphFactory.createRelationship(this.graphDatabaseService, sourceObject, targetObject, reference, i);
         }
     }
 
@@ -161,24 +148,24 @@ public final class StoreModelFacility<R extends EObject> extends GenericModelFac
      *
      * @return the object to node map
      */
-    private Map<EObject, Node> storeNodesRecursively(final EObject storeableObject,
-            final Map<EObject, Node> objectNodeMap) {
-        final Node node = ModelGraphFactory.createNode(this.graphDatabaseService, storeableObject,
-                this.resource.getNextId());
-        objectNodeMap.put(storeableObject, node);
+    private List<EObject> storeNodesRecursively(final EObject storeableObject, final List<EObject> objectList) {
+        ModelGraphFactory.createNode(this.graphDatabaseService, storeableObject,
+                ModelGraphFactory.getIdentification(storeableObject));
+
+        objectList.add(storeableObject);
 
         for (final EReference reference : storeableObject.eClass().getEAllContainments()) {
             final Object referencedObject = storeableObject.eGet(reference);
             if (reference.isMany()) {
                 for (final Object object : (EList<?>) referencedObject) {
-                    this.storeNodesRecursively((EObject) object, objectNodeMap);
+                    this.storeNodesRecursively((EObject) object, objectList);
                 }
             } else if (referencedObject != null) {
-                this.storeNodesRecursively((EObject) referencedObject, objectNodeMap);
+                this.storeNodesRecursively((EObject) referencedObject, objectList);
             }
         }
 
-        return objectNodeMap;
+        return objectList;
     }
 
 }

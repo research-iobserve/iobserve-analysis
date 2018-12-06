@@ -27,6 +27,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.feature.IContainerManagementSinkStage;
 import org.iobserve.analysis.sink.InitializeDeploymentVisualization;
+import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -44,7 +45,7 @@ public class VisualizationContainerManagementSinkStage implements IContainerMana
     public VisualizationContainerManagementSinkStage(final Configuration configuration,
             final ModelResource<ResourceEnvironment> resourceEnvironmentModelProvider,
             final ModelResource<System> systemModelProvider, final ModelResource<Allocation> allocationModelProvider)
-            throws IOException {
+            throws IOException, DBException {
         final URL url = new URL(configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL));
         final String systemId = configuration.getStringProperty(ConfigurationKeys.SYSTEM_ID);
         final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(url,

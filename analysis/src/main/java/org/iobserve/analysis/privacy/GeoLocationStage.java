@@ -99,6 +99,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
                 PrivacyPackage.Literals.GEO_LOCATION);
 
         for (final GeoLocation geoLocation : geoLocations) {
+            System.err.println("Geolocation " + geoLocation.getIsocode() + " " + geoLocation.getResourceContainer());
             final ResourceContainer existingContainer = this.resourceEnvironmentResource
                     .resolve(geoLocation.getResourceContainer());
             if (existingContainer != null) {

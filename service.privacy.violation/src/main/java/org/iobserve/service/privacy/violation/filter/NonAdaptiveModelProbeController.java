@@ -110,7 +110,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
         return receivedWarnings;
     }
 
-    private Map<AllocationContext, Set<OperationSignature>> computeAvailableProbes() {
+    private Map<AllocationContext, Set<OperationSignature>> computeAvailableProbes() throws DBException {
 
         final Repository repositoryModel = this.repositoryResource.getModelRootNode(Repository.class,
                 RepositoryPackage.Literals.REPOSITORY);

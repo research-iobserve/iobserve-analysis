@@ -24,6 +24,8 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,9 +71,11 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /**
      * Prepare test data.
+     *
+     * @throws DBException
      */
     @Before
-    public void setUp() {
+    public void setUp() throws DBException {
 
         this.serviceInstanceService = new ServiceInstanceService();
 
@@ -96,8 +100,7 @@ public class ServiceInstanceServiceTest { // NOCS test
         // stubbing
         Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
                 CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                this.mockedSystemModelGraphProvider.getInternalId(this.testAssemblyContext)))
-                .thenReturn(this.noAssemblyConnectors);
+                ModelGraphFactory.getIdentification(this.testAssemblyContext))).thenReturn(this.noAssemblyConnectors);
     }
 
     /**
@@ -117,10 +120,12 @@ public class ServiceInstanceServiceTest { // NOCS test
      * Check whether
      * {@link ServiceInstanceService#deleteServiceInstance(AssemblyContext, String, String, org.iobserve.analysis.model.provider.neo4j.ModelProvider)}
      * works as expected, when the ServiceInstance is not referenced by communicationInstances.
+     *
+     * @throws DBException
      */
     // TODO test when serviceInstance is referenced by communicationInstance
     @Test
-    public void checkDeleteServiceInstance() {
+    public void checkDeleteServiceInstance() throws DBException {
         final JsonObject actualDeleteServiceInstance = this.serviceInstanceService.deleteServiceInstance(
                 this.testAssemblyContext, this.systemId, this.nodeId, this.mockedSystemModelGraphProvider);
 

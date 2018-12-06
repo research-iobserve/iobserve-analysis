@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -60,7 +62,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
     @Override
     @Test
-    public void createThenReadByType() {
+    public void createThenReadByType() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
                 this.prefix, this.ePackage);
 
@@ -71,7 +73,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
     @Override
     @Test
-    public void createThenReadContaining() {
+    public void createThenReadContaining() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
                 this.prefix, this.ePackage);
 
@@ -80,14 +82,14 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         resource.storeModelPartition(this.testModel);
 
         final System readModel = (System) resource.findContainingObjectById(AssemblyContext.class,
-                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(ac));
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, ModelGraphFactory.getIdentification(ac));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
     }
 
     @Override
     @Test
-    public void createThenReadReferencing() {
+    public void createThenReadReferencing() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
                 this.prefix, this.ePackage);
 
@@ -108,7 +110,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
                 SystemDataFactory.BUSINESS_ORDER_ASSEMBLY_CONTEXT);
 
         readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
-                CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
+                CompositionPackage.Literals.ASSEMBLY_CONTEXT, ModelGraphFactory.getIdentification(context));
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
         // businessOrderContext
@@ -121,7 +123,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenUpdateThenReadUpdated",
                 this.prefix, this.ePackage);
 
@@ -193,7 +195,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
     @Override
     @Test
-    public void createThenDeleteObject() {
+    public void createThenDeleteObject() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
                 this.prefix, this.ePackage);
 
@@ -205,14 +207,14 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
 
         resource.deleteObject(writtenModel);
 
-        final List<Long> collection = resource.collectAllObjectIdsByType(System.class, SystemPackage.Literals.SYSTEM);
+        final List<String> collection = resource.collectAllObjectIdsByType(System.class, SystemPackage.Literals.SYSTEM);
 
         Assert.assertEquals("The system should be deleted.", 0, collection.size());
     }
 
     @Override
     @Test
-    public void createThenDeleteObjectAndDatatypes() {
+    public void createThenDeleteObjectAndDatatypes() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils
                 .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
@@ -221,7 +223,7 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         resource.deleteObjectByIdAndDatatype(System.class, SystemPackage.Literals.SYSTEM,
-                resource.getInternalId(this.testModel), true);
+                ModelGraphFactory.getIdentification(this.testModel));
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
     }
@@ -230,9 +232,11 @@ public class SystemModelProviderTest extends AbstractEnityModelProviderTest<Syst
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
      * the one written to the graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenReadByName() {
+    public final void createThenReadByName() throws DBException {
         final ModelResource<System> resource = ModelProviderTestUtils.prepareResource("createThenReadByName",
                 this.prefix, this.ePackage);
 

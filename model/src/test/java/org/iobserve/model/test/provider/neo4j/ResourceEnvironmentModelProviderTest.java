@@ -18,6 +18,8 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -59,10 +61,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
     /**
      * Create model, store then read by type.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenReadByType() {
+    public void createThenReadByType() throws DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenReadByType", this.prefix, this.ePackage);
 
@@ -78,17 +82,19 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
     /**
      * Check whether containing references are handled correctly.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenReadContaining() {
+    public void createThenReadContaining() throws DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenReadContaining", this.prefix, this.ePackage);
 
         final ResourceContainer writtenContainer = this.testModel.getResourceContainer_ResourceEnvironment().get(0);
         resource.storeModelPartition(this.testModel);
 
-        final long id = resource.getInternalId(writtenContainer);
+        final String id = ModelGraphFactory.getIdentification(writtenContainer);
 
         final ResourceEnvironment readModel = (ResourceEnvironment) resource.findContainingObjectById(
                 ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, id);
@@ -98,10 +104,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
     /**
      * Check is references are resolved correctly.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenReadReferencing() {
+    public void createThenReadReferencing() throws DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenReadReferencing", this.prefix, this.ePackage);
 
@@ -118,7 +126,7 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
                 CommunicationLinkResourceType.class, ResourcetypePackage.Literals.COMMUNICATION_LINK_RESOURCE_TYPE,
-                resource.getInternalId(lanType));
+                ModelGraphFactory.getIdentification(lanType));
 
         // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
         // CommunicationLinkResourceType
@@ -132,10 +140,11 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
      * Test whether update works correctly.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
@@ -189,10 +198,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
     /**
      * Test whether deletions work correctly.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenDeleteObject() {
+    public void createThenDeleteObject() throws DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenDeleteObject", this.prefix, this.ePackage);
 
@@ -224,10 +235,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
     /**
      * Check whether object and data type deletions work.
+     *
+     * @throws DBException
      */
     @Override
     @Test
-    public void createThenDeleteObjectAndDatatypes() {
+    public void createThenDeleteObjectAndDatatypes() throws DBException {
         final ModelResource<ResourceEnvironment> resource = ModelProviderTestUtils
                 .prepareResource("createThenDeleteComponentAndDatatypes", this.prefix, this.ePackage);
 
@@ -237,12 +250,12 @@ public class ResourceEnvironmentModelProviderTest extends AbstractNamedElementMo
 
         for (final LinkingResource lr : this.testModel.getLinkingResources__ResourceEnvironment()) {
             resource.deleteObjectByIdAndDatatype(LinkingResource.class,
-                    ResourceenvironmentPackage.Literals.LINKING_RESOURCE, resource.getInternalId(lr), true);
+                    ResourceenvironmentPackage.Literals.LINKING_RESOURCE, ModelGraphFactory.getIdentification(lr));
         }
 
         for (final ResourceContainer rc : this.testModel.getResourceContainer_ResourceEnvironment()) {
             resource.deleteObjectByIdAndDatatype(ResourceContainer.class,
-                    ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, resource.getInternalId(rc), true);
+                    ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, ModelGraphFactory.getIdentification(rc));
         }
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));

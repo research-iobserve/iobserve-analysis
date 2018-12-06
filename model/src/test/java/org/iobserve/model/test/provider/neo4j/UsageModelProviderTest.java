@@ -18,6 +18,8 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.UsageModelDataFactory;
@@ -58,9 +60,11 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     /**
      * Test whether we can create and send search for it by type.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenReadByType() {
+    public void createThenReadByType() throws DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadByType",
                 this.prefix, this.ePackage);
 
@@ -69,10 +73,10 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         // Create complete model but only read a UsageScenario, because UsageModel itself has no id
         resource.storeModelPartition(this.testModel);
 
-        final List<Long> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class,
+        final List<String> collectedIds = resource.collectAllObjectIdsByType(UsageScenario.class,
                 UsagemodelPackage.Literals.USAGE_SCENARIO);
 
-        final long id = resource.getInternalId(writtenScenario);
+        final String id = ModelGraphFactory.getIdentification(writtenScenario);
 
         // There is only one usage scenario in the test model
         Assert.assertTrue(collectedIds.size() == 1);
@@ -84,9 +88,11 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     /**
      * Test whether we can create and then read an object including containing elements.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenReadContaining() {
+    public void createThenReadContaining() throws DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadContaining",
                 this.prefix, this.ePackage);
 
@@ -95,7 +101,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         resource.storeModelPartition(this.testModel);
 
         final UsageModel readModel = (UsageModel) resource.findContainingObjectById(UsageScenario.class,
-                UsagemodelPackage.Literals.USAGE_SCENARIO, resource.getInternalId(writtenScenario));
+                UsagemodelPackage.Literals.USAGE_SCENARIO, ModelGraphFactory.getIdentification(writtenScenario));
 
         Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
 
@@ -104,9 +110,11 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     /**
      * Test whether creating and then reading referencing objects works.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenReadReferencing() {
+    public void createThenReadReferencing() throws DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenReadReferencing",
                 this.prefix, this.ePackage);
 
@@ -117,7 +125,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         // Using usage scenario because usage model does not have an id
         final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
                 UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
-                resource.getInternalId(writtenScenario));
+                ModelGraphFactory.getIdentification(writtenScenario));
 
         final EObject buyABookBehavior = UsageModelDataFactory.findBehavior(this.usageModel,
                 UsageModelDataFactory.BUY_A_BOOK_BEHAVIOR);
@@ -141,9 +149,10 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
      * correctly.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @Test
-    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils
                 .prepareResource("createThenUpdateThenReadUpdated", this.prefix, this.ePackage);
 
@@ -193,9 +202,11 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     /**
      * Test create with subsequent delete sequence.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenDeleteObject() {
+    public void createThenDeleteObject() throws DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils.prepareResource("createThenDeleteObject",
                 this.prefix, this.ePackage);
 
@@ -230,9 +241,11 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
 
     /**
      * Test whether we can create and then delete the object including its data types correctly.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenDeleteObjectAndDatatypes() {
+    public void createThenDeleteObjectAndDatatypes() throws DBException {
         final ModelResource<UsageModel> resource = ModelProviderTestUtils
                 .prepareResource("createThenDeleteObjectAndDatatypes", this.prefix, this.ePackage);
 
@@ -243,7 +256,7 @@ public class UsageModelProviderTest extends AbstractModelProviderTest<UsageModel
         Assert.assertFalse(ModelProviderTestUtils.isResourceEmpty(resource));
 
         resource.deleteObjectByIdAndDatatype(UsageScenario.class, UsagemodelPackage.Literals.USAGE_SCENARIO,
-                resource.getInternalId(writtenScenario), true);
+                ModelGraphFactory.getIdentification(writtenScenario));
 
         Assert.assertTrue(ModelProviderTestUtils.isResourceEmpty(resource));
 
