@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class ModelProviderUtil {
 
-    public static final String PCM_ENTITY_NAME = "entityName";
-    public static final String PCM_ID = "id";
+    // public static final String PCM_ENTITY_NAME = "entityName";
+    // public static final String PCM_ID = "id";
     public static final String IMPLEMENTATION_ID = "implementationId";
 
     public static final String REF_NAME = ":refName";

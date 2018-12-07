@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -32,7 +32,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.ResourceIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -319,17 +318,10 @@ public final class ModelGraphFactory {
      */
     public static Node findNode(final GraphDatabaseService graphDatabaseService, final EObject object)
             throws DBException {
-        System.err.println("findNode");
         final String typeName = ModelGraphFactory.fqnClassName(object.eClass());
         final String internalId = ModelGraphFactory.getIdentification(object);
 
         if (internalId != null) {
-            final ResourceIterator<Node> iter = graphDatabaseService.findNodes(Label.label(typeName));
-            while (iter.hasNext()) {
-                final Node node = iter.next();
-                System.err.println("findNode Nodes " + node.getProperty(ModelGraphFactory.EMF_INTERNAL_ID));
-            }
-
             return graphDatabaseService.findNode(Label.label(typeName), ModelGraphFactory.EMF_INTERNAL_ID, internalId);
         } else {
             throw new DBException(String
@@ -338,13 +330,13 @@ public final class ModelGraphFactory {
     }
 
     public static String getIdentification(final EObject object) {
-        String internalId = EcoreUtil.getIdentification(object).toLowerCase(); // NOPMD
-
         if (object.eIsProxy()) {
-            internalId = internalId.replaceAll("^.*\\{(.*\\{.*\\})\\}.*$", "$1");
+            final String result = ((BasicEObjectImpl) object).eProxyURI().toString();
+            System.err.println("PROXY " + result);
+            return result;
+        } else {
+            return Integer.toHexString(object.hashCode());
         }
-
-        return internalId;
     }
 
     /**
