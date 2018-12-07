@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.analysis.common.ConfigurationException;
-import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.IEvent;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,12 +103,8 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 event);
         if (selectedOutputPort != null) {
             // collecting event observation time (if possible); only for performance tests.
-            final long observedTime;
             if (event instanceof IEvent) {
-                ExperimentLogging.measure((IEvent) event, "analysis-entry");
-                observedTime = ((IEvent) event).getTimestamp();
-            } else {
-                observedTime = ((IMonitoringRecord) event).getLoggingTimestamp();
+                ExperimentLogging.measure((IEvent) event, ObservationPoint.DISPATCHER_ENTRY);
             }
             selectedOutputPort.send(event);
         } else {
@@ -121,7 +117,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
+                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }

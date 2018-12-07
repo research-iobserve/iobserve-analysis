@@ -44,8 +44,8 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      *
      */
     public TcpActivationParameterControlEvent(final String ip, final int port, final String hostname,
-            final String pattern, final Map<String, List<String>> parameters) {
-        super(ip, port, hostname, pattern);
+            final String pattern, final long triggerTimestamp, final Map<String, List<String>> parameters) {
+        super(ip, port, hostname, pattern, triggerTimestamp);
         this.parameters = parameters;
     }
 
@@ -58,8 +58,9 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      */
-    public TcpActivationParameterControlEvent(final String pattern, final Map<String, List<String>> parameters) {
-        super(pattern);
+    public TcpActivationParameterControlEvent(final String pattern, final long triggerTimestamp,
+            final Map<String, List<String>> parameters) {
+        super(pattern, triggerTimestamp);
         this.parameters = parameters;
     }
 

@@ -35,8 +35,9 @@ public class TcpActivationControlEvent extends AbstractTcpControlEvent {
      * @param pattern
      *            The pattern of the method that should be monitored.
      */
-    public TcpActivationControlEvent(final String ip, final int port, final String hostname, final String pattern) {
-        super(ip, port, hostname, pattern);
+    public TcpActivationControlEvent(final String ip, final int port, final String hostname, final String pattern,
+            final long triggerTimestamp) {
+        super(ip, port, hostname, pattern, triggerTimestamp);
     }
 
     /**
@@ -45,8 +46,8 @@ public class TcpActivationControlEvent extends AbstractTcpControlEvent {
      * @param pattern
      *            The pattern of the method that should be monitored.
      */
-    public TcpActivationControlEvent(final String pattern) {
-        super(pattern);
+    public TcpActivationControlEvent(final String pattern, final long triggerTimestamp) {
+        super(pattern, triggerTimestamp);
     }
 
 }

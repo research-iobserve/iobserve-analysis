@@ -190,10 +190,8 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
 
                     this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                     this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
-                    // this.connectPorts(whitelistFilter.getOutputPort(),
-                    // probeMapper.getInputPort());
-                    // this.connectPorts(probeMapper.getOutputPort(),
-                    // probeController.getInputPort());
+                    this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());
+                    this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
 
                     /** Alarm event processing. */
                     // TODO Trace analysis has become obsolete and will be replaced by an alarm

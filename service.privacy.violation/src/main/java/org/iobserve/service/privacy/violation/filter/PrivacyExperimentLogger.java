@@ -16,6 +16,7 @@
 package org.iobserve.service.privacy.violation.filter;
 
 import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.stages.data.ExperimentLogging;
 
@@ -25,8 +26,8 @@ import org.iobserve.stages.data.ExperimentLogging;
  */
 public class PrivacyExperimentLogger {
 
-    public static void measure(final ProbeManagementData element, final String label) {
-        ExperimentLogging.logEvent(0, EventTypes.NONE, label);
+    public static void measure(final ProbeManagementData element, final ObservationPoint point) {
+        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, point);
     }
 
 }

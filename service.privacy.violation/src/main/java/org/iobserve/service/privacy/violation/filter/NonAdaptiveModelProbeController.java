@@ -25,15 +25,16 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -75,11 +76,11 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
     @Override
     protected void execute(final Warnings element) throws Exception {
         if (element.getEvent() instanceof PCMDeployedEvent) {
-            AnalysisExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
-                    "compute-probe-configuration");
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
         } else {
-            AnalysisExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
-                    "compute-probe-configuration");
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
         }
 
         final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this.computeReceivedWarnings(element);
@@ -88,11 +89,21 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
         final ProbeManagementData probeMethodInformation = new ProbeManagementData(
                 new HashMap<AllocationContext, Set<OperationSignature>>(),
                 new HashMap<AllocationContext, Set<OperationSignature>>());
+        probeMethodInformation.setTriggerTime(element.getEvent().getTimestamp());
 
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = this.computeAvailableProbes();
 
         probeMethodInformation.setWarnedMethods(receivedWarnings);
         probeMethodInformation.setMethodsToUpdate(methodsToUpdate);
+
+        if (element.getEvent() instanceof PCMDeployedEvent) {
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
+        } else {
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
+        }
+
         this.outputPort.send(probeMethodInformation);
     }
 

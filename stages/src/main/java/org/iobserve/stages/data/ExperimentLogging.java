@@ -25,6 +25,7 @@ import org.iobserve.common.record.IDeploymentChange;
 import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.MeasureEventOccurance;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 
 /**
@@ -36,23 +37,23 @@ public class ExperimentLogging {
     private static IMonitoringController CTRL = MonitoringController.getInstance();
     private static ITimeSource timeSource = ExperimentLogging.CTRL.getTimeSource();
 
-    public static void logEvent(final long id, final EventTypes type, final String label) {
+    public static void logEvent(final long id, final EventTypes type, final ObservationPoint point) {
         ExperimentLogging.CTRL.newMonitoringRecord(
-                new MeasureEventOccurance(ExperimentLogging.timeSource.getTime(), id, type, label));
+                new MeasureEventOccurance(ExperimentLogging.timeSource.getTime(), id, type, point));
     }
 
-    public static void measure(final IEvent event, final String label) {
+    public static void measure(final IEvent event, final ObservationPoint point) {
         if (event instanceof IDeploymentChange) {
             if (event instanceof IDeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, label);
+                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
             } else if (event instanceof IUndeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, label);
+                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
             }
         }
     }
 
-    public static void measure(final AbstractTcpControlEvent event, final String label) {
-        ExperimentLogging.logEvent(0, EventTypes.NONE, label);
+    public static void measure(final AbstractTcpControlEvent event, final ObservationPoint point) {
+        ExperimentLogging.logEvent(event.getTriggerTimestamp(), EventTypes.NONE, point);
     }
 
 }

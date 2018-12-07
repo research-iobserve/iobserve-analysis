@@ -29,6 +29,8 @@ public abstract class AbstractTcpControlEvent {
 
     private final String pattern;
 
+    private final long triggerTimestamp;
+
     /**
      * Creates a complete control event.
      *
@@ -40,9 +42,12 @@ public abstract class AbstractTcpControlEvent {
      *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public AbstractTcpControlEvent(final String ip, final int port, final String hostname, final String pattern) {
-        this(pattern);
+    public AbstractTcpControlEvent(final String ip, final int port, final String hostname, final String pattern,
+            final long triggerTimestamp) {
+        this(pattern, triggerTimestamp);
         this.ip = ip;
         this.port = port;
         this.hostname = hostname;
@@ -53,9 +58,12 @@ public abstract class AbstractTcpControlEvent {
      *
      * @param pattern
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public AbstractTcpControlEvent(final String pattern) {
+    public AbstractTcpControlEvent(final String pattern, final long triggerTimestamp) {
         this.pattern = pattern;
+        this.triggerTimestamp = triggerTimestamp;
     }
 
     public String getIp() {
@@ -84,6 +92,10 @@ public abstract class AbstractTcpControlEvent {
 
     public void setHostname(final String hostname) {
         this.hostname = hostname;
+    }
+
+    public long getTriggerTimestamp() {
+        return this.triggerTimestamp;
     }
 
 }

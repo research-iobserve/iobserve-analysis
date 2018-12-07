@@ -41,6 +41,8 @@ public class ProbeManagementData {
 
     private List<String> whitelist = null; // NOPMD document null
 
+    private long triggerTime;
+
     /**
      * Create a probe management model.
      *
@@ -103,6 +105,14 @@ public class ProbeManagementData {
 
     public void setWhitelist(final List<String> whitelist) {
         this.whitelist = whitelist;
+    }
+
+    public final long getTriggerTime() {
+        return this.triggerTime;
+    }
+
+    public final void setTriggerTime(final long triggerTime) {
+        this.triggerTime = triggerTime;
     }
 
 }

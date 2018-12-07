@@ -22,6 +22,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -66,7 +67,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) throws DBException {
-        AnalysisExperimentLogging.measure(event, "model-update");
+        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
@@ -79,11 +80,14 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
             this.allocationModelResource.deleteObject(allocationContext);
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
                     allocationContextName);
         } else {
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
         }
     }
