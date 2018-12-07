@@ -38,8 +38,9 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
      *            a map of parameters and a list of each entry per parameter
      *
      */
-    public TcpUpdateParameterEvent(final String pattern, final Map<String, List<String>> parameters) {
-        super(pattern);
+    public TcpUpdateParameterEvent(final String pattern, final long triggerTimestamp,
+            final Map<String, List<String>> parameters) {
+        super(pattern, triggerTimestamp);
         this.parameters = parameters;
     }
 
@@ -59,8 +60,8 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
      *
      */
     public TcpUpdateParameterEvent(final String ip, final int port, final String hostname, final String pattern,
-            final Map<String, List<String>> parameters) {
-        super(ip, port, hostname, pattern);
+            final long triggerTimestamp, final Map<String, List<String>> parameters) {
+        super(ip, port, hostname, pattern, triggerTimestamp);
         this.parameters = parameters;
     }
 

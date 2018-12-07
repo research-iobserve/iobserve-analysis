@@ -168,6 +168,20 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		
 		return true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getService().hashCode();
+		code += this.getContext().hashCode();
+		code += this.getDeploymentId().hashCode();
+		code += this.getCountryCode().hashCode();
+		
+		return code;
+	}
 	
 	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;

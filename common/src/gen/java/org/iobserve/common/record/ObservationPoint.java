@@ -21,14 +21,27 @@ package org.iobserve.common.record;
  * 
  * @since 1.15
  */
-public enum JSSObservationPoint {
+public enum ObservationPoint {
 	DISPATCHER_ENTRY(0),
-	PRIVACY_WARNER_ENTRY(1),
-	PRIVACY_WARNER_EXIT(2);
+	CODE_TO_MODEL_ENTRY(1),
+	CODE_TO_MODEL_EXIT(2),
+	MODEL_UPDATE_ENTRY(3),
+	MODEL_UPDATE_EXIT(4),
+	PRIVACY_WARNER_ENTRY(5),
+	PRIVACY_WARNER_EXIT(6),
+	COMPUTE_PROBE_CONFIGURATION_ENTRY(7),
+	COMPUTE_PROBE_CONFIGURATION_EXIT(8),
+	WHITE_LIST_FILTER_ENTRY(9),
+	WHITE_LIST_FILTER_EXIT(10),
+	PROBE_MODEL_TO_CODE_ENTRY(11),
+	PROBE_MODEL_TO_CODE_EXIT(12),
+	CONTROL_PROBES_ENTRY(13),
+	CONTROL_PROBES_EXIT(14),
+	CONTROL_PROBES_ERROR(15);
 	
 	private int value;
 		
-	private JSSObservationPoint(final int value) {
+	private ObservationPoint(final int value) {
 		this.value = value;
 	}
 		
@@ -36,11 +49,11 @@ public enum JSSObservationPoint {
 		return this.value;
 	}
 	
-	public static JSSObservationPoint getEnum(final int value) {
-		for (final JSSObservationPoint type : JSSObservationPoint.values()) {
+	public static ObservationPoint getEnum(final int value) {
+		for (final ObservationPoint type : ObservationPoint.values()) {
 			if (type.getValue() == value)
 				return type;
 		}
-		throw new RuntimeException("Illegal value for JSSObservationPoint enumeration.");
+		throw new RuntimeException("Illegal value for ObservationPoint enumeration.");
 	}
 }

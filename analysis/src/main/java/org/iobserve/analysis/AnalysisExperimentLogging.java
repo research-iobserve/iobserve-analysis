@@ -19,6 +19,7 @@ import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.stages.data.ExperimentLogging;
 
 /**
@@ -27,11 +28,11 @@ import org.iobserve.stages.data.ExperimentLogging;
  */
 public class AnalysisExperimentLogging {
 
-    public static void measure(final IPCMDeploymentEvent event, final String label) {
+    public static void measure(final IPCMDeploymentEvent event, final ObservationPoint point) {
         if (event instanceof PCMDeployedEvent) {
-            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, label);
+            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
         } else if (event instanceof PCMUndeployedEvent) {
-            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, label);
+            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
         }
     }
 

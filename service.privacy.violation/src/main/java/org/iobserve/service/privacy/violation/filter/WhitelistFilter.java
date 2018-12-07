@@ -25,12 +25,13 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.neo4j.DBException;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -64,10 +65,11 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
      */
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        AnalysisExperimentLogging.logEvent(0, EventTypes.NONE, "white-list-filter");
+        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_ENTRY);
         final List<String> whitelist = this.computeWhitelist(element.getWarnedMethods());
         element.setWhitelist(whitelist);
         this.outputPort.send(element);
+        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_EXIT);
     }
 
     private List<String> computeWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods)

@@ -171,6 +171,19 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 		
 		return true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTraceId());
+		code += this.getHost().hashCode();
+		code += ((int)this.getPort());
+		code += this.getRequestURI().hashCode();
+		
+		return code;
+	}
 	
 	public final long getTraceId() {
 		return this.traceId;

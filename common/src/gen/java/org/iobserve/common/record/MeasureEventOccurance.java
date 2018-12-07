@@ -35,32 +35,30 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 	public static final int SIZE = TYPE_SIZE_LONG // MeasureEventOccurance.timestamp
 			 + TYPE_SIZE_LONG // MeasureEventOccurance.id
 			 + TYPE_SIZE_INT // MeasureEventOccurance.type
-			 + TYPE_SIZE_STRING; // MeasureEventOccurance.label
+			 + TYPE_SIZE_INT; // MeasureEventOccurance.point
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // MeasureEventOccurance.timestamp
 		long.class, // MeasureEventOccurance.id
 		EventTypes.class, // MeasureEventOccurance.type
-		String.class, // MeasureEventOccurance.label
+		ObservationPoint.class, // MeasureEventOccurance.point
 	};
 	
-	/** default constants. */
-	public static final String LABEL = "";
-	private static final long serialVersionUID = -1882324022611495306L;
+	private static final long serialVersionUID = 2782001322842515724L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
 		"id",
 		"type",
-		"label",
+		"point",
 	};
 	
 	/** property declarations. */
 	private final long timestamp;
 	private final long id;
 	private final EventTypes type;
-	private final String label;
+	private final ObservationPoint point;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -71,14 +69,14 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 	 *            id
 	 * @param type
 	 *            type
-	 * @param label
-	 *            label
+	 * @param point
+	 *            point
 	 */
-	public MeasureEventOccurance(final long timestamp, final long id, final EventTypes type, final String label) {
+	public MeasureEventOccurance(final long timestamp, final long id, final EventTypes type, final ObservationPoint point) {
 		this.timestamp = timestamp;
 		this.id = id;
 		this.type = type;
-		this.label = label == null?"":label;
+		this.point = point;
 	}
 
 
@@ -94,7 +92,7 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		this.timestamp = deserializer.getLong();
 		this.id = deserializer.getLong();
 		this.type = deserializer.getEnumeration(EventTypes.class);
-		this.label = deserializer.getString();
+		this.point = deserializer.getEnumeration(ObservationPoint.class);
 	}
 	
 	/**
@@ -106,7 +104,7 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		serializer.putLong(this.getTimestamp());
 		serializer.putLong(this.getId());
 		serializer.putInt(this.getType().ordinal());
-		serializer.putString(this.getLabel());
+		serializer.putInt(this.getPoint().ordinal());
 	}
 	
 	/**
@@ -162,11 +160,24 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		if (this.getType() != castedRecord.getType()) {
 			return false;
 		}
-		if (!this.getLabel().equals(castedRecord.getLabel())) {
+		if (this.getPoint() != castedRecord.getPoint()) {
 			return false;
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += ((int)this.getId());
+		code += this.getType().hashCode();
+		code += this.getPoint().hashCode();
+		
+		return code;
 	}
 	
 	public final long getTimestamp() {
@@ -184,8 +195,8 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 	}
 	
 	
-	public final String getLabel() {
-		return this.label;
+	public final ObservationPoint getPoint() {
+		return this.point;
 	}
 	
 }

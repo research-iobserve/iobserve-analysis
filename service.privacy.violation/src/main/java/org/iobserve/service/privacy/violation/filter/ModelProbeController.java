@@ -24,9 +24,13 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
+import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
@@ -59,13 +63,15 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             this.logger.error("Received warning with empty edge list");
             return;
         } else {
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
             final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this
                     .computeReceivedWarnings(element.getWarningEdges());
             final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
                     this.currentActiveWarnings);
 
             final ProbeManagementData probeMethodInformation = this.computeWarningDifferences(currentWarnings,
-                    receivedWarnings);
+                    receivedWarnings, element.getEvent());
 
             this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
                     probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
@@ -73,6 +79,8 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             probeMethodInformation.setWarnedMethods(receivedWarnings);
             probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
 
+            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
+                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
             this.outputPort.send(probeMethodInformation);
         }
     }
@@ -111,7 +119,8 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     private ProbeManagementData computeWarningDifferences(
             final Map<AllocationContext, Set<OperationSignature>> currentWarnings,
-            final Map<AllocationContext, Set<OperationSignature>> receivedWarnings) {
+            final Map<AllocationContext, Set<OperationSignature>> receivedWarnings,
+            final IPCMDeploymentEvent ipcmDeploymentEvent) {
         Map<AllocationContext, Set<OperationSignature>> missingWarnings = new HashMap<>();
         Map<AllocationContext, Set<OperationSignature>> addedWarnings = new HashMap<>();
 
@@ -147,7 +156,9 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
         addedWarnings.putAll(newAllocationWarnings);
 
-        return new ProbeManagementData(addedWarnings, missingWarnings);
+        final ProbeManagementData result = new ProbeManagementData(addedWarnings, missingWarnings);
+        result.setTriggerTime(ipcmDeploymentEvent.getTimestamp());
+        return result;
 
     }
 
