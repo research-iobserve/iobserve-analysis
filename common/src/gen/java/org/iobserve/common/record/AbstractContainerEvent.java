@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.iobserve.common.record;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
-import org.iobserve.common.record.IEvent;
+import kieker.common.record.flow.IEventRecord;
 
 /**
  * @author Reiner Jung
@@ -29,15 +29,15 @@ import org.iobserve.common.record.IEvent;
  * 
  * @since 0.0.2
  */
-public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IEvent {			
+public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IEventRecord {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
-	private static final long serialVersionUID = 743898805447896033L;
+	private static final long serialVersionUID = -1238325291800203916L;
 	
 		
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final String service;
 	
 	/**
@@ -113,6 +113,9 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final String getService() {
 		return this.service;

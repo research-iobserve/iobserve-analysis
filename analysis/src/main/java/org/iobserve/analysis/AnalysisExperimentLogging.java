@@ -26,7 +26,11 @@ import org.iobserve.stages.data.ExperimentLogging;
  * @author Reiner Jung
  *
  */
-public class AnalysisExperimentLogging {
+public final class AnalysisExperimentLogging {
+
+    private AnalysisExperimentLogging() {
+
+    }
 
     public static void measure(final IPCMDeploymentEvent event, final ObservationPoint point) {
         if (event instanceof PCMDeployedEvent) {

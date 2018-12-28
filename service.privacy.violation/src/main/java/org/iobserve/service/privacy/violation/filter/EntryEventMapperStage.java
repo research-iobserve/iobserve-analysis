@@ -25,9 +25,9 @@ import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.OperationEntry;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -51,13 +51,13 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
 
     private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
-    private final ModelResource<CorrespondenceModel> correspondenceResource;
+    private final IModelResource<CorrespondenceModel> correspondenceResource;
 
-    private final ModelResource<Allocation> allocationResource;
+    private final IModelResource<Allocation> allocationResource;
 
-    private final ModelResource<System> assemblyResource;
+    private final IModelResource<System> assemblyResource;
 
-    private final ModelResource<Repository> repositoryResource;
+    private final IModelResource<Repository> repositoryResource;
 
     /**
      * Entry event mapper.
@@ -71,9 +71,9 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
      * @param allocationResource
      *            allocation model graph
      */
-    public EntryEventMapperStage(final ModelResource<CorrespondenceModel> correspondenceResource,
-            final ModelResource<Repository> repositoryResource, final ModelResource<System> assemblyResource,
-            final ModelResource<Allocation> allocationResource) {
+    public EntryEventMapperStage(final IModelResource<CorrespondenceModel> correspondenceResource,
+            final IModelResource<Repository> repositoryResource, final IModelResource<System> assemblyResource,
+            final IModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.assemblyResource = assemblyResource;
@@ -84,17 +84,18 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
     protected void execute(final EntryCallEvent event) throws Exception {
         /** retrieve mapping. */
         // TODO correct key names?
-        final List<ComponentEntry> entries = this.correspondenceResource.findObjectsByTypeAndName(ComponentEntry.class,
-                CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId", event.getClassSignature());
+        final List<ComponentEntry> entries = this.correspondenceResource.findObjectsByTypeAndProperty(
+                ComponentEntry.class, CorrespondencePackage.Literals.COMPONENT_ENTRY, "implementationId",
+                event.getClassSignature());
         if (!entries.isEmpty()) {
             final ComponentEntry componentEntry = entries.get(0);
             final OperationEntry operationEntry = this.correspondenceResource
-                    .findObjectsByTypeAndName(OperationEntry.class, CorrespondencePackage.Literals.OPERATION_ENTRY,
+                    .findObjectsByTypeAndProperty(OperationEntry.class, CorrespondencePackage.Literals.OPERATION_ENTRY,
                             "implementationId", event.getOperationSignature())
                     .get(0);
 
             if (operationEntry != null) {
-                final AllocationEntry allocationEntry = this.correspondenceResource.findObjectsByTypeAndName(
+                final AllocationEntry allocationEntry = this.correspondenceResource.findObjectsByTypeAndProperty(
                         AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY, "implementationId",
                         event.getHostname()).get(0);
                 if (allocationEntry != null) {

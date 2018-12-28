@@ -21,38 +21,58 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
+ * This stage controls the flow of event.
+ *
  * @author Reiner Jung
  *
  */
-public class DelayStage extends AbstractConsumerStage<IMonitoringRecord> {
+public class ReplayControlStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     private long last;
     private final long unitAdjustment;
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort(IMonitoringRecord.class);
+    private final Long delayFactor;
+    private final Long showRecordCount;
+    private int count;
 
     /**
      * Create a delay stage.
      *
      * @param unitAdjustment
      *            divisor for time values.
+     * @param delayFactor
+     *            delay factor
+     * @param showRecordCount
+     *            show record count
      */
-    public DelayStage(final long unitAdjustment) {
+    public ReplayControlStage(final long unitAdjustment, final Long delayFactor, final Long showRecordCount) {
         this.unitAdjustment = unitAdjustment;
+        this.delayFactor = delayFactor == null ? 1 : delayFactor;
+        this.showRecordCount = showRecordCount;
     }
 
     @Override
     protected void execute(final IMonitoringRecord event) {
+        if (this.showRecordCount != null) {
+            this.count++;
+            if (this.count % this.showRecordCount == 0) {
+                this.logger.info("Read {} records.", this.count);
+            }
+        }
         if (this.last == 0) {
             this.last = event.getLoggingTimestamp();
-        } else {
-            final long now = event.getLoggingTimestamp();
-            try {
-                Thread.sleep((now - this.last) / this.unitAdjustment);
-                this.last = now;
-                this.outputPort.send(event);
-            } catch (final InterruptedException e) {
-                this.logger.info("DelayStage got interrupted.");
+        }
+        final long now = event.getLoggingTimestamp();
+        try {
+            final long delay = (now - this.last) / this.unitAdjustment / this.delayFactor;
+            if (delay > 0) {
+                Thread.sleep(delay);
             }
+            this.last = now;
+            this.outputPort.send(event);
+        } catch (final InterruptedException e) {
+            this.logger.info("ReplayControlStage got interrupted.");
+            this.workCompleted();
         }
     }
 

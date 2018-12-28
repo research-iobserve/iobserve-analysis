@@ -28,7 +28,7 @@ public class GenericModelFacility<R extends EObject> {
 
     protected final GraphDatabaseService graphDatabaseService;
 
-    protected final ModelResource<R> resource;
+    protected final Neo4JModelResource<R> resource;
 
     /**
      * Create an abstract model facility.
@@ -38,7 +38,7 @@ public class GenericModelFacility<R extends EObject> {
      * @param graphDatabaseService
      *            database for the model
      */
-    public GenericModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
+    public GenericModelFacility(final Neo4JModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
         this.resource = resource;
         this.graphDatabaseService = graphDatabaseService;
     }

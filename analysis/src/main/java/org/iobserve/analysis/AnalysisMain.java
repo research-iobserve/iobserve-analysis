@@ -22,14 +22,13 @@ import com.beust.jcommander.JCommander;
 
 import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractLegacyTool;
 import kieker.tools.common.AbstractService;
 
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -82,7 +81,7 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
                 this.parameterConfiguration.setModelInitDirectory(
                         new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY)));
                 if (this.parameterConfiguration.getModelInitDirectory() == null) {
-                    AbstractLegacyTool.LOGGER.info("Reuse PCM model in database.");
+                    this.logger.info("Reuse PCM model in database.");
                 } else {
                     configurationGood &= CommandLineParameterEvaluation.checkDirectory(
                             this.parameterConfiguration.getModelInitDirectory(), "PCM startup model", commander);
@@ -117,36 +116,38 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
                         this.parameterConfiguration.getModelInitDirectory());
 
                 /** initialize neo4j graphs. */
-                final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
+                final Neo4JModelResource<CorrespondenceModel> correspondenceModelResource = new Neo4JModelResource<>(
                         CorrespondencePackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "correspondence"));
                 correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-                final ModelResource<Repository> repositoryModelResource = new ModelResource<>(
+                final Neo4JModelResource<Repository> repositoryModelResource = new Neo4JModelResource<>(
                         RepositoryPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "repository"));
                 repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-                final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
+                final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new Neo4JModelResource<>(
                         ResourceenvironmentPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "resourceenvironment")); // add
 
                 resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-                final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
+                final Neo4JModelResource<System> systemModelResource = new Neo4JModelResource<>(SystemPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "system"));
                 systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-                final ModelResource<Allocation> allocationModelResource = new ModelResource<>(
+                final Neo4JModelResource<Allocation> allocationModelResource = new Neo4JModelResource<>(
                         AllocationPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "allocation"));
                 allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-                final ModelResource<UsageModel> usageModelResource = new ModelResource<>(UsagemodelPackage.eINSTANCE,
+                final Neo4JModelResource<UsageModel> usageModelResource = new Neo4JModelResource<>(
+                        UsagemodelPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "usageModel"));
                 usageModelResource.storeModelPartition(modelHandler.getUsageModel());
 
-                final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
+                final Neo4JModelResource<PrivacyModel> privacyModelResource = new Neo4JModelResource<>(
+                        PrivacyPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "privacy"));
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 

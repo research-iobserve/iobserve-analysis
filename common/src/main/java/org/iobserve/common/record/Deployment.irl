@@ -17,17 +17,16 @@ package org.iobserve.common.record
 	 
 import kieker.common.record.flow.IEventRecord
 import org.iobserve.common.record.GeoLocation
-import org.iobserve.common.record.IEvent
 	 
 /** 
- * Marker interfaces for deployment and undeployment.	 
+ * Marker interfaces for deployment and undeployment.
  */ 
 @author "Reiner Jung" @since "0.0.2"
 template IDeploymentChange
 @author "Reiner Jung" @since "0.0.2"
-template IDeployedEvent : IDeploymentChange, IEvent
+template IDeployedEvent : IDeploymentChange, IEventRecord
 @author "Reiner Jung" @since "0.0.2"
-template IUndeployedEvent : IDeploymentChange, IEvent
+template IUndeployedEvent : IDeploymentChange, IEventRecord
 	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.

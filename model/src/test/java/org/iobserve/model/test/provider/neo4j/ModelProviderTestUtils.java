@@ -20,7 +20,7 @@ import java.io.File;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
@@ -53,7 +53,7 @@ public final class ModelProviderTestUtils {
      *
      * @return the prepared graph
      */
-    public static <T extends EObject> ModelResource<T> prepareResource(final String name, final String prefix,
+    public static <T extends EObject> Neo4JModelResource<T> prepareResource(final String name, final String prefix,
             final EPackage ePackage) {
         final File graphBaseDir = new File("./testdb/" + prefix + "." + ePackage.eClass().getName() + "." + name);
 
@@ -69,7 +69,7 @@ public final class ModelProviderTestUtils {
      *            A model resource, containing a model
      * @return True if the graph is empty, false otherwise
      */
-    public static boolean isResourceEmpty(final ModelResource<?> resource) {
+    public static boolean isResourceEmpty(final Neo4JModelResource<?> resource) {
         boolean isEmpty = false;
 
         try (Transaction tx = resource.getGraphDatabaseService().beginTx()) {

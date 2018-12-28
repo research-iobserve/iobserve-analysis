@@ -22,7 +22,6 @@ import com.beust.jcommander.JCommander;
 
 import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
-import kieker.tools.common.AbstractLegacyTool;
 import kieker.tools.common.AbstractService;
 
 import org.apache.commons.io.FileUtils;
@@ -32,8 +31,9 @@ import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
+import org.iobserve.model.persistence.memory.MemoryModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -79,22 +79,22 @@ public final class PrivacyViolationDetectionServiceMain
             final ModelImporter modelHandler = new ModelImporter(this.parameterConfiguration.getModelInitDirectory());
 
             /** initialize database. */
-            final ModelResource<CorrespondenceModel> correspondenceModelResource = this
+            final IModelResource<CorrespondenceModel> correspondenceModelResource = this
                     .loadResourceAndInitDB(CorrespondencePackage.eINSTANCE, modelHandler.getCorrespondenceModel());
 
-            final ModelResource<Repository> repositoryModelResource = this
+            final IModelResource<Repository> repositoryModelResource = this
                     .loadResourceAndInitDB(RepositoryPackage.eINSTANCE, modelHandler.getRepositoryModel());
 
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = this.loadResourceAndInitDB(
+            final IModelResource<ResourceEnvironment> resourceEnvironmentModelResource = this.loadResourceAndInitDB(
                     ResourceenvironmentPackage.eINSTANCE, modelHandler.getResourceEnvironmentModel());
 
-            final ModelResource<System> systemModelResource = this.loadResourceAndInitDB(SystemPackage.eINSTANCE,
+            final IModelResource<System> systemModelResource = this.loadResourceAndInitDB(SystemPackage.eINSTANCE,
                     modelHandler.getSystemModel());
 
-            final ModelResource<Allocation> allocationModelResource = this
+            final IModelResource<Allocation> allocationModelResource = this
                     .loadResourceAndInitDB(AllocationPackage.eINSTANCE, modelHandler.getAllocationModel());
 
-            final ModelResource<PrivacyModel> privacyModelResource = this
+            final IModelResource<PrivacyModel> privacyModelResource = this
                     .loadResourceAndInitDB(PrivacyPackage.eINSTANCE, modelHandler.getPrivacyModel());
 
             return new PrivacyViolationDetectionTeetimeConfiguration(this.kiekerConfiguration,
@@ -109,7 +109,7 @@ public final class PrivacyViolationDetectionServiceMain
         }
     }
 
-    private <T extends EObject> ModelResource<T> loadResourceAndInitDB(final EPackage ePackage, final EObject model)
+    private <T extends EObject> IModelResource<T> loadResourceAndInitDB(final EPackage ePackage, final T model)
             throws DBException, IOException {
         final File file = new File(this.parameterConfiguration.getModelDatabaseDirectory(), ePackage.getName());
         if (file.exists()) {
@@ -119,7 +119,8 @@ public final class PrivacyViolationDetectionServiceMain
                 throw new IOException(String.format("%s is not a directory.", file.getAbsolutePath()));
             }
         }
-        final ModelResource<T> resource = new ModelResource<>(ePackage, file);
+        // final IModelResource<T> resource = new Neo4JModelResource<>(ePackage, file);
+        final IModelResource<T> resource = new MemoryModelResource<>(ePackage);
         resource.clearResource();
         resource.storeModelPartition(model);
         return resource;
@@ -153,7 +154,7 @@ public final class PrivacyViolationDetectionServiceMain
             final String modelInitDirectoryName = configuration
                     .getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY);
             if (modelInitDirectoryName == null) {
-                AbstractLegacyTool.LOGGER.info("Reuse PCM model in database.");
+                this.logger.info("Reuse PCM model in database.");
             } else {
                 this.parameterConfiguration.setModelInitDirectory(new File(modelInitDirectoryName));
                 configurationGood &= CommandLineParameterEvaluation.checkDirectory(
@@ -188,7 +189,7 @@ public final class PrivacyViolationDetectionServiceMain
 
             return configurationGood;
         } catch (final IOException e) {
-            AbstractLegacyTool.LOGGER.error("Evaluating command line parameter failed.", e);
+            this.logger.error("Evaluating command line parameter failed.", e);
             return false;
         }
     }

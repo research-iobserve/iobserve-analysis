@@ -23,8 +23,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.ObservationPoint;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -42,7 +42,7 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to system model provider. */
-    private final ModelResource<Allocation> allocationModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -53,7 +53,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * @param allocationModelResource
      *            system model access
      */
-    public UndeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
+    public UndeploymentModelUpdater(final IModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
     }
 
@@ -73,7 +73,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
                 + event.getResourceContainer().getEntityName();
 
-        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndName(
+        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndProperty(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
                 allocationContextName);
 

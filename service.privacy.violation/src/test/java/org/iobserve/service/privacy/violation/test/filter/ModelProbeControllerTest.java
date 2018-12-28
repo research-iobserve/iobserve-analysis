@@ -31,6 +31,7 @@ import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -40,6 +41,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  * @author Marc Adolf
  *
  */
+@Ignore
 public class ModelProbeControllerTest {
     private ModelProbeController modelProbeController;
 

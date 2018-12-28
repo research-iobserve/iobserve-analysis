@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IEvent;
+import kieker.common.record.flow.IEventRecord;
 import org.iobserve.common.record.GeoLocation;
 
 /**
@@ -32,15 +32,15 @@ import org.iobserve.common.record.GeoLocation;
  * 
  * @since 0.0.2
  */
-public class ServerGeoLocation extends AbstractMonitoringRecord implements IEvent, GeoLocation {			
+public class ServerGeoLocation extends AbstractMonitoringRecord implements IEventRecord, GeoLocation {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_INT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
 			 + TYPE_SIZE_STRING; // ServerGeoLocation.address
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		ISOCountryCode.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
@@ -49,7 +49,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -413384511659446310L;
+	private static final long serialVersionUID = -2727780590184532240L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -60,7 +60,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final ISOCountryCode countryCode;
 	private final String hostname;
 	private final String address;
@@ -189,6 +189,9 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;

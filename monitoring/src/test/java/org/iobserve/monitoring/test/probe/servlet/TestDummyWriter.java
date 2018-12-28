@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.monitoring.test.probe.servlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
@@ -26,9 +26,9 @@ import kieker.monitoring.writer.AbstractMonitoringWriter;
  * @author Reiner Jung
  *
  */
-public class TestDumpWriter extends AbstractMonitoringWriter {
+public class TestDummyWriter extends AbstractMonitoringWriter {
 
-    private static final List<IMonitoringRecord> STORAGE = new ArrayList<>();
+    private static final List<IMonitoringRecord> EVENTS = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor.
@@ -36,7 +36,7 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
      * @param configuration
      *            the Kieker configuration which defines monitoring parameters.
      */
-    public TestDumpWriter(final Configuration configuration) {
+    public TestDummyWriter(final Configuration configuration) {
         super(configuration);
     }
 
@@ -60,8 +60,8 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
      */
     @Override
     public void writeMonitoringRecord(final IMonitoringRecord record) {
-        synchronized (TestDumpWriter.STORAGE) {
-            TestDumpWriter.STORAGE.add(record);
+        synchronized (TestDummyWriter.EVENTS) {
+            TestDummyWriter.EVENTS.add(record);
         }
     }
 
@@ -76,8 +76,8 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
 
     }
 
-    public static List<IMonitoringRecord> getRecords() {
-        return TestDumpWriter.STORAGE;
+    public static List<IMonitoringRecord> getEvents() {
+        return TestDummyWriter.EVENTS;
     }
 
 }

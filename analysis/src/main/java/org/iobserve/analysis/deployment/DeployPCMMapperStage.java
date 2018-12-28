@@ -31,9 +31,9 @@ import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.EServiceTechnology;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.system.System;
@@ -46,8 +46,8 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> {
 
-    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
-    private final ModelResource<System> systemModelResource;
+    private final IModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final IModelResource<System> systemModelResource;
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
@@ -59,8 +59,8 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
      * @param systemModelResource
      *            assembly context model provider
      */
-    public DeployPCMMapperStage(final ModelResource<CorrespondenceModel> correspondenceModelResource,
-            final ModelResource<System> systemModelResource) {
+    public DeployPCMMapperStage(final IModelResource<CorrespondenceModel> correspondenceModelResource,
+            final IModelResource<System> systemModelResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.systemModelResource = systemModelResource;
     }
@@ -102,7 +102,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     private void performMapping(final EServiceTechnology technology, final String service, final String context,
             final ISOCountryCode countryCode, final long timestamp) throws InvocationException, DBException {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndProperty(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
         // build the containerAllocationEvent

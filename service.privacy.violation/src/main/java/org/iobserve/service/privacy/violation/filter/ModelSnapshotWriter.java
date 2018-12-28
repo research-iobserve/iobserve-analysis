@@ -33,9 +33,9 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.ModelNeo4JUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -56,12 +56,12 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent> {
 
-    private final ModelResource<CorrespondenceModel> correspondenceResource;
-    private final ModelResource<Repository> repositoryResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<System> assemblyResource;
-    private final ModelResource<Allocation> allocationResource;
-    private final ModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<CorrespondenceModel> correspondenceResource;
+    private final IModelResource<Repository> repositoryResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<System> assemblyResource;
+    private final IModelResource<Allocation> allocationResource;
+    private final IModelResource<PrivacyModel> privacyModelResource;
 
     private final File modelDumpDirectory;
 
@@ -70,11 +70,11 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort(PCMDeployedEvent.class);
 
     public ModelSnapshotWriter(final File modelDumpDirectory,
-            final ModelResource<CorrespondenceModel> correspondenceResource,
-            final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
-            final ModelResource<PrivacyModel> privacyModelResource) {
+            final IModelResource<CorrespondenceModel> correspondenceResource,
+            final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationResource,
+            final IModelResource<PrivacyModel> privacyModelResource) {
         this.modelDumpDirectory = modelDumpDirectory;
         if (!modelDumpDirectory.exists()) {
             modelDumpDirectory.mkdirs();
@@ -129,7 +129,6 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
                 revisionOutputDirectory);
 
         /** Resolve models. */
-        Thread.sleep(1000);
         ModelNeo4JUtil.resolveAll(resourceSet, this.correspondenceResource, this.repositoryResource,
                 this.resourceEnvironmentResource, this.assemblyResource, this.allocationResource,
                 this.privacyModelResource);
@@ -147,11 +146,9 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
     }
 
     private <T extends EObject> Resource loadModel(final ResourceSet resourceSet,
-            final ModelResource<T> resourceHandler, final Class<T> clazz, final EClass eClass, final EPackage ePackage,
+            final IModelResource<T> resourceHandler, final Class<T> clazz, final EClass eClass, final EPackage ePackage,
             final File baseDirectory) throws DBException {
         final T model = resourceHandler.getModelRootNode(clazz, eClass);
-
-        ModelNeo4JUtil.printModel(model);
 
         final URI writeModelURI = URI.createFileURI(
                 String.format("%s%sjpetstore", baseDirectory.toPath().toAbsolutePath().toString(), File.separator));

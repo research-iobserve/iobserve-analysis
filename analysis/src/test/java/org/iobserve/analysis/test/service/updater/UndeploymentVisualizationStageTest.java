@@ -24,8 +24,8 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,9 +67,9 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
+    private Neo4JModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
     @Mock
-    private ModelResource<System> mockedSystemModelGraphProvider;
+    private Neo4JModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private CorrespondenceModel mockedCorrespondenceModel;
 
@@ -131,7 +131,7 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndProperty(ResourceContainer.class,
                 ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
                 UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 

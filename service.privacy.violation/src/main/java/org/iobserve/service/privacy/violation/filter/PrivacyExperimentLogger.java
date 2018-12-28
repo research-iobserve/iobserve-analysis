@@ -24,7 +24,11 @@ import org.iobserve.stages.data.ExperimentLogging;
  * @author Reiner Jung
  *
  */
-public class PrivacyExperimentLogger {
+public final class PrivacyExperimentLogger {
+
+    private PrivacyExperimentLogger() {
+
+    }
 
     public static void measure(final ProbeManagementData element, final ObservationPoint point) {
         ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, point);

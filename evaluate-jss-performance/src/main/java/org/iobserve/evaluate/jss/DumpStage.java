@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record
+package org.iobserve.evaluate.jss;
 
-@author "Reiner Jung" @since "0.0.3"
-template IEvent {
-	long timestamp
+import kieker.common.record.IMonitoringRecord;
+
+import teetime.framework.AbstractConsumerStage;
+
+/**
+ * @author Reiner Jung
+ *
+ */
+public class DumpStage extends AbstractConsumerStage<IMonitoringRecord> {
+
+    @Override
+    protected void execute(final IMonitoringRecord element) throws Exception {
+
+    }
+
 }

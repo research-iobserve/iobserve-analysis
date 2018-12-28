@@ -24,6 +24,8 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 
 /**
  * @author Reiner Jung
@@ -35,8 +37,8 @@ public final class ModelNeo4JUtil {
         // do not instantiate utility class
     }
 
-    public synchronized static void resolveAll(final ResourceSet resourceSet,
-            final ModelResource<?>... modelResources) {
+    public static synchronized void resolveAll(final ResourceSet resourceSet,
+            final IModelResource<?>... modelResources) {
         final EList<Resource> resources = resourceSet.getResources();
 
         for (int i = 0; i < resources.size(); i++) {
@@ -49,7 +51,7 @@ public final class ModelNeo4JUtil {
         }
     }
 
-    private static void resolve(final EObject object, final ModelResource<?>[] modelResources) {
+    private static void resolve(final EObject object, final IModelResource<?>[] modelResources) {
         for (final EReference reference : object.eClass().getEAllReferences()) {
             if (reference.isMany()) {
                 @SuppressWarnings("unchecked")
@@ -64,8 +66,8 @@ public final class ModelNeo4JUtil {
         }
     }
 
-    private static void resolveReference(final ModelResource<?>[] modelResources, final EObject referencedObject) {
-        for (final ModelResource<?> modelResource : modelResources) {
+    private static void resolveReference(final IModelResource<?>[] modelResources, final EObject referencedObject) {
+        for (final IModelResource<?> modelResource : modelResources) {
             if (referencedObject != null) {
                 if (referencedObject.eIsProxy() && modelResource.isTypeManagedByResource(referencedObject)) {
                     try {

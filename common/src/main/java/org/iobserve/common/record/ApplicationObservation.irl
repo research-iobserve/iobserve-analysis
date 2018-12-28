@@ -7,6 +7,7 @@ enum EventTypes {
 }
 
 enum ObservationPoint {
+	EVENT_CREATION_TIME,
 	DISPATCHER_ENTRY,
 	CODE_TO_MODEL_ENTRY,
 	CODE_TO_MODEL_EXIT,
@@ -27,7 +28,7 @@ enum ObservationPoint {
 
 
 entity MeasureEventOccurance {
-	long timestamp
+	changeable long timestamp
 	long id
 	EventTypes type
 	ObservationPoint point

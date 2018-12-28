@@ -16,6 +16,7 @@
 package org.iobserve.model.persistence.neo4j;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.model.persistence.DBException;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -38,7 +39,7 @@ public class DeleteModelFacility<R extends EObject> extends GenericModelFacility
      * @param graphDatabaseService
      *            the database
      */
-    public DeleteModelFacility(final ModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService) {
+    public DeleteModelFacility(final Neo4JModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService) {
         super(modelResource, graphDatabaseService);
     }
 

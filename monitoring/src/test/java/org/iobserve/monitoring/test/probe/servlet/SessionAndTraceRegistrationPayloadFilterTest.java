@@ -44,7 +44,7 @@ import org.junit.Assert;
  */
 public class SessionAndTraceRegistrationPayloadFilterTest { // NOCS no constructor in test
 
-    private static final String WRITER_NAME = TestDumpWriter.class.getCanonicalName();
+    private static final String WRITER_NAME = TestDummyWriter.class.getCanonicalName();
 
     static {
         System.setProperty(ConfigurationKeys.CONTROLLER_NAME, "iObserve-Experiments");
@@ -81,7 +81,7 @@ public class SessionAndTraceRegistrationPayloadFilterTest { // NOCS no construct
                 Thread.sleep(1000);
             }
 
-            final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
+            final List<IMonitoringRecord> storage = TestDummyWriter.getEvents();
 
             Assert.assertTrue("No records received", !storage.isEmpty());
 

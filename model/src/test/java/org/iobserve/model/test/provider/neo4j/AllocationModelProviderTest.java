@@ -18,9 +18,9 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -66,7 +66,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadByType() throws DBException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
@@ -79,32 +79,20 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenReadContaining() throws DBException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.ePackage);
 
-        final AllocationContext writtenContext = this.testModel.getAllocationContexts_Allocation().get(0);
-
-        resource.storeModelPartition(this.testModel);
-
-        final Allocation readModel = (Allocation) resource.findContainingObjectById(AllocationContext.class,
-                AllocationPackage.Literals.ALLOCATION_CONTEXT, ModelGraphFactory.getIdentification(writtenContext));
-
-        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
-
-        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
     public void createThenReadReferencing() throws DBException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         final AssemblyContext context = SystemDataFactory.findAssemblyContext(this.system,
                 SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT);
-        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndProperty(
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                 ModelGraphFactory.getIdentification(context));
 
@@ -122,7 +110,7 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils.prepareResource(
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils.prepareResource(
                 AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.ePackage);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory
@@ -165,12 +153,12 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
      */
     @Test
     public final void createThenReadByName() throws DBException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final List<Allocation> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
+        final List<Allocation> readModels = resource.findObjectsByTypeAndProperty(this.clazz, this.eClass, "entityName",
                 this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {
