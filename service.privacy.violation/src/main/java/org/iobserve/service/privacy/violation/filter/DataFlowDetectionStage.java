@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -30,9 +30,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEvent> {
 
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<Allocation> allocationModelResource;
+    private final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final Neo4JModelResource<System> systemModelResource;
+    private final Neo4JModelResource<Allocation> allocationModelResource;
     private final OutputPort<?> outputPort = this.createOutputPort(Object.class); // TODO define
                                                                                   // better
                                                                                   // data type
@@ -47,8 +47,8 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
      * @param resourceEnvironmentResource
      *            resource environment model provider
      */
-    public DataFlowDetectionStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource) {
+    public DataFlowDetectionStage(final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final Neo4JModelResource<System> systemModelResource, final Neo4JModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;

@@ -26,8 +26,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -46,7 +46,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 public final class AllocationStage extends AbstractConsumerStage<IAllocationEvent> {
 
     /** reference to {@link ResourceEnvironment} provider. */
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /** Relay allocation event. */
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
@@ -60,7 +60,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      * @param resourceEnvironmentResource
      *            the resource environment model
      */
-    public AllocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    public AllocationStage(final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
     }
 

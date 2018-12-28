@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IEvent;
+import kieker.common.record.flow.IEventRecord;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
@@ -32,14 +32,14 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 0.0.2
  */
-public class SessionEndEvent extends AbstractMonitoringRecord implements IEvent, ISessionEvent {			
+public class SessionEndEvent extends AbstractMonitoringRecord implements IEventRecord, ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
 			 + TYPE_SIZE_STRING; // ISessionEvent.sessionId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // ISessionEvent.hostname
 		String.class, // ISessionEvent.sessionId
 	};
@@ -47,7 +47,7 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IEvent,
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
-	private static final long serialVersionUID = -1121939915927202195L;
+	private static final long serialVersionUID = -7471486980805589930L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -57,7 +57,7 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IEvent,
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final String hostname;
 	private final String sessionId;
 	
@@ -176,6 +176,9 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IEvent,
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final String getHostname() {
 		return this.hostname;

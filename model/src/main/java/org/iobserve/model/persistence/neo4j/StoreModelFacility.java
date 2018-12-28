@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.iobserve.model.persistence.DBException;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 
@@ -40,7 +41,7 @@ public final class StoreModelFacility<R extends EObject> extends GenericModelFac
      * @param graphDatabaseService
      *            the database
      */
-    public StoreModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
+    public StoreModelFacility(final Neo4JModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
         super(resource, graphDatabaseService);
     }
 

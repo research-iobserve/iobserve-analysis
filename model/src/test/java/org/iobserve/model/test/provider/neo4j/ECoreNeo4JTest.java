@@ -26,9 +26,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.hamcrest.core.Is;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.test.data.TestModelData;
 import org.iobserve.model.test.storage.one.OnePackage;
 import org.iobserve.model.test.storage.one.Root;
@@ -88,7 +88,7 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreResourceCreate() throws DBException {
-        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
+        final Neo4JModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
                 TwoPackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
@@ -109,12 +109,12 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void testStoreResourceAndRead() throws DBException {
-        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
+        final Neo4JModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
                 this.prefix, OnePackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
 
-        final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, OnePackage.Literals.ROOT, "name",
+        final List<Root> readModel = resource.findObjectsByTypeAndProperty(Root.class, OnePackage.Literals.ROOT, "name",
                 this.modelOne.getName());
 
         Assert.assertTrue(
@@ -130,13 +130,13 @@ public class ECoreNeo4JTest {
      */
     @Test
     public void createThenCloneThenRead() throws DBException {
-        final ModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
+        final Neo4JModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
                 this.prefix, OnePackage.eINSTANCE);
 
         storeResource.storeModelPartition(this.modelOne);
         storeResource.getGraphDatabaseService().shutdown();
 
-        final ModelResource<Root> newVersionResource = ModelProviderUtil
+        final Neo4JModelResource<Root> newVersionResource = ModelProviderUtil
                 .createNewModelResourceVersion(OnePackage.eINSTANCE, storeResource);
 
         final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
@@ -147,9 +147,9 @@ public class ECoreNeo4JTest {
 
     @Test
     public void createWithReferenceThenUpdate() throws Exception {
-        final ModelResource<Root> oneResource = ModelProviderTestUtils
+        final Neo4JModelResource<Root> oneResource = ModelProviderTestUtils
                 .prepareResource("createWithReferenceThenUpdate-one", this.prefix, OnePackage.eINSTANCE);
-        final ModelResource<Two> twoResource = ModelProviderTestUtils
+        final Neo4JModelResource<Two> twoResource = ModelProviderTestUtils
                 .prepareResource("createWithReferenceThenUpdate-two", this.prefix, TwoPackage.eINSTANCE);
 
         oneResource.storeModelPartition(this.modelOne);

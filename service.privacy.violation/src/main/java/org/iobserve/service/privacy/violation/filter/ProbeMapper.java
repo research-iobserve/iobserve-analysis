@@ -31,9 +31,9 @@ import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.DataTypeEntry;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.exceptions.ControlEventCreationFailedException;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
@@ -66,11 +66,11 @@ import org.palladiosimulator.pcm.system.System;
 public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private static final int PORT = 5791;
 
-    private final ModelResource<CorrespondenceModel> correspondenceResource;
-    private final ModelResource<Repository> repositoryResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<System> assemblyResource;
-    private final ModelResource<Allocation> allocationResource;
+    private final IModelResource<CorrespondenceModel> correspondenceResource;
+    private final IModelResource<Repository> repositoryResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<System> assemblyResource;
+    private final IModelResource<Allocation> allocationResource;
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -78,13 +78,20 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
      * Initialize probe mapper from model to code level.
      *
      * @param correspondenceResource
+     *            correspondence model resource
      * @param repositoryResource
+     *            repository model resource
      * @param resourceEnvironmentResource
+     *            resource environment model resource
+     * @param assemblyResource
+     *            assembly model resource
+     * @param allocationResource
+     *            allocation model resource
      */
-    public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
-            final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> assemblyResource, final ModelResource<Allocation> allocationResource) {
+    public ProbeMapper(final IModelResource<CorrespondenceModel> correspondenceResource,
+            final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> assemblyResource, final IModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;

@@ -22,9 +22,9 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
@@ -43,9 +43,9 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
-    private final ModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<PrivacyModel> privacyModelResource;
 
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /**
      * Create a geo location filter.
@@ -55,8 +55,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
      * @param privacyModelResource
      *            privacy model resource
      */
-    public GeoLocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<PrivacyModel> privacyModelResource) {
+    public GeoLocationStage(final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<PrivacyModel> privacyModelResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.privacyModelResource = privacyModelResource;
     }

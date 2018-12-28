@@ -27,7 +27,7 @@ import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.iobserve.model.persistence.neo4j.EMFRelationshipType;
 import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -214,7 +214,7 @@ public final class DebugHelper {
      * @param resource
      *            the graph
      */
-    public static void listAllRelationships(final Class<?> caller, final ModelResource<?> resource) {
+    public static void listAllRelationships(final Class<?> caller, final Neo4JModelResource<?> resource) {
         for (final Relationship r : resource.getGraphDatabaseService().getAllRelationships()) {
             DebugHelper.LOGGER.debug(
                     String.format("%s \t%d -- (%d) --> %d", caller, r.getStartNodeId(), r.getId(), r.getEndNodeId()));

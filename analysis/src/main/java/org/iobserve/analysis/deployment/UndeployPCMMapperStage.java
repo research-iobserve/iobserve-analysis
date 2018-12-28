@@ -28,9 +28,9 @@ import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -46,9 +46,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEvent> {
 
-    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final IModelResource<System> systemModelResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -62,9 +62,9 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
      * @param resourceEnvironmentResource
      *            resource container model resource
      */
-    public UndeployPCMMapperStage(final ModelResource<CorrespondenceModel> correspondenceModelResource,
-            final ModelResource<System> systemModelResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    public UndeployPCMMapperStage(final IModelResource<CorrespondenceModel> correspondenceModelResource,
+            final IModelResource<System> systemModelResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
@@ -103,10 +103,10 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     private void performMapping(final String service, final String context, final long observedTime)
             throws InvocationException, DBException {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndProperty(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
-        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndName(
+        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndProperty(
                 ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
 
         if (assemblyEntry.size() == 1) {

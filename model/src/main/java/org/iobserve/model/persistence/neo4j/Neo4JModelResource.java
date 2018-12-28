@@ -18,7 +18,6 @@ package org.iobserve.model.persistence.neo4j;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,8 @@ import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -52,9 +53,9 @@ import org.slf4j.LoggerFactory;
  * @param <R>
  *            type of the root class
  */
-public class ModelResource<R extends EObject> {
+public class Neo4JModelResource<R extends EObject> implements IModelResource<R> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Neo4JModelResource.class);
 
     private final File graphDirectory;
     private final GraphDatabaseService graphDatabaseService;
@@ -73,7 +74,7 @@ public class ModelResource<R extends EObject> {
      * @param graphDirectory
      *            Directory where the graph database shall be located
      */
-    public ModelResource(final EPackage ePackage, final File graphDirectory) {
+    public Neo4JModelResource(final EPackage ePackage, final File graphDirectory) {
         this.graphDirectory = graphDirectory.getAbsoluteFile();
         if (!this.graphDirectory.exists()) {
             if (!this.graphDirectory.mkdirs()) {
@@ -124,6 +125,7 @@ public class ModelResource<R extends EObject> {
     /**
      * Deletes all nodes and relationships in the graph database.
      */
+    @Override
     public void clearResource() {
         ModelProviderSynchronizer.getLock(this);
 
@@ -143,7 +145,8 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             on db errors
      */
-    public void storeModelPartition(final EObject rootElement) throws DBException {
+    @Override
+    public void storeModelPartition(final R rootElement) throws DBException {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -166,6 +169,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             on db errors
      */
+    @Override
     public <T extends EObject> void updatePartition(final T object) throws NodeLookupException, DBException {
         ModelProviderSynchronizer.getLock(this);
 
@@ -187,6 +191,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             on db errors
      */
+    @Override
     public <T> void deleteObject(final EObject object) throws DBException {
         ModelProviderSynchronizer.getLock(this);
 
@@ -210,7 +215,7 @@ public class ModelResource<R extends EObject> {
      * @param <T>
      *            type definition
      */
-    public <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final EClass eClass, final String id) {
+    private <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final EClass eClass, final String id) {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -241,6 +246,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
+    @Override
     public <T extends EObject> T findAndLockObjectById(final Class<T> clazz, final EClass eClass, final String id)
             throws DBException {
         ModelProviderSynchronizer.getLock(this);
@@ -262,6 +268,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends EObject> T findObjectByTypeAndId(final Class<T> clazz, final EClass eClass, final String id)
             throws DBException {
@@ -301,10 +308,10 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
-    public <T extends EObject> List<T> collectAllObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
+    private <T extends EObject> List<T> collectAllObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
             final String name, final String value) throws DBException {
         ModelProviderSynchronizer.getLock(this);
-        return this.findObjectsByTypeAndName(clazz, eClass, name, value);
+        return this.findObjectsByTypeAndProperty(clazz, eClass, name, value);
     }
 
     /**
@@ -327,8 +334,9 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public <T extends EObject> List<T> findObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
+    public <T extends EObject> List<T> findObjectsByTypeAndProperty(final Class<T> clazz, final EClass eClass,
             final String key, final String value) throws DBException {
         final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
         final List<T> nodes = new LinkedList<>();
@@ -338,10 +346,10 @@ public class ModelResource<R extends EObject> {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
-                ModelResource.LOGGER.debug("Node id {} type {}", node.getId(),
+                Neo4JModelResource.LOGGER.debug("Node id {} type {}", node.getId(),
                         node.getLabels().iterator().next().name());
                 for (final Entry<String, Object> v : node.getAllProperties().entrySet()) {
-                    ModelResource.LOGGER.debug("property {}={}", v.getKey(), v.getValue());
+                    Neo4JModelResource.LOGGER.debug("property {}={}", v.getKey(), v.getValue());
                 }
 
                 final Map<Node, EObject> nodeObjectMap = new HashMap<>();
@@ -356,32 +364,6 @@ public class ModelResource<R extends EObject> {
         }
 
         return nodes;
-    }
-
-    /**
-     * Collect all object ids of objects of the given type.
-     *
-     * @param clazz
-     *            the objects' type
-     * @param eClass
-     *            eClass corresponding to clazz
-     * @return returns a list of internal ids
-     */
-    public List<String> collectAllObjectIdsByType(final Class<?> clazz, final EClass eClass) {
-        try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final ResourceIterator<Node> nodes = this.graphDatabaseService
-                    .findNodes(Label.label(ModelGraphFactory.fqnClassName(eClass)));
-
-            final List<String> ids = new LinkedList<>();
-
-            while (nodes.hasNext()) {
-                final Node n = nodes.next();
-                ids.add((String) n.getProperty(ModelGraphFactory.EMF_INTERNAL_ID));
-            }
-
-            tx.success();
-            return ids;
-        }
     }
 
     /**
@@ -400,6 +382,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when the search for a matching reference to a relationship
      */
+    @Override
     public <T extends EObject> List<T> collectAllObjectsByType(final Class<T> clazz, final EClass eClass)
             throws DBException {
         final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
@@ -415,90 +398,10 @@ public class ModelResource<R extends EObject> {
             }
             tx.success();
         } catch (final NotInTransactionException e) {
-            ModelResource.LOGGER.debug("Access failed", e);
+            Neo4JModelResource.LOGGER.debug("Access failed", e);
         }
 
         return nodes;
-    }
-
-    /**
-     * Reads the containing object of the specified object from the provider's graph.
-     *
-     * @param clazz
-     *            Data type of the contained object
-     * @param eClass
-     *            corresponding eClass to clazz
-     * @param id
-     *            Id of the contained object
-     *
-     * @param <T>
-     *            type of the object
-     *
-     * @return The containing object
-     * @throws DBException
-     *             when a relationship is not backed by a EReference
-     */
-    public <T extends EObject> T findAndLockContainingObjectById(final Class<T> clazz, final EClass eClass,
-            final String id) throws DBException {
-        ModelProviderSynchronizer.getLock(this);
-        return this.findContainingObjectById(clazz, eClass, id);
-    }
-
-    /**
-     * Reads the containing object of the specified object from the provider's graph without locking
-     * it for other providers.
-     *
-     * @param clazz
-     *            Data type of the contained object
-     * @param eClass
-     *            eClass corresponding to clazz
-     * @param id
-     *            Id of the contained object
-     *
-     * @param <T>
-     *            type of the object
-     *
-     * @return The containing object
-     * @throws DBException
-     */
-    public <T extends EObject> T findContainingObjectById(final Class<T> clazz, final EClass eClass, final String id)
-            throws DBException {
-        final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
-
-        T object = null;
-
-        try (Transaction tx = this.graphDatabaseService.beginTx()) {
-            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.EMF_INTERNAL_ID, id);
-            final Iterator<Relationship> inRels = node
-                    .getRelationships(Direction.INCOMING, EMFRelationshipType.CONTAINS).iterator();
-
-            if (inRels.hasNext()) {
-                object = this.queryModelFacility.readContainedNodes(inRels.next().getStartNode());
-            }
-
-            tx.success();
-        }
-
-        return object;
-    }
-
-    /**
-     * Reads components referencing to the specified component from the provider's graph.
-     *
-     * @param clazz
-     *            Data type of the referenced component
-     * @param eClass
-     *            eClass corresponding to clazz
-     * @param id
-     *            Id of the referenced component
-     * @return The referencing components
-     * @throws DBException
-     *             when a relationship is not backed by a EReference
-     */
-    public List<EObject> readReferencingObjectsById(final Class<?> clazz, final EClass eClass, final String id)
-            throws DBException {
-        ModelProviderSynchronizer.getLock(this);
-        return this.collectReferencingObjectsByTypeAndId(clazz, eClass, id);
     }
 
     /**
@@ -509,20 +412,21 @@ public class ModelResource<R extends EObject> {
      *            Data type of the referenced object
      * @param eClass
      *            eClass corresponding to clazz
-     * @param id
+     * @param property
      *            Id of the referenced object
      * @return List of all objects which reference the specified object
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
-    public List<EObject> collectReferencingObjectsByTypeAndId(final Class<?> clazz, final EClass eClass,
-            final String id) throws DBException {
+    @Override
+    public List<EObject> collectReferencingObjectsByTypeAndProperty(final Class<?> clazz, final EClass eClass,
+            final String property) throws DBException {
         final List<EObject> referencingObjects = new LinkedList<>();
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
 
-            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.EMF_INTERNAL_ID, id);
+            final Node node = this.graphDatabaseService.findNode(label, ModelGraphFactory.EMF_INTERNAL_ID, property);
             if (node != null) {
                 for (final Relationship inRel : node.getRelationships(Direction.INCOMING,
                         EMFRelationshipType.REFERENCES)) {
@@ -547,6 +451,7 @@ public class ModelResource<R extends EObject> {
      * @throws DBException
      *             when a relationship is not backed by a EReference
      */
+    @Override
     public R getAndLockModelRootNode(final Class<R> clazz, final EClass eClass) throws DBException {
         ModelProviderSynchronizer.getLock(this);
         return this.getModelRootNode(clazz, eClass);
@@ -563,6 +468,7 @@ public class ModelResource<R extends EObject> {
      * @return The read object
      * @throws DBException
      */
+    @Override
     public R getModelRootNode(final Class<R> clazz, final EClass eClass) throws DBException {
         R object = null;
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
@@ -609,6 +515,7 @@ public class ModelResource<R extends EObject> {
      *            the proxy object
      * @return returns true on success
      */
+    @Override
     public <T extends EObject> boolean isTypeManagedByResource(final T proxyObject) {
         for (final EFactory factory : this.factories) {
             try {
@@ -638,6 +545,7 @@ public class ModelResource<R extends EObject> {
      *
      * @return returns the resolved objects
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends EObject> T resolve(final T proxyObject) throws InvocationException, DBException {
         if (proxyObject == null) {
@@ -672,7 +580,7 @@ public class ModelResource<R extends EObject> {
 
                 tx.success();
             } catch (final TransactionFailureException ex) {
-                ModelResource.LOGGER.error("Cannot create transaction to resolve data.");
+                Neo4JModelResource.LOGGER.error("Cannot create transaction to resolve data.");
             }
             return proxyObject;
         } else {

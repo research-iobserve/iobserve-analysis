@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record
 
-import org.iobserve.common.record.IEvent
-
 @author "Reiner Jung" @since "0.0.3"
 enum ISOCountryCode {
 	AFGHANISTAN = 004,
@@ -284,7 +282,7 @@ template GeoLocation {
  * server. 	 
  */
 @author "Reiner Jung" @since "0.0.2"
-event ServerGeoLocation : IEvent, GeoLocation {
+event ServerGeoLocation : IEventRecord, GeoLocation {
 	string hostname
 	string address
 }

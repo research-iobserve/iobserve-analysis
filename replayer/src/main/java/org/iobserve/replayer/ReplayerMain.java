@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
@@ -36,23 +33,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  */
-public final class ReplayerMain extends AbstractService<ReplayerConfiguration, ReplayerMain> {
+public final class ReplayerMain extends AbstractService<ReplayerTeetimeConfiguration, ReplayerParameter> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplayerMain.class);
 
-    @Parameter(names = { "-i",
-            "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
-    private File dataLocation;
-
-    @Parameter(names = { "-p",
-            "--port" }, required = true, description = "Output port.", converter = IntegerConverter.class)
-    private Integer outputPort;
-
-    @Parameter(names = { "-h",
-            "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
-    private String hostname;
-
-    private ReplayerConfiguration configuration;
+    private ReplayerTeetimeConfiguration configuration;
+    private final ReplayerParameter parameter = new ReplayerParameter();
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -69,12 +55,22 @@ public final class ReplayerMain extends AbstractService<ReplayerConfiguration, R
      */
     public static void main(final String[] args) {
         final ReplayerMain main = new ReplayerMain();
-        System.exit(main.run("Replayer", "replayer", args, main));
+        System.exit(main.run("Replayer", "replayer", args));
     }
 
-    @Override
-    public int run(final String title, final String label, final String[] args, final ReplayerMain main) {
-        final int result = super.run(title, label, args, main);
+    /**
+     * Runner method.
+     *
+     * @param title
+     *            application title
+     * @param label
+     *            logging label
+     * @param args
+     *            command line arguments
+     * @return returns exit code
+     */
+    public int run(final String title, final String label, final String[] args) {
+        final int result = super.run(title, label, args, this.parameter);
         if (this.configuration != null) {
             ReplayerMain.LOGGER.info("Records send {}", this.configuration.getCounter().getCount());
         }
@@ -82,16 +78,16 @@ public final class ReplayerMain extends AbstractService<ReplayerConfiguration, R
     }
 
     @Override
-    protected ReplayerConfiguration createTeetimeConfiguration() throws ConfigurationException {
-        this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
+    protected ReplayerTeetimeConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        this.configuration = new ReplayerTeetimeConfiguration(this.parameter);
         return this.configuration;
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
-            return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory",
-                    commander);
+            return CommandLineParameterEvaluation.checkDirectory(this.parameter.getDataLocation(),
+                    "Output Kieker directory", commander);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
@@ -72,7 +72,7 @@ public final class UserBehaviorTransformationTest {
     // @Test
     public void testBranchWithinLoop() throws IOException, DBException {
 
-        final ModelResource<Repository> repositoryModelProvider = new ModelResource<>(RepositoryPackage.eINSTANCE,
+        final Neo4JModelResource<Repository> repositoryModelProvider = new Neo4JModelResource<>(RepositoryPackage.eINSTANCE,
                 new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.getAndLockModelRootNode(Repository.class,

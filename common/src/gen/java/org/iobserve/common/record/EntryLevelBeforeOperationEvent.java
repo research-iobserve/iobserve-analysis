@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,13 +110,13 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	public EntryLevelBeforeOperationEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		// load array sizes
-		int _parameters_size0 = deserializer.getInt();
+		final int _parameters_size0 = deserializer.getInt();
 		this.parameters = new String[_parameters_size0];
 		for (int i0=0;i0<_parameters_size0;i0++)
 			this.parameters[i0] = deserializer.getString();
 		
 		// load array sizes
-		int _values_size0 = deserializer.getInt();
+		final int _values_size0 = deserializer.getInt();
 		this.values = new String[_values_size0];
 		for (int i0=0;i0<_values_size0;i0++)
 			this.values[i0] = deserializer.getString();

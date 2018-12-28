@@ -28,9 +28,9 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
@@ -59,15 +59,15 @@ import org.palladiosimulator.pcm.system.System;
 public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warnings> {
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
-    private final ModelResource<Allocation> allocationResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<Repository> repositoryResource;
+    private final IModelResource<Allocation> allocationResource;
+    private final IModelResource<System> systemModelResource;
+    private final IModelResource<Repository> repositoryResource;
 
     /**
      * Create an initialize the model probe controller.
      */
-    public NonAdaptiveModelProbeController(final ModelResource<Allocation> allocationResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Repository> repositoryResource) {
+    public NonAdaptiveModelProbeController(final IModelResource<Allocation> allocationResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Repository> repositoryResource) {
         this.allocationResource = allocationResource;
         this.systemModelResource = systemModelResource;
         this.repositoryResource = repositoryResource;

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,23 @@ package org.iobserve.common.record;
  * @since 1.15
  */
 public enum ObservationPoint {
-	DISPATCHER_ENTRY(0),
-	CODE_TO_MODEL_ENTRY(1),
-	CODE_TO_MODEL_EXIT(2),
-	MODEL_UPDATE_ENTRY(3),
-	MODEL_UPDATE_EXIT(4),
-	PRIVACY_WARNER_ENTRY(5),
-	PRIVACY_WARNER_EXIT(6),
-	COMPUTE_PROBE_CONFIGURATION_ENTRY(7),
-	COMPUTE_PROBE_CONFIGURATION_EXIT(8),
-	WHITE_LIST_FILTER_ENTRY(9),
-	WHITE_LIST_FILTER_EXIT(10),
-	PROBE_MODEL_TO_CODE_ENTRY(11),
-	PROBE_MODEL_TO_CODE_EXIT(12),
-	CONTROL_PROBES_ENTRY(13),
-	CONTROL_PROBES_EXIT(14),
-	CONTROL_PROBES_ERROR(15);
+	EVENT_CREATION_TIME(0),
+	DISPATCHER_ENTRY(1),
+	CODE_TO_MODEL_ENTRY(2),
+	CODE_TO_MODEL_EXIT(3),
+	MODEL_UPDATE_ENTRY(4),
+	MODEL_UPDATE_EXIT(5),
+	PRIVACY_WARNER_ENTRY(6),
+	PRIVACY_WARNER_EXIT(7),
+	COMPUTE_PROBE_CONFIGURATION_ENTRY(8),
+	COMPUTE_PROBE_CONFIGURATION_EXIT(9),
+	WHITE_LIST_FILTER_ENTRY(10),
+	WHITE_LIST_FILTER_EXIT(11),
+	PROBE_MODEL_TO_CODE_ENTRY(12),
+	PROBE_MODEL_TO_CODE_EXIT(13),
+	CONTROL_PROBES_ENTRY(14),
+	CONTROL_PROBES_EXIT(15),
+	CONTROL_PROBES_ERROR(16);
 	
 	private int value;
 		

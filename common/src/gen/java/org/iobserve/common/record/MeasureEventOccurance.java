@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
@@ -55,7 +55,7 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final long id;
 	private final EventTypes type;
 	private final ObservationPoint point;
@@ -184,6 +184,9 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final long getId() {
 		return this.id;

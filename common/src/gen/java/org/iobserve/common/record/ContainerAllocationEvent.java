@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@ import org.iobserve.common.record.IAllocationEvent;
  */
 public class ContainerAllocationEvent extends AbstractContainerEvent implements IAllocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING; // AbstractContainerEvent.service
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // AbstractContainerEvent.service
 	};
 	

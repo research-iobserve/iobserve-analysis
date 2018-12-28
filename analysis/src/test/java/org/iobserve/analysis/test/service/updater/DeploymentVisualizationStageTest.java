@@ -26,8 +26,8 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.EServiceTechnology;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,9 +69,9 @@ public class DeploymentVisualizationStageTest { // NOCS test
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
-    private ModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
+    private Neo4JModelResource<ResourceEnvironment> mockedResourceContainerModelProvider;
     @Mock
-    private ModelResource<Allocation> mockedAllocationContextModelProvider;
+    private Neo4JModelResource<Allocation> mockedAllocationContextModelProvider;
     @Mock
     private CorrespondenceModel mockedCorrespondenceModel;
 
@@ -125,7 +125,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
-        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndName(ResourceContainer.class,
+        Mockito.when(this.mockedResourceContainerModelProvider.findObjectsByTypeAndProperty(ResourceContainer.class,
                 ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName",
                 DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
@@ -133,7 +133,7 @@ public class DeploymentVisualizationStageTest { // NOCS test
         // Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
         // .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
 
-        Mockito.when(this.mockedAllocationContextModelProvider.findObjectsByTypeAndName(AssemblyContext.class,
+        Mockito.when(this.mockedAllocationContextModelProvider.findObjectsByTypeAndProperty(AssemblyContext.class,
                 CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 

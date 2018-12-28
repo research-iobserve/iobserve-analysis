@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 
 import kieker.analysis.common.ConfigurationException;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;
@@ -35,11 +34,10 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
-import org.iobserve.service.privacy.violation.filter.ModelSnapshotWriter;
 import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
@@ -93,11 +91,11 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
      *             on configuration errors
      */
     public PrivacyViolationDetectionTeetimeConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelResource<CorrespondenceModel> correspondenceResource,
-            final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
-            final ModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile,
+            final IModelResource<CorrespondenceModel> correspondenceResource,
+            final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationResource,
+            final IModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile,
             final File modelDumpDirectory) throws IOException, ConfigurationException {
 
         /** instantiating filters. */
@@ -106,8 +104,9 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
             final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
                     .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
+            final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
             final IEventMatcher<IDeployedEvent> deployedEventMatcher = new ImplementsEventMatcher<>(
-                    IDeployedEvent.class, null);
+                    IDeployedEvent.class, flowMatcher);
             final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
                     IUndeployedEvent.class, deployedEventMatcher);
 
@@ -116,10 +115,8 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
             final IEventMatcher<IDeallocationEvent> deallocationEventMatcher = new ImplementsEventMatcher<>(
                     IDeallocationEvent.class, allocationEventMatcher);
 
-            final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class,
-                    deallocationEventMatcher);
-
-            final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
+            final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(deallocationEventMatcher, true,
+                    true, false);
 
             /** allocation. */
             final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentResource);
@@ -154,12 +151,14 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
             final ProbeControlFilter probeController = new ProbeControlFilter(new DummyProbeController());
 
             // Model dumper
-            final ModelSnapshotWriter modelDumper = new ModelSnapshotWriter(modelDumpDirectory, correspondenceResource,
-                    repositoryResource, resourceEnvironmentResource, systemModelResource, allocationResource,
-                    privacyModelResource);
+            // final ModelSnapshotWriter modelDumper = new ModelSnapshotWriter(modelDumpDirectory,
+            // correspondenceResource,
+            // repositoryResource, resourceEnvironmentResource, systemModelResource,
+            // allocationResource,
+            // privacyModelResource);
 
             // TODO remove for performance measurements
-            final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(100);
+            // final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(100);
 
             try {
                 final AlarmSink alarmSink = new AlarmSink(alarmFile);
@@ -168,8 +167,9 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
                     final WarnSink warnSink = new WarnSink(warningFile);
 
                     /** connect ports. */
-                    this.connectPorts(sourceCompositeStage.getOutputPort(), eventDelayer.getInputPort());
-                    this.connectPorts(eventDelayer.getOutputPort(), eventDispatcher.getInputPort());
+                    this.connectPorts(sourceCompositeStage.getOutputPort(), // eventDelayer.getInputPort());
+                            // this.connectPorts(eventDelayer.getOutputPort(),
+                            eventDispatcher.getInputPort());
 
                     /** event dispatcher. */
                     this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
@@ -180,8 +180,9 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
 
                     this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
 
-                    this.connectPorts(geoLocationStage.getOutputPort(), modelDumper.getInputPort());
-                    this.connectPorts(modelDumper.getOutputPort(), privacyWarner.getDeployedInputPort());
+                    this.connectPorts(geoLocationStage.getOutputPort(), // modelDumper.getInputPort());
+                            // this.connectPorts(modelDumper.getOutputPort(),
+                            privacyWarner.getDeployedInputPort());
 
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
                             privacyWarner.getUndeployedInputPort());

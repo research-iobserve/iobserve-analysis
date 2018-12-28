@@ -28,9 +28,9 @@ import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.Part;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -52,11 +52,11 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final ModelResource<Allocation> allocationModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
-    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final IModelResource<CorrespondenceModel> correspondenceModelResource;
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -67,8 +67,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * @param allocationModelResource
      *            allocation model provider
      */
-    public DeploymentModelUpdater(final ModelResource<CorrespondenceModel> correspondenceModelResource,
-            final ModelResource<Allocation> allocationModelResource) {
+    public DeploymentModelUpdater(final IModelResource<CorrespondenceModel> correspondenceModelResource,
+            final IModelResource<Allocation> allocationModelResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.allocationModelResource = allocationModelResource;
     }
@@ -94,7 +94,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
                 event.getResourceContainer());
 
-        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndName(
+        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndProperty(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
                 allocationContextName);
         if (allocationContext.isEmpty()) {

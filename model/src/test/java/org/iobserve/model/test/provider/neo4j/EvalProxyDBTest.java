@@ -26,9 +26,9 @@ import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelNeo4JUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.test.data.TestModelData;
 import org.iobserve.model.test.storage.one.Other;
 import org.iobserve.model.test.storage.one.Root;
@@ -86,12 +86,12 @@ public class EvalProxyDBTest {
         resourceTwo.save(null);
 
         // store in DB
-        final ModelResource<Root> dbResourceOne = ModelProviderTestUtils.prepareResource("testStoreGraphCreate1",
+        final Neo4JModelResource<Root> dbResourceOne = ModelProviderTestUtils.prepareResource("testStoreGraphCreate1",
                 this.prefix, TwoPackage.eINSTANCE);
 
         dbResourceOne.storeModelPartition(modelOne);
 
-        final ModelResource<Two> dbResourceTwo = ModelProviderTestUtils.prepareResource("testStoreGraphCreate2",
+        final Neo4JModelResource<Two> dbResourceTwo = ModelProviderTestUtils.prepareResource("testStoreGraphCreate2",
                 this.prefix, TwoPackage.eINSTANCE);
 
         dbResourceTwo.storeModelPartition(modelTwo);

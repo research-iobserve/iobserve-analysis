@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.model.persistence.DBException;
 import org.neo4j.graphdb.Relationship;
 import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
 import org.palladiosimulator.pcm.repository.ComponentType;
@@ -78,7 +79,7 @@ public final class ModelProviderUtil {
      */
     public <V extends EObject> void initializeModelGraph(final EPackage ePackage, final V model, final String nameLabel,
             final String idLabel, final File baseDirectory) throws DBException {
-        final ModelResource<V> resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
+        final Neo4JModelResource<V> resource = ModelProviderUtil.createModelResource(ePackage, baseDirectory);
         resource.clearResource();
         resource.storeModelPartition(model);
         resource.getGraphDatabaseService().shutdown();
@@ -97,7 +98,7 @@ public final class ModelProviderUtil {
      *
      * @return The model graph
      */
-    public static <T extends EObject> ModelResource<T> createModelResource(final EPackage ePackage,
+    public static <T extends EObject> Neo4JModelResource<T> createModelResource(final EPackage ePackage,
             final File baseDirectory) {
         final String graphTypeDirName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File graphTypeDir = new File(baseDirectory, graphTypeDirName);
@@ -110,7 +111,7 @@ public final class ModelProviderUtil {
         final File newGraphDir = ModelProviderUtil.createResourceDatabaseFile(graphTypeDir, graphTypeDirName,
                 maxVersionNumber);
 
-        return new ModelResource<>(ePackage, newGraphDir);
+        return new Neo4JModelResource<>(ePackage, newGraphDir);
     }
 
     /**
@@ -127,8 +128,8 @@ public final class ModelProviderUtil {
      *
      * @return The cloned graph
      */
-    public static <T extends EObject> ModelResource<T> createNewModelResourceVersion(final EPackage ePackage,
-            final ModelResource<T> resource) {
+    public static <T extends EObject> Neo4JModelResource<T> createNewModelResourceVersion(final EPackage ePackage,
+            final Neo4JModelResource<T> resource) {
         final File baseDirectory = resource.getGraphDirectory().getParentFile().getParentFile();
 
         return ModelProviderUtil.cloneNewModelGraphVersion(ePackage, baseDirectory);
@@ -144,7 +145,7 @@ public final class ModelProviderUtil {
      *            graph type
      * @return The the model graph
      */
-    private static <T extends EObject> ModelResource<T> cloneNewModelGraphVersion(final EPackage ePackage,
+    private static <T extends EObject> Neo4JModelResource<T> cloneNewModelGraphVersion(final EPackage ePackage,
             final File baseDirectory) {
         final String resourceRootTypeName = ModelProviderUtil.fullyQualifiedPackageName(ePackage);
         final File resourceBaseDirectory = new File(baseDirectory, resourceRootTypeName);
@@ -167,7 +168,7 @@ public final class ModelProviderUtil {
             throw new InternalError("No such model available for cloning.");
         }
 
-        return new ModelResource<>(ePackage, newGraphDir);
+        return new Neo4JModelResource<>(ePackage, newGraphDir);
     }
 
     /**

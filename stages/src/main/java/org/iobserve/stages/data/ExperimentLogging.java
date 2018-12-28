@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.stages.data;
 
+import kieker.common.record.flow.IEventRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
@@ -22,7 +23,6 @@ import kieker.monitoring.timer.ITimeSource;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IDeploymentChange;
-import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.MeasureEventOccurance;
 import org.iobserve.common.record.ObservationPoint;
@@ -32,17 +32,30 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
  * @author Reiner Jung
  *
  */
-public class ExperimentLogging {
+public final class ExperimentLogging {
 
-    private static IMonitoringController CTRL = MonitoringController.getInstance();
-    private static ITimeSource timeSource = ExperimentLogging.CTRL.getTimeSource();
+    private static final IMonitoringController CTRL = MonitoringController.getInstance();
+    private static final ITimeSource TIME_SOURCE = ExperimentLogging.CTRL.getTimeSource();
+
+    private ExperimentLogging() {
+    }
 
     public static void logEvent(final long id, final EventTypes type, final ObservationPoint point) {
         ExperimentLogging.CTRL.newMonitoringRecord(
-                new MeasureEventOccurance(ExperimentLogging.timeSource.getTime(), id, type, point));
+                new MeasureEventOccurance(ExperimentLogging.TIME_SOURCE.getTime(), id, type, point));
     }
 
-    public static void measure(final IEvent event, final ObservationPoint point) {
+    public static void measure(final IEventRecord event, final ObservationPoint point) {
+        if (event instanceof IDeploymentChange) {
+            if (event instanceof IDeployedEvent) {
+                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
+            } else if (event instanceof IUndeployedEvent) {
+                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
+            }
+        }
+    }
+
+    public static void measureEventTime(final IEventRecord event, final ObservationPoint point) {
         if (event instanceof IDeploymentChange) {
             if (event instanceof IDeployedEvent) {
                 ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);

@@ -21,10 +21,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -35,9 +34,9 @@ import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.ObservationPoint;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
@@ -84,14 +83,11 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    // remove probes later
-    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
-
-    private final ModelResource<Allocation> allocationModelResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<Repository> repositoryResource;
-    private final ModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
+    private final IModelResource<System> systemModelResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<Repository> repositoryResource;
+    private final IModelResource<PrivacyModel> privacyModelResource;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -131,10 +127,10 @@ public class PrivacyWarner extends AbstractStage {
      * @param privacyModelResource
      *            privacy model provider
      */
-    public PrivacyWarner(final Configuration configuration, final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
-            final ModelResource<PrivacyModel> privacyModelResource) {
+    public PrivacyWarner(final Configuration configuration, final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationModelResource,
+            final IModelResource<PrivacyModel> privacyModelResource) {
 
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
@@ -180,12 +176,41 @@ public class PrivacyWarner extends AbstractStage {
             throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
+        this.print(graph);
         final Warnings warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
 
         this.probesOutputPort.send(warnings);
         this.warningsOutputPort.send(warnings);
+    }
+
+    private void print(final PrivacyGraph graph) {
+        java.lang.System.out.println("Graph-Name " + graph.getName());
+        java.lang.System.out.println("Vertices");
+        for (final Entry<String, Vertex> entry : graph.getVertices().entrySet()) {
+            final String entityName;
+            final AllocationContext context = entry.getValue().getAllocationContext();
+            if (context != null) {
+                entityName = context.getEntityName();
+            } else {
+                entityName = "<missing allocation context>";
+            }
+            java.lang.System.out
+                    .println("\t" + entry.getKey() + " = " + entry.getValue().getName() + " : " + entityName);
+        }
+        java.lang.System.out.println("Edges");
+        for (final Edge value : graph.getEdges()) {
+            final String entityName;
+            final OperationSignature context = value.getOperationSignature();
+            if (context != null) {
+                entityName = context.getEntityName();
+            } else {
+                entityName = "<missing operation signature>";
+            }
+            java.lang.System.out.println(
+                    "\t" + entityName + " " + value.getSource().getName() + " -> " + value.getTarget().getName());
+        }
     }
 
     private Warnings checkGraph(final PrivacyGraph graph) throws FileNotFoundException, InstantiationException,

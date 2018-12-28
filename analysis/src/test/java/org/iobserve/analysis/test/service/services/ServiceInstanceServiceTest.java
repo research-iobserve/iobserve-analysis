@@ -24,19 +24,16 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.persistence.neo4j.DBException;
-import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.system.System;
 
 /**
@@ -53,7 +50,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelResource<System> mockedSystemModelGraphProvider;
+    private Neo4JModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 
@@ -97,10 +94,6 @@ public class ServiceInstanceServiceTest { // NOCS test
                 .add("id", "si_test_serviceId").add("systemId", this.systemId).add("serviceId", "_test_serviceId")
                 .add("nodeId", this.nodeId).build();
 
-        // stubbing
-        Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
-                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                ModelGraphFactory.getIdentification(this.testAssemblyContext))).thenReturn(this.noAssemblyConnectors);
     }
 
     /**

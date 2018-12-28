@@ -24,6 +24,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.iobserve.model.persistence.DBException;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -51,7 +52,7 @@ public class QueryModelFacility<R extends EObject> extends GenericModelFacility<
      * @param factories
      *            factories of the metamodel or partition
      */
-    public QueryModelFacility(final ModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService,
+    public QueryModelFacility(final Neo4JModelResource<R> modelResource, final GraphDatabaseService graphDatabaseService,
             final Set<EFactory> factories) {
         super(modelResource, graphDatabaseService);
         this.factories = factories;

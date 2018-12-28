@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ import org.iobserve.common.record.Privacy;
  */
 public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
 			 + TYPE_SIZE_INT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId

@@ -25,6 +25,6 @@ template ISessionEvent {
 }
 
 @author "Reiner Jung" @since "0.0.2"
-event SessionStartEvent : IEvent, ISessionEvent
+event SessionStartEvent : IEventRecord, ISessionEvent
 @author "Reiner Jung" @since "0.0.2"
-event SessionEndEvent : IEvent, ISessionEvent
+event SessionEndEvent : IEventRecord, ISessionEvent

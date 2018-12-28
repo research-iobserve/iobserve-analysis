@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,12 +100,12 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenCloneThenRead() throws DBException {
-        final ModelResource<T> storeResource = ModelProviderTestUtils.prepareResource(
+        final Neo4JModelResource<T> storeResource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLONE_THEN_READ, this.prefix, this.ePackage);
 
         storeResource.storeModelPartition(this.testModel);
 
-        final ModelResource<T> newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
+        final Neo4JModelResource<T> newRevisionResource = ModelProviderUtil.createNewModelResourceVersion(this.ePackage,
                 storeResource);
 
         final T clonedModel = newRevisionResource.getModelRootNode(this.clazz, this.eClass);
@@ -124,7 +124,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenClearResource() throws DBException {
-        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
+        final Neo4JModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_CLEAR_GRAPH, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
@@ -147,7 +147,7 @@ public abstract class AbstractNamedElementModelProviderTest<T extends NamedEleme
      */
     @Test
     public final void createThenReadRoot() throws DBException {
-        final ModelResource<T> resource = ModelProviderTestUtils.prepareResource(
+        final Neo4JModelResource<T> resource = ModelProviderTestUtils.prepareResource(
                 AbstractNamedElementModelProviderTest.CREATE_THEN_READ_ROOT, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);

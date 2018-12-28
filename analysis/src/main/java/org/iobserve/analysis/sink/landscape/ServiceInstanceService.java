@@ -22,9 +22,9 @@ import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
@@ -90,10 +90,10 @@ public class ServiceInstanceService {
      */
 
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,
-            final String nodeId, final ModelResource<System> systemModelGraphProvider) throws DBException {
+            final String nodeId, final Neo4JModelResource<System> systemModelGraphProvider) throws DBException {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
-        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndId(
+        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndProperty(
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
                 ModelGraphFactory.getIdentification(assemblyContext));
         // if so, delete all communicationInstances

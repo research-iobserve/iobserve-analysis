@@ -27,9 +27,9 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -46,13 +46,13 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  */
 public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> {
-    private final ModelResource<Allocation> allocationResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<Allocation> allocationResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort();
 
-    public WhitelistFilter(final ModelResource<Allocation> allocationResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    public WhitelistFilter(final IModelResource<Allocation> allocationResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.allocationResource = allocationResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
 
