@@ -37,8 +37,7 @@ import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
 /**
  * Test of the TEntryEventSequence filter.
  *
- * @author Reiner Jung
- *
+ * @author David Peter, Robert Heinrich
  */
 public final class TEntryEventSequenceTest {
 
@@ -46,7 +45,7 @@ public final class TEntryEventSequenceTest {
     private static final int NUMBER_OF_USER_GROUPS = 1;
     private static final boolean CLOSED_WORKLOAD = true;
     private static final int VARIANCE_OF_USER_GROUPS = 0;
-    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 500;
+    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 1;//500;
     private static final int STEP_SIZE = 1;
 
     private static final String TEST_FOLDER = "D:\\Dokumente\\Uni\\HiWi\\UsageBehaviourTransformationTest\\TEntryEventSequenceTest\\";
@@ -69,35 +68,39 @@ public final class TEntryEventSequenceTest {
     }
     
     public void startTests() throws IOException {
-    	System.out.println("Start BranchWithinBranch test");
-    	testBranchWithinBranch();
+//    	System.out.println("Start SimpleSequence test");
+//    	testSimpleSequence();
+//    	System.out.println("Start SimpleBranch test");
+//    	testSimpleBranch();
+//    	System.out.println("Start SimpleLoop test");
+//    	testSimpleLoop();
+//    	System.out.println("Start OverlappingLoops test");
+//    	testOverlappingIteration();
+//    	System.out.println("Start BranchWithinBranch test");
+//    	testBranchWithinBranch();
+//    	System.out.println("Start LoopWithinBranch test");
+//    	testLoopWithinBranch();
+//    	System.out.println("Start LoopWithinLoop test");
+//    	testLoopWithinLoop();
     	System.out.println("Start BranchWithinLoop test");
     	testBranchWithinLoop();
-    	System.out.println("Start LoopWithinBranch test");
-    	testLoopWithinBranch();
-    	System.out.println("Start LoopWithinLoop test");
-    	testLoopWithinLoop();
-    	System.out.println("Start SimpleBranch test");
-    	testSimpleBranch();
-    	System.out.println("Start SimpleLoop test");
-    	testSimpleLoop();
-    	System.out.println("Start SimpleSequence test");
-    	testSimpleSequence();
     }
     
     public void startRMETest() throws IOException {
-    	System.out.println("Start SimpleSequence RME closedWorkload false test");
+    	System.out.println("Start SimpleSequence RME openWorkload test");
     	testSimpleSequenceRME(false);
-    	System.out.println("Start SimpleSequence RME closedWorkload true test");
+    	
+    	System.out.println("Start SimpleSequence RME closedWorkload test");
     	testSimpleSequenceRME(true);
     }
     
-    public void testBranchWithinBranch() throws IOException {
+    public void testSimpleSequence() throws IOException {
         List<AccuracyResults> results = new ArrayList<>();
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = BranchWithinBranchReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+            ReferenceElements referenceElements = SimpleSequenceReference.getModel(
+                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    THINK_TIME, CLOSED_WORKLOAD);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
@@ -111,116 +114,7 @@ public final class TEntryEventSequenceTest {
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
         }
 
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinBranchAccuracy");
-    }
-    
-    public void testBranchWithinLoop() throws IOException {
-        List<AccuracyResults> results = new ArrayList<>();
-        
-        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = BranchWithinLoopReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
-            
-            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
-                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
-            behaviorModeling.modelUserBehavior();
-
-            AccuracyResults accuracyResults = UserBehaviorEvaluation
-                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
-            results.add(accuracyResults);
-
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
-        }
-
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinLoopAccuracy");
-    }
-    
-    public void testCallSequenceScalability() throws IOException {
-        List<AccuracyResults> results = new ArrayList<>();
-        
-        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = CallSequenceScalabilityReference.getModel(100);
-            
-            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
-                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
-            behaviorModeling.modelUserBehavior();
-
-            AccuracyResults accuracyResults = UserBehaviorEvaluation
-                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
-            results.add(accuracyResults);
-
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
-        }
-
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "CallSequenceScalabilityAccuracy");
-    }
-    
-    public void testLoopWithinBranch() throws IOException {
-        List<AccuracyResults> results = new ArrayList<>();
-        
-        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = LoopWithinBranchReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
-            
-            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
-                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
-            behaviorModeling.modelUserBehavior();
-
-            AccuracyResults accuracyResults = UserBehaviorEvaluation
-                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
-            results.add(accuracyResults);
-
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
-        }
-
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinBranchAccuracy");
-    }
-    
-    public void testLoopWithinLoop() throws IOException {
-        List<AccuracyResults> results = new ArrayList<>();
-        
-        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = LoopWithinLoopReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
-            
-            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
-                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
-            behaviorModeling.modelUserBehavior();
-
-            AccuracyResults accuracyResults = UserBehaviorEvaluation
-                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
-            results.add(accuracyResults);
-
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
-        }
-
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinLoopAccuracy");
-    }
-    
-    public void testOverlappingIteration() throws IOException {
-        List<AccuracyResults> results = new ArrayList<>();
-        
-        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = OverlappingIterationReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
-            
-            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
-                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
-            behaviorModeling.modelUserBehavior();
-
-            AccuracyResults accuracyResults = UserBehaviorEvaluation
-                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
-            results.add(accuracyResults);
-
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
-        }
-
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "OverlappingIterationAccuracy");
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleSequenceAccuracy");
     }
     
     public void testSimpleBranch() throws IOException {
@@ -267,13 +161,12 @@ public final class TEntryEventSequenceTest {
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleLoopAccuracy");
     }
     
-    public void testSimpleSequence() throws IOException {
+    public void testOverlappingIteration() throws IOException {
         List<AccuracyResults> results = new ArrayList<>();
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
-                    THINK_TIME, CLOSED_WORKLOAD);
+            ReferenceElements referenceElements = OverlappingIterationReference.getModel(
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
@@ -287,7 +180,95 @@ public final class TEntryEventSequenceTest {
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
         }
 
-        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleSequenceAccuracy");
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "OverlappingIterationAccuracy");
+    }
+    
+    public void testBranchWithinBranch() throws IOException {
+        List<AccuracyResults> results = new ArrayList<>();
+        
+        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
+            ReferenceElements referenceElements = BranchWithinBranchReference.getModel(
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+            
+            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
+                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+            behaviorModeling.modelUserBehavior();
+
+            AccuracyResults accuracyResults = UserBehaviorEvaluation
+                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
+            results.add(accuracyResults);
+
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+        }
+
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinBranchAccuracy");
+    }
+    
+    public void testLoopWithinBranch() throws IOException {
+        List<AccuracyResults> results = new ArrayList<>();
+        
+        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
+            ReferenceElements referenceElements = LoopWithinBranchReference.getModel(
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+            
+            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
+                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+            behaviorModeling.modelUserBehavior();
+
+            AccuracyResults accuracyResults = UserBehaviorEvaluation
+                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
+            results.add(accuracyResults);
+
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+        }
+
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinBranchAccuracy");
+    }
+    
+    public void testLoopWithinLoop() throws IOException {
+        List<AccuracyResults> results = new ArrayList<>();
+        
+        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
+            ReferenceElements referenceElements = LoopWithinLoopReference.getModel(
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+            
+            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
+                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+            behaviorModeling.modelUserBehavior();
+
+            AccuracyResults accuracyResults = UserBehaviorEvaluation
+                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
+            results.add(accuracyResults);
+
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+        }
+
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinLoopAccuracy");
+    }
+    
+    public void testBranchWithinLoop() throws IOException {
+        List<AccuracyResults> results = new ArrayList<>();
+        
+        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
+            ReferenceElements referenceElements = BranchWithinLoopReference.getModel(
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+            
+            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
+                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+            behaviorModeling.modelUserBehavior();
+
+            AccuracyResults accuracyResults = UserBehaviorEvaluation
+                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
+            results.add(accuracyResults);
+
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+        }
+
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinLoopAccuracy");
     }
     
     public void testSimpleSequenceRME(boolean closedWorkload) throws IOException {
@@ -307,11 +288,34 @@ public final class TEntryEventSequenceTest {
             
             double relativeMeasurementError = WorkloadEvaluation.calculateRME(behaviorModeling.getPcmUsageModel(),
                     referenceElements);
+            
             resultsRME.add(relativeMeasurementError);
 
             
         }
 
         TestHelper.writeRME(resultsRME, TEST_RESULTS_FOLDER + "SimpleSequenceRME_closedWorkload_" + closedWorkload);
+    }
+    
+    // Obviously not Used for accuracy testing
+    public void testCallSequenceScalability() throws IOException {
+        List<AccuracyResults> results = new ArrayList<>();
+        
+        for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
+            ReferenceElements referenceElements = CallSequenceScalabilityReference.getModel(100);
+            
+            UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
+                    referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+            behaviorModeling.modelUserBehavior();
+
+            AccuracyResults accuracyResults = UserBehaviorEvaluation
+                    .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
+            results.add(accuracyResults);
+
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+        }
+
+        TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "CallSequenceScalabilityAccuracy");
     }
 }
