@@ -30,6 +30,7 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
@@ -161,14 +162,14 @@ public class PrivacyWarner extends AbstractStage {
         }
 
         if (undeployedEvent != null) {
-            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
-            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
+            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 
@@ -176,7 +177,7 @@ public class PrivacyWarner extends AbstractStage {
             throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
-        this.print(graph);
+        // debug code this.print(graph);
         final Warnings warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
@@ -270,6 +271,7 @@ public class PrivacyWarner extends AbstractStage {
      * @throws InvocationException
      */
     private void addDeployedComponents(final PrivacyGraph privacyGraph) throws InvocationException, DBException {
+        DeploymentLock.lock();
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
             final AssemblyContext proxyAssemblyContext = allocationContext.getAssemblyContext_AllocationContext();
@@ -304,6 +306,7 @@ public class PrivacyWarner extends AbstractStage {
                 }
             }
         }
+        DeploymentLock.unlock();
     }
 
     private EStereoType computeStereotype(final BasicComponent basicComponent) {

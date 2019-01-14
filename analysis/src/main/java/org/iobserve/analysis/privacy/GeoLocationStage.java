@@ -20,6 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.persistence.DBException;
@@ -63,6 +64,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     @Override
     protected void execute(final PCMDeployedEvent event) throws Exception {
+        DeploymentLock.lock();
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(),
                 event.getResourceContainer().getEntityName(), event.getService(), event.getUrl());
@@ -81,6 +83,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
             this.privacyModelResource.updatePartition(geoLocation);
         }
 
+        DeploymentLock.unlock();
         this.outputPort.send(event);
     }
 
@@ -99,7 +102,6 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
                 PrivacyPackage.Literals.GEO_LOCATION);
 
         for (final GeoLocation geoLocation : geoLocations) {
-            System.err.println("Geolocation " + geoLocation.getIsocode() + " " + geoLocation.getResourceContainer());
             final ResourceContainer existingContainer = this.resourceEnvironmentResource
                     .resolve(geoLocation.getResourceContainer());
             if (existingContainer != null) {

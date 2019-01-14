@@ -67,11 +67,12 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) throws DBException {
-        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+        DeploymentLock.lock();
+        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
-        final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
-                + event.getResourceContainer().getEntityName();
+        final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
+                event.getResourceContainer());
 
         final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndProperty(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
@@ -81,14 +82,17 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
             final AllocationContext allocationContext = allocationContexts.get(0);
             this.allocationModelResource.deleteObject(allocationContext);
             AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+            DeploymentLock.unlock();
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
             AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
                     allocationContextName);
+            DeploymentLock.unlock();
         } else {
             AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
+            DeploymentLock.unlock();
         }
     }
 

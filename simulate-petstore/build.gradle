@@ -1,0 +1,26 @@
+apply plugin: 'application'
+
+mainClassName='org.iobserve.simulate.petstore.SimulatePetStoreMain'
+
+dependencies {
+	clover 'org.openclover:clover:4.2.0'
+
+	compile project(":service")
+}
+
+clover {
+	report {
+		html=true
+	}
+	
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'simulate.petstore'
+    }
+}
+
+

@@ -86,29 +86,36 @@ public class ComputeResults extends AbstractConsumerStage<List<MeasureEventOccur
         final Long probe2ModelExit = this.getFirstEventTime(events, ObservationPoint.PROBE_MODEL_TO_CODE_EXIT);
         this.checkValue(probe2ModelExit, ObservationPoint.PROBE_MODEL_TO_CODE_EXIT);
 
-        Long controlProbeEntry = this.getFirstEventTime(events, ObservationPoint.CONTROL_PROBES_ENTRY);
-        final long lastControlEvent;
-        if (controlProbeEntry != null) {
-            lastControlEvent = this.getLastEvent(events, ObservationPoint.CONTROL_PROBES_EXIT);
+        if (probe2ModelExit != null) {
+
+            Long controlProbeEntry = this.getFirstEventTime(events, ObservationPoint.CONTROL_PROBES_ENTRY);
+            final long lastControlEvent;
+            if (controlProbeEntry != null) {
+                lastControlEvent = this.getLastEvent(events, ObservationPoint.CONTROL_PROBES_EXIT);
+            } else {
+                lastControlEvent = probe2ModelExit;
+                controlProbeEntry = probe2ModelExit;
+                this.logger.info("No entry on probe control. Therefore, configuration time is zero");
+            }
+
+            if (this.timeNormalization == null) {
+                this.timeNormalization = eventTime;
+            }
+
+            /** compute total. */
+            result.put(ComputeResults.TRIGGER_TIME, eventTime - this.timeNormalization);
+            result.put(ComputeResults.TOTAL_REACTION_TIME, lastControlEvent - eventTime);
+            result.put(ComputeResults.TOTAL_PROCESSING_TIME, lastControlEvent - entryTime);
+            result.put(ComputeResults.MODEL_UPDATE, modelUpdateExit - code2ModelEntry);
+            if (privacyWarnerExit != null && privacyWarnerEntry != null) {
+                result.put(ComputeResults.PRIVACY_UPDATE, privacyWarnerExit - privacyWarnerEntry);
+            }
+            result.put(ComputeResults.CONFIGURATION_TIME, lastControlEvent - controlProbeEntry);
+
+            this.outputPort.send(result);
         } else {
-            lastControlEvent = probe2ModelExit;
-            controlProbeEntry = probe2ModelExit;
-            this.logger.info("No entry on probe control. Therefore, configuration time is zero");
+            this.logger.warn("Missing probe configuration model to code mapping.");
         }
-
-        if (this.timeNormalization == null) {
-            this.timeNormalization = eventTime;
-        }
-
-        /** compute total. */
-        result.put(ComputeResults.TRIGGER_TIME, eventTime - this.timeNormalization);
-        result.put(ComputeResults.TOTAL_REACTION_TIME, lastControlEvent - eventTime);
-        result.put(ComputeResults.TOTAL_PROCESSING_TIME, lastControlEvent - entryTime);
-        result.put(ComputeResults.MODEL_UPDATE, modelUpdateExit - code2ModelEntry);
-        result.put(ComputeResults.PRIVACY_UPDATE, privacyWarnerExit - privacyWarnerEntry);
-        result.put(ComputeResults.CONFIGURATION_TIME, lastControlEvent - controlProbeEntry);
-
-        this.outputPort.send(result);
     }
 
     private void checkValue(final Long timestamp, final ObservationPoint point) {

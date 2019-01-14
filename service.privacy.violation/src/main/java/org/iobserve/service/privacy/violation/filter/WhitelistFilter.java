@@ -25,6 +25,7 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
@@ -51,6 +52,14 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort();
 
+    /**
+     * Instantiate whielist filter.
+     *
+     * @param allocationResource
+     *            allocation resource
+     * @param resourceEnvironmentResource
+     *            resource environment
+     */
     public WhitelistFilter(final IModelResource<Allocation> allocationResource,
             final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.allocationResource = allocationResource;
@@ -66,8 +75,10 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
         ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_ENTRY);
+        DeploymentLock.lock();
         final List<String> whitelist = this.computeWhitelist(element.getWarnedMethods());
         element.setWhitelist(whitelist);
+        DeploymentLock.unlock();
         this.outputPort.send(element);
         ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_EXIT);
     }
