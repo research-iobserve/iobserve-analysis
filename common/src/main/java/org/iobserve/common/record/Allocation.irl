@@ -21,7 +21,7 @@ import org.iobserve.common.record.IEvent
  * Marker interfaces for allocation and deallocation.	 
  */
 @author "Reiner Jung" @since "0.0.2"
-template IAllocationEvent 
+template IAllocationEvent
 template IDeallocationEvent
 
 /**	 

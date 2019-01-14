@@ -24,6 +24,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.AssemblyEntry;
@@ -106,9 +107,11 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
         PrivacyExperimentLogger.measure(element, ObservationPoint.PROBE_MODEL_TO_CODE_ENTRY);
+        DeploymentLock.lock();
         this.createMethodsToActivate(element);
         this.createMethodsToDeactivate(element);
         this.createMethodsToUpdate(element);
+        DeploymentLock.unlock();
         PrivacyExperimentLogger.measure(element, ObservationPoint.PROBE_MODEL_TO_CODE_EXIT);
     }
 
@@ -237,7 +240,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     }
 
     /**
-     * Find the corresponding AllocationEntry for an AllocationContext-
+     * Find the corresponding AllocationEntry for an AllocationContext.
      *
      * @param allocation
      *            the allocation context

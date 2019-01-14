@@ -25,6 +25,7 @@ import java.util.Set;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
@@ -65,6 +66,13 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
 
     /**
      * Create an initialize the model probe controller.
+     *
+     * @param allocationResource
+     *            allocation
+     * @param systemModelResource
+     *            system model
+     * @param repositoryResource
+     *            repository
      */
     public NonAdaptiveModelProbeController(final IModelResource<Allocation> allocationResource,
             final IModelResource<System> systemModelResource, final IModelResource<Repository> repositoryResource) {
@@ -83,6 +91,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
                     ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
         }
 
+        DeploymentLock.lock();
         final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this.computeReceivedWarnings(element);
 
         // no probe should be changed
@@ -104,6 +113,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
                     ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
         }
 
+        DeploymentLock.unlock();
         this.outputPort.send(probeMethodInformation);
     }
 

@@ -89,7 +89,9 @@ public class MemoryModelResource<R extends EObject> implements IModelResource<R>
         final EObject container = object.eContainer();
         final EStructuralFeature feature = object.eContainingFeature();
         if (feature.isMany()) {
-            ((EList<EObject>) container.eGet(feature)).remove(object);
+            if (!((EList<EObject>) container.eGet(feature)).remove(object)) {
+                throw new DBException("Object does not exist in database.");
+            }
         } else {
             container.eSet(feature, null);
         }
