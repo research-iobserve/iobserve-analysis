@@ -33,11 +33,6 @@ public final class EJBUndeployedEventFactory implements IRecordFactory<EJBUndepl
 		return new EJBUndeployedEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public EJBUndeployedEvent create(final Object[] values) {
-		return new EJBUndeployedEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return EJBUndeployedEvent.SIZE;

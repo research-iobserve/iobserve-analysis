@@ -33,11 +33,6 @@ public final class ServletDeployedEventFactory implements IRecordFactory<Servlet
 		return new ServletDeployedEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ServletDeployedEvent create(final Object[] values) {
-		return new ServletDeployedEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ServletDeployedEvent.SIZE;

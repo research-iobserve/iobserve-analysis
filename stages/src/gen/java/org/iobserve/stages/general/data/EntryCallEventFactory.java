@@ -33,11 +33,6 @@ public final class EntryCallEventFactory implements IRecordFactory<EntryCallEven
 		return new EntryCallEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public EntryCallEvent create(final Object[] values) {
-		return new EntryCallEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return EntryCallEvent.SIZE;

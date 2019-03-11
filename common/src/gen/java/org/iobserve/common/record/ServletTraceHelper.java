@@ -28,11 +28,11 @@ import kieker.common.record.flow.IFlowRecord;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {			
+public class ServletTraceHelper extends AbstractMonitoringRecord implements ITraceHelper, IFlowRecord {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
 			 + TYPE_SIZE_STRING // ITraceHelper.host
@@ -84,42 +84,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		this.requestURI = requestURI == null?"":requestURI;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public ServletTraceHelper(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.traceId = (Long) values[0];
-		this.host = (String) values[1];
-		this.port = (Integer) values[2];
-		this.requestURI = (String) values[3];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected ServletTraceHelper(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.traceId = (Long) values[0];
-		this.host = (String) values[1];
-		this.port = (Integer) values[2];
-		this.requestURI = (String) values[3];
-	}
 
 	
 	/**
@@ -135,21 +100,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		this.requestURI = deserializer.getString();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getTraceId(),
-			this.getHost(),
-			this.getPort(),
-			this.getRequestURI(),
-		};
-	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -186,16 +136,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -230,6 +170,19 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTraceId());
+		code += this.getHost().hashCode();
+		code += ((int)this.getPort());
+		code += this.getRequestURI().hashCode();
+		
+		return code;
 	}
 	
 	public final long getTraceId() {

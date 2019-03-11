@@ -20,7 +20,7 @@ import kieker.common.record.IMonitoringRecord;
 /**
  * @author Generic Kieker
  * 
- * @since 1.14
+ * @since 1.15
  */
 public interface IDeallocationEvent extends IMonitoringRecord {
 }

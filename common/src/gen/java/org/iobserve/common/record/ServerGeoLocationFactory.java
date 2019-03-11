@@ -33,11 +33,6 @@ public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoL
 		return new ServerGeoLocation(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ServerGeoLocation create(final Object[] values) {
-		return new ServerGeoLocation(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ServerGeoLocation.SIZE;

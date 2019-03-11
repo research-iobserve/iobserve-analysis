@@ -33,11 +33,6 @@ public final class EntryLevelBeforeOperationObjectEventFactory implements IRecor
 		return new EntryLevelBeforeOperationObjectEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public EntryLevelBeforeOperationObjectEvent create(final Object[] values) {
-		return new EntryLevelBeforeOperationObjectEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return EntryLevelBeforeOperationObjectEvent.SIZE;
