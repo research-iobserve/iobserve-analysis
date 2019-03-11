@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="correspondence_new" nsURI="https://www.iobserve-devops.net/model/0.0.3/correspondence"
+    nsPrefix="correspondence_new">
+  <eClassifiers xsi:type="ecore:EClass" name="CorrespondenceModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="correspondences" upperBound="-1"
+        eType="#//Correspondence" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="architecturalModel" lowerBound="1"
+        eType="#//ArchitecturalModel" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="implementationArtifacts"
+        lowerBound="1" eType="#//ImplementationArtifacts" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Correspondence" eSuperTypes="../../../../org.palladiosimulator.pcm/model/pcm.ecore#//core/entity/Entity">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="from" lowerBound="1" eType="#//ArchitecturalModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="to" lowerBound="1" eType="#//ImplementationArtifact"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArchitecturalModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" lowerBound="1"
+        upperBound="-1" eType="#//ArchitecturalModelElement" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArchitecturalModelElement" eSuperTypes="../../../../org.palladiosimulator.pcm/model/pcm.ecore#//core/entity/Entity">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="element" lowerBound="1"
+        eType="ecore:EClass ../../../../org.palladiosimulator.pcm/model/pcm.ecore#//core/entity/Entity"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ImplementationArtifacts">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artifacts" lowerBound="1"
+        upperBound="-1" eType="#//ImplementationArtifact" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ImplementationArtifact" eSuperTypes="../../../../org.palladiosimulator.pcm/model/pcm.ecore#//core/entity/Entity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="artifactId" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+  </eClassifiers>
+</ecore:EPackage>

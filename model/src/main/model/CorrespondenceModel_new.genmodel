@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/model/src/gen/java/" editDirectory="/CorrespondenceModel_new.edit/src"
+    editorDirectory="/CorrespondenceModel_new.editor/src" modelPluginID="correspondencemodel_new"
+    modelName="CorrespondenceModel_new" editPluginClass="org.iobserve.model.correspondence_new.provider.CorrespondenceModel_newEditPlugin"
+    editorPluginClass="org.iobserve.model.correspondence_new.presentation.CorrespondenceModel_newEditorPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="org.iobserve.model.correspondence.tests.CorrespondenceModel_newAllTests"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    providerRootExtendsClass="" editPluginID="CorrespondenceModel_new.edit" editorPluginID="CorrespondenceModel_new.editor"
+    usedGenPackages="../../../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
+    interfaceNamePattern="" importOrganizing="true" oSGiCompatible="true">
+  <foreignModel>CorrespondenceModel_new.ecore</foreignModel>
+  <genPackages prefix="Correspondence_new" basePackage="org.iobserve.model" disposableProviderFactory="true"
+      contentTypeIdentifier="" fileExtensions="rac" ecorePackage="CorrespondenceModel_new.ecore#/">
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//CorrespondenceModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//CorrespondenceModel/correspondences"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//CorrespondenceModel/architecturalModel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//CorrespondenceModel/implementationArtifacts"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//Correspondence">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//Correspondence/from"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//Correspondence/to"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//ArchitecturalModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//ArchitecturalModel/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//ArchitecturalModelElement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//ArchitecturalModelElement/element"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//ImplementationArtifacts">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference CorrespondenceModel_new.ecore#//ImplementationArtifacts/artifacts"/>
+    </genClasses>
+    <genClasses ecoreClass="CorrespondenceModel_new.ecore#//ImplementationArtifact">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute CorrespondenceModel_new.ecore#//ImplementationArtifact/artifactId"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
