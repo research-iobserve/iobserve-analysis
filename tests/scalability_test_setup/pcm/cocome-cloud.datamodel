@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datamodel:DataModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:datamodel="http://palladiosimulator.org/PalladioComponentModel/5.1/bp/DataModel" xmlns:repository="http://palladiosimulator.org/PalladioComponentModel/Repository/5.1">
+  <dataObjects xsi:type="datamodel:CollectionDataObject" id="_OGk9oD6REeaewP-8r44ssQ" entityName="Items" innerDataObjects="_TNcw0T6REeaewP-8r44ssQ">
+    <dataTypes xsi:type="repository:CollectionDataType" href="cocome-cloud.repository#_kA99otYgEeWrM-HnT5f_ug"/>
+  </dataObjects>
+  <dataObjects xsi:type="datamodel:CompositeDataObject" id="_TNcw0T6REeaewP-8r44ssQ" entityName="Item">
+    <dataTypes xsi:type="repository:CompositeDataType" href="cocome-cloud.repository#_j83gwNYgEeWrM-HnT5f_ug"/>
+  </dataObjects>
+  <dataObjects xsi:type="datamodel:CollectionDataObject" id="_cOPOQEHmEeaQx52r8RCbXg" entityName="MoneyCollection" innerDataObjects="_eRVucUHmEeaQx52r8RCbXg"/>
+  <dataObjects xsi:type="datamodel:CompositeDataObject" id="_eRVucUHmEeaQx52r8RCbXg" entityName="Money"/>
+  <dataObjects xsi:type="datamodel:CompositeDataObject" id="_qgO5YUjaEea808Ttd_V1HQ" entityName="CreditCard"/>
+  <dataObjects xsi:type="datamodel:CompositeDataObject" id="_GiHnEUjsEea808Ttd_V1HQ" entityName="Receipt"/>
+</datamodel:DataModel>

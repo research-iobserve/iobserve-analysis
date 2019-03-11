@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ASCII"?>
+<usagemodel:UsageModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:usagemodel="http://palladiosimulator.org/PalladioComponentModel/UsageModel/5.1">
+  <usageScenario_UsageModel id="_WQqmgPoJEeicQY-DsQioQw" entityName="">
+    <scenarioBehaviour_UsageScenario id="_WQzwcPoJEeicQY-DsQioQw">
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WQzwcfoJEeicQY-DsQioQw" entityName="" successor="_WQzwc_oJEeicQY-DsQioQw"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WQzwcvoJEeicQY-DsQioQw" entityName="" predecessor="_WQzwc_oJEeicQY-DsQioQw"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Loop" id="_WQzwc_oJEeicQY-DsQioQw" entityName="" successor="_WQzwcvoJEeicQY-DsQioQw" predecessor="_WQzwcfoJEeicQY-DsQioQw">
+        <loopIteration_Loop specification="3"/>
+        <bodyBehaviour_Loop id="_WQzwdPoJEeicQY-DsQioQw">
+          <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WQzwdfoJEeicQY-DsQioQw" entityName="" successor="_WQzwd_oJEeicQY-DsQioQw"/>
+          <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WQzwdvoJEeicQY-DsQioQw" entityName="" predecessor="_WQ9hdvoJEeicQY-DsQioQw"/>
+          <actions_ScenarioBehaviour xsi:type="usagemodel:Branch" id="_WQzwd_oJEeicQY-DsQioQw" entityName="" successor="_WQ9hdfoJEeicQY-DsQioQw" predecessor="_WQzwdfoJEeicQY-DsQioQw">
+            <branchTransitions_Branch branchProbability="0.5">
+              <branchedBehaviour_BranchTransition id="_WQzwePoJEeicQY-DsQioQw">
+                <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WQzwefoJEeicQY-DsQioQw" entityName="" successor="_WQ9hcPoJEeicQY-DsQioQw"/>
+                <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WQzwevoJEeicQY-DsQioQw" entityName="" predecessor="_WQ9hcPoJEeicQY-DsQioQw"/>
+                <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WQ9hcPoJEeicQY-DsQioQw" entityName="selectPaymentMode" successor="_WQzwevoJEeicQY-DsQioQw" predecessor="_WQzwefoJEeicQY-DsQioQw">
+                  <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                  <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_Lm4LsBEYEeaZraF8j4MsOw"/>
+                </actions_ScenarioBehaviour>
+              </branchedBehaviour_BranchTransition>
+            </branchTransitions_Branch>
+            <branchTransitions_Branch branchProbability="0.5">
+              <branchedBehaviour_BranchTransition id="_WQ9hcfoJEeicQY-DsQioQw">
+                <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WQ9hcvoJEeicQY-DsQioQw" entityName="" successor="_WQ9hdPoJEeicQY-DsQioQw"/>
+                <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WQ9hc_oJEeicQY-DsQioQw" entityName="" predecessor="_WQ9hdPoJEeicQY-DsQioQw"/>
+                <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WQ9hdPoJEeicQY-DsQioQw" entityName="startSale" successor="_WQ9hc_oJEeicQY-DsQioQw" predecessor="_WQ9hcvoJEeicQY-DsQioQw">
+                  <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                  <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_21xUQBEXEeaZraF8j4MsOw"/>
+                </actions_ScenarioBehaviour>
+              </branchedBehaviour_BranchTransition>
+            </branchTransitions_Branch>
+          </actions_ScenarioBehaviour>
+          <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WQ9hdfoJEeicQY-DsQioQw" entityName="sendProductBarcode" successor="_WQ9hdvoJEeicQY-DsQioQw" predecessor="_WQzwd_oJEeicQY-DsQioQw">
+            <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_j15WE9YgEeWrM-HnT5f_ug"/>
+            <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_xkWDANbkEeWn1fcBwCRaXA"/>
+          </actions_ScenarioBehaviour>
+          <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WQ9hdvoJEeicQY-DsQioQw" entityName="finishSale" successor="_WQzwdvoJEeicQY-DsQioQw" predecessor="_WQ9hdfoJEeicQY-DsQioQw">
+            <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+            <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_D95oIBEYEeaZraF8j4MsOw"/>
+          </actions_ScenarioBehaviour>
+        </bodyBehaviour_Loop>
+      </actions_ScenarioBehaviour>
+    </scenarioBehaviour_UsageScenario>
+  </usageScenario_UsageModel>
+</usagemodel:UsageModel>

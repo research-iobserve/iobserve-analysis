@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organizationenvironmentmodel:OrganizationEnvironmentModel xmlns:Identifier_1.0="http://sdq.ipd.uka.de/Identifier/1.0" xmlns:organizationenvironmentmodel="http://palladiosimulator.org/PalladioComponentModel/5.1/bp/OrganizationEnvironmentModel" entityName="cocome-cloud">
+  <roles Identifier_1.0:id="_KKQnID6TEeaewP-8r44ssQ" entityName="Customer"/>
+  <roles Identifier_1.0:id="_Pk4cwD6TEeaewP-8r44ssQ" entityName="Cashier"/>
+  <deviceResources Identifier_1.0:id="_E-h-kj6SEeaewP-8r44ssQ" entityName="BarCodeScanner"/>
+  <deviceResources Identifier_1.0:id="_JT4OMj6SEeaewP-8r44ssQ" entityName="CashDeskPC"/>
+  <deviceResources Identifier_1.0:id="_HgWzYj6YEeaewP-8r44ssQ" entityName="CardReader"/>
+  <deviceResources Identifier_1.0:id="_L-nHYj6YEeaewP-8r44ssQ" entityName="CashBox"/>
+  <deviceResources Identifier_1.0:id="_N3y2kj6YEeaewP-8r44ssQ" entityName="Printer"/>
+  <deviceResources Identifier_1.0:id="_PrFZIj6YEeaewP-8r44ssQ" entityName="LightDisplay"/>
+</organizationenvironmentmodel:OrganizationEnvironmentModel>

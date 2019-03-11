@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ASCII"?>
+<usagemodel:UsageModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:usagemodel="http://palladiosimulator.org/PalladioComponentModel/UsageModel/5.1">
+  <usageScenario_UsageModel id="_WS2X0PoJEeicQY-DsQioQw" entityName="Usage Scneario of user group 0">
+    <scenarioBehaviour_UsageScenario id="_WS5bPfoJEeicQY-DsQioQw">
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS5bPvoJEeicQY-DsQioQw" entityName="" successor="_WS6CNPoJEeicQY-DsQioQw"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS5bP_oJEeicQY-DsQioQw" entityName="" predecessor="_WS6CSPoJEeicQY-DsQioQw"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS6CNPoJEeicQY-DsQioQw" entityName="sendProductBarcode" successor="_WS6CNfoJEeicQY-DsQioQw" predecessor="_WS5bPvoJEeicQY-DsQioQw">
+        <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_j15WE9YgEeWrM-HnT5f_ug"/>
+        <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_xkWDANbkEeWn1fcBwCRaXA"/>
+      </actions_ScenarioBehaviour>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Branch" id="_WS6CNfoJEeicQY-DsQioQw" entityName="" successor="_WS6CSPoJEeicQY-DsQioQw" predecessor="_WS6CNPoJEeicQY-DsQioQw">
+        <branchTransitions_Branch branchProbability="0.5">
+          <branchedBehaviour_BranchTransition id="_WS6CN_oJEeicQY-DsQioQw">
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS6COPoJEeicQY-DsQioQw" entityName="" successor="_WS6CPvoJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS6COfoJEeicQY-DsQioQw" entityName="" predecessor="_WS6CPvoJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS6CPvoJEeicQY-DsQioQw" entityName="selectPaymentMode" successor="_WS6COfoJEeicQY-DsQioQw" predecessor="_WS6COPoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_Lm4LsBEYEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+          </branchedBehaviour_BranchTransition>
+        </branchTransitions_Branch>
+        <branchTransitions_Branch branchProbability="0.5">
+          <branchedBehaviour_BranchTransition id="_WS6CQPoJEeicQY-DsQioQw">
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS6CQfoJEeicQY-DsQioQw" entityName="" successor="_WS6CR_oJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS6CQvoJEeicQY-DsQioQw" entityName="" predecessor="_WS6CR_oJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS6CR_oJEeicQY-DsQioQw" entityName="startSale" successor="_WS6CQvoJEeicQY-DsQioQw" predecessor="_WS6CQfoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_21xUQBEXEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+          </branchedBehaviour_BranchTransition>
+        </branchTransitions_Branch>
+      </actions_ScenarioBehaviour>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Branch" id="_WS6CSPoJEeicQY-DsQioQw" entityName="" successor="_WS5bP_oJEeicQY-DsQioQw" predecessor="_WS6CNfoJEeicQY-DsQioQw">
+        <branchTransitions_Branch branchProbability="0.5">
+          <branchedBehaviour_BranchTransition id="_WS4NAPoJEeicQY-DsQioQw">
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS4NAfoJEeicQY-DsQioQw" entityName="" successor="_WS4NB_oJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS4NAvoJEeicQY-DsQioQw" entityName="" predecessor="_WS5bIPoJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS4NB_oJEeicQY-DsQioQw" entityName="selectPaymentMode" successor="_WS40EPoJEeicQY-DsQioQw" predecessor="_WS4NAfoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_Lm4LsBEYEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Branch" id="_WS40EPoJEeicQY-DsQioQw" entityName="" successor="_WS5bIPoJEeicQY-DsQioQw" predecessor="_WS4NB_oJEeicQY-DsQioQw">
+              <branchTransitions_Branch branchProbability="0.5">
+                <branchedBehaviour_BranchTransition id="_WS40EvoJEeicQY-DsQioQw">
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS40E_oJEeicQY-DsQioQw" entityName="" successor="_WS40GfoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS40FPoJEeicQY-DsQioQw" entityName="" predecessor="_WS40GfoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS40GfoJEeicQY-DsQioQw" entityName="selectPaymentMode" successor="_WS40FPoJEeicQY-DsQioQw" predecessor="_WS40E_oJEeicQY-DsQioQw">
+                    <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                    <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_Lm4LsBEYEeaZraF8j4MsOw"/>
+                  </actions_ScenarioBehaviour>
+                </branchedBehaviour_BranchTransition>
+              </branchTransitions_Branch>
+              <branchTransitions_Branch branchProbability="0.5">
+                <branchedBehaviour_BranchTransition id="_WS40G_oJEeicQY-DsQioQw">
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS40HPoJEeicQY-DsQioQw" entityName="" successor="_WS40IvoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS40HfoJEeicQY-DsQioQw" entityName="" predecessor="_WS40IvoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS40IvoJEeicQY-DsQioQw" entityName="startSale" successor="_WS40HfoJEeicQY-DsQioQw" predecessor="_WS40HPoJEeicQY-DsQioQw">
+                    <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                    <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_21xUQBEXEeaZraF8j4MsOw"/>
+                  </actions_ScenarioBehaviour>
+                </branchedBehaviour_BranchTransition>
+              </branchTransitions_Branch>
+            </actions_ScenarioBehaviour>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS5bIPoJEeicQY-DsQioQw" entityName="finishSale" successor="_WS4NAvoJEeicQY-DsQioQw" predecessor="_WS40EPoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_D95oIBEYEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+          </branchedBehaviour_BranchTransition>
+        </branchTransitions_Branch>
+        <branchTransitions_Branch branchProbability="0.5">
+          <branchedBehaviour_BranchTransition id="_WS5bIfoJEeicQY-DsQioQw">
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS5bIvoJEeicQY-DsQioQw" entityName="" successor="_WS5bKPoJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS5bI_oJEeicQY-DsQioQw" entityName="" predecessor="_WS5bPPoJEeicQY-DsQioQw"/>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS5bKPoJEeicQY-DsQioQw" entityName="startSale" successor="_WS5bKfoJEeicQY-DsQioQw" predecessor="_WS5bIvoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_21xUQBEXEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:Branch" id="_WS5bKfoJEeicQY-DsQioQw" entityName="" successor="_WS5bPPoJEeicQY-DsQioQw" predecessor="_WS5bKPoJEeicQY-DsQioQw">
+              <branchTransitions_Branch branchProbability="0.5">
+                <branchedBehaviour_BranchTransition id="_WS5bK_oJEeicQY-DsQioQw">
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS5bLPoJEeicQY-DsQioQw" entityName="" successor="_WS5bMvoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS5bLfoJEeicQY-DsQioQw" entityName="" predecessor="_WS5bMvoJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS5bMvoJEeicQY-DsQioQw" entityName="selectPaymentMode" successor="_WS5bLfoJEeicQY-DsQioQw" predecessor="_WS5bLPoJEeicQY-DsQioQw">
+                    <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                    <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_Lm4LsBEYEeaZraF8j4MsOw"/>
+                  </actions_ScenarioBehaviour>
+                </branchedBehaviour_BranchTransition>
+              </branchTransitions_Branch>
+              <branchTransitions_Branch branchProbability="0.5">
+                <branchedBehaviour_BranchTransition id="_WS5bNPoJEeicQY-DsQioQw">
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_WS5bNfoJEeicQY-DsQioQw" entityName="" successor="_WS5bO_oJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_WS5bNvoJEeicQY-DsQioQw" entityName="" predecessor="_WS5bO_oJEeicQY-DsQioQw"/>
+                  <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS5bO_oJEeicQY-DsQioQw" entityName="startSale" successor="_WS5bNvoJEeicQY-DsQioQw" predecessor="_WS5bNfoJEeicQY-DsQioQw">
+                    <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+                    <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_21xUQBEXEeaZraF8j4MsOw"/>
+                  </actions_ScenarioBehaviour>
+                </branchedBehaviour_BranchTransition>
+              </branchTransitions_Branch>
+            </actions_ScenarioBehaviour>
+            <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_WS5bPPoJEeicQY-DsQioQw" entityName="finishSale" successor="_WS5bI_oJEeicQY-DsQioQw" predecessor="_WS5bKfoJEeicQY-DsQioQw">
+              <providedRole_EntryLevelSystemCall href="cocome-cloud.repository#_qZnFQewaEeW_LdalkgkVnQ"/>
+              <operationSignature__EntryLevelSystemCall href="cocome-cloud.repository#_D95oIBEYEeaZraF8j4MsOw"/>
+            </actions_ScenarioBehaviour>
+          </branchedBehaviour_BranchTransition>
+        </branchTransitions_Branch>
+      </actions_ScenarioBehaviour>
+    </scenarioBehaviour_UsageScenario>
+    <workload_UsageScenario xsi:type="usagemodel:ClosedWorkload" population="40">
+      <thinkTime_ClosedWorkload specification="1.0"/>
+    </workload_UsageScenario>
+  </usageScenario_UsageModel>
+</usagemodel:UsageModel>

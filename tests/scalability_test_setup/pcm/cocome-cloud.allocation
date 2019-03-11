@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ASCII"?>
+<allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://palladiosimulator.org/PalladioComponentModel/Allocation/5.1" id="_rghxIK2VEeaxN4gXuIkS2A" entityName="defaultAllocation">
+  <targetResourceEnvironment_Allocation href="cocome-cloud.resourceenvironment#/"/>
+  <system_Allocation href="cocome-cloud.system#_hn6AYBkPEeaIeLbO8-hHwA"/>
+  <allocationContexts_Allocation id="_t0hNsP0NEeasPpaLXHksoQ" entityName="org.cocome.tradingsystem.inventory.application.Store_store-1">
+    <resourceContainer_AllocationContext href="file:/D:/Dokumente/Uni/HiWi/iobserve/iobserve/iobserve-analysis/org.iobserve.analysis.cli/../org.iobserve.analysis/res/working_dir/pcm/cocome-cloud.resourceenvironment#_BgmykK2VEeaxN4gXuIkS2A"/>
+    <assemblyContext_AllocationContext href="file:/D:/Dokumente/Uni/HiWi/iobserve/iobserve/iobserve-analysis/org.iobserve.analysis.cli/../org.iobserve.analysis/res/working_dir/pcm/cocome-cloud.system#_DYPVMP0LEeaJSY-2iwQRSA"/>
+  </allocationContexts_Allocation>
+</allocation:Allocation>
