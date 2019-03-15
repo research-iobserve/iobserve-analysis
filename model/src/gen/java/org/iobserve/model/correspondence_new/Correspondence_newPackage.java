@@ -233,14 +233,14 @@ public interface Correspondence_newPackage extends EPackage {
 	int ARCHITECTURAL_MODEL_ELEMENT_FEATURE_COUNT = EntityPackage.ENTITY_FEATURE_COUNT + 1;
 
 	/**
-	 * The meta object id for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactsImpl <em>Implementation Artifacts</em>}' class.
+	 * The meta object id for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactSetImpl <em>Implementation Artifact Set</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.iobserve.model.correspondence_new.impl.ImplementationArtifactsImpl
-	 * @see org.iobserve.model.correspondence_new.impl.Correspondence_newPackageImpl#getImplementationArtifacts()
+	 * @see org.iobserve.model.correspondence_new.impl.ImplementationArtifactSetImpl
+	 * @see org.iobserve.model.correspondence_new.impl.Correspondence_newPackageImpl#getImplementationArtifactSet()
 	 * @generated
 	 */
-	int IMPLEMENTATION_ARTIFACTS = 4;
+	int IMPLEMENTATION_ARTIFACT_SET = 4;
 
 	/**
 	 * The feature id for the '<em><b>Artifacts</b></em>' containment reference list.
@@ -249,16 +249,16 @@ public interface Correspondence_newPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IMPLEMENTATION_ARTIFACTS__ARTIFACTS = 0;
+	int IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS = 0;
 
 	/**
-	 * The number of structural features of the '<em>Implementation Artifacts</em>' class.
+	 * The number of structural features of the '<em>Implementation Artifact Set</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IMPLEMENTATION_ARTIFACTS_FEATURE_COUNT = 1;
+	int IMPLEMENTATION_ARTIFACT_SET_FEATURE_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactImpl <em>Implementation Artifact</em>}' class.
@@ -425,25 +425,25 @@ public interface Correspondence_newPackage extends EPackage {
 	EReference getArchitecturalModelElement_Element();
 
 	/**
-	 * Returns the meta object for class '{@link org.iobserve.model.correspondence_new.ImplementationArtifacts <em>Implementation Artifacts</em>}'.
+	 * Returns the meta object for class '{@link org.iobserve.model.correspondence_new.ImplementationArtifactSet <em>Implementation Artifact Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Implementation Artifacts</em>'.
-	 * @see org.iobserve.model.correspondence_new.ImplementationArtifacts
+	 * @return the meta object for class '<em>Implementation Artifact Set</em>'.
+	 * @see org.iobserve.model.correspondence_new.ImplementationArtifactSet
 	 * @generated
 	 */
-	EClass getImplementationArtifacts();
+	EClass getImplementationArtifactSet();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.iobserve.model.correspondence_new.ImplementationArtifacts#getArtifacts <em>Artifacts</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.iobserve.model.correspondence_new.ImplementationArtifactSet#getArtifacts <em>Artifacts</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Artifacts</em>'.
-	 * @see org.iobserve.model.correspondence_new.ImplementationArtifacts#getArtifacts()
-	 * @see #getImplementationArtifacts()
+	 * @see org.iobserve.model.correspondence_new.ImplementationArtifactSet#getArtifacts()
+	 * @see #getImplementationArtifactSet()
 	 * @generated
 	 */
-	EReference getImplementationArtifacts_Artifacts();
+	EReference getImplementationArtifactSet_Artifacts();
 
 	/**
 	 * Returns the meta object for class '{@link org.iobserve.model.correspondence_new.ImplementationArtifact <em>Implementation Artifact</em>}'.
@@ -585,14 +585,14 @@ public interface Correspondence_newPackage extends EPackage {
 		EReference ARCHITECTURAL_MODEL_ELEMENT__ELEMENT = eINSTANCE.getArchitecturalModelElement_Element();
 
 		/**
-		 * The meta object literal for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactsImpl <em>Implementation Artifacts</em>}' class.
+		 * The meta object literal for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactSetImpl <em>Implementation Artifact Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.iobserve.model.correspondence_new.impl.ImplementationArtifactsImpl
-		 * @see org.iobserve.model.correspondence_new.impl.Correspondence_newPackageImpl#getImplementationArtifacts()
+		 * @see org.iobserve.model.correspondence_new.impl.ImplementationArtifactSetImpl
+		 * @see org.iobserve.model.correspondence_new.impl.Correspondence_newPackageImpl#getImplementationArtifactSet()
 		 * @generated
 		 */
-		EClass IMPLEMENTATION_ARTIFACTS = eINSTANCE.getImplementationArtifacts();
+		EClass IMPLEMENTATION_ARTIFACT_SET = eINSTANCE.getImplementationArtifactSet();
 
 		/**
 		 * The meta object literal for the '<em><b>Artifacts</b></em>' containment reference list feature.
@@ -600,7 +600,7 @@ public interface Correspondence_newPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IMPLEMENTATION_ARTIFACTS__ARTIFACTS = eINSTANCE.getImplementationArtifacts_Artifacts();
+		EReference IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS = eINSTANCE.getImplementationArtifactSet_Artifacts();
 
 		/**
 		 * The meta object literal for the '{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactImpl <em>Implementation Artifact</em>}' class.

@@ -89,8 +89,8 @@ public class Correspondence_newAdapterFactory extends AdapterFactoryImpl {
 				return createArchitecturalModelElementAdapter();
 			}
 			@Override
-			public Adapter caseImplementationArtifacts(ImplementationArtifacts object) {
-				return createImplementationArtifactsAdapter();
+			public Adapter caseImplementationArtifactSet(ImplementationArtifactSet object) {
+				return createImplementationArtifactSetAdapter();
 			}
 			@Override
 			public Adapter caseImplementationArtifact(ImplementationArtifact object) {
@@ -185,16 +185,16 @@ public class Correspondence_newAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.iobserve.model.correspondence_new.ImplementationArtifacts <em>Implementation Artifacts</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.iobserve.model.correspondence_new.ImplementationArtifactSet <em>Implementation Artifact Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.iobserve.model.correspondence_new.ImplementationArtifacts
+	 * @see org.iobserve.model.correspondence_new.ImplementationArtifactSet
 	 * @generated
 	 */
-	public Adapter createImplementationArtifactsAdapter() {
+	public Adapter createImplementationArtifactSetAdapter() {
 		return null;
 	}
 

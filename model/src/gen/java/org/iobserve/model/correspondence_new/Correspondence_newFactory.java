@@ -58,13 +58,13 @@ public interface Correspondence_newFactory extends EFactory {
 	ArchitecturalModelElement createArchitecturalModelElement();
 
 	/**
-	 * Returns a new object of class '<em>Implementation Artifacts</em>'.
+	 * Returns a new object of class '<em>Implementation Artifact Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Implementation Artifacts</em>'.
+	 * @return a new object of class '<em>Implementation Artifact Set</em>'.
 	 * @generated
 	 */
-	ImplementationArtifacts createImplementationArtifacts();
+	ImplementationArtifactSet createImplementationArtifactSet();
 
 	/**
 	 * Returns a new object of class '<em>Implementation Artifact</em>'.

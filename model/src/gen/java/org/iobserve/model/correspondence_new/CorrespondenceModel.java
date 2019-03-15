@@ -36,7 +36,7 @@ public interface CorrespondenceModel extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Correspondences</em>' containment reference list.
 	 * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getCorrespondenceModel_Correspondences()
-	 * @model containment="true"
+	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	EList<Correspondence> getCorrespondences();
@@ -76,12 +76,12 @@ public interface CorrespondenceModel extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Implementation Artifacts</em>' containment reference.
-	 * @see #setImplementationArtifacts(ImplementationArtifacts)
+	 * @see #setImplementationArtifacts(ImplementationArtifactSet)
 	 * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getCorrespondenceModel_ImplementationArtifacts()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
-	ImplementationArtifacts getImplementationArtifacts();
+	ImplementationArtifactSet getImplementationArtifacts();
 
 	/**
 	 * Sets the value of the '{@link org.iobserve.model.correspondence_new.CorrespondenceModel#getImplementationArtifacts <em>Implementation Artifacts</em>}' containment reference.
@@ -91,6 +91,6 @@ public interface CorrespondenceModel extends EObject {
 	 * @see #getImplementationArtifacts()
 	 * @generated
 	 */
-	void setImplementationArtifacts(ImplementationArtifacts value);
+	void setImplementationArtifacts(ImplementationArtifactSet value);
 
 } // CorrespondenceModel

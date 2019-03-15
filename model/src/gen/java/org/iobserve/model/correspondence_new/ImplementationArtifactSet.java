@@ -8,21 +8,21 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Implementation Artifacts</b></em>'.
+ * A representation of the model object '<em><b>Implementation Artifact Set</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.model.correspondence_new.ImplementationArtifacts#getArtifacts <em>Artifacts</em>}</li>
+ *   <li>{@link org.iobserve.model.correspondence_new.ImplementationArtifactSet#getArtifacts <em>Artifacts</em>}</li>
  * </ul>
  *
- * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getImplementationArtifacts()
+ * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getImplementationArtifactSet()
  * @model
  * @generated
  */
-public interface ImplementationArtifacts extends EObject {
+public interface ImplementationArtifactSet extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Artifacts</b></em>' containment reference list.
 	 * The list contents are of type {@link org.iobserve.model.correspondence_new.ImplementationArtifact}.
@@ -33,10 +33,10 @@ public interface ImplementationArtifacts extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Artifacts</em>' containment reference list.
-	 * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getImplementationArtifacts_Artifacts()
+	 * @see org.iobserve.model.correspondence_new.Correspondence_newPackage#getImplementationArtifactSet_Artifacts()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	EList<ImplementationArtifact> getArtifacts();
 
-} // ImplementationArtifacts
+} // ImplementationArtifactSet

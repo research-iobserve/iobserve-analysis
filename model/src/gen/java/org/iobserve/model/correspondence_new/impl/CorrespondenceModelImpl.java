@@ -22,7 +22,7 @@ import org.iobserve.model.correspondence_new.ArchitecturalModel;
 import org.iobserve.model.correspondence_new.Correspondence;
 import org.iobserve.model.correspondence_new.CorrespondenceModel;
 import org.iobserve.model.correspondence_new.Correspondence_newPackage;
-import org.iobserve.model.correspondence_new.ImplementationArtifacts;
+import org.iobserve.model.correspondence_new.ImplementationArtifactSet;
 
 /**
  * <!-- begin-user-doc -->
@@ -68,7 +68,7 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 * @ordered
 	 */
-	protected ImplementationArtifacts implementationArtifacts;
+	protected ImplementationArtifactSet implementationArtifacts;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -149,7 +149,7 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ImplementationArtifacts getImplementationArtifacts() {
+	public ImplementationArtifactSet getImplementationArtifacts() {
 		return implementationArtifacts;
 	}
 
@@ -158,8 +158,8 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetImplementationArtifacts(ImplementationArtifacts newImplementationArtifacts, NotificationChain msgs) {
-		ImplementationArtifacts oldImplementationArtifacts = implementationArtifacts;
+	public NotificationChain basicSetImplementationArtifacts(ImplementationArtifactSet newImplementationArtifacts, NotificationChain msgs) {
+		ImplementationArtifactSet oldImplementationArtifacts = implementationArtifacts;
 		implementationArtifacts = newImplementationArtifacts;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, Correspondence_newPackage.CORRESPONDENCE_MODEL__IMPLEMENTATION_ARTIFACTS, oldImplementationArtifacts, newImplementationArtifacts);
@@ -173,7 +173,7 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setImplementationArtifacts(ImplementationArtifacts newImplementationArtifacts) {
+	public void setImplementationArtifacts(ImplementationArtifactSet newImplementationArtifacts) {
 		if (newImplementationArtifacts != implementationArtifacts) {
 			NotificationChain msgs = null;
 			if (implementationArtifacts != null)
@@ -240,7 +240,7 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 				setArchitecturalModel((ArchitecturalModel)newValue);
 				return;
 			case Correspondence_newPackage.CORRESPONDENCE_MODEL__IMPLEMENTATION_ARTIFACTS:
-				setImplementationArtifacts((ImplementationArtifacts)newValue);
+				setImplementationArtifacts((ImplementationArtifactSet)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -261,7 +261,7 @@ public class CorrespondenceModelImpl extends MinimalEObjectImpl.Container implem
 				setArchitecturalModel((ArchitecturalModel)null);
 				return;
 			case Correspondence_newPackage.CORRESPONDENCE_MODEL__IMPLEMENTATION_ARTIFACTS:
-				setImplementationArtifacts((ImplementationArtifacts)null);
+				setImplementationArtifacts((ImplementationArtifactSet)null);
 				return;
 		}
 		super.eUnset(featureID);

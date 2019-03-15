@@ -18,22 +18,22 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.iobserve.model.correspondence_new.Correspondence_newPackage;
 import org.iobserve.model.correspondence_new.ImplementationArtifact;
-import org.iobserve.model.correspondence_new.ImplementationArtifacts;
+import org.iobserve.model.correspondence_new.ImplementationArtifactSet;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Implementation Artifacts</b></em>'.
+ * An implementation of the model object '<em><b>Implementation Artifact Set</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactsImpl#getArtifacts <em>Artifacts</em>}</li>
+ *   <li>{@link org.iobserve.model.correspondence_new.impl.ImplementationArtifactSetImpl#getArtifacts <em>Artifacts</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container implements ImplementationArtifacts {
+public class ImplementationArtifactSetImpl extends MinimalEObjectImpl.Container implements ImplementationArtifactSet {
 	/**
 	 * The cached value of the '{@link #getArtifacts() <em>Artifacts</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -49,7 +49,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ImplementationArtifactsImpl() {
+	protected ImplementationArtifactSetImpl() {
 		super();
 	}
 
@@ -60,7 +60,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return Correspondence_newPackage.Literals.IMPLEMENTATION_ARTIFACTS;
+		return Correspondence_newPackage.Literals.IMPLEMENTATION_ARTIFACT_SET;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	 */
 	public EList<ImplementationArtifact> getArtifacts() {
 		if (artifacts == null) {
-			artifacts = new EObjectContainmentEList<ImplementationArtifact>(ImplementationArtifact.class, this, Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS);
+			artifacts = new EObjectContainmentEList<ImplementationArtifact>(ImplementationArtifact.class, this, Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS);
 		}
 		return artifacts;
 	}
@@ -83,7 +83,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS:
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS:
 				return ((InternalEList<?>)getArtifacts()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -97,7 +97,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS:
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS:
 				return getArtifacts();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -112,7 +112,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS:
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS:
 				getArtifacts().clear();
 				getArtifacts().addAll((Collection<? extends ImplementationArtifact>)newValue);
 				return;
@@ -128,7 +128,7 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS:
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS:
 				getArtifacts().clear();
 				return;
 		}
@@ -143,10 +143,10 @@ public class ImplementationArtifactsImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS__ARTIFACTS:
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS:
 				return artifacts != null && !artifacts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
-} //ImplementationArtifactsImpl
+} //ImplementationArtifactSetImpl

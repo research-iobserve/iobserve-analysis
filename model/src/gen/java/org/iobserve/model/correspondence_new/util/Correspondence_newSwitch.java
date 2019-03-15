@@ -101,9 +101,9 @@ public class Correspondence_newSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS: {
-				ImplementationArtifacts implementationArtifacts = (ImplementationArtifacts)theEObject;
-				T result = caseImplementationArtifacts(implementationArtifacts);
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET: {
+				ImplementationArtifactSet implementationArtifactSet = (ImplementationArtifactSet)theEObject;
+				T result = caseImplementationArtifactSet(implementationArtifactSet);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -181,17 +181,17 @@ public class Correspondence_newSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Implementation Artifacts</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Implementation Artifact Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Implementation Artifacts</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Implementation Artifact Set</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseImplementationArtifacts(ImplementationArtifacts object) {
+	public T caseImplementationArtifactSet(ImplementationArtifactSet object) {
 		return null;
 	}
 

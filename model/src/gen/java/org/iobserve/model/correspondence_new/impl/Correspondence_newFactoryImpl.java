@@ -60,7 +60,7 @@ public class Correspondence_newFactoryImpl extends EFactoryImpl implements Corre
 			case Correspondence_newPackage.CORRESPONDENCE: return createCorrespondence();
 			case Correspondence_newPackage.ARCHITECTURAL_MODEL: return createArchitecturalModel();
 			case Correspondence_newPackage.ARCHITECTURAL_MODEL_ELEMENT: return createArchitecturalModelElement();
-			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACTS: return createImplementationArtifacts();
+			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT_SET: return createImplementationArtifactSet();
 			case Correspondence_newPackage.IMPLEMENTATION_ARTIFACT: return createImplementationArtifact();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -112,9 +112,9 @@ public class Correspondence_newFactoryImpl extends EFactoryImpl implements Corre
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ImplementationArtifacts createImplementationArtifacts() {
-		ImplementationArtifactsImpl implementationArtifacts = new ImplementationArtifactsImpl();
-		return implementationArtifacts;
+	public ImplementationArtifactSet createImplementationArtifactSet() {
+		ImplementationArtifactSetImpl implementationArtifactSet = new ImplementationArtifactSetImpl();
+		return implementationArtifactSet;
 	}
 
 	/**

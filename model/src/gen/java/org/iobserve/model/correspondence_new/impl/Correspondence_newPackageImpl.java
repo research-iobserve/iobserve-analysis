@@ -24,7 +24,7 @@ import org.iobserve.model.correspondence_new.CorrespondenceModel;
 import org.iobserve.model.correspondence_new.Correspondence_newFactory;
 import org.iobserve.model.correspondence_new.Correspondence_newPackage;
 import org.iobserve.model.correspondence_new.ImplementationArtifact;
-import org.iobserve.model.correspondence_new.ImplementationArtifacts;
+import org.iobserve.model.correspondence_new.ImplementationArtifactSet;
 
 import org.palladiosimulator.pcm.PcmPackage;
 
@@ -70,7 +70,7 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass implementationArtifactsEClass = null;
+	private EClass implementationArtifactSetEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -251,8 +251,8 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getImplementationArtifacts() {
-		return implementationArtifactsEClass;
+	public EClass getImplementationArtifactSet() {
+		return implementationArtifactSetEClass;
 	}
 
 	/**
@@ -260,8 +260,8 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getImplementationArtifacts_Artifacts() {
-		return (EReference)implementationArtifactsEClass.getEStructuralFeatures().get(0);
+	public EReference getImplementationArtifactSet_Artifacts() {
+		return (EReference)implementationArtifactSetEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -325,8 +325,8 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 		architecturalModelElementEClass = createEClass(ARCHITECTURAL_MODEL_ELEMENT);
 		createEReference(architecturalModelElementEClass, ARCHITECTURAL_MODEL_ELEMENT__ELEMENT);
 
-		implementationArtifactsEClass = createEClass(IMPLEMENTATION_ARTIFACTS);
-		createEReference(implementationArtifactsEClass, IMPLEMENTATION_ARTIFACTS__ARTIFACTS);
+		implementationArtifactSetEClass = createEClass(IMPLEMENTATION_ARTIFACT_SET);
+		createEReference(implementationArtifactSetEClass, IMPLEMENTATION_ARTIFACT_SET__ARTIFACTS);
 
 		implementationArtifactEClass = createEClass(IMPLEMENTATION_ARTIFACT);
 		createEAttribute(implementationArtifactEClass, IMPLEMENTATION_ARTIFACT__ARTIFACT_ID);
@@ -369,9 +369,9 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(correspondenceModelEClass, CorrespondenceModel.class, "CorrespondenceModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCorrespondenceModel_Correspondences(), this.getCorrespondence(), null, "correspondences", null, 0, -1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCorrespondenceModel_Correspondences(), this.getCorrespondence(), null, "correspondences", null, 1, -1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getCorrespondenceModel_ArchitecturalModel(), this.getArchitecturalModel(), null, "architecturalModel", null, 1, 1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCorrespondenceModel_ImplementationArtifacts(), this.getImplementationArtifacts(), null, "implementationArtifacts", null, 1, 1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCorrespondenceModel_ImplementationArtifacts(), this.getImplementationArtifactSet(), null, "implementationArtifacts", null, 1, 1, CorrespondenceModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(correspondenceEClass, Correspondence.class, "Correspondence", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getCorrespondence_From(), this.getArchitecturalModelElement(), null, "from", null, 1, 1, Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -383,8 +383,8 @@ public class Correspondence_newPackageImpl extends EPackageImpl implements Corre
 		initEClass(architecturalModelElementEClass, ArchitecturalModelElement.class, "ArchitecturalModelElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getArchitecturalModelElement_Element(), theEntityPackage.getEntity(), null, "element", null, 1, 1, ArchitecturalModelElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(implementationArtifactsEClass, ImplementationArtifacts.class, "ImplementationArtifacts", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getImplementationArtifacts_Artifacts(), this.getImplementationArtifact(), null, "artifacts", null, 1, -1, ImplementationArtifacts.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(implementationArtifactSetEClass, ImplementationArtifactSet.class, "ImplementationArtifactSet", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getImplementationArtifactSet_Artifacts(), this.getImplementationArtifact(), null, "artifacts", null, 1, -1, ImplementationArtifactSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(implementationArtifactEClass, ImplementationArtifact.class, "ImplementationArtifact", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getImplementationArtifact_ArtifactId(), ecorePackage.getEString(), "artifactId", "", 1, 1, ImplementationArtifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
