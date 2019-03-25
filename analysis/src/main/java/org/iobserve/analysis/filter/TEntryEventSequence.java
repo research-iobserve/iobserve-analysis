@@ -54,6 +54,14 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	private final RepositoryModelProvider repositoryModelProvider;
 	
 	private long timestamp = 0;
+	
+	private long modelLoadTime = -1;
+	
+	private long modelSaveTime = 0;
+	
+	private long userBehaviorTransformationTime = 0;
+	
+	private long updateModelTime = 0;
 
 	/**
 	 * Create a entry event sequence filter.
@@ -88,32 +96,80 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	    ExecutionTimeLogger.getInstance().startLogging(model);
 	    
 	    // Calculating the timestamp takes way less time than loading the model in each iteration.
+	    long loadOrTimestampTimeBefore = System.currentTimeMillis();
 	    long timestamp = this.usageModelProvider.getTimestamp();
-	    
 	    if(this.timestamp != timestamp) {
-	        // Resets the current usage model
+	    	// Resets the current usage model
 	        this.usageModelProvider.loadModel();
 	    }
+	    long loadOrTimestampTimeAfter = System.currentTimeMillis();
+        this.modelLoadTime = loadOrTimestampTimeAfter - loadOrTimestampTimeBefore;
 		
 		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
 		
+		long userBehaviorTransformationTimeBefore = System.currentTimeMillis();
 		// Executes the user behavior modeling procedure
 		final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(model,
 				numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
 				this.repositoryModelProvider, this.correspondenceModel);
 		try {
+			
 			behaviorModeling.modelUserBehavior();
+			long userBehaviorTransformationTimeAfter= System.currentTimeMillis();
+			this.userBehaviorTransformationTime = userBehaviorTransformationTimeAfter - userBehaviorTransformationTimeBefore;
+			
+			long updateModelTimeBefore = System.currentTimeMillis();
 			this.usageModelProvider.resetModel();
 			this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
-
+			long updateModelTimeAfter= System.currentTimeMillis();
+			this.updateModelTime = updateModelTimeAfter - updateModelTimeBefore;
+			
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
+		
+		long saveTimeBefore = System.currentTimeMillis();
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
+		long saveTimeAfter = System.currentTimeMillis();
+		this.modelSaveTime = saveTimeAfter - saveTimeBefore;
+		
 		this.timestamp = this.usageModelProvider.getTimestamp();
 		
-		ExecutionTimeLogger.getInstance().stopLogging(model);
+		ExecutionTimeLogger.getInstance().stopLogging(model, this);
+	}
+
+	public long getModelLoadTime() {
+		return modelLoadTime;
+	}
+	
+	public void setModelLoadTime(long modelLoadTime) {
+		this.modelLoadTime = modelLoadTime;
+	}
+
+	public long getModelSaveTime() {
+		return modelSaveTime;
+	}
+	
+	public void setModelSaveTime(long modelSaveTime) {
+		this.modelSaveTime = modelSaveTime;
+	}
+
+	public long getUserBehaviorTransformationTime() {
+		return userBehaviorTransformationTime;
+	}
+
+	public void setUserBehaviorTransformationTime(
+			long userBehaviorTransformationTime) {
+		this.userBehaviorTransformationTime = userBehaviorTransformationTime;
+	}
+
+	public long getUpdateModelTime() {
+		return updateModelTime;
+	}
+
+	public void setUpdateModelTime(long updateModelTime) {
+		this.updateModelTime = updateModelTime;
 	}
 }

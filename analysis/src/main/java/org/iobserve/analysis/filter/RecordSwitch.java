@@ -22,12 +22,12 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.misc.KiekerMetadataRecord;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;
@@ -68,6 +68,11 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     @Override
     protected void execute(final IMonitoringRecord element) {
         this.recordCount++;
+        if(recordCount > 0 && recordCount % 30 == 0) {
+        	System.out.println(recordCount/3);
+        	ExecutionTimeLogger.getInstance().exportAsCsv();
+        }
+
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
         } else if (element instanceof IUndeploymentRecord) {
