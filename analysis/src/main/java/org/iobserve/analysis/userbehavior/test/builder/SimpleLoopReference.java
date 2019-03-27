@@ -20,8 +20,10 @@ import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
@@ -70,7 +72,7 @@ public final class SimpleLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryModelProvider repositoryModelProvider, final CorrespondenceModelProvider correspondenceModelProvider)
             throws IOException {
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -105,22 +107,21 @@ public final class SimpleLoopReference {
         final Stop loopStop = UsageModelBuilder.createAddStopAction("", loop.getBodyBehaviour_Loop());
         lastAction = loopStart;
 
-        Optional<Correspondent> optionCorrespondent;
+        Optional<ArchitecturalModelElement> architecturalElement;
         // Because the number of iterated calls is set randomly, the switch case adds the number of
         // iterated calls to the loop
         for (int i = 0; i < numberOfIteratedCalls; i++) {
             if ((i >= 0) && (i < 5)) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
+            	architecturalElement = correspondenceModelProvider.getCorrespondent(
                         ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
 
             } else {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
+            if (architecturalElement.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                        .createEntryLevelSystemCall(repositoryModelProvider, architecturalElement.get());
                 UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
                 UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

@@ -23,10 +23,10 @@ import java.util.Optional;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -72,7 +72,7 @@ public final class BranchWithinBranchReference {
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
     		final RepositoryModelProvider repositoryModelProvider,
-    		final ICorrespondence correspondenceModel) throws IOException {
+    		final CorrespondenceModelProvider correspondenceModelProvider) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -136,7 +136,7 @@ public final class BranchWithinBranchReference {
                 numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, entryCallSequenceModel);
 
         final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(repositoryModelProvider, 
-        		correspondenceModel, numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, 
+        		correspondenceModelProvider, numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, 
         		numberOfConcurrentUsers, exteriorCallIds, exteriorCallAmounts, interiorCallIds, interiorCallAmounts);
 
         // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
@@ -248,12 +248,12 @@ public final class BranchWithinBranchReference {
      * @return
      */
     private static UsageModel createTheReferenceModel(final RepositoryModelProvider repositoryModelProvider, 
-    		final ICorrespondence correspondenceModel, final int numberOfTransitionsOfExteriorBranch,
+    		final CorrespondenceModelProvider correspondenceModelProvider, final int numberOfTransitionsOfExteriorBranch,
     		final int numberOfTransitionsOfInteriorBranches, final int numberOfConcurrentUsers, 
     		final List<Integer> exteriorCallIds, int[] exteriorCallAmounts,
     		final List<List<Integer>> interiorCallIds, List<int[]> interiorCallAmounts) {
         // In the following the reference usage model is created
-    	Optional<Correspondent> optionCorrespondent;
+    	Optional<ArchitecturalModelElement> architecturalModelElement;
         final UsageModel referenceModel = UsageModelBuilder.createUsageModel();
         final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", referenceModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
@@ -273,19 +273,20 @@ public final class BranchWithinBranchReference {
             UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
             final Stop stopBranchTransition = UsageModelBuilder.createStop("");
             UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
-            optionCorrespondent = correspondenceModel.getCorrespondent(
-                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[exteriorCallIds.get(i)],
-                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[exteriorCallIds.get(i)]);
+			
+            architecturalModelElement = correspondenceModelProvider.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
             final org.palladiosimulator.pcm.usagemodel.Branch internalBranch = UsageModelBuilder.createBranch("", branchTransitionBehaviour);
-            if (optionCorrespondent.isPresent()) {
+            if (architecturalModelElement.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                        .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
+                        .createEntryLevelSystemCall(repositoryModelProvider, architecturalModelElement.get());
                 UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelBuilder.connect(startBranchTransition, entryLevelSystemCall);
                 UsageModelBuilder.connect(entryLevelSystemCall, internalBranch);
                 UsageModelBuilder.connect(internalBranch, stopBranchTransition);
             }
-            
+
             for(int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
             	final BranchTransition internalBranchTransition = UsageModelBuilder.createBranchTransition(internalBranch);
                 final ScenarioBehaviour internalBranchTransitionBehaviour = internalBranchTransition.getBranchedBehaviour_BranchTransition();
@@ -294,12 +295,12 @@ public final class BranchWithinBranchReference {
                 UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, startInternalBranchTransition);
                 final Stop stopInternalBranchTransition = UsageModelBuilder.createStop("");
                 UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, stopInternalBranchTransition);
-                optionCorrespondent = correspondenceModel.getCorrespondent(
+                architecturalModelElement = correspondenceModelProvider.getCorrespondent(
                         ReferenceUsageModelBuilder.CLASS_SIGNATURE[interiorCallIds.get(i).get(k)],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[interiorCallIds.get(i).get(k)]);
-                if (optionCorrespondent.isPresent()) {
+                if (architecturalModelElement.isPresent()) {
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                            .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
+                            .createEntryLevelSystemCall(repositoryModelProvider, architecturalModelElement.get());
                     UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, entryLevelSystemCall);
                     UsageModelBuilder.connect(startInternalBranchTransition, entryLevelSystemCall);
                     UsageModelBuilder.connect(entryLevelSystemCall, stopInternalBranchTransition);

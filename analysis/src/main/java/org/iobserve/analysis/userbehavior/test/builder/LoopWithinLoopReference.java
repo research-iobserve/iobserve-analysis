@@ -20,8 +20,10 @@ import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
@@ -70,7 +72,7 @@ public final class LoopWithinLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryModelProvider repositoryModelProvider, final CorrespondenceModelProvider correspondenceModelProvider)
             throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -87,7 +89,7 @@ public final class LoopWithinLoopReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        Optional<Correspondent> optionCorrespondent;
+        Optional<ArchitecturalModelElement> architecturalModelElement;
         AbstractUserAction lastAction;
         final UsageModel usageModel = UsageModelBuilder.createUsageModel();
         final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
@@ -122,12 +124,11 @@ public final class LoopWithinLoopReference {
         final Stop loop2Stop = UsageModelBuilder.createStop("");
         UsageModelBuilder.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Stop);
         lastAction = loop2Start;
-        optionCorrespondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
+        architecturalModelElement = correspondenceModelProvider.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
-        if (optionCorrespondent.isPresent()) {
-            final Correspondent correspondent = optionCorrespondent.get();
+        if (architecturalModelElement.isPresent()) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    .createEntryLevelSystemCall(repositoryModelProvider, architecturalModelElement.get());
             UsageModelBuilder.addUserAction(loop2.getBodyBehaviour_Loop(), entryLevelSystemCall);
             UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;
@@ -139,22 +140,21 @@ public final class LoopWithinLoopReference {
         for (int i = 0; i < lengthOfSubsequentLoopSequence; i++) {
             switch (i) {
             case 0:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
+            	architecturalModelElement = correspondenceModelProvider.getCorrespondent(
                         ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
                 break;
             case 1:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
+            	architecturalModelElement = correspondenceModelProvider.getCorrespondent(
                         ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
+            if (architecturalModelElement.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                        .createEntryLevelSystemCall(repositoryModelProvider, architecturalModelElement.get());
                 UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
                 UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

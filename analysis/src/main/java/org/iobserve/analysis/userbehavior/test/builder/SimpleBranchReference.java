@@ -22,8 +22,10 @@ import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
@@ -69,7 +71,7 @@ public final class SimpleBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryModelProvider repositoryModelProvider, final CorrespondenceModelProvider correspondenceModelProvider)
             throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -86,7 +88,7 @@ public final class SimpleBranchReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        Optional<Correspondent> correspondent;
+        Optional<ArchitecturalModelElement> architecturalElement;
 
         final UsageModel usageModel = UsageModelBuilder.createUsageModel();
         final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
@@ -114,28 +116,28 @@ public final class SimpleBranchReference {
             lastAction = startBranchTransition;
 
             if ((i >= 0) && (i < 5)) {
-                correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
+            	architecturalElement = correspondenceModelProvider.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
             } else {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
-            if (correspondent.isPresent()) {
+            if (architecturalElement.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryModelProvider, architecturalElement.get());
                 UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
             if (i == 0) {
-                correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[1],
+            	architecturalElement = correspondenceModelProvider.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[1],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1]);
             } else {
-                correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
+            	architecturalElement = correspondenceModelProvider.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
             }
-            if (correspondent.isPresent()) {
+            if (architecturalElement.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryModelProvider, architecturalElement.get());
                 UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
@@ -143,11 +145,11 @@ public final class SimpleBranchReference {
 
             UsageModelBuilder.connect(lastAction, stopBranchTransition);
         }
-        correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
+        architecturalElement = correspondenceModelProvider.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
-        if (correspondent.isPresent()) {
+        if (architecturalElement.isPresent()) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                    .createEntryLevelSystemCall(repositoryModelProvider, architecturalElement.get());
             UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
             UsageModelBuilder.connect(branch, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;

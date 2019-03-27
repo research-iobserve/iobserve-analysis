@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -54,17 +55,17 @@ public final class TEntryEventSequenceTest {
     private static final String OUTPUT_USAGE_MODEL = TEST_DATA_FOLDER + "OutputModel.usagemodel";
     private static final String REFERENCE_USAGE_MODEL = TEST_DATA_FOLDER + "\\ReferenceModel.usagemodel";
     private static final String REPOSITORY_MODEL_PATH = TEST_DATA_FOLDER + "cocome-cloud.repository";
-    private static final String CORRESPONDENCE_MODEL_PATH = TEST_DATA_FOLDER + "mapping.rac";
+    private static final String CORRESPONDENCE_MODEL_PATH = TEST_DATA_FOLDER + "mapping.correspondence";
 
     private static RepositoryModelProvider repositoryModelProvider = null;
-    private static ICorrespondence correspondenceModel = null;
+    private static CorrespondenceModelProvider correspondenceModelProvider = null;
     
     /**
      * Test class.
      */
     public TEntryEventSequenceTest() {
     	repositoryModelProvider = new RepositoryModelProvider(URI.createFileURI(REPOSITORY_MODEL_PATH));
-    	correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(CORRESPONDENCE_MODEL_PATH);
+    	correspondenceModelProvider = new CorrespondenceModelProvider(URI.createFileURI(CORRESPONDENCE_MODEL_PATH));
     }
     
     public void startTests() {
@@ -112,12 +113,12 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModelProvider,
                     THINK_TIME, CLOSED_WORKLOAD);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -139,11 +140,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = SimpleBranchReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -165,11 +166,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = SimpleLoopReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -191,11 +192,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = OverlappingIterationReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -217,11 +218,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = BranchWithinBranchReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -243,11 +244,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = LoopWithinBranchReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -269,11 +270,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = LoopWithinLoopReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -295,11 +296,11 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = BranchWithinLoopReference.getModel(
-                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
+                    REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModelProvider);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
@@ -321,12 +322,12 @@ public final class TEntryEventSequenceTest {
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
             ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModelProvider,
                     THINK_TIME, closedWorkload);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    closedWorkload, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    closedWorkload, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
@@ -351,7 +352,7 @@ public final class TEntryEventSequenceTest {
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), NUMBER_OF_USER_GROUPS, VARIANCE_OF_USER_GROUPS,
-                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModel);
+                    CLOSED_WORKLOAD, THINK_TIME, repositoryModelProvider, correspondenceModelProvider);
             behaviorModeling.modelUserBehavior();
 
             AccuracyResults accuracyResults = UserBehaviorEvaluation
