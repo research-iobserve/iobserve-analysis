@@ -37,8 +37,12 @@ import org.iobserve.analysis.utils.StringUtils;
  * @author Robert Heinrich
  * @author Nicolas Boltz
  * @author Alessandro Giusa
+ * 
+ * @deprecated 	Due to emf version of correspondence model, see generated files in src/gen/java.
+ * 				Not deleted for reference during implementation/testing of new models functionality.
  *
  */
+@Deprecated
 class CorrespondenceModelImpl implements ICorrespondence {
 
     private static final Logger LOGGER = LogManager.getLogger(CorrespondenceModelImpl.class);

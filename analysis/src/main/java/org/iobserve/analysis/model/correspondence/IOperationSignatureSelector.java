@@ -29,8 +29,12 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  * @see BiFunction
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * 
+ * @deprecated 	Due to emf version of correspondence model, see generated files in src/gen/java.
+ * 				Not deleted for reference during implementation/testing of new models functionality.
  */
 @FunctionalInterface
+@Deprecated
 public interface IOperationSignatureSelector extends IToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
 
     /**

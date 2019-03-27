@@ -26,8 +26,12 @@ import java.util.Optional;
  * @author Reiner Jung
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * 
+ * @deprecated 	Due to emf version of correspondence model, see generated files in src/gen/java.
+ * 				Not deleted for reference during implementation/testing of new models functionality.
  *
  */
+@Deprecated
 public interface ICorrespondence {
 
     // Operation Signature + Class Signature + Session ID + Host name

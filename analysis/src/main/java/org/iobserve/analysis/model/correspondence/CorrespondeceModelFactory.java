@@ -30,8 +30,11 @@ import org.iobserve.analysis.utils.StringUtils;
  * @author Alessandro Giusa
  *
  * @version 1.0
+ * @deprecated 	Due to emf version of correspondence model, see generated files in src/gen/java.
+ * 				Not deleted for reference during implementation/testing of new models functionality.
  *
  */
+@Deprecated
 public final class CorrespondeceModelFactory {
 
     /** singleton instance of factory. */

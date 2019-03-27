@@ -20,7 +20,12 @@ package org.iobserve.analysis.model.correspondence;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * 
+ * @deprecated 	Due to emf version of correspondence model, see generated files in src/gen/java.
+ * 				Not deleted for reference during implementation/testing of new models functionality.
+ * 
  */
+@Deprecated
 public final class Correspondent {
 
     /** entity name. */
