@@ -20,11 +20,11 @@ import java.net.URL;
 
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
 
 /**

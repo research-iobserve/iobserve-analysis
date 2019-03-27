@@ -1,9 +1,10 @@
-package org.iobserve.analysis.model;
+package org.iobserve.analysis.model.correspondence;
 
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.analysis.model.AbstractModelProvider;
 import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.model.correspondence.Correspondence;
 import org.iobserve.analysis.model.correspondence.CorrespondenceModel;

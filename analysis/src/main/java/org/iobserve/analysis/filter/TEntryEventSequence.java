@@ -20,9 +20,9 @@ import java.io.IOException;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 

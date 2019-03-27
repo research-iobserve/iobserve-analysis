@@ -96,7 +96,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         this.bufferSize = bufferSize;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void execute() {
         try {
             final ServerSocketChannel serverSocket = ServerSocketChannel.open();

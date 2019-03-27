@@ -133,4 +133,27 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
         final String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
         return this.opProvidedRoleMap.get(provRoleId);
     }
+    
+    /**
+     * Get the {@link OperationProvidedRole} by the given operation interface and basic component.
+     *
+     * @param operationInterfaceId
+     *            operation interface id.
+     * @return operation provide role instance or null if none available by the given operation
+     *         interface
+     */
+    public OperationProvidedRole getOperationProvidedRole(final String operationInterfaceId) {
+        final String provRoleId = this.opInfToProvInfMap.get(operationInterfaceId);
+        return this.opProvidedRoleMap.get(provRoleId);
+    }
+    
+    public boolean hasEntityWithId(final String id) {
+    	if (this.operationInterfaceMap.containsKey(id) ||
+    		this.operationSignatureMap.containsKey(id) ||
+    		this.opProvidedRoleMap.containsKey(id)) {
+    		return true;
+    	}
+    	
+    	return false;
+    }
 }

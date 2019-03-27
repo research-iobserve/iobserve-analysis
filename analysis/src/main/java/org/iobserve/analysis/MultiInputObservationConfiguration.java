@@ -17,11 +17,11 @@ package org.iobserve.analysis;
 
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.

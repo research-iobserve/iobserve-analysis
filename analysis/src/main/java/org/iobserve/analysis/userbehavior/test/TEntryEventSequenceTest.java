@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinBranchReference;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinLoopReference;

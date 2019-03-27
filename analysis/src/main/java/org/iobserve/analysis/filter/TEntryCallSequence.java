@@ -23,7 +23,7 @@ import java.util.Map;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import teetime.framework.AbstractConsumerStage;

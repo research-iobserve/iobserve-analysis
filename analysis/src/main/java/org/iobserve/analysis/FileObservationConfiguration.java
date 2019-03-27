@@ -20,11 +20,11 @@ import java.util.Collection;
 
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelProvider;
 
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;

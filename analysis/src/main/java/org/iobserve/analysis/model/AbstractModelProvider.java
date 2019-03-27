@@ -55,7 +55,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * @param theUriModelInstance
      *            uri to the model
      */
-    AbstractModelProvider(final URI theUriModelInstance) {
+    protected AbstractModelProvider(final URI theUriModelInstance) {
         this.uriModelInstance = theUriModelInstance;
         this.loadModel();
     }
