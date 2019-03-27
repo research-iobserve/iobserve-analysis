@@ -20,11 +20,11 @@ import java.util.Collection;
 
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
@@ -36,16 +36,16 @@ import teetime.stage.className.ClassNameRegistryRepository;
  */
 public class FileObservationConfiguration extends AbstractObservationConfiguration {
 
-    private final InitialElementProducer<File> files;
-    private final Dir2RecordsFilter reader;
+	private final InitialElementProducer<File> files;
+	private final Dir2RecordsFilter reader;
 
     /**
      * Analysis configuration constructor.
      *
      * @param directories
      *            a collection of directories containing kieker logs
-     * @param correspondenceModel
-     *            the correspondence model
+     * @param correspondenceModelProvider
+     *            the correspondence model provider
      * @param usageModelProvider
      *            the usage model provider
      * @param repositoryModelProvider
@@ -63,19 +63,20 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
      */
-    public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload, final int generationFrequency) {
-        super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+    public FileObservationConfiguration(final Collection<File> directories, 
+			final CorrespondenceModelProvider correspondenceModelProvider, final UsageModelProvider usageModelProvider,
+			final RepositoryModelProvider repositoryModelProvider, 
+			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider, 
+			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+			final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload, final int generationFrequency) {
+        super(correspondenceModelProvider, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload, generationFrequency);
 
-        this.files = new InitialElementProducer<>(directories);
-        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+		this.files = new InitialElementProducer<>(directories);
+		this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
-        /** connecting filters */
-        this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
-    }
+		/** connecting filters */
+		this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
+		this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
+	}
 }

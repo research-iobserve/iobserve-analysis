@@ -20,9 +20,9 @@ import java.io.IOException;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
@@ -36,7 +36,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
 public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 
 	/** reference to the correspondence model. */
-	private final ICorrespondence correspondenceModel;
+	private final CorrespondenceModelProvider correspondenceModelProvider;
 	/** usage model provider. */
 	private final UsageModelProvider usageModelProvider;
 	/** reference to repository model provider. */
@@ -71,10 +71,10 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	 * @param closedWorkload
 	 *            type of workload
 	 */
-	public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+	public TEntryEventSequence(final CorrespondenceModelProvider correspondenceModelProvider, final UsageModelProvider usageModelProvider,
 			final RepositoryModelProvider repositoryModelProvider, final int varianceOfUserGroups, final int thinkTime,
 			final boolean closedWorkload) {
-		this.correspondenceModel = correspondenceModel;
+		this.correspondenceModelProvider = correspondenceModelProvider;
 		this.usageModelProvider = usageModelProvider;
 		this.repositoryModelProvider = repositoryModelProvider;
 
@@ -103,7 +103,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		// Executes the user behavior modeling procedure
 		final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(model,
 				numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
-				this.repositoryModelProvider, this.correspondenceModel);
+				this.repositoryModelProvider, this.correspondenceModelProvider);
 		try {
 			behaviorModeling.modelUserBehavior();
 			long userBehaviorTransformationTimeAfter= System.currentTimeMillis();

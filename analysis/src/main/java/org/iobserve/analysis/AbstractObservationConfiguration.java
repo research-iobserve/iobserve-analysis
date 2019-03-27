@@ -25,11 +25,11 @@ import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 import teetime.framework.Configuration;
 
@@ -72,7 +72,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
      */
-    public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
+    public AbstractObservationConfiguration(final CorrespondenceModelProvider correspondenceModelProvider,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
@@ -81,14 +81,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-        this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+        this.deployment = new TDeployment(correspondenceModelProvider, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
+
         this.deallocation = new TDeallocation(resourceEnvironmentModelProvider);
-        final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+        final TUndeployment tUndeployment = new TUndeployment(correspondenceModelProvider, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
-        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel, generationFrequency);
-        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModelProvider, generationFrequency);
+        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModelProvider, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);

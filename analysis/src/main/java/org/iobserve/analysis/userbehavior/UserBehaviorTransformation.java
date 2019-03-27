@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
@@ -46,7 +46,7 @@ public class UserBehaviorTransformation {
     private final int varianceOfUserGroups;
     private final boolean isClosedWorkload;
     private final double thinkTime;
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModelProvider correspondenceModelProvider;
     // Response times of the individual process steps
     private long responseTimeOfUserGroupExtraction = 0;
     private long responseTimeOfBranchExtraction = 0;
@@ -79,13 +79,13 @@ public class UserBehaviorTransformation {
     public UserBehaviorTransformation(final EntryCallSequenceModel inputEntryCallSequenceModel,
             final int numberOfUserGroupsFromInputUsageModel, final int varianceOfUserGroups,
             final boolean isClosedWorkload, final double thinkTime,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel) {
+            final RepositoryModelProvider repositoryModelProvider, final CorrespondenceModelProvider correspondenceModelProvider) {
         this.inputEntryCallSequenceModel = inputEntryCallSequenceModel;
         this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.isClosedWorkload = isClosedWorkload;
         this.thinkTime = thinkTime;
-        this.correspondenceModel = correspondenceModel;
+        this.correspondenceModelProvider = correspondenceModelProvider;
         this.repositoryModelProvider = repositoryModelProvider;
     }
 
@@ -176,7 +176,7 @@ public class UserBehaviorTransformation {
          */
         timeBefore = System.currentTimeMillis();
         final PcmUsageModelBuilder pcmUsageModelBuilder = new PcmUsageModelBuilder(loopBranchModels,
-                this.isClosedWorkload, this.thinkTime, this.repositoryModelProvider, this.correspondenceModel);
+                this.isClosedWorkload, this.thinkTime, this.repositoryModelProvider, this.correspondenceModelProvider);
         this.pcmUsageModel = pcmUsageModelBuilder.createUsageModel();
         timeAfter = System.currentTimeMillis();
         this.responseTimeOfPcmModelling = (timeAfter - timeBefore);

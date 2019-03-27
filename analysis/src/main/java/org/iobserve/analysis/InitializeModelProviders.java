@@ -23,14 +23,14 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 
 /**
  *
  * Will load all models and {@link ICorrespondence} model.
  *
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  * @author Alessandro Giusa
  */
 public final class InitializeModelProviders {
@@ -40,7 +40,7 @@ public final class InitializeModelProviders {
     private AllocationModelProvider allocationModelProvider;
     private ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
     private SystemModelProvider systemModelProvider;
-    private ICorrespondence correspondenceModel;
+    private CorrespondenceModelProvider correspondenceModelProvider;
 
     /**
      * Create model provider.
@@ -71,9 +71,9 @@ public final class InitializeModelProviders {
                 final URI uri = this.getUri(nextFile);
                 this.usageModelProvider = new UsageModelProvider(uri);
 
-            } else if ("rac".equalsIgnoreCase(extension)) {
-                final String pathMappingFile = nextFile.getAbsolutePath();
-                this.correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(pathMappingFile);
+            } else if ("correspondence".equalsIgnoreCase(extension)) {
+            	final URI uri = this.getUri(nextFile);
+                this.correspondenceModelProvider = new CorrespondenceModelProvider(uri);
             }
         }
     }
@@ -107,13 +107,6 @@ public final class InitializeModelProviders {
     }
 
     /**
-     * @return correspondence model
-     */
-    public ICorrespondence getCorrespondenceModel() {
-        return this.correspondenceModel;
-    }
-
-    /**
      * @return repository model provider
      */
     public RepositoryModelProvider getRepositoryModelProvider() {
@@ -142,4 +135,10 @@ public final class InitializeModelProviders {
         return URI.createFileURI(file.getAbsolutePath());
     }
 
+    /**
+     * @return correspondence model provider
+     */
+	public CorrespondenceModelProvider getCorrespondenceModelProvider() {
+		return correspondenceModelProvider;
+	}
 }

@@ -24,11 +24,11 @@ import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -112,7 +112,8 @@ public class AnalysisDaemon implements Daemon {
             /** process parameter. */
             final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
 
-            final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+            final CorrespondenceModelProvider correspondenceModelProvider = 
+            		modelProvider.getCorrespondenceModelProvider();
             final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
             final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
@@ -121,9 +122,9 @@ public class AnalysisDaemon implements Daemon {
             final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
-                    this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
-                    usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider);
+                    this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, 
+                    correspondenceModelProvider, usageModelProvider, repositoryModelProvider, 
+                    resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

@@ -17,11 +17,11 @@ package org.iobserve.analysis;
 
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -38,8 +38,8 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *
      * @param inputPort
      *            the input port where the analysis is listening
-     * @param correspondenceModel
-     *            the correspondence model
+     * @param correspondenceModelProvider
+     *            the correspondence model provider
      * @param usageModelProvider
      *            the usage model provider
      * @param repositoryModelProvider
@@ -57,13 +57,15 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
-        super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+    public MultiInputObservationConfiguration(final int inputPort, 
+    		final CorrespondenceModelProvider correspondenceModelProvider, final UsageModelProvider usageModelProvider,
+			final RepositoryModelProvider repositoryModelProvider, 
+			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider, 
+			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+			final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+        super(correspondenceModelProvider, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload, 0);
+
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

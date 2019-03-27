@@ -19,12 +19,12 @@ import java.util.Optional;
 
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBUndeployedEvent;
@@ -49,7 +49,7 @@ import teetime.framework.OutputPort;
 public final class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
     /** reference to correspondence interface. */
-    private final ICorrespondence correspondence;
+    private final CorrespondenceModelProvider correspondenceModelProvider;
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
     /** reference to system model provider. */
@@ -71,10 +71,10 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      * @param resourceEnvironmentModelProvider
      *            resource environment model access
      */
-    public TUndeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
+    public TUndeployment(final CorrespondenceModelProvider correspondenceModelProvider, final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
-        this.correspondence = correspondence;
+        this.correspondenceModelProvider = correspondenceModelProvider;
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
@@ -109,8 +109,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     private void process(final ServletUndeployedEvent event) {
         final String service = event.getSerivce();
         final String context = event.getContext();
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondence -> this.updateModel(service, correspondence))
+        Opt.of(this.correspondenceModelProvider.getCorrespondent(context)).ifPresent()
+                .apply(architecturalElement -> this.updateModel(service, architecturalElement))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -123,8 +123,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     private void process(final EJBUndeployedEvent event) {
         final String service = event.getSerivce();
         final String context = event.getContext();
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.updateModel(service, correspondent))
+        Opt.of(this.correspondenceModelProvider.getCorrespondent(context)).ifPresent()
+                .apply(architecturalElement -> this.updateModel(service, architecturalElement))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -136,9 +136,9 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      * @param correspondent
      *            correspondent
      */
-    private void updateModel(final String serverName, final Correspondent correspondent) {
+    private void updateModel(final String serverName, final ArchitecturalModelElement architecturalElement) {
         // get the model entity name
-        final String entityName = correspondent.getPcmEntityName();
+        final String entityName = architecturalElement.getElement().getEntityName();
 
         // build the assembly context name
         final String asmContextName = entityName + "_" + serverName;

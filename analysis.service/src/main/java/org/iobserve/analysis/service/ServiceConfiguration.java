@@ -20,11 +20,11 @@ import java.net.URL;
 
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
 
 /**
@@ -68,12 +68,12 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      */
     public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+            final CorrespondenceModelProvider correspondenceModelProvider, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
             throws MalformedURLException {
-        super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
+        super(inputPort, correspondenceModelProvider, usageModelProvider, repositoryModelProvider,
                 resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload);
 

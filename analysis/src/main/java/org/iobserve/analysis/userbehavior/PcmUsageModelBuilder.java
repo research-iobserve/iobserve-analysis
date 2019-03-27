@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
@@ -60,7 +60,7 @@ public class PcmUsageModelBuilder {
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final RepositoryModelProvider repositoryModelProvider;
-    private final ICorrespondence correspondenceModel;
+    private final CorrespondenceModelProvider correspondenceModelProvider;
 
     /**
      *
@@ -77,12 +77,12 @@ public class PcmUsageModelBuilder {
      */
     public PcmUsageModelBuilder(final List<BranchModel> loopBranchModels, final boolean isClosedWorkloadRequested,
             final double thinkTime, final RepositoryModelProvider repositoryModelProvider,
-            final ICorrespondence correspondenceModel) {
+            final CorrespondenceModelProvider correspondenceModelProvider) {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
         this.branchScenarioBehavioursOfUserGroups = new ArrayList<>();
-        this.correspondenceModel = correspondenceModel;
+        this.correspondenceModelProvider = correspondenceModelProvider;
         this.repositoryModelProvider = repositoryModelProvider;
     }
 
@@ -181,13 +181,14 @@ public class PcmUsageModelBuilder {
             if (branchElement.getClass().equals(CallElement.class)) { // Element is a entryLevelSystemCall
             	CallElement callElement = (CallElement) branchElement;
                 EntryLevelSystemCall eSysCall = null;
-                final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
-                        .getCorrespondent(callElement.getClassSignature(), callElement.getOperationSignature());
-                
+
+                final Optional<ArchitecturalModelElement> optionCorrespondent = this.correspondenceModelProvider
+                        .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
                 if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
+                    final ArchitecturalModelElement architecturalElement = optionCorrespondent.get();
+
                     eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,
-                            correspondent);
+                    		architecturalElement);
                 }
                 
                 if (eSysCall != null) {

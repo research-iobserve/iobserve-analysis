@@ -23,7 +23,7 @@ import java.util.Map;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import teetime.framework.AbstractConsumerStage;
@@ -39,8 +39,8 @@ import teetime.framework.OutputPort;
  */
 public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 
-    /** reference to the correspondence model. */
-    private final ICorrespondence correspondenceModel;
+    /** reference to the correspondence model provider. */
+    private final CorrespondenceModelProvider correspondenceModelProvider;
     /** Frequency of when to send to output port. */
 	private final int generationFrequency;
 	/** count of events processed by filter. */
@@ -69,8 +69,8 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
      * @param generationFrequency
      *            frequency in which a updated usage model should be created
      */
-    public TEntryCallSequence(final ICorrespondence correspondenceModel, final int generationFrequency) {
-        this.correspondenceModel = correspondenceModel;
+    public TEntryCallSequence(final CorrespondenceModelProvider correspondenceModelProvider, final int generationFrequency) {
+        this.correspondenceModelProvider = correspondenceModelProvider;
         this.generationFrequency = generationFrequency;
         this.eventCount = 0;
     }
@@ -78,10 +78,9 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     @Override
     protected void execute(final EntryCallEvent event) {
         /** check if operationEvent is from an known object */
-        if (this.correspondenceModel.containsCorrespondent(event.getClassSignature(), event.getOperationSignature())) {
-        	ExecutionTimeLogger.getInstance().startLogging(event);
+        if (this.correspondenceModelProvider.containsCorrespondence(event.getClassSignature(), event.getOperationSignature())) {
+			ExecutionTimeLogger.getInstance().startLogging(event);
         	eventCount++;
-        	
             // add the event to the corresponding user session
             // in case the user session is not yet available, create one
             final String userSessionId = UserSession.parseUserSessionId(event);

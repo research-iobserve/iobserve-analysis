@@ -19,12 +19,12 @@ import java.util.Optional;
 
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
@@ -47,7 +47,7 @@ import teetime.framework.OutputPort;
 public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 
     /** reference to correspondent model. */
-    private final ICorrespondence correspondence;
+    private final CorrespondenceModelProvider correspondenceModelProvider;
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
     /** reference to system model provider. */
@@ -60,7 +60,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     /**
      * Creates new TDeallocation filter.
      *
-     * @param correspondence
+     * @param correspondenceModelProvider
      *            the correspondence model access
      * @param allocationModelProvider
      *            allocation model provider
@@ -69,11 +69,11 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param resourceEnvironmentModelProvider
      *            resource environment model provider
      */
-    public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
+    public TDeployment(final CorrespondenceModelProvider correspondenceModelProvider, final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
         // get all model references
-        this.correspondence = correspondence;
+        this.correspondenceModelProvider = correspondenceModelProvider;
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
@@ -108,9 +108,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private void process(final ServletDeployedEvent event) {
         final String service = event.getSerivce();
         final String context = event.getContext();
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondence -> this.updateModel(service, correspondence))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+        Opt.of(this.correspondenceModelProvider.getCorrespondent(context)).ifPresent()
+                .apply(architecturalElement -> this.updateModel(service, architecturalElement))
+                .elseApply(() -> System.out.printf("No architectural element found for %s \n", service));
     }
 
     /**
@@ -123,9 +123,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String service = event.getSerivce();
         final String context = event.getContext();
 
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.updateModel(service, correspondent))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+        Opt.of(this.correspondenceModelProvider.getCorrespondent(context)).ifPresent()
+                .apply(architecturalElement -> this.updateModel(service, architecturalElement))
+                .elseApply(() -> System.out.printf("No architectural element found for %s \n", service));
     }
 
     /**
@@ -133,11 +133,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *
      * @param serverName
      *            name of the server
-     * @param correspondent
-     *            correspondent
+     * @param architecturalElement
+     *            architectural element in pcm model
      */
-    private void updateModel(final String serverName, final Correspondent correspondent) {
-        final String entityName = correspondent.getPcmEntityName();
+    private void updateModel(final String serverName, final ArchitecturalModelElement architecturalElement) {
+        // get the model entity name
+        final String entityName = architecturalElement.getElement().getEntityName();
 
         // build the assembly context name
         final String asmContextName = entityName + "_" + serverName;

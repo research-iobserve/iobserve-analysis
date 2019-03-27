@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
-import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ArchitecturalModelElement;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.repository.OperationInterface;
@@ -253,14 +253,14 @@ public final class UsageModelBuilder {
      *
      * @param repositoryModelProvider
      *            provider for a repository model
-     * @param correspondent
-     *            correspondent containing operation signature
+     * @param architecturalElement
+     *            correspondent with operation signature
      * @return null, if the creation failed, the instance if not.
      */
     public static EntryLevelSystemCall createEntryLevelSystemCall(
-    		final RepositoryModelProvider repositoryModelProvider, final Correspondent correspondent) {
+    		final RepositoryModelProvider repositoryModelProvider, final ArchitecturalModelElement architecturalElement) {
         return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider,
-                correspondent.getPcmOperationId());
+        		architecturalElement.getElement().getId());
     }
 
     /**

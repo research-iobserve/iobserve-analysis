@@ -23,11 +23,12 @@ import java.util.Collection;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CorrespondenceModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+
 import org.iobserve.analysis.userbehavior.test.ClusteringEvaluation;
 import org.iobserve.analysis.userbehavior.test.TEntryEventSequenceTest;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
@@ -153,7 +154,7 @@ public final class AnalysisMain {
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
                 pcmModelDirectory);
 
-        final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+        final CorrespondenceModelProvider correspondenceModelProvider = modelProviderPlatform.getCorrespondenceModelProvider();
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
         final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
         final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
@@ -162,8 +163,9 @@ public final class AnalysisMain {
         final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 
         final Configuration warmupConfiguration = new FileObservationConfiguration(monitoringDataDirectories,
-                correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
+                correspondenceModelProvider, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload, generationFrequency);
+
 
         System.out.println(executionTag + " configuration");
         final Execution<Configuration> warmup = new Execution<>(warmupConfiguration);
