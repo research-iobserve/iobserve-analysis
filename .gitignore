@@ -41,7 +41,7 @@ test.setup/kieker*tgz
 !/analysis/src/main/java/log4j2.properties
 
 # For building peropteryx.rcp with gradle
-gradle.properties
+/gradle.properties
 !peropteryx.rcp/build.properties
 
 
@@ -143,7 +143,6 @@ $RECYCLE.BIN/
 /.gradle/
 
 /bin/
-/gradle.properties
 /reports.html
 model/build.properties
 model/plugin.properties
