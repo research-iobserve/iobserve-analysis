@@ -4,10 +4,10 @@ pipeline {
     stages {
         stage('Prepare') {
             steps {
-#                deleteDir()
-#		sh 'git clone https://github.com/research-iobserve/iobserve-analysis.git'
+//                deleteDir()
+//		sh 'git clone https://github.com/research-iobserve/iobserve-analysis.git'
                 sh 'git clone https://github.com/research-iobserve/iobserve-repository.git'
-#		sh 'cd iobserve-analysis'
+//		sh 'cd iobserve-analysis'
 		sh 'PWD=`pwd` ; echo "api.baseline=$PWD/iobserve-repository/mvn-repo/" > gradle.properties'
 		sh 'cat gradle.properties.template >> gradle.properties'
             }
