@@ -24,21 +24,25 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
+import org.iobserve.analysis.deployment.DeploymentLock;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.correspondence.AllocationEntry;
+import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.ComponentEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.DataTypeEntry;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.service.privacy.exceptions.ControlEventCreationFailedException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.iobserve.service.privacy.violation.exceptions.ControlEventCreationFailedException;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationParameterControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpUpdateParameterEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.CollectionDataType;
@@ -63,10 +67,11 @@ import org.palladiosimulator.pcm.system.System;
 public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private static final int PORT = 5791;
 
-    private final ModelResource<CorrespondenceModel> correspondenceResource;
-    private final ModelResource<Repository> repositoryResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<System> assemblyResource;
+    private final IModelResource<CorrespondenceModel> correspondenceResource;
+    private final IModelResource<Repository> repositoryResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<System> assemblyResource;
+    private final IModelResource<Allocation> allocationResource;
 
     private final OutputPort<AbstractTcpControlEvent> outputPort = this.createOutputPort();
 
@@ -74,17 +79,25 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
      * Initialize probe mapper from model to code level.
      *
      * @param correspondenceResource
+     *            correspondence model resource
      * @param repositoryResource
+     *            repository model resource
      * @param resourceEnvironmentResource
+     *            resource environment model resource
+     * @param assemblyResource
+     *            assembly model resource
+     * @param allocationResource
+     *            allocation model resource
      */
-    public ProbeMapper(final ModelResource<CorrespondenceModel> correspondenceResource,
-            final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> assemblyResource) {
+    public ProbeMapper(final IModelResource<CorrespondenceModel> correspondenceResource,
+            final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> assemblyResource, final IModelResource<Allocation> allocationResource) {
         this.correspondenceResource = correspondenceResource;
         this.repositoryResource = repositoryResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.assemblyResource = assemblyResource;
+        this.allocationResource = allocationResource;
     }
 
     public OutputPort<AbstractTcpControlEvent> getOutputPort() {
@@ -93,22 +106,31 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
+        PrivacyExperimentLogger.measure(element, ObservationPoint.PROBE_MODEL_TO_CODE_ENTRY);
+        DeploymentLock.lock();
         this.createMethodsToActivate(element);
         this.createMethodsToDeactivate(element);
         this.createMethodsToUpdate(element);
+        DeploymentLock.unlock();
+        PrivacyExperimentLogger.measure(element, ObservationPoint.PROBE_MODEL_TO_CODE_EXIT);
     }
 
     private void createMethodsToActivate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToActivate = element.getMethodsToActivate();
         if (methodsToActivate != null) {
+            this.logger.debug("methods to activate");
             for (final AllocationContext allocation : methodsToActivate.keySet()) {
+                this.logger.debug("AllocationContext to activate {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToActivate.get(allocation)) {
+                    this.logger.debug("AllocationContext activate operation {}", operationSignature.getEntityName());
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext activate operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         final TcpActivationControlEvent currentEvent = this.createActivationEvent(pattern,
-                                element.getWhitelist());
+                                element.getTriggerTime(), element.getWhitelist());
                         this.fillTcpControlEvent(currentEvent, allocation);
                         this.outputPort.send(currentEvent);
                     } catch (final ControlEventCreationFailedException e) {
@@ -124,13 +146,18 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate = element.getMethodsToDeactivate();
         if (methodsToDeactivate != null) {
+            this.logger.debug("methods to deactivate");
             for (final AllocationContext allocation : methodsToDeactivate.keySet()) {
+                this.logger.debug("AllocationContext to deactivate {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToDeactivate.get(allocation)) {
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext deactivate operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         // deactivation -> no parameters needed
-                        final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern);
+                        final TcpDeactivationControlEvent currentEvent = new TcpDeactivationControlEvent(pattern,
+                                element.getTriggerTime());
                         this.fillTcpControlEvent(currentEvent, allocation);
                         this.outputPort.send(currentEvent);
                     } catch (final ControlEventCreationFailedException e) {
@@ -145,20 +172,24 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
     private void createMethodsToUpdate(final ProbeManagementData element)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = element.getMethodsToUpdate();
-        if ((methodsToUpdate != null) && (element.getWhitelist() != null)) {
+        if (methodsToUpdate != null && element.getWhitelist() != null) {
             for (final AllocationContext allocation : methodsToUpdate.keySet()) {
+                this.logger.debug("AllocationContext to update {}", allocation.getEntityName());
                 for (final OperationSignature operationSignature : methodsToUpdate.get(allocation)) {
                     try {
-                        final String pattern = this.computeAllocationComponentIdentifier(allocation,
+                        final String pattern = this.computeAllocationComponentIdentifierPattern(allocation,
                                 operationSignature);
+                        this.logger.debug("AllocationContext update operation {} -- {}",
+                                operationSignature.getEntityName(), pattern);
                         final Map<String, List<String>> parameters = new HashMap<>();
                         parameters.put("whitelist", element.getWhitelist());
-                        final TcpUpdateParameterEvent currentEvent = new TcpUpdateParameterEvent(pattern, parameters);
+                        final TcpUpdateParameterEvent currentEvent = new TcpUpdateParameterEvent(pattern,
+                                element.getTriggerTime(), parameters);
                         this.fillTcpControlEvent(currentEvent, allocation);
                         this.outputPort.send(currentEvent);
                     } catch (final ControlEventCreationFailedException e) {
-                        this.logger.error("Could not construct activation event for: " + operationSignature.toString(),
-                                e);
+                        this.logger.error("Could not construct activation event for: {} {}",
+                                operationSignature.toString(), e.getLocalizedMessage());
                     }
                 }
             }
@@ -184,7 +215,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     }
 
-    private String computeAllocationComponentIdentifier(final AllocationContext allocation,
+    private String computeAllocationComponentIdentifierPattern(final AllocationContext allocation,
             final OperationSignature operationSignature)
             throws ControlEventCreationFailedException, InvocationException, DBException {
         final AllocationEntry entry = this.findAllocationEntry(allocation);
@@ -195,27 +226,57 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
         case EJB:
         case ASPECT_J:
             return this.computeAllocationComponentJavaSignature(allocation, operationSignature);
+        case DB:
+            return this.computeAllocationComponentDBSignature(allocation, operationSignature);
         default:
             throw new InternalError("Technology " + entry.getTechnology().getLiteral() + " not supported.");
         }
 
     }
 
-    private AllocationEntry findAllocationEntry(final AllocationContext allocation) {
+    private String computeAllocationComponentDBSignature(final AllocationContext allocation,
+            final OperationSignature operationSignature) {
+        return "db://" + allocation.getEntityName() + operationSignature.getEntityName();
+    }
+
+    /**
+     * Find the corresponding AllocationEntry for an AllocationContext.
+     *
+     * @param allocation
+     *            the allocation context
+     * @return returns the AllocationEntry
+     * @throws InvocationException
+     * @throws DBException
+     */
+    private AllocationEntry findAllocationEntry(final AllocationContext allocation)
+            throws InvocationException, DBException {
         final List<AllocationEntry> allocations = this.correspondenceResource
                 .collectAllObjectsByType(AllocationEntry.class, CorrespondencePackage.Literals.ALLOCATION_ENTRY);
 
         for (final AllocationEntry entry : allocations) {
-            if (entry.getAllocation().getId().equals(allocation.getId())) {
+            final AllocationContext entryAllocation = this.allocationResource.resolve(entry.getAllocation());
+            this.logger.debug("XXXXX entry id {} name {} / ac id {} name {}", entryAllocation.getId(),
+                    entryAllocation.getEntityName(), allocation.getId(), allocation.getEntityName());
+            if (entryAllocation.getId().equals(allocation.getId())) {
                 return entry;
             }
         }
 
-        return null;
+        throw new InternalError("Correspondence entry missing for " + allocation.getEntityName());
     }
 
+    /**
+     * Compute allocation component servlet id.
+     *
+     * @param entry
+     * @param allocation
+     * @param operationSignature
+     * @return
+     * @throws InvocationException
+     * @throws DBException
+     */
     private String computeAllocationComponentServletId(final AllocationEntry entry, final AllocationContext allocation,
-            final OperationSignature operationSignature) {
+            final OperationSignature operationSignature) throws InvocationException, DBException {
         final EList<Parameter> parameterList = operationSignature.getParameters__OperationSignature();
         String parameters = null;
         for (final Parameter parameter : parameterList) {
@@ -226,11 +287,30 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
             }
         }
 
-        final String componentId = String.format("%s (%s)", entry.getImplementationId(), parameters);
+        AssemblyContext assemblyContext = this.assemblyResource
+                .resolve(allocation.getAssemblyContext_AllocationContext());
 
-        this.logger.debug("Constructed method string: {}", componentId);
+        assemblyContext = this.assemblyResource.resolve(assemblyContext);
 
-        return componentId;
+        String component = "ERROR";
+
+        for (final AssemblyEntry assemblyEntry : this.correspondenceResource
+                .collectAllObjectsByType(AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY)) {
+            final AssemblyContext entryRelatedContext = this.assemblyResource.resolve(assemblyEntry.getAssembly());
+            // this.logger.debug(entryRelatedContext.getId() + " is proxy? " +
+            // entryRelatedContext.eIsProxy()
+            // + " <- compared to -> " + assemblyContext.getId() + " is proxy? " +
+            // assemblyContext.eIsProxy());
+            if (entryRelatedContext.getId().equals(assemblyContext.getId())) {
+                component = assemblyEntry.getImplementationId();
+            }
+        }
+
+        final String methodId = String.format("%s.%s (%s)", component, operationSignature.getEntityName(), parameters);
+
+        this.logger.debug("Constructed method string: {}", methodId);
+
+        return methodId;
     }
 
     private String computeAllocationComponentJavaSignature(final AllocationContext allocation,
@@ -303,13 +383,14 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     }
 
-    private TcpActivationControlEvent createActivationEvent(final String pattern, final List<String> whitelist) {
+    private TcpActivationControlEvent createActivationEvent(final String pattern, final long triggerTime,
+            final List<String> whitelist) {
         if (whitelist == null) {
-            return new TcpActivationControlEvent(pattern);
+            return new TcpActivationControlEvent(pattern, triggerTime);
         } else {
             final Map<String, List<String>> parameters = new HashMap<>();
             parameters.put("whitelist", whitelist);
-            return new TcpActivationParameterControlEvent(pattern, parameters);
+            return new TcpActivationParameterControlEvent(pattern, triggerTime, parameters);
         }
     }
 

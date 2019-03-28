@@ -18,13 +18,13 @@ package org.iobserve.analysis.deployment;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+import teetime.stage.basic.merger.Merger;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.stages.general.AggregateEventStage;
+import org.iobserve.model.persistence.IModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -40,7 +40,7 @@ import org.palladiosimulator.pcm.system.System;
 public class DeploymentCompositeStage extends CompositeStage implements IDeploymentCompositeStage {
 
     private final DeployPCMMapperStage deployPCMMapper;
-    private final AggregateEventStage<PCMDeployedEvent> relayDeployedEventStage;
+    private final Merger<PCMDeployedEvent> relayDeployedEventStage;
     private final AllocationStage syntehticAllocation;
 
     /**
@@ -55,9 +55,9 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      * @param correspondenceResource
      *            the correspondence model graph
      */
-    public DeploymentCompositeStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationResource,
-            final ModelResource<CorrespondenceModel> correspondenceResource) {
+    public DeploymentCompositeStage(final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationResource,
+            final IModelResource<CorrespondenceModel> correspondenceResource) {
 
         this.deployPCMMapper = new DeployPCMMapperStage(correspondenceResource, systemModelResource);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
@@ -73,7 +73,7 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
         final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(correspondenceResource,
                 allocationResource);
 
-        this.relayDeployedEventStage = new AggregateEventStage<>(2);
+        this.relayDeployedEventStage = new Merger<>();
         this.relayDeployedEventStage.declareActive();
 
         /** connect internal ports. */
@@ -85,9 +85,9 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
         this.connectPorts(this.syntehticAllocation.getAllocationNotifyOutputPort(),
                 allocationFinished.getAllocationFinishedInputPort());
         this.connectPorts(allocationFinished.getDeployedOutputPort(), deploymentAfterAllocation.getInputPort());
-        this.connectPorts(deployment.getDeployedNotifyOutputPort(), this.relayDeployedEventStage.getInputPort(0));
+        this.connectPorts(deployment.getDeployedNotifyOutputPort(), this.relayDeployedEventStage.getNewInputPort());
         this.connectPorts(deploymentAfterAllocation.getDeployedNotifyOutputPort(),
-                this.relayDeployedEventStage.getInputPort(1));
+                this.relayDeployedEventStage.getNewInputPort());
     }
 
     @Override

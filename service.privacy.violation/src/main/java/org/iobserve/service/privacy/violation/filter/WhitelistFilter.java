@@ -19,18 +19,24 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.analysis.deployment.DeploymentLock;
+import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
@@ -41,13 +47,21 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  */
 public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> {
-    private final ModelResource<Allocation> allocationResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<Allocation> allocationResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort();
 
-    public WhitelistFilter(final ModelResource<Allocation> allocationResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    /**
+     * Instantiate whielist filter.
+     *
+     * @param allocationResource
+     *            allocation resource
+     * @param resourceEnvironmentResource
+     *            resource environment
+     */
+    public WhitelistFilter(final IModelResource<Allocation> allocationResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.allocationResource = allocationResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
 
@@ -60,26 +74,30 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
      */
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        final List<String> whitelist = this.computeWhitelist(element);
+        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_ENTRY);
+        DeploymentLock.lock();
+        final List<String> whitelist = this.computeWhitelist(element.getWarnedMethods());
         element.setWhitelist(whitelist);
+        DeploymentLock.unlock();
         this.outputPort.send(element);
+        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_EXIT);
     }
 
-    private List<String> computeWhitelist(final ProbeManagementData element) {
-        final Set<String> blacklist = this.computeForbiddenIps(element);
+    private List<String> computeWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods)
+            throws DBException {
+        final Set<String> blacklist = this.computeForbiddenIps(warnedMethods);
         final Set<String> allIps = this.computeAvailableIps();
         final Set<String> whitelist = new HashSet<>(allIps);
         whitelist.removeAll(blacklist);
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("All available IPs: " + allIps);
-            this.logger.debug("Forbidden IPs: " + blacklist);
-            this.logger.debug("Computed whitelist: " + whitelist);
-        }
+        this.logger.debug("All available IPs: {}", allIps);
+        this.logger.debug("Forbidden IPs: {}", blacklist);
+        this.logger.debug("Computed whitelist: {}", whitelist);
+
         return new LinkedList<>(whitelist);
     }
 
-    private Set<String> computeAvailableIps() {
+    private Set<String> computeAvailableIps() throws DBException {
         final List<AllocationContext> allocations = this.allocationResource
                 .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT);
         final Set<String> availableIps = new LinkedHashSet<>();
@@ -97,10 +115,9 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
         return availableIps;
     }
 
-    private Set<String> computeForbiddenIps(final ProbeManagementData element) {
+    private Set<String> computeForbiddenIps(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
         final Set<AllocationContext> allocationSet = new LinkedHashSet<>();
-        allocationSet.addAll(element.getMethodsToActivate().keySet());
-        allocationSet.addAll(element.getMethodsToDeactivate().keySet());
+        allocationSet.addAll(warnedMethods.keySet());
         final Set<String> blacklistSet = new HashSet<>();
 
         for (final AllocationContext allocation : allocationSet) {

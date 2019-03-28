@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,26 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IEvent;
+import kieker.common.record.flow.IEventRecord;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public class SessionEndEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, ISessionEvent {			
+public class SessionEndEvent extends AbstractMonitoringRecord implements IEventRecord, ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
 			 + TYPE_SIZE_STRING; // ISessionEvent.sessionId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // ISessionEvent.hostname
 		String.class, // ISessionEvent.sessionId
 	};
@@ -47,7 +46,7 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
-	private static final long serialVersionUID = -1121939915927202195L;
+	private static final long serialVersionUID = -7471486980805589930L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -57,7 +56,7 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final String hostname;
 	private final String sessionId;
 	
@@ -77,42 +76,7 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 		this.sessionId = sessionId == null?"":sessionId;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public SessionEndEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.timestamp = (Long) values[0];
-		this.hostname = (String) values[1];
-		this.sessionId = (String) values[2];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected SessionEndEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
-		this.hostname = (String) values[1];
-		this.sessionId = (String) values[2];
-	}
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -127,24 +91,9 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getTimestamp(),
-			this.getHostname(),
-			this.getSessionId(),
-		};
-	}
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getHostname());
 		serializer.putString(this.getSessionId());
@@ -174,16 +123,6 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -216,11 +155,26 @@ public class SessionEndEvent extends AbstractMonitoringRecord implements IMonito
 		
 		return true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getHostname().hashCode();
+		code += this.getSessionId().hashCode();
+		
+		return code;
+	}
 	
 	public final long getTimestamp() {
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final String getHostname() {
 		return this.hostname;

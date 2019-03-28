@@ -6,7 +6,9 @@ include "common", "monitoring", "model", "stages", "service",
 	"collector", "splitter", "rac.creator", "replayer",
 	"evaluate-user-behaviors",
 	"reconstructor",
-	"service.privacy.violation"
+	"service.privacy.violation",
+	"evaluate-jss-performance",
+        "simulate-petstore"
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"

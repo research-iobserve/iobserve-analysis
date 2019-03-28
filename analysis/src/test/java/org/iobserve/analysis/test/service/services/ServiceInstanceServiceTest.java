@@ -24,17 +24,16 @@ import javax.json.JsonObject;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.system.System;
 
 /**
@@ -51,7 +50,7 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /** mocks. */
     @Mock
-    private ModelResource<System> mockedSystemModelGraphProvider;
+    private Neo4JModelResource<System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 
@@ -69,9 +68,11 @@ public class ServiceInstanceServiceTest { // NOCS test
 
     /**
      * Prepare test data.
+     *
+     * @throws DBException
      */
     @Before
-    public void setUp() {
+    public void setUp() throws DBException {
 
         this.serviceInstanceService = new ServiceInstanceService();
 
@@ -93,11 +94,6 @@ public class ServiceInstanceServiceTest { // NOCS test
                 .add("id", "si_test_serviceId").add("systemId", this.systemId).add("serviceId", "_test_serviceId")
                 .add("nodeId", this.nodeId).build();
 
-        // stubbing
-        Mockito.when(this.mockedSystemModelGraphProvider.collectReferencingObjectsByTypeAndId(AssemblyContext.class,
-                CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                this.mockedSystemModelGraphProvider.getInternalId(this.testAssemblyContext)))
-                .thenReturn(this.noAssemblyConnectors);
     }
 
     /**
@@ -117,10 +113,12 @@ public class ServiceInstanceServiceTest { // NOCS test
      * Check whether
      * {@link ServiceInstanceService#deleteServiceInstance(AssemblyContext, String, String, org.iobserve.analysis.model.provider.neo4j.ModelProvider)}
      * works as expected, when the ServiceInstance is not referenced by communicationInstances.
+     *
+     * @throws DBException
      */
     // TODO test when serviceInstance is referenced by communicationInstance
     @Test
-    public void checkDeleteServiceInstance() {
+    public void checkDeleteServiceInstance() throws DBException {
         final JsonObject actualDeleteServiceInstance = this.serviceInstanceService.deleteServiceInstance(
                 this.testAssemblyContext, this.systemId, this.nodeId, this.mockedSystemModelGraphProvider);
 

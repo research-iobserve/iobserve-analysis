@@ -26,6 +26,7 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.stages.data.IErrorMessages;
 import org.iobserve.stages.tcp.ProbeControlFilter;
+import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.junit.After;
@@ -48,6 +49,8 @@ public class ProbeControlFilterTest {
     private static final int BUFFER_SIZE = 65535;
 
     private static final String PATTERN = "test.pattern";
+
+    private static final long TRIGGER_TIMESTAMP = 0;
 
     private static int port = 9753;
 
@@ -82,7 +85,7 @@ public class ProbeControlFilterTest {
                     ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOGGER, listener);
             new Thread(this.tcpReader).start();
 
-            this.probeControlFilter = new ProbeControlFilter();
+            this.probeControlFilter = new ProbeControlFilter(new TcpProbeController());
         }
     }
 
@@ -94,7 +97,7 @@ public class ProbeControlFilterTest {
         final String ip = "127.0.0.1"; // NOPMD localhost is required here
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
-                hostname, ProbeControlFilterTest.PATTERN);
+                hostname, ProbeControlFilterTest.PATTERN, ProbeControlFilterTest.TRIGGER_TIMESTAMP);
         final List<AbstractTcpControlEvent> input = new ArrayList<>();
         input.add(controlEvent);
 
@@ -114,7 +117,7 @@ public class ProbeControlFilterTest {
         final String ip = "1.2.3.4"; // NOPMD fake ip as string is necessary
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
-                hostname, ProbeControlFilterTest.PATTERN);
+                hostname, ProbeControlFilterTest.PATTERN, ProbeControlFilterTest.TRIGGER_TIMESTAMP);
         final List<AbstractTcpControlEvent> input = new ArrayList<>();
         input.add(controlEvent);
 

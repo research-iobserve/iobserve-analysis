@@ -1,0 +1,41 @@
+//apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'application'
+apply plugin: 'java'
+
+mainClassName='org.iobserve.evaluate.jss.EvaluateMain'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
+
+dependencies {
+	clover 'org.openclover:clover:4.2.0'
+
+	compile project(":analysis") // behavior model data
+	compile project(":service")
+}
+
+// SHADOW
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
+//}
+
+test {
+  println 'Starting unit tests.'
+  scanForTestClasses = false
+  include '**/evaluation/test/suites/Test*.java'
+  exclude '**/evaluation/test/filter/*'
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'evaluation'
+    }
+}
+
+

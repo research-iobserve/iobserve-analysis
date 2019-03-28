@@ -9,6 +9,11 @@ dependencies {
 	// project dependencies
 	compile project(":common")
 	testCompile project(":planning.systemadaptation")
+	
+	//compile 'fr.inria.atlanmod.neoemf:neoemf-core:1.0.2'
+	//compile 'fr.inria.atlanmod.neoemf:neoemf-io:1.0.2'
+	//compile 'fr.inria.atlanmod.neoemf:neoemf-data-blueprints-core:1.0.2'
+	//compile 'fr.inria.atlanmod.neoemf:neoemf-data-blueprints-neo4j:1.0.2'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

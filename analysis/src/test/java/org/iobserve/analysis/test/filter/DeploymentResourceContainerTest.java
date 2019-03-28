@@ -28,7 +28,8 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
@@ -68,11 +69,11 @@ public class DeploymentResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static Neo4JModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelResource<Allocation> mockedAllocationModelGraphProvider;
+    private static Neo4JModelResource<Allocation> mockedAllocationModelGraphProvider;
     @Mock
-    private static ModelResource<CorrespondenceModel> mockedCorrespondence;
+    private static Neo4JModelResource<CorrespondenceModel> mockedCorrespondence;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
     private static Repository repository = RepositoryModelDataFactory.createBookstoreRepositoryModel();
@@ -91,11 +92,11 @@ public class DeploymentResourceContainerTest {
     public static void setUp() {
 
         /** mocks for model graph provider */
-        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
-        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelResource.class);
+        DeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(Neo4JModelResource.class);
+        DeploymentResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(Neo4JModelResource.class);
 
         /** mock for correspondence model */
-        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ModelResource.class);
+        DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(Neo4JModelResource.class);
     }
 
     /**
@@ -103,9 +104,10 @@ public class DeploymentResourceContainerTest {
      * {@link ResourceEnvironment} model.
      *
      * @throws NodeLookupException
+     * @throws DBException
      */
     @Before
-    public void stubMocksResourceContainer() throws NodeLookupException {
+    public void stubMocksResourceContainer() throws NodeLookupException, DBException {
 
         /** mock for ModelBuilder */
         // use PowerMockito for calling static methods of these final classes

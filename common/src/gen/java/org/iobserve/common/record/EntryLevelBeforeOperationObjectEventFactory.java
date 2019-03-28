@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,6 @@ public final class EntryLevelBeforeOperationObjectEventFactory implements IRecor
 		return new EntryLevelBeforeOperationObjectEvent(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public EntryLevelBeforeOperationObjectEvent create(final Object[] values) {
-		return new EntryLevelBeforeOperationObjectEvent(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return EntryLevelBeforeOperationObjectEvent.SIZE;

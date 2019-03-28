@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistry;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.exception.MonitoringRecordException;
 import kieker.common.exception.RecordInstantiationException;
@@ -31,8 +30,7 @@ import kieker.common.record.factory.CachedRecordFactoryCatalog;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.BinaryValueDeserializer;
 import kieker.common.record.io.IValueDeserializer;
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.registry.IRegistryRecordReceiver;
+import kieker.common.registry.reader.ReaderRegistry;
 
 import teetime.framework.OutputPort;
 
@@ -90,10 +88,10 @@ public class HackedRecordFromBinaryFileCreator {
 
         HackedRecordFromBinaryFileCreator.LOGGER.info("reading file {}", binaryFile.getAbsolutePath());
 
-        final ClassNameRegistry classNameRegistry = this.classNameRegistryRepository.get(binaryFile.getParentFile());
+        final ReaderRegistry<String> classNameRegistry = this.classNameRegistryRepository
+                .get(binaryFile.getParentFile());
 
-        final IRegistry<String> stringRegistryWrapper = new GlueRegistry(classNameRegistry);
-        final BinaryValueDeserializer deserializer = BinaryValueDeserializer.create(this.buffer, stringRegistryWrapper);
+        final BinaryValueDeserializer deserializer = BinaryValueDeserializer.create(this.buffer, classNameRegistry);
 
         boolean endOfStreamReached = false;
         while (!endOfStreamReached) {
@@ -120,7 +118,7 @@ public class HackedRecordFromBinaryFileCreator {
 
     }
 
-    private void processBuffer(final ClassNameRegistry registry, final IValueDeserializer deserializer,
+    private void processBuffer(final ReaderRegistry<String> registry, final IValueDeserializer deserializer,
             final OutputPort<IMonitoringRecord> outputPort) throws IOException {
         this.buffer.flip();
 
@@ -146,8 +144,8 @@ public class HackedRecordFromBinaryFileCreator {
         }
     }
 
-    private IMonitoringRecord deserializeRecord(final ClassNameRegistry registry, final IValueDeserializer deserializer)
-            throws IOException {
+    private IMonitoringRecord deserializeRecord(final ReaderRegistry<String> registry,
+            final IValueDeserializer deserializer) throws IOException {
         final int clazzId = this.buffer.getInt();
         final String recordClassName = registry.get(clazzId);
 
@@ -197,52 +195,6 @@ public class HackedRecordFromBinaryFileCreator {
                 }
             }
         }
-    }
-
-    /**
-     * Glues the ClassNameRegistry which is used as a StringRegistry onto the IRegistry interface.
-     *
-     * @author Reiner Jung
-     *
-     */
-    private class GlueRegistry implements IRegistry<String> {
-
-        private final ClassNameRegistry classNameRegistry;
-
-        public GlueRegistry(final ClassNameRegistry classNameRegistry) {
-            this.classNameRegistry = classNameRegistry;
-        }
-
-        @Override
-        public long getId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int get(final String value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String get(final int key) {
-            return this.classNameRegistry.get(key);
-        }
-
-        @Override
-        public String[] getAll() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getSize() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setRecordReceiver(final IRegistryRecordReceiver registryRecordReceiver) {
-            throw new UnsupportedOperationException();
-        }
-
     }
 
 }

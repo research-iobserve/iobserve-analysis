@@ -17,11 +17,10 @@ package org.iobserve.service;
 
 import java.lang.reflect.InvocationTargetException;
 
-import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+import kieker.analysis.common.ConfigurationException;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,7 @@ public final class InstantiationFactory { // NOPMD
      *
      * @param <C>
      *            The type of the returned class.
-     * 
+     *
      * @throws ConfigurationException
      *             on configuration errors during instantiation
      */
@@ -107,17 +106,9 @@ public final class InstantiationFactory { // NOPMD
         try {
             final Class<?> clazz = Class.forName(className);
             if (implementedInterface.isAssignableFrom(clazz)) {
-                // Choose the appropriate configuration to pass.
-                final kieker.common.configuration.Configuration configurationToPass;
-                if (clazz.isAnnotationPresent(ReceiveUnfilteredConfiguration.class)) {
-                    configurationToPass = configuration.flatten();
-                } else {
-                    configurationToPass = configuration.getPropertiesStartingWith(className);
-                }
-
                 final Class<?>[] parameterTypes = { kieker.common.configuration.Configuration.class };
                 return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes,
-                        configurationToPass);
+                        configuration);
             } else {
                 InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className,
                         implementedInterface.getSimpleName());

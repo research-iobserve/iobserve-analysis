@@ -15,12 +15,13 @@
  ***************************************************************************/
 package org.iobserve.collector;
 
+import kieker.analysis.common.ConfigurationException;
+
 import teetime.framework.Configuration;
 
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.service.source.SourceStageFactory;
-import org.iobserve.stages.general.ConfigurationException;
-import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.DataSinkStage;
 
 /**
  * Analysis configuration for the data collector.
@@ -32,7 +33,7 @@ import org.iobserve.stages.sink.DataDumpStage;
  */
 public class CollectorConfiguration extends Configuration {
 
-    private final DataDumpStage consumer;
+    private final DataSinkStage consumer;
 
     /**
      * Configure analysis.
@@ -46,12 +47,12 @@ public class CollectorConfiguration extends Configuration {
             throws ConfigurationException {
         final ISourceCompositeStage sourceStage = SourceStageFactory.createSourceCompositeStage(configuration);
 
-        this.consumer = new DataDumpStage(configuration);
+        this.consumer = new DataSinkStage(configuration);
 
         this.connectPorts(sourceStage.getOutputPort(), this.consumer.getInputPort());
     }
 
-    public DataDumpStage getCounter() {
+    public DataSinkStage getCounter() {
         return this.consumer;
     }
 }

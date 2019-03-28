@@ -21,23 +21,23 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.common.record.JSSObservationEvent;
-import org.iobserve.common.record.JSSObservationPoint;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.common.record.ObservationPoint;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.privacy.EDataPrivacyLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
@@ -75,8 +75,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
-
-
 /**
  * Privacy warner.
  *
@@ -86,14 +84,11 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    // remove probes later
-    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
-
-    private final ModelResource<Allocation> allocationModelResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
-    private final ModelResource<Repository> repositoryResource;
-    private final ModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
+    private final IModelResource<System> systemModelResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<Repository> repositoryResource;
+    private final IModelResource<PrivacyModel> privacyModelResource;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -133,10 +128,10 @@ public class PrivacyWarner extends AbstractStage {
      * @param privacyModelResource
      *            privacy model provider
      */
-    public PrivacyWarner(final Configuration configuration, final ModelResource<Repository> repositoryResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
-            final ModelResource<PrivacyModel> privacyModelResource) {
+    public PrivacyWarner(final Configuration configuration, final IModelResource<Repository> repositoryResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationModelResource,
+            final IModelResource<PrivacyModel> privacyModelResource) {
 
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
@@ -154,10 +149,7 @@ public class PrivacyWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
-            final long observedTime = deployedEvent.getTimestamp();
-            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
-                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_ENTRY,
-                    deployedEvent.getClass().getCanonicalName(), observedTime));
+            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
@@ -166,27 +158,18 @@ public class PrivacyWarner extends AbstractStage {
             this.performPrivacyEvaluation(deployedEvent);
 
             this.logger.debug("Deployment processed");
-
-            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
-                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_EXIT,
-                    deployedEvent.getClass().getCanonicalName(), observedTime));
+            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
 
         if (undeployedEvent != null) {
-            final long observedTime = undeployedEvent.getTimestamp();
-            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
-                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_ENTRY,
-                    undeployedEvent.getClass().getCanonicalName(), observedTime));
+            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
-
-            PrivacyWarner.CONTROLLER.newMonitoringRecord(new JSSObservationEvent(
-                    PrivacyWarner.CONTROLLER.getTimeSource().getTime(), JSSObservationPoint.PRIVACY_WARNER_EXIT,
-                    undeployedEvent.getClass().getCanonicalName(), observedTime));
+            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 
@@ -194,6 +177,7 @@ public class PrivacyWarner extends AbstractStage {
             throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException,
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
+        // debug code this.print(graph);
         final Warnings warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
@@ -202,9 +186,38 @@ public class PrivacyWarner extends AbstractStage {
         this.warningsOutputPort.send(warnings);
     }
 
+    private void print(final PrivacyGraph graph) {
+        java.lang.System.out.println("Graph-Name " + graph.getName());
+        java.lang.System.out.println("Vertices");
+        for (final Entry<String, Vertex> entry : graph.getVertices().entrySet()) {
+            final String entityName;
+            final AllocationContext context = entry.getValue().getAllocationContext();
+            if (context != null) {
+                entityName = context.getEntityName();
+            } else {
+                entityName = "<missing allocation context>";
+            }
+            java.lang.System.out
+                    .println("\t" + entry.getKey() + " = " + entry.getValue().getName() + " : " + entityName);
+        }
+        java.lang.System.out.println("Edges");
+        for (final Edge value : graph.getEdges()) {
+            final String entityName;
+            final OperationSignature context = value.getOperationSignature();
+            if (context != null) {
+                entityName = context.getEntityName();
+            } else {
+                entityName = "<missing operation signature>";
+            }
+            java.lang.System.out.println(
+                    "\t" + entityName + " " + value.getSource().getName() + " -> " + value.getTarget().getName());
+        }
+    }
+
     private Warnings checkGraph(final PrivacyGraph graph) throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
         final Warnings warnings = new Warnings();
+
         final PrivacyChecker privacyChecker = new PrivacyChecker(this.policyList, this.policyPackage);
         final List<Edge> edges = privacyChecker.check(graph);
 
@@ -236,8 +249,10 @@ public class PrivacyWarner extends AbstractStage {
 
     /**
      * Loads the root element for each model.
+     *
+     * @throws DBException
      **/
-    private void loadRoots() {
+    private void loadRoots() throws DBException {
         this.repositoryRootElement = this.repositoryResource.getModelRootNode(Repository.class,
                 RepositoryPackage.Literals.REPOSITORY);
         this.systemRootElement = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);
@@ -256,6 +271,7 @@ public class PrivacyWarner extends AbstractStage {
      * @throws InvocationException
      */
     private void addDeployedComponents(final PrivacyGraph privacyGraph) throws InvocationException, DBException {
+        DeploymentLock.lock();
         for (final AllocationContext allocationContext : this.allocationRootElement
                 .getAllocationContexts_Allocation()) {
             final AssemblyContext proxyAssemblyContext = allocationContext.getAssemblyContext_AllocationContext();
@@ -290,6 +306,7 @@ public class PrivacyWarner extends AbstractStage {
                 }
             }
         }
+        DeploymentLock.unlock();
     }
 
     private EStereoType computeStereotype(final BasicComponent basicComponent) {
@@ -331,7 +348,7 @@ public class PrivacyWarner extends AbstractStage {
                 final RepositoryComponent requiringComponent = this.repositoryResource
                         .resolve(requiringAssemblyContext.getEncapsulatedComponent__AssemblyContext());
 
-                if ((providingComponent != null) && (requiringComponent != null)) {
+                if (providingComponent != null && requiringComponent != null) {
                     final OperationProvidedRole providedRole = this.repositoryResource
                             .resolve(assemblyConnector.getProvidedRole_AssemblyConnector());
                     final String interfaceName = this.shortName(providedRole.getEntityName());
@@ -364,12 +381,12 @@ public class PrivacyWarner extends AbstractStage {
                 final Parameter parameter = this.repositoryResource.resolve(proxyParameter);
                 final ParameterModifier mod = parameter.getModifier__Parameter();
 
-                if ((mod == ParameterModifier.IN) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
                     outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
-                if ((mod == ParameterModifier.OUT) || (mod == ParameterModifier.INOUT)) {
+                if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
                     inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }
@@ -384,7 +401,7 @@ public class PrivacyWarner extends AbstractStage {
             final Vertex providingComponentVertex = this.vertices.get(providingComponent.getId());
             final Vertex requiringComponentVertex = this.vertices.get(requiringComponent.getId());
 
-            if ((providingComponentVertex != null) && (requiringComponentVertex != null)) {
+            if (providingComponentVertex != null && requiringComponentVertex != null) {
                 // Add Edges
                 if (inEdgePrivacyLevel != null) {
                     final Edge edge = new Edge(providingComponentVertex, requiringComponentVertex);
@@ -398,7 +415,7 @@ public class PrivacyWarner extends AbstractStage {
                     edge.setOperationSignature(operationSignature);
                     graph.addEdge(edge);
                 }
-                if ((inEdgePrivacyLevel == null) && (outEdgePrivacyLevel == null)) {
+                if (inEdgePrivacyLevel == null && outEdgePrivacyLevel == null) {
                     this.logger.error("Missing privacy level");
                 }
             }
@@ -434,6 +451,7 @@ public class PrivacyWarner extends AbstractStage {
      * @throws InvocationException
      **/
     private void clearAndFillQueryMaps() throws InvocationException, DBException {
+        DeploymentLock.lock();
         this.vertices.clear();
         this.geolocations.clear();
         this.stereotypes.clear();
@@ -472,6 +490,7 @@ public class PrivacyWarner extends AbstractStage {
                 this.interfaces.put(inf.getEntityName(), (OperationInterface) inf);
             }
         }
+        DeploymentLock.unlock();
     }
 
     // TODO better method name

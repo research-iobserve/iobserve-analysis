@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,6 @@ public final class ServletTraceHelperFactory implements IRecordFactory<ServletTr
 		return new ServletTraceHelper(deserializer);
 	}
 	
-	@Override
-	@Deprecated
-	public ServletTraceHelper create(final Object[] values) {
-		return new ServletTraceHelper(values);
-	}
 	
 	public int getRecordSizeInBytes() {
 		return ServletTraceHelper.SIZE;

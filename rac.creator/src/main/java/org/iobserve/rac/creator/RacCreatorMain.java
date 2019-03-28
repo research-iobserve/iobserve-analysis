@@ -26,11 +26,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
+import kieker.tools.common.AbstractService;
 
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  * @author Reiner Jung
  *
  */
-public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration> {
+public class RacCreatorMain extends AbstractService<ObservationConfiguration, RacCreatorMain> {
 
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILENAME = "mapped.txt";
@@ -83,12 +83,12 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
      *             parser configuration error
      */
     public static void main(final String[] args) throws IOException, ParserConfigurationException, SAXException {
-        new RacCreatorMain().run("RAC Creator", "rac creator", args);
+        final RacCreatorMain main = new RacCreatorMain();
+        System.exit(main.run("RAC Creator", "rac creator", args, main));
     }
 
     @Override
-    protected ObservationConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
+    protected ObservationConfiguration createTeetimeConfiguration() throws ConfigurationException {
         final Collection<File> inputPaths = new ArrayList<>();
         inputPaths.add(this.inputPath);
 

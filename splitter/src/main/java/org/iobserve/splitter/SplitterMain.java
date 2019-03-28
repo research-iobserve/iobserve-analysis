@@ -22,18 +22,18 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
+import kieker.tools.common.AbstractService;
 
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Splitter main class.
  *
  * @author Reiner Jung
  */
-public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfiguration> {
+public final class SplitterMain extends AbstractService<SimpleSplitterConfiguration, SplitterMain> {
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
@@ -60,12 +60,12 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new SplitterMain().run("Splitter", "splitter", args);
+        final SplitterMain main = new SplitterMain();
+        System.exit(main.run("Splitter", "splitter", args, main));
     }
 
     @Override
-    protected SimpleSplitterConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
+    protected SimpleSplitterConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
             return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
         } catch (final IOException e) {

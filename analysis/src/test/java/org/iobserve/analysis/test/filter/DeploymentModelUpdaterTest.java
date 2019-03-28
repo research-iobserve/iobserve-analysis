@@ -30,7 +30,8 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -59,15 +60,17 @@ public class DeploymentModelUpdaterTest {
     private final ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
     private final Allocation allocation = AllocationDataFactory.createAllocation(this.system, this.resourceEnvironment);
     private final CorrespondenceModel correspondenceModel = CorrespondenceFactory.eINSTANCE.createCorrespondenceModel();
-    private ModelResource<Allocation> allocationResource;
-    private ModelResource<CorrespondenceModel> correspondenceResource;
+    private Neo4JModelResource<Allocation> allocationResource;
+    private Neo4JModelResource<CorrespondenceModel> correspondenceResource;
 
     /**
      * Test method for
      * {@link org.iobserve.analysis.deployment.DeploymentModelUpdater#execute(org.iobserve.analysis.deployment.data.PCMDeployedEvent)}.
+     * 
+     * @throws DBException
      */
     @Test
-    public void testExecutePCMDeployedEvent() {
+    public void testExecutePCMDeployedEvent() throws DBException {
         this.initializationDatabase();
         final Allocation initDbAllocation = this.allocationResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
@@ -100,7 +103,7 @@ public class DeploymentModelUpdaterTest {
         }
     }
 
-    private void initializationDatabase() {
+    private void initializationDatabase() throws DBException {
         this.prepareGraph(RepositoryPackage.eINSTANCE, "testExecutePCMDeployedEvent-repository")
                 .storeModelPartition(this.repository);
         this.prepareGraph(SystemPackage.eINSTANCE, "testExecutePCMDeployedEvent-system")
@@ -124,12 +127,12 @@ public class DeploymentModelUpdaterTest {
      *
      * @return the prepared graph
      */
-    protected <T extends EObject> ModelResource<T> prepareGraph(final EPackage ePackage, final String name) {
+    protected <T extends EObject> Neo4JModelResource<T> prepareGraph(final EPackage ePackage, final String name) {
         final File graphBaseDir = new File("testdb/" + this.getClass().getCanonicalName() + "/" + name);
 
         this.removeDirectory(graphBaseDir);
 
-        return new ModelResource<>(ePackage, graphBaseDir);
+        return new Neo4JModelResource<>(ePackage, graphBaseDir);
     }
 
     /**

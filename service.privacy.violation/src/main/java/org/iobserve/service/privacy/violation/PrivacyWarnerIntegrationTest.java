@@ -30,7 +30,8 @@ import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.EServiceTechnology;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.privacy.violation.data.Warnings;
@@ -90,8 +91,9 @@ public class PrivacyWarnerIntegrationTest {
      *            command line arguments
      * @throws IOException
      *             on io errors
+     * @throws DBException
      */
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException, DBException {
         if (args.length == 2) {
             final PrivacyWarnerIntegrationTest test = new PrivacyWarnerIntegrationTest(args[0], args[1]);
             test.initializePW();
@@ -103,8 +105,10 @@ public class PrivacyWarnerIntegrationTest {
 
     /**
      * Initialize database.
+     *
+     * @throws DBException
      */
-    public void initializePW() {
+    public void initializePW() throws DBException {
         this.clearDirectory(this.modelDatabaseDirectory);
         this.modelDatabaseDirectory.mkdirs();
 
@@ -112,27 +116,27 @@ public class PrivacyWarnerIntegrationTest {
             final ModelImporter modelHandler = new ModelImporter(this.pcmDirectory);
 
             /** graphs. */
-            final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
+            final Neo4JModelResource<CorrespondenceModel> correspondenceModelResource = new Neo4JModelResource<>(
                     CorrespondencePackage.eINSTANCE, new File(this.modelDatabaseDirectory, "correspondence"));
             correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-            final ModelResource<Repository> repositoryModelResource = new ModelResource<>(RepositoryPackage.eINSTANCE,
+            final Neo4JModelResource<Repository> repositoryModelResource = new Neo4JModelResource<>(RepositoryPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "repository"));
             repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new Neo4JModelResource<>(
                     ResourceenvironmentPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "resourceenvironment"));
             resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-            final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
+            final Neo4JModelResource<System> systemModelResource = new Neo4JModelResource<>(SystemPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "system"));
             systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-            final ModelResource<Allocation> allocationModelResource = new ModelResource<>(AllocationPackage.eINSTANCE,
+            final Neo4JModelResource<Allocation> allocationModelResource = new Neo4JModelResource<>(AllocationPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "allocation"));
             allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-            final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
+            final Neo4JModelResource<PrivacyModel> privacyModelResource = new Neo4JModelResource<>(PrivacyPackage.eINSTANCE,
                     new File(this.modelDatabaseDirectory, "privacy"));
             privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 

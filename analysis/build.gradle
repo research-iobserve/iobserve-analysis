@@ -142,9 +142,9 @@ sourceSets {
 			srcDir 'src/gen/java'
 			srcDir 'src/gen/java-factory'
 		}
-	    	resources {
-	    		srcDir 'src/main/resources'
-	    	}
+	   	resources {
+	   		srcDir 'src/main/resources'
+	   	}
 	}
 }
 

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
 
 import teetime.framework.CompositeStage;
@@ -31,7 +32,6 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

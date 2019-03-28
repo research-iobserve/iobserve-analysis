@@ -26,8 +26,8 @@ import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.feature.IContainerManagementSinkStage;
-import org.iobserve.analysis.sink.InitializeDeploymentVisualization;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -42,15 +42,11 @@ import org.palladiosimulator.pcm.system.System;
 public class VisualizationContainerManagementSinkStage implements IContainerManagementSinkStage {
 
     public VisualizationContainerManagementSinkStage(final Configuration configuration,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelResource<System> systemModelProvider, final ModelResource<Allocation> allocationModelProvider)
-            throws IOException {
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final Neo4JModelResource<System> systemModelProvider,
+            final Neo4JModelResource<Allocation> allocationModelProvider) throws IOException, DBException {
         final URL url = new URL(configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL));
         final String systemId = configuration.getStringProperty(ConfigurationKeys.SYSTEM_ID);
-        final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(url,
-                systemId, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
-
-        deploymentVisualization.initialize();
     }
 
     @Override

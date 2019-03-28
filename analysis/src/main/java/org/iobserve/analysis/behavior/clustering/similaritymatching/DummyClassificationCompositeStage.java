@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
 
 import teetime.framework.CompositeStage;
@@ -24,7 +25,6 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  *

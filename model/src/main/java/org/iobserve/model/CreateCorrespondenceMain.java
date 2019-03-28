@@ -86,7 +86,7 @@ public final class CreateCorrespondenceMain {
                 part.getEntries().add(entry);
             }
 
-            final URI outputURI = URI.createFileURI("/home/reiner/correspondence.rac");
+            final URI outputURI = URI.createFileURI("/home/reiner/correspondence.correspondence");
             CreateCorrespondenceMain.save(correspondenceModel, outputURI);
         } catch (final IOException e) {
             CreateCorrespondenceMain.LOGGER.error("Canot load all models {}", e.getLocalizedMessage());

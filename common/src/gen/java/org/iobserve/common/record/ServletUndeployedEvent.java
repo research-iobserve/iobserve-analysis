@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
@@ -28,19 +27,19 @@ import org.iobserve.common.record.ServletDescriptor;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public class ServletUndeployedEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IUndeployedEvent, ServletDescriptor {			
+public class ServletUndeployedEvent extends AbstractMonitoringRecord implements IUndeployedEvent, ServletDescriptor {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
 			 + TYPE_SIZE_STRING; // ServletDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // ServletDescriptor.service
 		String.class, // ServletDescriptor.context
 		String.class, // ServletDescriptor.deploymentId
@@ -61,7 +60,7 @@ public class ServletUndeployedEvent extends AbstractMonitoringRecord implements 
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final String service;
 	private final String context;
 	private final String deploymentId;
@@ -85,44 +84,7 @@ public class ServletUndeployedEvent extends AbstractMonitoringRecord implements 
 		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public ServletUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.timestamp = (Long) values[0];
-		this.service = (String) values[1];
-		this.context = (String) values[2];
-		this.deploymentId = (String) values[3];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected ServletUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
-		this.service = (String) values[1];
-		this.context = (String) values[2];
-		this.deploymentId = (String) values[3];
-	}
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -138,25 +100,9 @@ public class ServletUndeployedEvent extends AbstractMonitoringRecord implements 
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getTimestamp(),
-			this.getService(),
-			this.getContext(),
-			this.getDeploymentId(),
-		};
-	}
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getService());
 		serializer.putString(this.getContext());
@@ -187,16 +133,6 @@ public class ServletUndeployedEvent extends AbstractMonitoringRecord implements 
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -232,11 +168,27 @@ public class ServletUndeployedEvent extends AbstractMonitoringRecord implements 
 		
 		return true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getService().hashCode();
+		code += this.getContext().hashCode();
+		code += this.getDeploymentId().hashCode();
+		
+		return code;
+	}
 	
 	public final long getTimestamp() {
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final String getService() {
 		return this.service;

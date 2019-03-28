@@ -18,8 +18,11 @@ package org.iobserve.stages.tcp;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.stages.data.Alarms;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.iobserve.stages.data.IErrorMessages;
+import org.iobserve.utility.tcp.IProbeController;
 import org.iobserve.utility.tcp.RemoteControlFailedException;
 import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
@@ -32,21 +35,24 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
  *
  */
 public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControlEvent> {
-    private final TcpProbeController probeController;
+    private final IProbeController probeController;
     private final OutputPort<IErrorMessages> outputPort = this.createOutputPort();
 
     /**
      * Initiates the filter with a new {@link TcpProbeController}.
      */
-    public ProbeControlFilter() {
-        this.probeController = new TcpProbeController();
+    public ProbeControlFilter(final IProbeController probeController) {
+        this.probeController = probeController;
     }
 
     @Override
     protected void execute(final AbstractTcpControlEvent event) {
         try {
+            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_ENTRY);
             this.probeController.controlProbe(event);
+            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_EXIT);
         } catch (final RemoteControlFailedException e) {
+            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_ERROR);
             final String alarmMessage = "Could not send probe control event " + e.getMessage();
             final Alarms alarms = new Alarms();
             alarms.addMessage(alarmMessage);

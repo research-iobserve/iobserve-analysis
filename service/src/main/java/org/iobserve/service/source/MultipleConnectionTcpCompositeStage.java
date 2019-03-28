@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.source;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
 
@@ -22,7 +23,6 @@ import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.service.InstantiationFactory;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.source.ITraceMetadataRewriter;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;

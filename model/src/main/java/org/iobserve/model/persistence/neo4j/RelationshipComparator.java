@@ -37,7 +37,8 @@ public class RelationshipComparator implements Comparator<Relationship> {
 
     @Override
     public int compare(final Relationship o1, final Relationship o2) {
-        return (int) o1.getProperty(ModelProviderUtil.REF_POS) - (int) o2.getProperty(ModelProviderUtil.REF_POS);
+        return (int) ((long) o1.getProperty(ModelProviderUtil.REF_POS)
+                - (long) o2.getProperty(ModelProviderUtil.REF_POS));
     }
 
 }

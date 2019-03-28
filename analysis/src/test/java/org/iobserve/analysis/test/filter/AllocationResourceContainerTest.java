@@ -26,7 +26,8 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
@@ -50,7 +51,7 @@ import org.powermock.api.mockito.PowerMockito;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static Neo4JModelResource<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     private static ResourceEnvironment resourceEnvironment = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
@@ -69,16 +70,18 @@ public class AllocationResourceContainerTest {
     /**
      * Define the test situation in which a {@link ContainerAllocationEvent} is defined as input and
      * the specified {@link ResourceContainer} does exist in the {@link ResourceEnvironment}.
+     * 
+     * @throws DBException
      */
     @SuppressWarnings("unchecked")
     @Before
-    public void stubMocksResourceContainer() {
+    public void stubMocksResourceContainer() throws DBException {
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         /** mock for new graph provider */
-        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelResource.class);
+        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(Neo4JModelResource.class);
 
         this.allocationStage = new AllocationStage(
                 AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);

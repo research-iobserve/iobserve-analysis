@@ -23,7 +23,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
@@ -50,7 +51,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     /** reference to the correspondence model. */
     private final CorrespondenceModel correspondenceModel;
     /** usage model provider. */
-    private final ModelResource<UsageModel> usageModelProvider;
+    private final Neo4JModelResource<UsageModel> usageModelProvider;
 
     private final int varianceOfUserGroups;
 
@@ -80,7 +81,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
      *            type of workload
      */
     public TEntryEventSequence(final CorrespondenceModel correspondenceModel,
-            final ModelResource<UsageModel> usageModelProvider,
+            final Neo4JModelResource<UsageModel> usageModelProvider,
             final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
             final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
@@ -96,7 +97,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     }
 
     @Override
-    protected void execute(final UserSessionCollectionModel entryCallSequenceModel) {
+    protected void execute(final UserSessionCollectionModel entryCallSequenceModel) throws DBException {
         // Resets the current usage model
         final UsageModel model = this.usageModelProvider.getAndLockModelRootNode(UsageModel.class,
                 UsagemodelPackage.Literals.USAGE_MODEL);
@@ -126,7 +127,11 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 
         // Sets the new usage model within iObserve
         this.usageModelProvider.clearResource();
-        this.usageModelProvider.storeModelPartition(model);
+        try {
+            this.usageModelProvider.storeModelPartition(model);
+        } catch (final DBException e) {
+            e.printStackTrace();
+        }
 
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         this.outputPortSnapshot.send(false);

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Marc Adolf
  *
  */
-public class TcpProbeController {
+public class TcpProbeController implements IProbeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeController.class);
     private static final int CONN_TIMEOUT_IN_MS = 100;
 
@@ -67,11 +67,17 @@ public class TcpProbeController {
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
+    @Override
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
+        if (TcpProbeController.LOGGER.isDebugEnabled()) {
+            TcpProbeController.LOGGER
+                    .debug("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
+        }
         final String ip = event.getIp();
         final int port = event.getPort();
         final String hostname = event.getHostname();
         final String pattern = event.getPattern();
+
         if (event instanceof TcpActivationControlEvent) {
             if (event instanceof TcpActivationParameterControlEvent) {
                 this.activateParameterMonitoredPattern(ip, port, hostname, pattern,
@@ -186,7 +192,7 @@ public class TcpProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+        if (currentConnection == null || currentConnection.getHostname() != hostname) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -250,7 +256,12 @@ public class TcpProbeController {
         final String[][] parameterArray = new String[parameterLength][];
 
         for (int i = 0; i < parameterLength; i++) {
-            parameterArray[i] = (String[]) parameters.get(parameterNames[i]).toArray();
+            final List<String> list = parameters.get(parameterNames[i]);
+            if (list.isEmpty()) {
+                parameterArray[i] = new String[0];
+            } else {
+                parameterArray[i] = (String[]) list.toArray();
+            }
         }
         return parameterArray;
     }

@@ -15,11 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.persistence.neo4j;
 
-import java.util.Map;
-
 import org.eclipse.emf.ecore.EObject;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
 
 /**
  * @author Reiner Jung
@@ -31,9 +28,7 @@ public class GenericModelFacility<R extends EObject> {
 
     protected final GraphDatabaseService graphDatabaseService;
 
-    protected final Map<EObject, Node> objectNodeMap;
-
-    protected final ModelResource<R> resource;
+    protected final Neo4JModelResource<R> resource;
 
     /**
      * Create an abstract model facility.
@@ -42,14 +37,10 @@ public class GenericModelFacility<R extends EObject> {
      *            the corresponding model resource
      * @param graphDatabaseService
      *            database for the model
-     * @param objectNodeMap
-     *            object to node map
      */
-    public GenericModelFacility(final ModelResource<R> resource, final GraphDatabaseService graphDatabaseService,
-            final Map<EObject, Node> objectNodeMap) {
+    public GenericModelFacility(final Neo4JModelResource<R> resource, final GraphDatabaseService graphDatabaseService) {
         this.resource = resource;
         this.graphDatabaseService = graphDatabaseService;
-        this.objectNodeMap = objectNodeMap;
     }
 
 }

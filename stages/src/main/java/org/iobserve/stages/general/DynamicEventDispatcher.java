@@ -18,16 +18,14 @@ package org.iobserve.stages.general;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kieker.common.record.IMonitoringRecord;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
+import kieker.analysis.common.ConfigurationException;
+import kieker.common.record.flow.IEventRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.common.record.IEvent;
-import org.iobserve.common.record.JSSObservationEvent;
-import org.iobserve.common.record.JSSObservationPoint;
+import org.iobserve.common.record.ObservationPoint;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +38,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.3
  */
 public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
-
-    // remove probes later
-    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicEventDispatcher.class);
 
@@ -108,15 +103,11 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 event);
         if (selectedOutputPort != null) {
             // collecting event observation time (if possible); only for performance tests.
-            final long observedTime;
-            if (event instanceof IEvent) {
-                observedTime = ((IEvent) event).getTimestamp();
-            } else {
-                observedTime = ((IMonitoringRecord) event).getLoggingTimestamp();
+            if (event instanceof IEventRecord) {
+                final IEventRecord specialEvent = (IEventRecord) event;
+                ExperimentLogging.measureEventTime(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
+                ExperimentLogging.measure(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
             }
-            DynamicEventDispatcher.CONTROLLER.newMonitoringRecord(
-                    new JSSObservationEvent(DynamicEventDispatcher.CONTROLLER.getTimeSource().getTime(),
-                            JSSObservationPoint.DISPATCHER_ENTRY, event.getClass().getCanonicalName(), observedTime));
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {

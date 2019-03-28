@@ -24,26 +24,47 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
- * Container for transportation of the information, which methods (probes) monitoring should be
- * (de-)activated.
+ * Model to remember which monitoring probes should be (de-)activated for certain methods.
  *
  * @author Marc Adolf
  *
  */
 public class ProbeManagementData {
+
     private final Map<AllocationContext, Set<OperationSignature>> methodsToActivate;
+
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
+
     private Map<AllocationContext, Set<OperationSignature>> methodsToUpdate;
 
-    private List<String> whitelist = null;
+    private Map<AllocationContext, Set<OperationSignature>> warnedMethods;
 
+    private List<String> whitelist = null; // NOPMD document null
+
+    private long triggerTime;
+
+    /**
+     * Create a probe management model.
+     *
+     * @param methodsToActivate
+     * @param methodsToDeactivate
+     */
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
-        this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>());
+        this(methodsToActivate, methodsToDeactivate, new HashMap<AllocationContext, Set<OperationSignature>>(),
+                new HashMap<AllocationContext, Set<OperationSignature>>());
     }
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
+            final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+        this(methodsToActivate, methodsToDeactivate, warnedMethods,
+                new HashMap<AllocationContext, Set<OperationSignature>>());
+    }
+
+    private ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
+            final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
+            final Map<AllocationContext, Set<OperationSignature>> warnedMethods,
             final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
@@ -58,6 +79,14 @@ public class ProbeManagementData {
         return this.methodsToDeactivate;
     }
 
+    public Map<AllocationContext, Set<OperationSignature>> getWarnedMethods() {
+        return this.warnedMethods;
+    }
+
+    public void setWarnedMethods(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
+        this.warnedMethods = warnedMethods;
+    }
+
     public void setMethodsToUpdate(final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
         this.methodsToUpdate = methodsToUpdate;
     }
@@ -68,7 +97,7 @@ public class ProbeManagementData {
 
     /**
      *
-     * @return null, if there is no whitelist
+     * @return returns the whitelist or null, if there is no whitelist.
      */
     public List<String> getWhitelist() {
         return this.whitelist;
@@ -76,6 +105,14 @@ public class ProbeManagementData {
 
     public void setWhitelist(final List<String> whitelist) {
         this.whitelist = whitelist;
+    }
+
+    public final long getTriggerTime() {
+        return this.triggerTime;
+    }
+
+    public final void setTriggerTime(final long triggerTime) {
+        this.triggerTime = triggerTime;
     }
 
 }

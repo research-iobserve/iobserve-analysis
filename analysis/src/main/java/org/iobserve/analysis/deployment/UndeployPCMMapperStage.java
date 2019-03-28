@@ -23,13 +23,15 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -44,9 +46,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEvent> {
 
-    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
-    private final ModelResource<System> systemModelResource;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final IModelResource<System> systemModelResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -60,9 +62,9 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
      * @param resourceEnvironmentResource
      *            resource container model resource
      */
-    public UndeployPCMMapperStage(final ModelResource<CorrespondenceModel> correspondenceModelResource,
-            final ModelResource<System> systemModelResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentResource) {
+    public UndeployPCMMapperStage(final IModelResource<CorrespondenceModel> correspondenceModelResource,
+            final IModelResource<System> systemModelResource,
+            final IModelResource<ResourceEnvironment> resourceEnvironmentResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.systemModelResource = systemModelResource;
         this.resourceEnvironmentResource = resourceEnvironmentResource;
@@ -74,12 +76,14 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     @Override
     protected void execute(final IUndeployedEvent event) throws InvocationException, DBException {
+        ExperimentLogging.measure(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
         this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);
         } else if (event instanceof EJBUndeployedEvent) {
             this.ejbMapper((EJBUndeployedEvent) event);
         }
+        ExperimentLogging.measure(event, ObservationPoint.CODE_TO_MODEL_EXIT);
     }
 
     private void servletMapper(final ServletUndeployedEvent event) throws InvocationException, DBException {
@@ -99,24 +103,31 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     private void performMapping(final String service, final String context, final long observedTime)
             throws InvocationException, DBException {
-        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndName(
+        DeploymentLock.lock();
+        final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndProperty(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
-        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndName(
-                ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
+        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource
+                .findObjectsByTypeAndProperty(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
 
-        if (assemblyEntry.size() == 1) {
-            final ResourceContainer resourceContainer = resourceContainers.get(0);
-            final AssemblyContext assemblyContext = this.systemModelResource
-                    .resolve(assemblyEntry.get(0).getAssembly());
-            this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
-        } else if (assemblyEntry.isEmpty()) {
-            this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
-                    service);
-        } else if (assemblyEntry.size() > 1) {
-            this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.", context,
-                    service);
+        if (!resourceContainers.isEmpty()) {
+            if (assemblyEntry.size() == 1) {
+                final ResourceContainer resourceContainer = resourceContainers.get(0);
+                final AssemblyContext assemblyContext = this.systemModelResource
+                        .resolve(assemblyEntry.get(0).getAssembly());
+                this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
+            } else if (assemblyEntry.isEmpty()) {
+                this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
+                        service);
+            } else if (assemblyEntry.size() > 1) {
+                this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.",
+                        context, service);
+            }
+        } else {
+            this.logger.warn("Undeplyoment issue: No resource container found {}.", service);
         }
+        DeploymentLock.unlock();
     }
 
 }

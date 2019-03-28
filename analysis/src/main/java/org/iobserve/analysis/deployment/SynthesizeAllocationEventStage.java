@@ -28,7 +28,8 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
@@ -54,7 +55,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     private static final ITimeSource TIME_SOURCE = MonitoringController.getInstance().getTimeSource();
 
     /** reference to resource environment model provider. */
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
@@ -66,12 +67,12 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
      * @param resourceEnvironmentModelResource
      *            the resource environment which is tested for a proper allocation
      */
-    public SynthesizeAllocationEventStage(final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource) {
+    public SynthesizeAllocationEventStage(final IModelResource<ResourceEnvironment> resourceEnvironmentModelResource) {
         this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
     }
 
     @Override
-    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException {
+    protected void execute(final PCMDeployedEvent event) throws EventConfigurationException, DBException {
         if (event.getAssemblyContext() == null) {
             throw new EventConfigurationException("Missing assembly context in PCMDeployedEvent");
         }

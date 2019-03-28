@@ -22,10 +22,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.analysis.common.ConfigurationException;
+import kieker.tools.common.AbstractService;
+
 import org.iobserve.planning.configurations.PlanningConfigurationMockup;
-import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * A main class for mocking iObserve's planning service.
@@ -33,7 +34,8 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class PlanningMainMockup extends AbstractServiceMain<PlanningConfigurationMockup> {
+public class PlanningMainMockup extends AbstractService<PlanningConfigurationMockup, PlanningMainMockup> {
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -48,7 +50,8 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMainMockup().run("Planning Service", "planning", args);
+        final PlanningMainMockup main = new PlanningMainMockup();
+        System.exit(main.run("Planning Service", "planning", args, main));
     }
 
     @Override
@@ -82,18 +85,18 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
     }
 
     @Override
-    protected PlanningConfigurationMockup createConfiguration(
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+    protected PlanningConfigurationMockup createTeetimeConfiguration() throws ConfigurationException {
         final File runtimeModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(
-                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
-        final int adaptationRuntimeModelInputPort = configuration
+        final String adaptationHostname = this.kiekerConfiguration
+                .getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
+        final int adaptationRuntimeModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
-        final int adaptationRedeploymentModelInputPort = configuration
+        final int adaptationRedeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
         return new PlanningConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, adaptationHostname,

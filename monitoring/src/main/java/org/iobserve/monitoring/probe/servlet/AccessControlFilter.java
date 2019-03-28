@@ -27,7 +27,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
@@ -80,19 +79,16 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        if (AccessControlFilter.CTRLINST.isMonitoringEnabled()) {
-            if (request instanceof HttpServletRequest) {
-                final String remoteAddr = request.getRemoteAddr();
-                if (this.isInWhiteList(remoteAddr, this.computeLocationId((HttpServletRequest) request))) {
-                    chain.doFilter(request, response);
-                } else {
-                    ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    chain.doFilter(request, response);
-                }
-            }
-        } else {
-            chain.doFilter(request, response);
-        }
+        chain.doFilter(request, response);
+
+        /*
+         * if (AccessControlFilter.CTRLINST.isMonitoringEnabled()) { if (request instanceof
+         * HttpServletRequest) { final String remoteAddr = request.getRemoteAddr(); if
+         * (this.isInWhiteList(remoteAddr, this.computeLocationId((HttpServletRequest) request))) {
+         * chain.doFilter(request, response); } else { ((HttpServletResponse)
+         * response).setStatus(HttpServletResponse.SC_FORBIDDEN); chain.doFilter(request, response);
+         * } } } else { chain.doFilter(request, response); }
+         */
     }
 
     private String computeLocationId(final HttpServletRequest request) {
@@ -106,12 +102,21 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
             }
         }
 
-        return String.format("%s %s %s (%s)", request.getRequestURI(), parameters);
+        return String.format("%s (%s)", request.getRequestURI(), parameters);
     }
 
     private boolean isInWhiteList(final String remoteAddr, final String locationId) {
         final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getParameters(locationId);
-        return parameters.get("whitelist").contains(remoteAddr);
+        if (parameters != null) {
+            final List<String> whitelist = parameters.get("whitelist");
+            if (whitelist != null) {
+                return whitelist.contains(remoteAddr);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override

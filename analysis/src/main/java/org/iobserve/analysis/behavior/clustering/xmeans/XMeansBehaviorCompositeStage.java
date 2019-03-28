@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.xmeans;
 
+import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
@@ -32,7 +33,6 @@ import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * @author Reiner Jung
@@ -121,3 +121,4 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
     }
 
 }
+

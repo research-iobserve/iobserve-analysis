@@ -46,7 +46,15 @@ public enum EServiceTechnology implements Enumerator {
      * @generated
      * @ordered
      */
-    ASPECT_J(2, "ASPECT_J", "ASPECT_J");
+    ASPECT_J(2, "ASPECT_J", "ASPECT_J"), /**
+     * The '<em><b>DB</b></em>' literal object.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #DB_VALUE
+     * @generated
+     * @ordered
+     */
+    DB(3, "DB", "DB");
 
     /**
      * The '<em><b>SERVLET</b></em>' literal value.
@@ -94,6 +102,21 @@ public enum EServiceTechnology implements Enumerator {
     public static final int ASPECT_J_VALUE = 2;
 
     /**
+     * The '<em><b>DB</b></em>' literal value.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of '<em><b>DB</b></em>' literal object isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @see #DB
+     * @model
+     * @generated
+     * @ordered
+     */
+    public static final int DB_VALUE = 3;
+
+    /**
      * An array of all the '<em><b>EService Technology</b></em>' enumerators.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -104,6 +127,7 @@ public enum EServiceTechnology implements Enumerator {
             SERVLET,
             EJB,
             ASPECT_J,
+            DB,
         };
 
     /**
@@ -163,6 +187,7 @@ public enum EServiceTechnology implements Enumerator {
             case SERVLET_VALUE: return SERVLET;
             case EJB_VALUE: return EJB;
             case ASPECT_J_VALUE: return ASPECT_J;
+            case DB_VALUE: return DB;
         }
         return null;
     }

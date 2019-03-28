@@ -20,8 +20,11 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AnalysisExperimentLogging;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.common.record.ObservationPoint;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -39,7 +42,7 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to system model provider. */
-    private final ModelResource<Allocation> allocationModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -50,7 +53,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * @param allocationModelResource
      *            system model access
      */
-    public UndeploymentModelUpdater(final ModelResource<Allocation> allocationModelResource) {
+    public UndeploymentModelUpdater(final IModelResource<Allocation> allocationModelResource) {
         this.allocationModelResource = allocationModelResource;
     }
 
@@ -59,27 +62,37 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      *
      * @param event
      *            undeployment event
+     * @throws DBException
+     *             on db errors
      */
     @Override
-    protected void execute(final PCMUndeployedEvent event) {
+    protected void execute(final PCMUndeployedEvent event) throws DBException {
+        DeploymentLock.lock();
+        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
-        final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
-                + event.getResourceContainer().getEntityName();
+        final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
+                event.getResourceContainer());
 
-        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndName(
+        final List<AllocationContext> allocationContexts = this.allocationModelResource.findObjectsByTypeAndProperty(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
                 allocationContextName);
 
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
             this.allocationModelResource.deleteObject(allocationContext);
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+            DeploymentLock.unlock();
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
                     allocationContextName);
+            DeploymentLock.unlock();
         } else {
+            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
+            DeploymentLock.unlock();
         }
     }
 

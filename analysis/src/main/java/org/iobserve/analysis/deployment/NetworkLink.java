@@ -23,7 +23,8 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -59,11 +60,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final ModelResource<Allocation> allocationModelResource;
+    private final Neo4JModelResource<Allocation> allocationModelResource;
     /** reference to system model provider. */
-    private final ModelResource<System> systemModelResource;
+    private final Neo4JModelResource<System> systemModelResource;
     /** reference to resource environment model provider. */
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
 
     /**
      * Create new TNetworkLink filter.
@@ -75,9 +76,9 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final ModelResource<Allocation> allocationModelProvider,
-            final ModelResource<System> systemModelProvider,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelProvider) {
+    public NetworkLink(final Neo4JModelResource<Allocation> allocationModelProvider,
+            final Neo4JModelResource<System> systemModelProvider,
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.allocationModelResource = allocationModelProvider;
         this.systemModelResource = systemModelProvider;
         this.resourceEnvironmentModelResource = resourceEnvironmentModelProvider;
@@ -89,9 +90,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param event
      *            event to use
      * @throws NodeLookupException
+     * @throws DBException
+     *             on db errors
      */
     @Override
-    protected void execute(final TraceMetadata event) throws NodeLookupException {
+    protected void execute(final TraceMetadata event) throws NodeLookupException, DBException {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelResource.getAndLockModelRootNode(
                 ResourceEnvironment.class, ResourceenvironmentPackage.Literals.RESOURCE_ENVIRONMENT);
 

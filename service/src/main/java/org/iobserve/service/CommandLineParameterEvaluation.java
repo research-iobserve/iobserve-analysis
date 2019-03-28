@@ -57,6 +57,11 @@ public final class CommandLineParameterEvaluation {
      */
     public static boolean checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
+        if (location == null) {
+            CommandLineParameterEvaluation.LOGGER.error("{} path not specified.", locationLabel);
+            commander.usage();
+            return false;
+        }
         if (!location.exists()) {
             CommandLineParameterEvaluation.LOGGER.error("{} path {} does not exist.", locationLabel,
                     location.getCanonicalPath());

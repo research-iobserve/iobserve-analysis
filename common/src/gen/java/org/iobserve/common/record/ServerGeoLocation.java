@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,28 +19,27 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
-import org.iobserve.common.record.IEvent;
+import kieker.common.record.flow.IEventRecord;
 import org.iobserve.common.record.GeoLocation;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public class ServerGeoLocation extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, GeoLocation {			
+public class ServerGeoLocation extends AbstractMonitoringRecord implements IEventRecord, GeoLocation {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_INT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
 			 + TYPE_SIZE_STRING; // ServerGeoLocation.address
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		ISOCountryCode.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
@@ -49,7 +48,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -413384511659446310L;
+	private static final long serialVersionUID = -2727780590184532240L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -60,7 +59,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
+	private long timestamp;
 	private final ISOCountryCode countryCode;
 	private final String hostname;
 	private final String address;
@@ -84,44 +83,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 		this.address = address == null?"":address;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.timestamp = (Long) values[0];
-		this.countryCode = (ISOCountryCode) values[1];
-		this.hostname = (String) values[2];
-		this.address = (String) values[3];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
-		this.countryCode = (ISOCountryCode) values[1];
-		this.hostname = (String) values[2];
-		this.address = (String) values[3];
-	}
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -137,25 +99,9 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getTimestamp(),
-			this.getCountryCode(),
-			this.getHostname(),
-			this.getAddress(),
-		};
-	}
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putInt(this.getCountryCode().ordinal());
 		serializer.putString(this.getHostname());
@@ -186,16 +132,6 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -231,11 +167,27 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IMoni
 		
 		return true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getTimestamp());
+		code += this.getCountryCode().hashCode();
+		code += this.getHostname().hashCode();
+		code += this.getAddress().hashCode();
+		
+		return code;
+	}
 	
 	public final long getTimestamp() {
 		return this.timestamp;
 	}
 	
+	public final void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;
