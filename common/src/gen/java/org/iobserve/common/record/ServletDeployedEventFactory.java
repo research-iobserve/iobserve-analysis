@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ServletDeployedEventFactory implements IRecordFactory<ServletDeployedEvent> {
 	
-	
+
 	@Override
 	public ServletDeployedEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ServletDeployedEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return ServletDeployedEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return ServletDeployedEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return ServletDeployedEvent.SIZE;
 	}

@@ -17,7 +17,7 @@ package org.iobserve.service;
 
 import java.lang.reflect.InvocationTargetException;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 
 import teetime.framework.Configuration;
 

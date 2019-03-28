@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;

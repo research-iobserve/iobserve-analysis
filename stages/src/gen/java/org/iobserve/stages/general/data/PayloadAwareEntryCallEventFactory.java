@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class PayloadAwareEntryCallEventFactory implements IRecordFactory<PayloadAwareEntryCallEvent> {
 	
-	
+
 	@Override
 	public PayloadAwareEntryCallEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new PayloadAwareEntryCallEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return PayloadAwareEntryCallEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return PayloadAwareEntryCallEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return PayloadAwareEntryCallEvent.SIZE;
 	}

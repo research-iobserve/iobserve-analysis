@@ -45,18 +45,18 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 		String.class, // ServerGeoLocation.address
 	};
 	
-	/** default constants. */
-	public static final String HOSTNAME = "";
-	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -2727780590184532240L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"countryCode",
 		"hostname",
 		"address",
 	};
+	
+	/** default constants. */
+	public static final String HOSTNAME = "";
+	public static final String ADDRESS = "";
+	private static final long serialVersionUID = -2727780590184532240L;
 	
 	/** property declarations. */
 	private long timestamp;
@@ -121,7 +121,7 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

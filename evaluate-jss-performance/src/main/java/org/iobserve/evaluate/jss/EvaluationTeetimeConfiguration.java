@@ -17,7 +17,7 @@ package org.iobserve.evaluate.jss;
 
 import java.io.FileNotFoundException;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 
 import teetime.framework.Configuration;
 

@@ -45,19 +45,19 @@ public class EJBUndeployedEvent extends AbstractMonitoringRecord implements IUnd
 		String.class, // EJBDescriptor.deploymentId
 	};
 	
-	/** default constants. */
-	public static final String SERVICE = "";
-	public static final String CONTEXT = "";
-	public static final String DEPLOYMENT_ID = "";
-	private static final long serialVersionUID = -3501215990833926224L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"service",
 		"context",
 		"deploymentId",
 	};
+	
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -3501215990833926224L;
 	
 	/** property declarations. */
 	private long timestamp;
@@ -122,7 +122,7 @@ public class EJBUndeployedEvent extends AbstractMonitoringRecord implements IUnd
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

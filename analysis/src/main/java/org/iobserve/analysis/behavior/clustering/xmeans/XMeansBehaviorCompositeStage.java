@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.xmeans;
 
-import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -121,4 +121,3 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
     }
 
 }
-

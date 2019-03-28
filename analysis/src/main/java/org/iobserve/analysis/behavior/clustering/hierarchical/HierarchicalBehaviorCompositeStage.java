@@ -17,6 +17,7 @@
 package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -33,7 +34,6 @@ import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Composite Stage for the Hierarchical Clustering Behavior.

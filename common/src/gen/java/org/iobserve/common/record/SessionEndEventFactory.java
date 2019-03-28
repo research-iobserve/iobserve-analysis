@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class SessionEndEventFactory implements IRecordFactory<SessionEndEvent> {
 	
-	
+
 	@Override
 	public SessionEndEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new SessionEndEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return SessionEndEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return SessionEndEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return SessionEndEvent.SIZE;
 	}

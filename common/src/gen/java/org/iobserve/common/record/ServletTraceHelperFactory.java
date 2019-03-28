@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
 	
-	
+
 	@Override
 	public ServletTraceHelper create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ServletTraceHelper(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return ServletTraceHelper.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return ServletTraceHelper.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return ServletTraceHelper.SIZE;
 	}

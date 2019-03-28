@@ -52,10 +52,8 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 		int.class, // IPayloadCharacterization.requestType
 	};
 	
-	private static final long serialVersionUID = -3583783831259543534L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"traceId",
 		"orderIndex",
@@ -65,6 +63,8 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 		"values",
 		"requestType",
 	};
+	
+	private static final long serialVersionUID = -3583783831259543534L;
 	
 	/** property declarations. */
 	private final String[] parameters;
@@ -160,7 +160,7 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

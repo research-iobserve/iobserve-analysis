@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
-import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
 
 import org.apache.commons.io.FileUtils;

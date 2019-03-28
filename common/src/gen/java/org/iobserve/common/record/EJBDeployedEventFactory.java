@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class EJBDeployedEventFactory implements IRecordFactory<EJBDeployedEvent> {
 	
-	
+
 	@Override
 	public EJBDeployedEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new EJBDeployedEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return EJBDeployedEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return EJBDeployedEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return EJBDeployedEvent.SIZE;
 	}

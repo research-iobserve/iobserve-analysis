@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class SessionStartEventFactory implements IRecordFactory<SessionStartEvent> {
 	
-	
+
 	@Override
 	public SessionStartEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new SessionStartEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return SessionStartEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return SessionStartEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return SessionStartEvent.SIZE;
 	}

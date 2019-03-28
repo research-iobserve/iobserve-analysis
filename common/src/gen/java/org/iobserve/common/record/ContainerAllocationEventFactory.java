@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
 	
-	
+
 	@Override
 	public ContainerAllocationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ContainerAllocationEvent(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return ContainerAllocationEvent.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return ContainerAllocationEvent.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return ContainerAllocationEvent.SIZE;
 	}

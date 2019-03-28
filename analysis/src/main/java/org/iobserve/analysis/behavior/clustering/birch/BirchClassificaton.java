@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.birch;
 
-import kieker.analysis.common.ConfigurationException;
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;

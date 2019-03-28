@@ -18,7 +18,7 @@ package org.iobserve.stages.general;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IEventRecord;
 
 import teetime.framework.AbstractConsumerStage;

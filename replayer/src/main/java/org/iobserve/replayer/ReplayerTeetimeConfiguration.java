@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.replayer;
 
-import kieker.analysisteetime.plugin.reader.filesystem.LogsReaderCompositeStage;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.tools.source.LogsReaderCompositeStage;
 
 import teetime.framework.Configuration;
 

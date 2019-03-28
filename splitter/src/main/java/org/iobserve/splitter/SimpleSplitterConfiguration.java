@@ -18,9 +18,9 @@ package org.iobserve.splitter;
 import java.io.File;
 import java.io.IOException;
 
-import kieker.analysisteetime.plugin.reader.filesystem.LogsReaderCompositeStage;
 import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.writer.filesystem.FileWriter;
+import kieker.tools.source.LogsReaderCompositeStage;
 
 import teetime.framework.Configuration;
 

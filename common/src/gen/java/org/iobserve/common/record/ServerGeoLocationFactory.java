@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
-	
+
 	@Override
 	public ServerGeoLocation create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ServerGeoLocation(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return ServerGeoLocation.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return ServerGeoLocation.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return ServerGeoLocation.SIZE;
 	}

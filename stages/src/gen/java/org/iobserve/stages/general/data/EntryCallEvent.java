@@ -47,15 +47,8 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 		String.class, // EntryCallEvent.hostname
 	};
 	
-	/** default constants. */
-	public static final String OPERATION_SIGNATURE = "";
-	public static final String CLASS_SIGNATURE = "";
-	public static final String SESSION_ID = "";
-	public static final String HOSTNAME = "";
-	private static final long serialVersionUID = -9019303768669463280L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"entryTime",
 		"exitTime",
 		"operationSignature",
@@ -63,6 +56,13 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 		"sessionId",
 		"hostname",
 	};
+	
+	/** default constants. */
+	public static final String OPERATION_SIGNATURE = "";
+	public static final String CLASS_SIGNATURE = "";
+	public static final String SESSION_ID = "";
+	public static final String HOSTNAME = "";
+	private static final long serialVersionUID = -9019303768669463280L;
 	
 	/** property declarations. */
 	private final long entryTime;
@@ -139,7 +139,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

@@ -45,19 +45,19 @@ public class ServletDeployedEvent extends AbstractMonitoringRecord implements ID
 		String.class, // ServletDescriptor.deploymentId
 	};
 	
-	/** default constants. */
-	public static final String SERVICE = "";
-	public static final String CONTEXT = "";
-	public static final String DEPLOYMENT_ID = "";
-	private static final long serialVersionUID = 5978540046869193725L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"service",
 		"context",
 		"deploymentId",
 	};
+	
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = 5978540046869193725L;
 	
 	/** property declarations. */
 	private long timestamp;
@@ -122,7 +122,7 @@ public class ServletDeployedEvent extends AbstractMonitoringRecord implements ID
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

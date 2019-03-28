@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
 
 import org.iobserve.adaptation.configurations.AdaptationConfiguration;

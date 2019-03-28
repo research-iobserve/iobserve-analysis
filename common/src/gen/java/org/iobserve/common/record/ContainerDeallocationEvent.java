@@ -40,13 +40,13 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 		String.class, // AbstractContainerEvent.service
 	};
 	
-	private static final long serialVersionUID = 6294283798368247976L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"service",
 	};
+	
+	private static final long serialVersionUID = 6294283798368247976L;
 	
 	
 	/**
@@ -94,7 +94,7 @@ public class ContainerDeallocationEvent extends AbstractContainerEvent implement
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

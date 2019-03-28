@@ -19,9 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import kieker.analysis.common.ConfigurationException;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
 import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.CompositeStage;

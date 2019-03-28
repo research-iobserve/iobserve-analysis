@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.service.source;
 
-import kieker.analysisteetime.plugin.reader.filesystem.LogsReaderCompositeStage;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
+import kieker.tools.source.LogsReaderCompositeStage;
 
 import teetime.framework.OutputPort;
 

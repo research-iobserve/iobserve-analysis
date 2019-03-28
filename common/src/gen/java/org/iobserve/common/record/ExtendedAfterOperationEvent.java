@@ -48,12 +48,8 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		String.class, // IUserInformation.informations
 	};
 	
-	/** default constants. */
-	public static final String INFORMATIONS = "";
-	private static final long serialVersionUID = -6074724758089708739L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"traceId",
 		"orderIndex",
@@ -61,6 +57,10 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		"classSignature",
 		"informations",
 	};
+	
+	/** default constants. */
+	public static final String INFORMATIONS = "";
+	private static final long serialVersionUID = -6074724758089708739L;
 	
 	/** property declarations. */
 	private final String informations;
@@ -124,7 +124,7 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

@@ -46,16 +46,16 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 		ISOCountryCode.class, // GeoLocation.countryCode
 	};
 	
-	private static final long serialVersionUID = 558619872261869010L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"service",
 		"context",
 		"deploymentId",
 		"countryCode",
 	};
+	
+	private static final long serialVersionUID = 558619872261869010L;
 	
 	/** property declarations. */
 	private final ISOCountryCode countryCode;
@@ -116,7 +116,7 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

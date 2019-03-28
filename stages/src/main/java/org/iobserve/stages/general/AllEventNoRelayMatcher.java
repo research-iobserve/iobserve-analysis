@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.stages.general;
 
-import kieker.analysis.common.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
 
 import teetime.framework.OutputPort;
 

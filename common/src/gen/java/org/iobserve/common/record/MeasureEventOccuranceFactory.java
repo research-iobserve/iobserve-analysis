@@ -27,13 +27,23 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class MeasureEventOccuranceFactory implements IRecordFactory<MeasureEventOccurance> {
 	
-	
+
 	@Override
 	public MeasureEventOccurance create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new MeasureEventOccurance(deserializer);
 	}
-	
-	
+
+
+	@Override
+	public String[] getValueNames() {
+		return MeasureEventOccurance.VALUE_NAMES; // NOPMD
+	}
+
+	@Override
+	public Class<?>[] getValueTypes() {
+		return MeasureEventOccurance.TYPES; // NOPMD
+	}
+
 	public int getRecordSizeInBytes() {
 		return MeasureEventOccurance.SIZE;
 	}

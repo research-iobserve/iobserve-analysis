@@ -46,16 +46,16 @@ public class Privacy_ServletDeployedEvent extends ServletDeployedEvent implement
 		ISOCountryCode.class, // GeoLocation.countryCode
 	};
 	
-	private static final long serialVersionUID = -4255437900010212383L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"service",
 		"context",
 		"deploymentId",
 		"countryCode",
 	};
+	
+	private static final long serialVersionUID = -4255437900010212383L;
 	
 	/** property declarations. */
 	private final ISOCountryCode countryCode;
@@ -116,7 +116,7 @@ public class Privacy_ServletDeployedEvent extends ServletDeployedEvent implement
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**

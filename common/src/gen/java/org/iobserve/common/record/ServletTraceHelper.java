@@ -45,18 +45,18 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 		String.class, // ServletTraceHelper.requestURI
 	};
 	
-	/** default constants. */
-	public static final String HOST = "";
-	public static final String REQUEST_URI = "";
-	private static final long serialVersionUID = 2363353535794190244L;
-	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"traceId",
 		"host",
 		"port",
 		"requestURI",
 	};
+	
+	/** default constants. */
+	public static final String HOST = "";
+	public static final String REQUEST_URI = "";
+	private static final long serialVersionUID = 2363353535794190244L;
 	
 	/** property declarations. */
 	private final long traceId;
@@ -121,7 +121,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**
