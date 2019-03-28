@@ -16,15 +16,17 @@
 package org.iobserve.evaluate.jss;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.MeasureEventOccurance;
+import org.iobserve.common.record.ObservationPoint;
 
 /**
  * @author Reiner Jung
@@ -47,8 +49,47 @@ public class EventCollector extends AbstractConsumerStage<MeasureEventOccurance>
 
     @Override
     protected void onTerminating() {
-        for (final Entry<Long, List<MeasureEventOccurance>> entry : this.data.entrySet()) {
-            this.outputPort.send(entry.getValue());
+        final Comparator<List<MeasureEventOccurance>> comparator = new Comparator<List<MeasureEventOccurance>>() {
+
+            @Override
+            public int compare(final List<MeasureEventOccurance> o1, final List<MeasureEventOccurance> o2) {
+                final Long eventTime1 = this.getFirstEventTime(o1, ObservationPoint.EVENT_CREATION_TIME);
+                final Long eventTime2 = this.getFirstEventTime(o2, ObservationPoint.EVENT_CREATION_TIME);
+
+                if (eventTime1 < eventTime2) {
+                    return -1;
+                } else if (eventTime1 > eventTime2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+
+            private Long getFirstEventTime(final List<MeasureEventOccurance> events, final ObservationPoint point) {
+                final MeasureEventOccurance event = this.getFirstEvent(events, point);
+                if (event != null) {
+                    return event.getTimestamp();
+                } else {
+                    return null;
+                }
+            }
+
+            private MeasureEventOccurance getFirstEvent(final List<MeasureEventOccurance> events,
+                    final ObservationPoint point) {
+                for (final MeasureEventOccurance event : events) {
+                    if (event.getPoint().equals(point)) {
+                        return event;
+                    }
+                }
+                return null;
+            }
+        };
+        final List<List<MeasureEventOccurance>> list = new ArrayList<>();
+        list.addAll(this.data.values());
+        Collections.sort(list, comparator);
+
+        for (final List<MeasureEventOccurance> entry : list) {
+            this.outputPort.send(entry);
         }
         super.onTerminating();
     }

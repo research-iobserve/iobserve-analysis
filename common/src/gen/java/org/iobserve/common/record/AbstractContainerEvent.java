@@ -18,7 +18,6 @@ package org.iobserve.common.record;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
 import kieker.common.record.flow.IEventRecord;
@@ -54,8 +53,6 @@ public abstract class AbstractContainerEvent extends AbstractMonitoringRecord im
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use

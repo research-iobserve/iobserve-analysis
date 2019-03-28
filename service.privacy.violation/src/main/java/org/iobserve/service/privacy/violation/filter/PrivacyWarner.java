@@ -451,6 +451,7 @@ public class PrivacyWarner extends AbstractStage {
      * @throws InvocationException
      **/
     private void clearAndFillQueryMaps() throws InvocationException, DBException {
+        DeploymentLock.lock();
         this.vertices.clear();
         this.geolocations.clear();
         this.stereotypes.clear();
@@ -489,6 +490,7 @@ public class PrivacyWarner extends AbstractStage {
                 this.interfaces.put(inf.getEntityName(), (OperationInterface) inf);
             }
         }
+        DeploymentLock.unlock();
     }
 
     // TODO better method name

@@ -104,8 +104,6 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -134,7 +132,6 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getEntryTime());
 		serializer.putLong(this.getExitTime());
 		serializer.putString(this.getOperationSignature());

@@ -19,7 +19,6 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-//import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
@@ -85,8 +84,6 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -105,7 +102,6 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putInt(this.getCountryCode().ordinal());
 		serializer.putString(this.getHostname());
