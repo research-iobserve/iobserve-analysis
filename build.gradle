@@ -7,14 +7,14 @@ buildscript {
         
         ////////// Goomph //////////
         // make it easy to test a snapshot version of goomph
-		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-		// grab dependencies from the gradle plugin portal
-		maven { url 'https://plugins.gradle.org/m2/' }
+	maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	// grab dependencies from the gradle plugin portal
+	maven { url 'https://plugins.gradle.org/m2/' }
     }
 
-	// make sure we don't cache stale snapshot versions
-	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    // make sure we don't cache stale snapshot versions
+    configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 
         // maven { url "https://plugins.gradle.org/m2/" } // shadow
 
@@ -26,9 +26,9 @@ buildscript {
          
         ////////// Goomph //////////      
         // a bunch of eclipse stuff
-		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
-		// creates a targetplatform
-		classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
+	classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+	// creates a targetplatform
+	classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
     }
 }
 
@@ -87,7 +87,7 @@ subprojects {
     group = 'org.iobserve'
     
     repositories {
-    	mavenCentral()
+	mavenCentral()
         mavenLocal()
         jcenter()
     }
@@ -105,11 +105,11 @@ subprojects {
         
 
     clover {
-    	excludes = [ '**/package-info.java' ]
+	excludes = [ '**/package-info.java' ]
 	testExcludes = [ '**/package-info.java' ]
 	
-    	debug = true
-    	
+	debug = true
+	
 	targetPercentage = cloverCoverage
         report {
            html=true
