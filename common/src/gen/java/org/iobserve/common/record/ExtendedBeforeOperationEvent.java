@@ -87,8 +87,6 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -105,7 +103,6 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putLong(this.getTraceId());
 		serializer.putInt(this.getOrderIndex());

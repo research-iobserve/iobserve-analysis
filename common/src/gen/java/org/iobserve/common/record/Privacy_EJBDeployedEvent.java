@@ -80,8 +80,6 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -98,7 +96,6 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getService());
 		serializer.putString(this.getContext());

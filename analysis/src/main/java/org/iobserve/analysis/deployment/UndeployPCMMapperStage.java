@@ -103,24 +103,31 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     private void performMapping(final String service, final String context, final long observedTime)
             throws InvocationException, DBException {
+        DeploymentLock.lock();
         final List<AssemblyEntry> assemblyEntry = this.correspondenceModelResource.findObjectsByTypeAndProperty(
                 AssemblyEntry.class, CorrespondencePackage.Literals.ASSEMBLY_ENTRY, "implementationId", context);
 
-        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource.findObjectsByTypeAndProperty(
-                ResourceContainer.class, ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
+        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentResource
+                .findObjectsByTypeAndProperty(ResourceContainer.class,
+                        ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", service);
 
-        if (assemblyEntry.size() == 1) {
-            final ResourceContainer resourceContainer = resourceContainers.get(0);
-            final AssemblyContext assemblyContext = this.systemModelResource
-                    .resolve(assemblyEntry.get(0).getAssembly());
-            this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
-        } else if (assemblyEntry.isEmpty()) {
-            this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
-                    service);
-        } else if (assemblyEntry.size() > 1) {
-            this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.", context,
-                    service);
+        if (!resourceContainers.isEmpty()) {
+            if (assemblyEntry.size() == 1) {
+                final ResourceContainer resourceContainer = resourceContainers.get(0);
+                final AssemblyContext assemblyContext = this.systemModelResource
+                        .resolve(assemblyEntry.get(0).getAssembly());
+                this.outputPort.send(new PCMUndeployedEvent(service, assemblyContext, resourceContainer, observedTime));
+            } else if (assemblyEntry.isEmpty()) {
+                this.logger.error("Undeplyoment failed: No corresponding assembly context {} found on {}.", context,
+                        service);
+            } else if (assemblyEntry.size() > 1) {
+                this.logger.error("Undeplyoment failed: Multiple corresponding assembly contexts {} found on {}.",
+                        context, service);
+            }
+        } else {
+            this.logger.warn("Undeplyoment issue: No resource container found {}.", service);
         }
+        DeploymentLock.unlock();
     }
 
 }

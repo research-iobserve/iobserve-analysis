@@ -62,8 +62,6 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	}
 
 
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -79,7 +77,6 @@ public class ContainerAllocationEvent extends AbstractContainerEvent implements 
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
 		serializer.putString(this.getService());
 	}
