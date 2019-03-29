@@ -6,6 +6,7 @@ pipeline {
             steps {
 //                deleteDir()
 //		sh 'git clone https://github.com/research-iobserve/iobserve-analysis.git'
+		sh 'rm -rf iobserve-repository'
                 sh 'git clone https://github.com/research-iobserve/iobserve-repository.git'
 //		sh 'cd iobserve-analysis'
 		sh 'PWD=`pwd` ; echo "api.baseline=$PWD/iobserve-repository/mvn-repo/" > gradle.properties'
