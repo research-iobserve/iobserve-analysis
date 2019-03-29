@@ -2,21 +2,19 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-
         
         ////////// Goomph //////////
         // make it easy to test a snapshot version of goomph
-	maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-	// grab dependencies from the gradle plugin portal
-	maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        // grab dependencies from the gradle plugin portal
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 
     // make sure we don't cache stale snapshot versions
     configurations.all {
-	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 
         // maven { url "https://plugins.gradle.org/m2/" } // shadow
-
     }
 
     dependencies {
@@ -25,21 +23,21 @@ buildscript {
          
         ////////// Goomph //////////      
         // a bunch of eclipse stuff
-	classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
-	// creates a targetplatform
-	classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
+        classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+        // creates a targetplatform
+        classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
     }
 }
 
 // checking the presence of an Eclipse API baseline repositorsy
 if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {
-	System.err.println("Cannot find an Eclipse API baseline repository")
-	System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
-	System.err.println("Add the property api.baseline=path to the repository")
-	System.err.println("Use / for path separation")
-	System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
-} else {	
-	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
+    System.err.println("Cannot find an Eclipse API baseline repository")
+    System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
+    System.err.println("Add the property api.baseline=path to the repository")
+    System.err.println("Use / for path separation")
+    System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
+} else {        
+    println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
 apply plugin: 'eclipse'
@@ -47,7 +45,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
-
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
@@ -60,17 +57,16 @@ def confDir = "${project.rootDir}/qa-configurations"
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    jcenter()
 }
 
-
 clover {
-	targetPercentage = cloverCoverage
-	report {
-		html = true
-	}
-	excludes = [ "**/package-info.java" ]
-	testExcludes = [ "**/package-info.java" ]
+    targetPercentage = cloverCoverage
+    report {
+        html = true
+    }
+    excludes = [ "**/package-info.java" ]
+    testExcludes = [ "**/package-info.java" ]
 }
 
 subprojects {
@@ -86,45 +82,62 @@ subprojects {
     group = 'org.iobserve'
     
     repositories {
-	mavenCentral()
-        mavenLocal()
+        mavenCentral()
         jcenter()
+        maven {url project.properties['api.baseline']}
+        maven {url "https://repo.eclipse.org/content/groups/releases/" }
+        maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven {url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
+        maven {url "https://oss.sonatype.org/content/groups/public/"}
+        maven {url "https://jitpack.io"}
+        maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
+        maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
+        maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
+        maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
+        maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
+        maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
+        maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
+
+        ////////// Goomph //////////
+        // SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+        if (project.version.endsWith('SNAPSHOT')) {
+            maven {url 'https://oss.sonatype.org/content/repositories/snapshots/'}
+        }
+        // local eclipse maven (created by Goomph)
+        maven {url rootProject.file('target.p2/build/p2asmaven/maven')}
     }
 
-	dependencies {
-	
-		// logging
-		compile 'org.slf4j:slf4j-api:1.7.25'
-		compile 'org.slf4j:slf4j-log4j12:1.7.25'
-		
-	    // central
-		testCompile "junit:junit:4.12"
-	   
-	}
-        
+    dependencies {
+        // logging
+        compile 'org.slf4j:slf4j-api:1.7.25'
+        compile 'org.slf4j:slf4j-log4j12:1.7.25'
+                
+        // central
+        testCompile "junit:junit:4.12"
+    }
 
     clover {
-	excludes = [ '**/package-info.java' ]
-	testExcludes = [ '**/package-info.java' ]
-	
-	debug = true
-	
-	targetPercentage = cloverCoverage
+        excludes = [ '**/package-info.java' ]
+        testExcludes = [ '**/package-info.java' ]
+        
+        debug = true
+        
+        targetPercentage = cloverCoverage
         report {
-           html=true
+            html=true
         }
         compiler {
-           debug = true
+            debug = true
         }
     }
 
     // --- quality assurance plugins ---
 
     apply plugin: 'pmd'
-    
     pmd {
-	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
-	toolVersion = pmdAndCpdVersion
+        // the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
+        toolVersion = pmdAndCpdVersion
 
         ignoreFailures = true
 
@@ -140,12 +153,12 @@ subprojects {
         toolVersion = checkstyleVersion
         ignoreFailures = true
         showViolations = false
-	configFile = new File(confDir, "checkstyle-rules.xml")
-	configDir = new File(confDir)
+        configFile = new File(confDir, "checkstyle-rules.xml")
+        configDir = new File(confDir)
     }
 
     // apply plugin: 'findbugs'
-    // findbugs {	
+    // findbugs {        
     //    toolVersion = fbVersion
     //    ignoreFailures = true
     //    effort = "max"
@@ -161,11 +174,11 @@ subprojects {
         }
     }
 
-	tasks.withType(Checkstyle) {
-	    reports {
-	        xml.enabled true
-	    }
-	}
+    tasks.withType(Checkstyle) {
+        reports {
+            xml.enabled true
+        }
+    }
 
     tasks.withType(FindBugs) {
         reports {
@@ -174,103 +187,71 @@ subprojects {
         }
     }
 
-    repositories {
-		mavenLocal()
-		maven {url project.properties['api.baseline']}
-		mavenCentral()
-		jcenter()
-		maven {url "https://repo.eclipse.org/content/groups/releases/" }
-		maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
-		maven {url "https://oss.sonatype.org/content/repositories/releases/" }
-		maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
-		maven {url "https://oss.sonatype.org/content/groups/public/"}
-		maven {url "https://jitpack.io"}
-		maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
-		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
-		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
-		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
-
-		////////// Goomph //////////
-		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-		if (project.version.endsWith('SNAPSHOT')) {
-			maven {
-				url 'https://oss.sonatype.org/content/repositories/snapshots/'
-			}
-		}
-		// local eclipse maven (created by Goomph)
-		maven {
-			url rootProject.file('target.p2/build/p2asmaven/maven')
-		}
-    }
-
     ext {
         appName = "org.iobserve"
     }
     
     eclipse {
-	    classpath {
-	       downloadSources=true
-	       downloadJavadoc=true
-	    }
+        classpath {
+            downloadSources=true
+            downloadJavadoc=true
+        }
     }
 }
 
 task reports {
-	doLast {
-		def reportCollection = ""
-		subprojects.each { s -> 
-			reportCollection += "\t\t<h2>" + s.name + "</h2>\n"
-			reportCollection += "\t\t<ul>\n"
+    doLast {
+        def reportCollection = ""
+        subprojects.each { s -> 
+            reportCollection += "\t\t<h2>" + s.name + "</h2>\n"
+            reportCollection += "\t\t<ul>\n"
 
-			def folder = new File ("$projectDir/" + s.name + "/build/reports/checkstyle")
+            def folder = new File ("$projectDir/" + s.name + "/build/reports/checkstyle")
 
-			if (folder.exists()) {
-				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/main.html\">checkstyle main</a></li>\n"
-				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/test.html\">checkstyle test</a></li>\n"
-			}
+            if (folder.exists()) {
+                reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/main.html\">checkstyle main</a></li>\n"
+                reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/test.html\">checkstyle test</a></li>\n"
+            }
 
-			folder = new File ("$projectDir/" + s.name + "/build/reports/tests")
-			if (folder.exists()) {
-				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/tests/test/index.html\">JUnit tests</a></li>\n"
-			}
-			
-			folder = new File ("$projectDir/" + s.name + "/build/reports/clover")
-			if (folder.exists()) {
-				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/clover/html/index.html\">Test coverage</a></li>\n"
-			}
-			
-			folder = new File ("$projectDir/" + s.name + "/build/reports/pmd")
-			if (folder.exists()) {
-				def mainFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/main.html")
-				def testFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/test.html")
-				
-				if (mainFile.exists()) {
-					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/main.html\">PMD main</a></li>\n"
-				}
-				if (testFile.exists()) {
-					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/test.html\">PMD test</a></li>\n"
-				}
-			}
+            folder = new File ("$projectDir/" + s.name + "/build/reports/tests")
+            if (folder.exists()) {
+                reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/tests/test/index.html\">JUnit tests</a></li>\n"
+            }
+                        
+            folder = new File ("$projectDir/" + s.name + "/build/reports/clover")
+            if (folder.exists()) {
+                reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/clover/html/index.html\">Test coverage</a></li>\n"
+            }
+                        
+            folder = new File ("$projectDir/" + s.name + "/build/reports/pmd")
+            if (folder.exists()) {
+                def mainFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/main.html")
+                def testFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/test.html")
+                                
+                if (mainFile.exists()) {
+                    reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/main.html\">PMD main</a></li>\n"
+                }
+                if (testFile.exists()) {
+                    reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/test.html\">PMD test</a></li>\n"
+                }
+            }
 
-			reportCollection += "\t\t</ul>\n"
-		}
+            reportCollection += "\t\t</ul>\n"
+        }
 
 
-		new File("$projectDir/reports.html").text = """
+        new File("$projectDir/reports.html").text = """
 <html>
-	<head>
-		<title>Project Summary</title>
-	</head>
-	<body>
-		<h1>Project Summary</h1>
+        <head>
+                <title>Project Summary</title>
+        </head>
+        <body>
+                <h1>Project Summary</h1>
 $reportCollection
-	</body>
+        </body>
 </html>
 """
-	}
+    }
 }
 
 def resolveRelativeToParent(String directory, String file) {
@@ -375,136 +356,133 @@ def parseCpdReport(File reportFile) {
     if (reportFile.exists()) {
         def xmlFile = (new XmlParser()).parse(reportFile)
         xmlFile.'duplication'.each { issue ->
-			errors++
+                        errors++
         }
     } else {
-	println 'Could not find CPD report file at ' + reportFile
+        println 'Could not find CPD report file at ' + reportFile
     }
     return [errors, warnings, infos]
 }
 
 rootProject.subprojects.each { project -> configure(project) {
 
-		task checkThresholds(dependsOn: ["build"]) {
-		  doLast {
-		    def reportTypes = ['main', 'test']
-		
-		    // Begin Checkstyle report parsing
-		    def csErrors = 0
-		    def csWarnings = 0
-		    def csInfos = 0
-		
-			def p = project
-			
-		        reportTypes.each { String type ->
-		            def reportFile = file(p.projectDir.path + '/build/reports/checkstyle/' + type + '.xml')
-		            def reportResults = parseCheckstyleReport(reportFile)
-		            csErrors += reportResults[0]
-		            csWarnings += reportResults[1]
-		            csInfos += reportResults[2]
-		        }
-		    // End Checkstyle report parsing
-		
-		
-		    // Begin Findbugs report parsing
-		    def fbErrors = 0
-		    def fbWarnings = 0
-		    def fbInfos = 0
-		
-		        reportTypes.each { String type ->
-		            def reportFile = file(p.projectDir.path + '/build/reports/findbugs/' + type + '.xml')
-		            def reportResults = parseFindbugsReport(reportFile)
-		            fbErrors += reportResults[0]
-		            fbWarnings += reportResults[1]
-		            fbInfos += reportResults[2]
-		        }
-		    // End Findbugs report parsing
-		
-		
-		    // Begin PMD report parsing
-		    def pmdErrors = 0
-		    def pmdWarnings = 0
-		    def pmdInfos = 0
-		
-		        reportTypes.each { String type ->
-		            def reportFile = file(p.projectDir.path + '/build/reports/pmd/' + type + '.xml')
-		            def reportResults = parsePmdReport(reportFile)
-		            pmdErrors += reportResults[0]
-		            pmdWarnings += reportResults[1]
-		            pmdInfos += reportResults[2]
-		        }
-		    // End PMD report parsing
-		
-		
-		    // Begin CPD report parsing
-		    def cpdErrors = 0
-		
-			p = rootProject
-			// cpd only produces one single file in the root project without any report types, such as main and test.
-		        def reportFile = file(p.projectDir.path + '/build/reports/cpd/cpdCheck.xml')
-		        def reportResults = parseCpdReport(reportFile)
-		        cpdErrors += reportResults[0]
-		    // End CPD report parsing
-		
-		
-		    // Print results
-		    println("Static analysis results:")
-		    println()
-		    println(" Checkstyle:")
-		    println("  Errors: " + csErrors + " (Threshold: " + checkstyleErrorThreshold + ")")
-		    println("  Warnings: " + csWarnings + " (Threshold: " + checkstyleWarningThreshold + ")")
-		    println("  Info: " + csInfos)
-		    println()
-		    println(" Findbugs:")
-		    println("  Errors: " + fbErrors + " (Threshold: " + findbugsErrorThreshold + ")")
-		    println("  Warnings: " + fbWarnings + " (Threshold: " + findbugsWarningThreshold + ")")
-		    println("  Info: " + fbInfos)
-		    println()
-		    println(" PMD:")
-		    println("  Errors: " + pmdErrors + " (Threshold: " + pmdErrorThreshold + ")")
-		    println("  Warnings: " + pmdWarnings + " (Threshold: " + pmdWarningThreshold + ")")
-		    println("  Info: " + pmdInfos)
-		    println()
-		    println(" CPD (counts for all Kieker components):")
-		    println("  Errors: " + cpdErrors + " (Threshold: " + cpdErrorThreshold + ")")
-		
-		
-		    // Fail build if Checkstyle thresholds are violated
-		    if (csWarnings > Integer.valueOf(checkstyleWarningThreshold)) {
-		        throw new GradleException("There were checkstyle warnings exceeding the warning threshold! Warnings: " + csWarnings + " Threshold: " + checkstyleWarningThreshold)
-		    }
-		
-		    if (csErrors > Integer.valueOf(checkstyleErrorThreshold)) {
-		        throw new GradleException("There were checkstyle errors exceeding the error threshold! Errors: " + csErrors + " Threshold: " + checkstyleErrorThreshold)
-		    }
-		
-		    // Fail build if Findbugs thresholds are violated
-		    if (fbWarnings > Integer.valueOf(findbugsWarningThreshold)) {
-		        throw new GradleException("There were findbugs warnings exceeding the warning threshold! Warnings: " + fbWarnings + " Threshold: " + findbugsWarningThreshold)
-		    }
-		
-		    if (fbErrors > Integer.valueOf(findbugsErrorThreshold)) {
-		        throw new GradleException("There were findbugs errors exceeding the error threshold! Errors: " + fbErrors + " Threshold: " + findbugsErrorThreshold)
-		    }
-		
-		    // Fail build if PMD thresholds are violated
-		    if (pmdWarnings > Integer.valueOf(pmdWarningThreshold)) {
-		        throw new GradleException("There were pmd warnings exceeding the warning threshold! Warnings: " + pmdWarnings + " Threshold: " + pmdWarningThreshold)
-		    }
-		
-		    if (pmdErrors > Integer.valueOf(pmdErrorThreshold)) {
-		        throw new GradleException("There were pmd errors exceeding the error threshold! Errors: " + pmdErrors + " Threshold: " + pmdErrorThreshold)
-		    }
-		
-			// Fail build if CPD thresholds are violated
-		    if (cpdErrors > Integer.valueOf(cpdErrorThreshold)) {
-		        throw new GradleException("There were cpd errors exceeding the error threshold! Errors: " + cpdErrors + " Threshold: " + cpdErrorThreshold)
-		    }
-		  }
-		}
+    task checkThresholds(dependsOn: ["build"]) {
+        doLast {
+            def reportTypes = ['main', 'test']
+                
+            // Begin Checkstyle report parsing
+            def csErrors = 0
+            def csWarnings = 0
+            def csInfos = 0
+                
+            def p = project
+                       
+            reportTypes.each { String type ->
+                def reportFile = file(p.projectDir.path + '/build/reports/checkstyle/' + type + '.xml')
+                def reportResults = parseCheckstyleReport(reportFile)
+                csErrors += reportResults[0]
+                csWarnings += reportResults[1]
+                csInfos += reportResults[2]
+            }
+            // End Checkstyle report parsing
+                
+                
+            // Begin Findbugs report parsing
+            def fbErrors = 0
+            def fbWarnings = 0
+            def fbInfos = 0
+                
+            reportTypes.each { String type ->
+                def reportFile = file(p.projectDir.path + '/build/reports/findbugs/' + type + '.xml')
+                def reportResults = parseFindbugsReport(reportFile)
+                fbErrors += reportResults[0]
+                fbWarnings += reportResults[1]
+                fbInfos += reportResults[2]
+            }
+            // End Findbugs report parsing
+                
+                
+            // Begin PMD report parsing
+            def pmdErrors = 0
+            def pmdWarnings = 0
+            def pmdInfos = 0
+                
+            reportTypes.each { String type ->
+                def reportFile = file(p.projectDir.path + '/build/reports/pmd/' + type + '.xml')
+                def reportResults = parsePmdReport(reportFile)
+                pmdErrors += reportResults[0]
+                pmdWarnings += reportResults[1]
+                pmdInfos += reportResults[2]
+            }
+            // End PMD report parsing
+                           
+            // Begin CPD report parsing
+            def cpdErrors = 0
+                
+            p = rootProject
+            // cpd only produces one single file in the root project without any report types, such as main and test.
+            def reportFile = file(p.projectDir.path + '/build/reports/cpd/cpdCheck.xml')
+            def reportResults = parseCpdReport(reportFile)
+            cpdErrors += reportResults[0]
+            // End CPD report parsing   
+                
+            // Print results
+            println("Static analysis results:")
+            println()
+            println(" Checkstyle:")
+            println("  Errors: " + csErrors + " (Threshold: " + checkstyleErrorThreshold + ")")
+            println("  Warnings: " + csWarnings + " (Threshold: " + checkstyleWarningThreshold + ")")
+            println("  Info: " + csInfos)
+            println()
+            println(" Findbugs:")
+            println("  Errors: " + fbErrors + " (Threshold: " + findbugsErrorThreshold + ")")
+            println("  Warnings: " + fbWarnings + " (Threshold: " + findbugsWarningThreshold + ")")
+            println("  Info: " + fbInfos)
+            println()
+            println(" PMD:")
+            println("  Errors: " + pmdErrors + " (Threshold: " + pmdErrorThreshold + ")")
+            println("  Warnings: " + pmdWarnings + " (Threshold: " + pmdWarningThreshold + ")")
+            println("  Info: " + pmdInfos)
+            println()
+            println(" CPD (counts for all Kieker components):")
+            println("  Errors: " + cpdErrors + " (Threshold: " + cpdErrorThreshold + ")")
 
-		tasks.check.finalizedBy(checkThresholds)
-	}
+            // Fail build if Checkstyle thresholds are violated
+                if (csWarnings > Integer.valueOf(checkstyleWarningThreshold)) {
+                    throw new GradleException("There were checkstyle warnings exceeding the warning threshold! Warnings: " + csWarnings + " Threshold: " + checkstyleWarningThreshold)
+                }
+                
+                if (csErrors > Integer.valueOf(checkstyleErrorThreshold)) {
+                    throw new GradleException("There were checkstyle errors exceeding the error threshold! Errors: " + csErrors + " Threshold: " + checkstyleErrorThreshold)
+                }
+                
+                // Fail build if Findbugs thresholds are violated
+                if (fbWarnings > Integer.valueOf(findbugsWarningThreshold)) {
+                    throw new GradleException("There were findbugs warnings exceeding the warning threshold! Warnings: " + fbWarnings + " Threshold: " + findbugsWarningThreshold)
+                }
+                
+                if (fbErrors > Integer.valueOf(findbugsErrorThreshold)) {
+                    throw new GradleException("There were findbugs errors exceeding the error threshold! Errors: " + fbErrors + " Threshold: " + findbugsErrorThreshold)
+                }
+                
+                // Fail build if PMD thresholds are violated
+                if (pmdWarnings > Integer.valueOf(pmdWarningThreshold)) {
+                    throw new GradleException("There were pmd warnings exceeding the warning threshold! Warnings: " + pmdWarnings + " Threshold: " + pmdWarningThreshold)
+                }
+                
+                if (pmdErrors > Integer.valueOf(pmdErrorThreshold)) {
+                    throw new GradleException("There were pmd errors exceeding the error threshold! Errors: " + pmdErrors + " Threshold: " + pmdErrorThreshold)
+                }
+                
+                // Fail build if CPD thresholds are violated
+                if (cpdErrors > Integer.valueOf(cpdErrorThreshold)) {
+                    throw new GradleException("There were cpd errors exceeding the error threshold! Errors: " + cpdErrors + " Threshold: " + cpdErrorThreshold)
+                }
+            }
+        }
+
+        tasks.check.finalizedBy(checkThresholds)
+    }
 }
 
 //////////////////////////
@@ -516,86 +494,86 @@ rootProject.subprojects.each { project -> configure(project) {
 // tasks to clean and jar all of the plugins
 Closure IS_PLUGIN = { it.name.startsWith('peropteryx') }
 configure(subprojects.findAll(IS_PLUGIN)) {
-	// we need the maven repo from p2
-	evaluationDependsOn(':target.p2')
+    // we need the maven repo from p2
+    evaluationDependsOn(':target.p2')
 
-	def PROJECT_NAME = it.name
+    def PROJECT_NAME = it.name
 
-	//////////
-	// JAVA //
-	//////////
-	apply plugin: 'java'
-	sourceSets {
-		main { java {
-			srcDir 'src'
-		} }
-		test { java {
-			srcDir 'test'
-		} }
-	}
-	sourceCompatibility = VER_JAVA
-	targetCompatibility = VER_JAVA
+    //////////
+    // JAVA //
+    //////////
+    apply plugin: 'java'
+    sourceSets {
+        main { java {
+            srcDir 'src'
+        } }
+        test { java {
+            srcDir 'test'
+        } }
+    }
+    sourceCompatibility = VER_JAVA
+    targetCompatibility = VER_JAVA
 
-	// Add SWT and the appropriate platform-native SWT for building and testing
-	// (We removed the dependencies resolved from p2 repository with goomph because they inconsistently caused 
-	// build failures. However, they will be needed to export an peropteryx product with goomph)
-	// dependencies {
-	//	compile "eclipse-deps:org.eclipse.swt:+"
-	//	compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
-	// }
+    // Add SWT and the appropriate platform-native SWT for building and testing
+    // (We removed the dependencies resolved from p2 repository with goomph because they inconsistently caused 
+    // build failures. However, they will be needed to export an peropteryx product with goomph)
+    // dependencies {
+    //        compile "eclipse-deps:org.eclipse.swt:+"
+    //        compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
+    // }
 
-	//////////
-	// OSGI //
-	//////////
-	// create the manifest
-	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
-	osgiBndManifest {
-		copyTo 'META-INF/MANIFEST.MF'
-	}
-	// configure the OSGi bundle
-	jar.manifest.attributes(
-		'-exportcontents': 'peropteryx.*',
-		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
-		'Import-Package': '!javax.annotation.*,*',
-		'Bundle-SymbolicName': project.name,
-		'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
-		'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
-		'Bundle-Vendor': 'iObserve',
-		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0",
-		'Export-Package': 'org.iobserve.peropteryx.rcp'
-	)
+    //////////
+    // OSGI //
+    //////////
+    // create the manifest
+    apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
+    osgiBndManifest {
+        copyTo 'META-INF/MANIFEST.MF'
+    }
+    // configure the OSGi bundle
+    jar.manifest.attributes(
+        '-exportcontents': 'peropteryx.*',
+        '-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
+        'Import-Package': '!javax.annotation.*,*',
+        'Bundle-SymbolicName': project.name,
+        'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
+        'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
+        'Bundle-Vendor': 'iObserve',
+        'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0",
+        'Export-Package': 'org.iobserve.peropteryx.rcp'
+    )
 
-	//////////////////////
-	// ECLIPSE PROJECTS //
-	//////////////////////
-	apply plugin: 'eclipse'
-	// remove the build folder
-	apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
-	// improve the project deps
-	apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
-	// handle build.properties correctly
-	apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+    //////////////////////
+    // ECLIPSE PROJECTS //
+    //////////////////////
+    apply plugin: 'eclipse'
+    // remove the build folder
+    apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+    // improve the project deps
+    apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
+    // handle build.properties correctly
+    apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
 
-	eclipse {
-		project {
-			natures 'org.eclipse.pde.PluginNature'
-			natures 'org.eclipse.jdt.core.javanature'
+    eclipse {
+        project {
+            natures 'org.eclipse.pde.PluginNature'
+            natures 'org.eclipse.jdt.core.javanature'
 
-			buildCommand 'org.eclipse.jdt.core.javabuilder'
-			buildCommand 'org.eclipse.pde.ManifestBuilder'
-			buildCommand 'org.eclipse.pde.SchemaBuilder'
-		}
-		classpath {
-			downloadSources true
-			downloadJavadoc true
-		}
-		jdt {
-			sourceCompatibility VER_JAVA
-			targetCompatibility VER_JAVA
-		}
-	}
-	// always create "fresh" projects
-	tasks.eclipse.dependsOn(cleanEclipse)
+            buildCommand 'org.eclipse.jdt.core.javabuilder'
+            buildCommand 'org.eclipse.pde.ManifestBuilder'
+            buildCommand 'org.eclipse.pde.SchemaBuilder'
+        }
+        classpath {
+            downloadSources true
+            downloadJavadoc true
+        }
+        jdt {
+            sourceCompatibility VER_JAVA
+            targetCompatibility VER_JAVA
+        }
+    }
+    // always create "fresh" projects
+    tasks.eclipse.dependsOn(cleanEclipse)
 }
 
 /////////////////////////////////////////////////////////
@@ -603,7 +581,7 @@ configure(subprojects.findAll(IS_PLUGIN)) {
 /////////////////////////////////////////////////////////
 apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
 eclipseResourceFilters {
-	exclude().folders().name('com.diffplug.*')
+    exclude().folders().name('com.diffplug.*')
 }
 
 
@@ -614,15 +592,15 @@ apply plugin: 'com.diffplug.gradle.equinoxlaunch'
 
 // Multiple versions of dependencies have to be specified here and in target.maven/build.gradle
 equinoxLaunch {
-	codegenSetup {
-		//source.addProject(project(':peropteryx.rcp'))
-		source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
-	    	source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
-	    	source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')
-	    	source.addMaven('extra:org.apache.batik.css:1.8.0.v20170214-1941')
-		source.addMaven('extra:org.apache.batik.util:1.7.0.v201011041433')
-	    	source.addMaven('extra:org.apache.batik.util:1.8.0.v20170214-1941')
-	    	source.addMaven('extra:org.apache.batik.util.gui:1.7.0.v200903091627')
-	    	source.addMaven('extra:org.apache.batik.util.gui:1.8.0.v20170214-1941')
-	}
+    codegenSetup {
+        //source.addProject(project(':peropteryx.rcp'))
+        source.addMaven('extra:org.antlr.runtime:4.3.0.v201502022030')
+        source.addMaven('extra:org.antlr.runtime:3.2.0.v201101311130')
+        source.addMaven('extra:org.apache.batik.css:1.7.0.v201011041433')
+        source.addMaven('extra:org.apache.batik.css:1.8.0.v20170214-1941')
+        source.addMaven('extra:org.apache.batik.util:1.7.0.v201011041433')
+        source.addMaven('extra:org.apache.batik.util:1.8.0.v20170214-1941')
+        source.addMaven('extra:org.apache.batik.util.gui:1.7.0.v200903091627')
+        source.addMaven('extra:org.apache.batik.util.gui:1.8.0.v20170214-1941')
+    }
 }
