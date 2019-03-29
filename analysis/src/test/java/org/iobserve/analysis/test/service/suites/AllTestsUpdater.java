@@ -61,7 +61,9 @@ public class AllTestsUpdater { // NOPMD all static, but test
      */
     @AfterClass
     public static void cleanUpClass() {
-        AllTestsUpdater.server.stop();
+    	if (AllTestsUpdater.server != null) {
+            AllTestsUpdater.server.stop();
+        }
     }
 
 }
