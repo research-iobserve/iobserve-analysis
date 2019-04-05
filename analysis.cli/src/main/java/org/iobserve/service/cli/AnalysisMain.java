@@ -61,7 +61,7 @@ public final class AnalysisMain {
 
     @Parameter(names = { "-c",
             "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
-    private final boolean closedWorkload = false;
+    private boolean closedWorkload = false;
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Kieker monitoring data directory.", converter = FileConverter.class)
