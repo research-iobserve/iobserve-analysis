@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -153,18 +154,22 @@ public abstract class AbstractModelProvider<T extends EObject> {
     }
     
     public long getTimestamp() {
-        this.getPackage().eClass();
-
-        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = reg.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
-        final ResourceSet resSet = new ResourceSetImpl();
-        resSet.setResourceFactoryRegistry(reg);
-
-        final Resource resource = resSet.getResource(this.uriModelInstance, true);
+//        this.getPackage().eClass();
+//
+//        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+//        final Map<String, Object> map = reg.getExtensionToFactoryMap();
+//        map.put("*", new XMIResourceFactoryImpl());
+//
+//        final ResourceSet resSet = new ResourceSetImpl();
+//        resSet.setResourceFactoryRegistry(reg);
+//
+//        final Resource resource = resSet.getResource(this.uriModelInstance, true);
+//
+//        return resource.getTimeStamp();
         
-        return resource.getTimeStamp();
+        File file = new File(this.uriModelInstance.path());
+        long lastModified = file.lastModified();
+        return lastModified;
     }
 
     /**
