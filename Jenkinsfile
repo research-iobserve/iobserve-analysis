@@ -19,5 +19,15 @@ pipeline {
                 sh './gradlew build --refresh-dependencies'
             }
         }
+	stage('Static Analysis') {
+          steps {
+            sh './gradlew check'
+          }
+	  post {
+            always {
+                recordIssues enabledForFailur: true, tool: checkStyle()
+            }
+          }
+        }
     }
 }
