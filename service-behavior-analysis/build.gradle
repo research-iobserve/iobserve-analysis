@@ -3,12 +3,27 @@ apply plugin: 'java'
 
 mainClassName='org.iobserve.collector.CollectorMain'
 
+
+repositories {
+   flatDir {
+       dirs 'libs'
+   }
+}
+
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
 	
 	compile project(":service")
 	compile project(":stages")
+	compile project(":analysis")
+	   
+	compile name: 'mtree'
+	
+	
+	testCompile 'org.mockito:mockito-core:2.21.0'	
+	
 }
+
 
 install {
     repositories.mavenInstaller {
@@ -17,5 +32,4 @@ install {
         pom.artifactId = 'collector'
     }
 }
-
 

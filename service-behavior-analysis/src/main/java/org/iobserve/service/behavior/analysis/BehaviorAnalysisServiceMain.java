@@ -6,14 +6,15 @@ import com.beust.jcommander.JCommander;
 
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-import teetime.framework.Configuration;
 
-public class BehaviorAnalysisServiceMain extends AbstractService {
+public class BehaviorAnalysisServiceMain
+        extends AbstractService<BehaviorAnalysisTeetimeConfiguration, BehaviorAnalysisSettings> {
 
     @Override
-    protected Configuration createTeetimeConfiguration() throws ConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
+    protected BehaviorAnalysisTeetimeConfiguration createTeetimeConfiguration() throws ConfigurationException {
+
+        return new BehaviorAnalysisTeetimeConfiguration();
+
     }
 
     @Override
