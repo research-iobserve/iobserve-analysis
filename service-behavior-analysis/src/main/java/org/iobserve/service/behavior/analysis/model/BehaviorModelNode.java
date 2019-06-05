@@ -1,33 +1,53 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.behavior.analysis.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-
+/**
+ * One node of a BehaviorModel.
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class BehaviorModelNode {
-    private final Map<BehaviorModelNode, BehaviorModelEdge> edges;
 
-    public Map<BehaviorModelNode, BehaviorModelEdge> getEdges() {
-        return this.edges;
-    }
+    private final Map<BehaviorModelNode, BehaviorModelEdge> outgoingEdges;
+
+    private final Map<BehaviorModelNode, BehaviorModelEdge> ingoingEdges;
 
     private final String name;
 
     public BehaviorModelNode(final String signiture) {
-        this.edges = new HashMap<>();
+        this.outgoingEdges = new HashMap<>();
+        this.ingoingEdges = new HashMap<>();
         this.name = signiture;
     }
 
-    public void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelNode target) {
-        final BehaviorModelEdge matchingEdge = this.edges.get(target);
+    public Map<BehaviorModelNode, BehaviorModelEdge> getOutgoingEdges() {
+        return this.outgoingEdges;
+    }
 
-        if (matchingEdge == null) {
-            final BehaviorModelEdge newEdge = new BehaviorModelEdge(event, this, target);
-            this.edges.put(target, newEdge);
-        } else {
-            matchingEdge.addEvent(event);
-        }
+    public String getName() {
+        return this.name;
+    }
+
+    public Map<BehaviorModelNode, BehaviorModelEdge> getIngoingEdges() {
+        return this.ingoingEdges;
     }
 
 }

@@ -1,4 +1,4 @@
-package org.iobserve.service.behavior.test.model;
+package org.iobserve.service.behavior.analysis.test.model;
 
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.junit.Before;

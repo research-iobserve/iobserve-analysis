@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.behavior.analysis;
 
 import java.util.Map;
@@ -8,13 +23,18 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelNode;
 
 import mtree.DistanceFunction;
 
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
-    final double NODE_INSERT_COST = 5;
-    final double NODE_DELETE_COST = this.NODE_INSERT_COST;
+    private static final double NODE_INSERT_COST = 5;
+    private static final double NODE_DELETE_COST = GraphEditDistance.NODE_INSERT_COST;
 
-    final double EDGE_INSERT_COST = 1;
-    final double EDGE_DELETE_COST = this.EDGE_INSERT_COST;
+    private static final double EDGE_INSERT_COST = 1;
+    private static final double EDGE_DELETE_COST = GraphEditDistance.EDGE_INSERT_COST;
 
     // costs to convert model1 into model2
     @Override
@@ -66,9 +86,9 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
     }
 
     private double nodeInsertionCost(final BehaviorModelNode node) {
-        double distance = this.NODE_INSERT_COST;
+        double distance = GraphEditDistance.NODE_INSERT_COST;
 
-        for (final BehaviorModelEdge edge : node.getEdges().values()) {
+        for (final BehaviorModelEdge edge : node.getOutgoingEdges().values()) {
             distance += this.edgeInsertionCost(edge);
         }
 
@@ -76,13 +96,13 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
     }
 
     private double edgeInsertionCost(final BehaviorModelEdge edge) {
-        return this.EDGE_INSERT_COST;
+        return GraphEditDistance.EDGE_INSERT_COST;
     }
 
     private double nodeDeletionCost(final BehaviorModelNode node) {
-        double distance = this.NODE_DELETE_COST;
+        double distance = GraphEditDistance.NODE_DELETE_COST;
 
-        for (final BehaviorModelEdge edge : node.getEdges().values()) {
+        for (final BehaviorModelEdge edge : node.getOutgoingEdges().values()) {
             distance += this.edgeDeletionCost(edge);
         }
 
@@ -90,7 +110,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
     }
 
     private double edgeDeletionCost(final BehaviorModelEdge edge) {
-        return this.EDGE_DELETE_COST;
+        return GraphEditDistance.EDGE_DELETE_COST;
     }
 
 }

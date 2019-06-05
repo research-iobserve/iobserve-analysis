@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.behavior.analysis;
 
 import java.util.ArrayList;
@@ -8,6 +23,11 @@ import java.util.PriorityQueue;
 
 import mtree.MTree;
 
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class OPTICS {
 
     private final int minPTs;
@@ -24,7 +44,7 @@ public class OPTICS {
         this.models = models;
     }
 
-    private double reachability_distance(final OpticsData model1, final OpticsData model2) {
+    private double reachabilityDistance(final OpticsData model1, final OpticsData model2) {
         final double distance = model1.distanceTo(model2);
         final double core_distance = model1.getCoreDistance();
         return Math.max(distance, core_distance);
@@ -65,10 +85,10 @@ public class OPTICS {
 
         for (final OpticsData model2 : neighbors) {
             if (!model2.isVisited()) {
-                final double newReachDistance = this.reachability_distance(model1, model2);
+                final double newReachDistance = this.reachabilityDistance(model1, model2);
 
                 // System.out.println(newReachDistance);
-                if (model2.getReachabilityDistance() == OpticsData.Undefined) {
+                if (model2.getReachabilityDistance() == OpticsData.UNDEFINED) {
                     model2.setReachabilityDistance(newReachDistance);
                     seeds.add(model2);
                 } else {
@@ -89,7 +109,7 @@ public class OPTICS {
 
         this.resultList.add(model1);
 
-        if (model1.getCoreDistance() != OpticsData.Undefined) {
+        if (model1.getCoreDistance() != OpticsData.UNDEFINED) {
             final PriorityQueue<OpticsData> seeds = new PriorityQueue<>(5, OPTICS.reachComparator);
 
             this.update(neighbors1, model1, seeds);
@@ -102,7 +122,7 @@ public class OPTICS {
 
                 model2.setVisited(true);
                 this.resultList.add(model2);
-                if (model2.getCoreDistance() != OpticsData.Undefined) {
+                if (model2.getCoreDistance() != OpticsData.UNDEFINED) {
                     this.update(neighbors2, model2, seeds);
                 }
             }

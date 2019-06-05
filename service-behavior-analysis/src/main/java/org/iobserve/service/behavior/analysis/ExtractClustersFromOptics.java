@@ -1,20 +1,38 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.behavior.analysis;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
-
 import teetime.stage.basic.AbstractTransformation;
 
+import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
+
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class ExtractClustersFromOptics extends AbstractTransformation<List<OpticsData>, Clustering> {
     private final double clusteringDistance;
-    private final int minPTs;
 
-    public ExtractClustersFromOptics(final double clusteringDistance, final int minPTs) {
+    public ExtractClustersFromOptics(final double clusteringDistance) {
         this.clusteringDistance = clusteringDistance;
-        this.minPTs = minPTs;
     }
 
     @Override
@@ -25,7 +43,7 @@ public class ExtractClustersFromOptics extends AbstractTransformation<List<Optic
         Set<BehaviorModelGED> currentCluster = clustering.getNoise();
 
         for (final OpticsData model : opticsResults) {
-            if ((model.getReachabilityDistance() == OpticsData.Undefined)
+            if ((model.getReachabilityDistance() == OpticsData.UNDEFINED)
                     || (model.getReachabilityDistance() > this.clusteringDistance)) {
                 if (model.getCoreDistance() <= this.clusteringDistance) {
                     final Set<BehaviorModelGED> newCluster = new HashSet<>();
