@@ -22,7 +22,6 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.session.CollectUserSessionsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +33,16 @@ import org.slf4j.LoggerFactory;
  */
 public class DataCollector<T> extends AbstractStage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CollectUserSessionsFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataCollector.class);
     private final InputPort<T> dataInputPort = this.createInputPort();
     private final InputPort<Long> timeTriggerInputPort = this.createInputPort();
     private final OutputPort<List<T>> mTreeOutputPort = this.createOutputPort();
     private final OutputPort<List<T>> opticsOutputPort = this.createOutputPort();
 
-    private final List<T> dataList = new ArrayList<>();
+    private List<T> dataList = new ArrayList<>();
+
+    private boolean stopAfterAmount = false;
+    private int maxAmount = 0;
 
     /**
      * Collect behavior models and send them based on an external time trigger to the mtree
@@ -55,19 +57,34 @@ public class DataCollector<T> extends AbstractStage {
         this.declareActive();
     }
 
+    public DataCollector(final int amount) {
+        this.declareActive();
+        this.maxAmount = amount;
+        this.stopAfterAmount = true;
+    }
+
     @Override
     protected void execute() throws Exception {
         final T newData = this.dataInputPort.receive();
 
         if (newData != null) {
-            DataCollector.LOGGER.debug("Received a behavior model...");
+            DataCollector.LOGGER.info("Received a behavior model!");
             this.dataList.add(newData);
+
+            if (this.stopAfterAmount) {
+                if (this.dataList.size() >= this.maxAmount) {
+                    DataCollector.LOGGER.info("Reached model amount maximum, sending models..");
+                    this.opticsOutputPort.send(this.dataList);
+                    this.mTreeOutputPort.send(this.dataList);
+                    this.dataList = new ArrayList<>();
+                }
+            }
         }
 
         final Long triggerTime = this.timeTriggerInputPort.receive();
         if (triggerTime != null) {
 
-            DataCollector.LOGGER.debug("Sending model...");
+            DataCollector.LOGGER.debug("Sending models...");
             this.opticsOutputPort.send(this.dataList);
             this.mTreeOutputPort.send(this.dataList);
 

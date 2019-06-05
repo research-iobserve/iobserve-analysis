@@ -20,24 +20,34 @@ public class ClusteringCompositeStage extends CompositeStage {
     private final OutputPort<Clustering> outputPort;
 
     public ClusteringCompositeStage() {
+        this(false, 0);
+    }
+
+    public ClusteringCompositeStage(final boolean hasMaxAmount, final int maxAmount) {
+
+        final double clusteringDistance = 10;
 
         final BehaviorModelToOpticsDataConverter modelToOptics = new BehaviorModelToOpticsDataConverter();
 
-        final OpticsStage<OpticsData> optics = new OpticsStage<>(10.0, 10);
+        final OpticsStage optics = new OpticsStage(clusteringDistance, 4);
 
         final MTreeGenerator<OpticsData> mTreeGenerator = new MTreeGenerator<>(new OpticsData.OPTICSDataGED());
 
-        final DataCollector<OpticsData> collector = new DataCollector<>();
+        DataCollector<OpticsData> collector;
+        if (hasMaxAmount) {
+            collector = new DataCollector<>(maxAmount);
 
-        final ExtractClustersFromOptics clustering = new ExtractClustersFromOptics(10);
+        } else {
+            collector = new DataCollector<>();
+        }
+
+        final ExtractClustersFromOptics clustering = new ExtractClustersFromOptics(clusteringDistance);
 
         this.modelInputPort = this.createInputPort(modelToOptics.getInputPort());
 
         this.timerInputPort = this.createInputPort(collector.getTimeTriggerInputPort());
 
         this.connectPorts(modelToOptics.getOutputPort(), collector.getDataInputPort());
-
-        this.connectPorts(collector.getmTreeOutputPort(), mTreeGenerator.getInputPort());
 
         this.connectPorts(collector.getmTreeOutputPort(), mTreeGenerator.getInputPort());
 

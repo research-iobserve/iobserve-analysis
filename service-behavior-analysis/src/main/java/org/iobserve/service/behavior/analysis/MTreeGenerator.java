@@ -61,9 +61,9 @@ public class MTreeGenerator<T> extends AbstractStage {
             for (final T model : models) {
                 mtree.add(model);
             }
+            MTreeGenerator.LOGGER.info("Created MTree");
 
             this.outputPort.send(mtree);
-            MTreeGenerator.LOGGER.info("Created MTree");
 
         } else {
             MTreeGenerator.LOGGER.warn("Received null as model list");

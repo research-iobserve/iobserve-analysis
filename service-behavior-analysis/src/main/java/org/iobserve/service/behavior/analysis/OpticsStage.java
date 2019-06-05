@@ -15,11 +15,16 @@
  ***************************************************************************/
 package org.iobserve.service.behavior.analysis;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import mtree.MTree;
 
@@ -27,13 +32,16 @@ import mtree.MTree;
  *
  * @author Lars Jürgensen
  *
- * @param <T>
  */
-public class OpticsStage<T> extends AbstractStage {
+public class OpticsStage extends AbstractStage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpticsStage.class);
 
     private final OutputPort<List<OpticsData>> outputPort = this.createOutputPort();
-    private final InputPort<MTree<T>> mTreeInputPort = this.createInputPort();
-    private final InputPort<List<T>> modelsInputPort = this.createInputPort();
+    private final InputPort<MTree<OpticsData>> mTreeInputPort = this.createInputPort();
+    private final InputPort<List<OpticsData>> modelsInputPort = this.createInputPort();
+
+    private final Queue<MTree<OpticsData>> mTreeInputQueue = new LinkedList<>();
+    private final Queue<List<OpticsData>> modelsInputQueue = new LinkedList<>();
 
     private final double maxDistance;
     private final int minPTs;
@@ -45,8 +53,29 @@ public class OpticsStage<T> extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
-        final MTree<T> mtree = this.mTreeInputPort.receive();
-        final List<T> models = this.modelsInputPort.receive();
+        final MTree<OpticsData> newMTree = this.mTreeInputPort.receive();
+        final List<OpticsData> newModels = this.modelsInputPort.receive();
+
+        if (newMTree != null) {
+            this.mTreeInputQueue.add(newMTree);
+        }
+        if (newModels != null) {
+            this.modelsInputQueue.add(newModels);
+        }
+
+        if (!this.mTreeInputQueue.isEmpty() && !this.modelsInputQueue.isEmpty()) {
+            OpticsStage.LOGGER.info("received models and mtrees, begins to calculate optics result");
+            final MTree<OpticsData> mtree = this.mTreeInputQueue.poll();
+            final List<OpticsData> models = this.modelsInputQueue.poll();
+
+            final OPTICS optics = new OPTICS(mtree, this.maxDistance, this.minPTs, models);
+            for (final OpticsData model : models) {
+                model.setOptics(optics);
+            }
+            OpticsStage.LOGGER.info("send optics result");
+
+            this.outputPort.send(optics.calculate());
+        }
 
     }
 
@@ -54,11 +83,11 @@ public class OpticsStage<T> extends AbstractStage {
         return this.outputPort;
     }
 
-    public InputPort<MTree<T>> getmTreeInputPort() {
+    public InputPort<MTree<OpticsData>> getmTreeInputPort() {
         return this.mTreeInputPort;
     }
 
-    public InputPort<List<T>> getModelsInputPort() {
+    public InputPort<List<OpticsData>> getModelsInputPort() {
         return this.modelsInputPort;
     }
 

@@ -22,6 +22,8 @@ import java.util.Set;
 import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,6 +31,9 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
  *
  */
 public class ExtractClustersFromOptics extends AbstractTransformation<List<OpticsData>, Clustering> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractClustersFromOptics.class);
+
     private final double clusteringDistance;
 
     public ExtractClustersFromOptics(final double clusteringDistance) {
@@ -38,6 +43,7 @@ public class ExtractClustersFromOptics extends AbstractTransformation<List<Optic
     @Override
     protected void execute(final List<OpticsData> opticsResults) throws Exception {
 
+        ExtractClustersFromOptics.LOGGER.info("received optics result");
         final Clustering clustering = new Clustering();
 
         Set<BehaviorModelGED> currentCluster = clustering.getNoise();
@@ -57,6 +63,8 @@ public class ExtractClustersFromOptics extends AbstractTransformation<List<Optic
                 currentCluster.add(model.getData());
             }
         }
+        ExtractClustersFromOptics.LOGGER.info("generated " + clustering.getClusters().size() + " clusters");
+
         this.getOutputPort().send(clustering);
     }
 }
