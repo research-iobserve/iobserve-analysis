@@ -23,8 +23,8 @@ import teetime.framework.test.StageTester;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.iobserve.service.behavior.analysis.GraphEditDistance;
-import org.iobserve.service.behavior.analysis.MTreeGenerator;
+import org.iobserve.service.behavior.analysis.clustering.GraphEditDistance;
+import org.iobserve.service.behavior.analysis.clustering.MTreeGenerator;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.junit.Before;
 import org.junit.Test;

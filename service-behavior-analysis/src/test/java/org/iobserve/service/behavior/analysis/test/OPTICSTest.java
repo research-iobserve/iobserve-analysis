@@ -1,13 +1,12 @@
 package org.iobserve.service.behavior.analysis.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.iobserve.service.behavior.analysis.OPTICS;
-import org.iobserve.service.behavior.analysis.OpticsData;
+import org.iobserve.service.behavior.analysis.clustering.OPTICS;
+import org.iobserve.service.behavior.analysis.clustering.OpticsData;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelNode;
 import org.junit.Before;
@@ -27,7 +26,9 @@ public class OPTICSTest {
         this.mtree = new MTree<>(new OpticsData.OPTICSDataGED(), null);
 
         for (int i = 0; i < 50; i++) {
-            final Map<String, BehaviorModelNode> nodes = new HashMap<>();
+            final BehaviorModelGED model = new BehaviorModelGED();
+
+            final Map<String, BehaviorModelNode> nodes = model.getNodes();
 
             final Random rand = new Random();
             final int nodeAmount = rand.nextInt(100);
@@ -35,7 +36,7 @@ public class OPTICSTest {
                 nodes.put(Integer.toString(j), new BehaviorModelNode(Integer.toString(j)));
             }
 
-            final OpticsData newModel = new OpticsData(new BehaviorModelGED(nodes));
+            final OpticsData newModel = new OpticsData(model);
             this.models.add(newModel);
             this.mtree.add(newModel);
 

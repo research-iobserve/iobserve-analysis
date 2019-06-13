@@ -13,36 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis;
+package org.iobserve.service.behavior.analysis.clustering;
 
-import java.util.HashSet;
-import java.util.Set;
+import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Clustering {
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
+public class BehaviorModelToOpticsDataConverter extends AbstractTransformation<BehaviorModelGED, OpticsData> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelToOpticsDataConverter.class);
 
-    private Set<BehaviorModelGED> noise = new HashSet<>();
+    @Override
+    protected void execute(final BehaviorModelGED model) throws Exception {
+        this.outputPort.send(new OpticsData(model));
+        BehaviorModelToOpticsDataConverter.LOGGER.info("Converted BehaviorModelGED to OpticsData");
 
-    private Set<Set<BehaviorModelGED>> clusters = new HashSet<>();
-
-    public Set<BehaviorModelGED> getNoise() {
-        return this.noise;
     }
 
-    public void setNoise(final Set<BehaviorModelGED> noise) {
-        this.noise = noise;
-    }
-
-    public Set<Set<BehaviorModelGED>> getClusters() {
-        return this.clusters;
-    }
-
-    public void setClusters(final Set<Set<BehaviorModelGED>> clusters) {
-        this.clusters = clusters;
-    }
-
-    public void addCluster(final Set<BehaviorModelGED> cluster) {
-        this.clusters.add(cluster);
-    }
 }

@@ -4,13 +4,6 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.service.behavior.analysis.BehaviorModelToOpticsDataConverter;
-import org.iobserve.service.behavior.analysis.Clustering;
-import org.iobserve.service.behavior.analysis.DataCollector;
-import org.iobserve.service.behavior.analysis.ExtractClustersFromOptics;
-import org.iobserve.service.behavior.analysis.MTreeGenerator;
-import org.iobserve.service.behavior.analysis.OpticsData;
-import org.iobserve.service.behavior.analysis.OpticsStage;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 
 public class ClusteringCompositeStage extends CompositeStage {
@@ -25,11 +18,11 @@ public class ClusteringCompositeStage extends CompositeStage {
 
     public ClusteringCompositeStage(final boolean hasMaxAmount, final int maxAmount) {
 
-        final double clusteringDistance = 10;
+        final double clusteringDistance = 40;
 
         final BehaviorModelToOpticsDataConverter modelToOptics = new BehaviorModelToOpticsDataConverter();
 
-        final OpticsStage optics = new OpticsStage(clusteringDistance, 4);
+        final OpticsStage optics = new OpticsStage(clusteringDistance, 20);
 
         final MTreeGenerator<OpticsData> mTreeGenerator = new MTreeGenerator<>(new OpticsData.OPTICSDataGED());
 

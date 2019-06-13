@@ -15,26 +15,21 @@
  ***************************************************************************/
 package org.iobserve.service.behavior.analysis;
 
-import java.io.File;
-
-import com.beust.jcommander.Parameter;
-
 /**
  *
  * @author Lars Jürgensen
  *
  */
 public class BehaviorAnalysisSettings {
-    @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
-
-    private File configurationFile;
-
-    public final File getConfigurationFile() {
-        return this.configurationFile;
-    }
-
-    public final void setConfigurationFile(final File configurationFile) {
-        this.configurationFile = configurationFile;
-    }
-
+    /*
+     * @Parameter(names = { "-c", "--configuration" }, required = true, description =
+     * "Configuration file")
+     * 
+     * private File configurationFile;
+     * 
+     * public final File getConfigurationFile() { return this.configurationFile; }
+     * 
+     * public final void setConfigurationFile(final File configurationFile) { this.configurationFile
+     * = configurationFile; }
+     */
 }

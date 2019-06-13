@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis;
+package org.iobserve.service.behavior.analysis.clustering;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -72,9 +72,12 @@ public class OpticsStage extends AbstractStage {
             for (final OpticsData model : models) {
                 model.setOptics(optics);
             }
+
+            final List<OpticsData> result = optics.calculate();
+
             OpticsStage.LOGGER.info("send optics result");
 
-            this.outputPort.send(optics.calculate());
+            this.outputPort.send(result);
         }
 
     }

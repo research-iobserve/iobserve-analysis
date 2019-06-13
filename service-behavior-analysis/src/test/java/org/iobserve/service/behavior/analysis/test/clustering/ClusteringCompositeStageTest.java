@@ -23,7 +23,7 @@ import java.util.Set;
 
 import teetime.framework.test.StageTester;
 
-import org.iobserve.service.behavior.analysis.Clustering;
+import org.iobserve.service.behavior.analysis.clustering.Clustering;
 import org.iobserve.service.behavior.analysis.clustering.ClusteringCompositeStage;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelNode;
@@ -37,20 +37,20 @@ import org.junit.Test;
  */
 public class ClusteringCompositeStageTest {
 
-    private final ClusteringCompositeStage clustering = new ClusteringCompositeStage(true, 49);
+    private final ClusteringCompositeStage clustering = new ClusteringCompositeStage(true, 9999);
     private List<BehaviorModelGED> models = new ArrayList<>();
 
     @Before
     public void setup() {
         this.models = new ArrayList<>();
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10000; i++) {
             final BehaviorModelGED newModel = new BehaviorModelGED();
 
             final Map<String, BehaviorModelNode> nodes = newModel.getNodes();
 
             final Random rand = new Random();
-            final int nodeAmount = rand.nextInt(100);
+            final int nodeAmount = rand.nextInt(30);
             for (int j = 0; j < nodeAmount; j++) {
                 nodes.put(Integer.toString(j), new BehaviorModelNode(Integer.toString(j)));
             }
@@ -68,17 +68,19 @@ public class ClusteringCompositeStageTest {
 
         if (solutions.size() > 0) {
             for (final Clustering solution : solutions) {
-                System.out.println("new solution");
+                // System.out.println("new solution");
 
                 for (final Set<BehaviorModelGED> cluster : solution.getClusters()) {
-                    System.out.println("new cluster");
+                    // System.out.println("new cluster");
 
                     for (final BehaviorModelGED model : cluster) {
 
-                        System.out.println(model.getNodes().size());
+                        // System.out.println(model.getNodes().size());
                     }
                 }
             }
         }
+        System.out.println("finished");
+
     }
 }
