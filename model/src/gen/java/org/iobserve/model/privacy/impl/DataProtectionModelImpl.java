@@ -5,34 +5,39 @@ package org.iobserve.model.privacy.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.IPrivacyAnnotation;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.IDataProtectionAnnotation;
 import org.iobserve.model.privacy.PrivacyPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Model</b></em>'.
+ * An implementation of the model object '<em><b>Data Protection Model</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getResourceContainerLocations <em>Resource Container Locations</em>}</li>
- *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getPrivacyLevels <em>Privacy Levels</em>}</li>
- *   <li>{@link org.iobserve.model.privacy.impl.PrivacyModelImpl#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.DataProtectionModelImpl#getResourceContainerLocations <em>Resource Container Locations</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.DataProtectionModelImpl#getPrivacyLevels <em>Privacy Levels</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.DataProtectionModelImpl#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements PrivacyModel {
+public class DataProtectionModelImpl extends MinimalEObjectImpl.Container implements DataProtectionModel {
     /**
      * The cached value of the '{@link #getResourceContainerLocations() <em>Resource Container Locations</em>}' containment reference list.
      * <!-- begin-user-doc -->
@@ -44,14 +49,14 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     protected EList<GeoLocation> resourceContainerLocations;
 
     /**
-     * The cached value of the '{@link #getPrivacyLevels() <em>Privacy Levels</em>}' containment reference list.
+     * The cached value of the '{@link #getDataProectionLevels() <em>Privacy Levels</em>}' containment reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getPrivacyLevels()
+     * @see #getDataProectionLevels()
      * @generated
      * @ordered
      */
-    protected EList<IPrivacyAnnotation> privacyLevels;
+    protected EList<IDataProtectionAnnotation> privacyLevels;
 
     /**
      * The cached value of the '{@link #getEncapsulatedDataSources() <em>Encapsulated Data Sources</em>}' containment reference list.
@@ -68,7 +73,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      * <!-- end-user-doc -->
      * @generated
      */
-    protected PrivacyModelImpl() {
+    protected DataProtectionModelImpl() {
         super();
     }
 
@@ -79,7 +84,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      */
     @Override
     protected EClass eStaticClass() {
-        return PrivacyPackage.Literals.PRIVACY_MODEL;
+        return PrivacyPackage.Literals.DATA_PROTECTION_MODEL;
     }
 
     /**
@@ -89,7 +94,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      */
     public EList<GeoLocation> getResourceContainerLocations() {
         if (resourceContainerLocations == null) {
-            resourceContainerLocations = new EObjectContainmentEList<GeoLocation>(GeoLocation.class, this, PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS);
+            resourceContainerLocations = new EObjectContainmentEList<GeoLocation>(GeoLocation.class, this, PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS);
         }
         return resourceContainerLocations;
     }
@@ -99,9 +104,9 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      * <!-- end-user-doc -->
      * @generated
      */
-    public EList<IPrivacyAnnotation> getPrivacyLevels() {
+    public EList<IDataProtectionAnnotation> getDataProectionLevels() {
         if (privacyLevels == null) {
-            privacyLevels = new EObjectContainmentEList<IPrivacyAnnotation>(IPrivacyAnnotation.class, this, PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS);
+            privacyLevels = new EObjectContainmentEList<IDataProtectionAnnotation>(IDataProtectionAnnotation.class, this, PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS);
         }
         return privacyLevels;
     }
@@ -113,7 +118,7 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
      */
     public EList<EncapsulatedDataSource> getEncapsulatedDataSources() {
         if (encapsulatedDataSources == null) {
-            encapsulatedDataSources = new EObjectContainmentEList<EncapsulatedDataSource>(EncapsulatedDataSource.class, this, PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES);
+            encapsulatedDataSources = new EObjectContainmentEList<EncapsulatedDataSource>(EncapsulatedDataSource.class, this, PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES);
         }
         return encapsulatedDataSources;
     }
@@ -126,11 +131,11 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
-            case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return ((InternalEList<?>)getResourceContainerLocations()).basicRemove(otherEnd, msgs);
-            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
-                return ((InternalEList<?>)getPrivacyLevels()).basicRemove(otherEnd, msgs);
-            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS:
+                return ((InternalEList<?>)getDataProectionLevels()).basicRemove(otherEnd, msgs);
+            case PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES:
                 return ((InternalEList<?>)getEncapsulatedDataSources()).basicRemove(otherEnd, msgs);
         }
         return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -144,11 +149,11 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return getResourceContainerLocations();
-            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
-                return getPrivacyLevels();
-            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS:
+                return getDataProectionLevels();
+            case PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES:
                 return getEncapsulatedDataSources();
         }
         return super.eGet(featureID, resolve, coreType);
@@ -163,15 +168,15 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 getResourceContainerLocations().clear();
                 getResourceContainerLocations().addAll((Collection<? extends GeoLocation>)newValue);
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
-                getPrivacyLevels().clear();
-                getPrivacyLevels().addAll((Collection<? extends IPrivacyAnnotation>)newValue);
+            case PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS:
+                getDataProectionLevels().clear();
+                getDataProectionLevels().addAll((Collection<? extends IDataProtectionAnnotation>)newValue);
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES:
                 getEncapsulatedDataSources().clear();
                 getEncapsulatedDataSources().addAll((Collection<? extends EncapsulatedDataSource>)newValue);
                 return;
@@ -187,13 +192,13 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 getResourceContainerLocations().clear();
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
-                getPrivacyLevels().clear();
+            case PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS:
+                getDataProectionLevels().clear();
                 return;
-            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES:
                 getEncapsulatedDataSources().clear();
                 return;
         }
@@ -208,14 +213,14 @@ public class PrivacyModelImpl extends MinimalEObjectImpl.Container implements Pr
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case PrivacyPackage.PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS:
                 return resourceContainerLocations != null && !resourceContainerLocations.isEmpty();
-            case PrivacyPackage.PRIVACY_MODEL__PRIVACY_LEVELS:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__PRIVACY_LEVELS:
                 return privacyLevels != null && !privacyLevels.isEmpty();
-            case PrivacyPackage.PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES:
+            case PrivacyPackage.DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES:
                 return encapsulatedDataSources != null && !encapsulatedDataSources.isEmpty();
         }
         return super.eIsSet(featureID);
     }
 
-} //PrivacyModelImpl
+} //DataProtectionModelImpl

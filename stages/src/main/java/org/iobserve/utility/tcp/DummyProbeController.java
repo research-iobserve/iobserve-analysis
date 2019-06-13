@@ -66,13 +66,13 @@ public class DummyProbeController implements IProbeController {
      */
     @Override
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
-        DummyProbeController.LOGGER.debug("control probe host=[{}] ip=[{}] port=[{}]", event.getHostname(),
+        DummyProbeController.LOGGER.debug("control probe host=[{}] ip=[{}] port=[{}]", event.getServiceComponent(),
                 event.getIp(), event.getPort());
 
         final String ip = event.getIp();
         final int port = event.getPort();
-        final String hostname = event.getHostname();
-        final String pattern = event.getPattern();
+        final String hostname = event.getServiceComponent();
+        final String pattern = event.getOperationSignature();
 
         if (event instanceof TcpActivationControlEvent) {
             if (event instanceof TcpActivationParameterControlEvent) {
@@ -187,7 +187,7 @@ public class DummyProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+        if ((currentConnection == null) || (currentConnection.getServiceComponent() != hostname)) {
             currentConnection = new TcpControlConnection(ip, port, hostname, null);
             this.knownAddresses.put(writerKey, currentConnection);
         }

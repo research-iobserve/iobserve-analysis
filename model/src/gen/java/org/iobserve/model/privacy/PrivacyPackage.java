@@ -58,14 +58,14 @@ public interface PrivacyPackage extends EPackage {
     PrivacyPackage eINSTANCE = org.iobserve.model.privacy.impl.PrivacyPackageImpl.init();
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.privacy.impl.PrivacyModelImpl <em>Model</em>}' class.
+     * The meta object id for the '{@link org.iobserve.model.privacy.impl.DataProtectionModelImpl <em>Data Protection Model</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.model.privacy.impl.PrivacyModelImpl
-     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getPrivacyModel()
+     * @see org.iobserve.model.privacy.impl.DataProtectionModelImpl
+     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getDataProtectionModel()
      * @generated
      */
-    int PRIVACY_MODEL = 0;
+    int DATA_PROTECTION_MODEL = 0;
 
     /**
      * The feature id for the '<em><b>Resource Container Locations</b></em>' containment reference list.
@@ -74,7 +74,7 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS = 0;
+    int DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS = 0;
 
     /**
      * The feature id for the '<em><b>Privacy Levels</b></em>' containment reference list.
@@ -83,7 +83,7 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int PRIVACY_MODEL__PRIVACY_LEVELS = 1;
+    int DATA_PROTECTION_MODEL__PRIVACY_LEVELS = 1;
 
     /**
      * The feature id for the '<em><b>Encapsulated Data Sources</b></em>' containment reference list.
@@ -92,35 +92,35 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES = 2;
+    int DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES = 2;
 
     /**
-     * The number of structural features of the '<em>Model</em>' class.
+     * The number of structural features of the '<em>Data Protection Model</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int PRIVACY_MODEL_FEATURE_COUNT = 3;
+    int DATA_PROTECTION_MODEL_FEATURE_COUNT = 3;
 
     /**
-     * The number of operations of the '<em>Model</em>' class.
+     * The number of operations of the '<em>Data Protection Model</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int PRIVACY_MODEL_OPERATION_COUNT = 0;
+    int DATA_PROTECTION_MODEL_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.privacy.IPrivacyAnnotation <em>IPrivacy Annotation</em>}' class.
+     * The meta object id for the '{@link org.iobserve.model.privacy.IDataProtectionAnnotation <em>IData Protection Annotation</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.model.privacy.IPrivacyAnnotation
-     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getIPrivacyAnnotation()
+     * @see org.iobserve.model.privacy.IDataProtectionAnnotation
+     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getIDataProtectionAnnotation()
      * @generated
      */
-    int IPRIVACY_ANNOTATION = 2;
+    int IDATA_PROTECTION_ANNOTATION = 2;
 
     /**
      * The feature id for the '<em><b>Level</b></em>' attribute.
@@ -129,35 +129,35 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int IPRIVACY_ANNOTATION__LEVEL = 0;
+    int IDATA_PROTECTION_ANNOTATION__LEVEL = 0;
 
     /**
-     * The number of structural features of the '<em>IPrivacy Annotation</em>' class.
+     * The number of structural features of the '<em>IData Protection Annotation</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int IPRIVACY_ANNOTATION_FEATURE_COUNT = 1;
+    int IDATA_PROTECTION_ANNOTATION_FEATURE_COUNT = 1;
 
     /**
-     * The number of operations of the '<em>IPrivacy Annotation</em>' class.
+     * The number of operations of the '<em>IData Protection Annotation</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int IPRIVACY_ANNOTATION_OPERATION_COUNT = 0;
+    int IDATA_PROTECTION_ANNOTATION_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl <em>Return Type Privacy</em>}' class.
+     * The meta object id for the '{@link org.iobserve.model.privacy.impl.ReturnTypeDataProtectionImpl <em>Return Type Data Protection</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl
-     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getReturnTypePrivacy()
+     * @see org.iobserve.model.privacy.impl.ReturnTypeDataProtectionImpl
+     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getReturnTypeDataProtection()
      * @generated
      */
-    int RETURN_TYPE_PRIVACY = 1;
+    int RETURN_TYPE_DATA_PROTECTION = 1;
 
     /**
      * The feature id for the '<em><b>Level</b></em>' attribute.
@@ -166,7 +166,7 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RETURN_TYPE_PRIVACY__LEVEL = IPRIVACY_ANNOTATION__LEVEL;
+    int RETURN_TYPE_DATA_PROTECTION__LEVEL = IDATA_PROTECTION_ANNOTATION__LEVEL;
 
     /**
      * The feature id for the '<em><b>Operation Signature</b></em>' reference.
@@ -175,25 +175,25 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE = IPRIVACY_ANNOTATION_FEATURE_COUNT + 0;
+    int RETURN_TYPE_DATA_PROTECTION__OPERATION_SIGNATURE = IDATA_PROTECTION_ANNOTATION_FEATURE_COUNT + 0;
 
     /**
-     * The number of structural features of the '<em>Return Type Privacy</em>' class.
+     * The number of structural features of the '<em>Return Type Data Protection</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int RETURN_TYPE_PRIVACY_FEATURE_COUNT = IPRIVACY_ANNOTATION_FEATURE_COUNT + 1;
+    int RETURN_TYPE_DATA_PROTECTION_FEATURE_COUNT = IDATA_PROTECTION_ANNOTATION_FEATURE_COUNT + 1;
 
     /**
-     * The number of operations of the '<em>Return Type Privacy</em>' class.
+     * The number of operations of the '<em>Return Type Data Protection</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int RETURN_TYPE_PRIVACY_OPERATION_COUNT = IPRIVACY_ANNOTATION_OPERATION_COUNT + 0;
+    int RETURN_TYPE_DATA_PROTECTION_OPERATION_COUNT = IDATA_PROTECTION_ANNOTATION_OPERATION_COUNT + 0;
 
     /**
      * The meta object id for the '{@link org.iobserve.model.privacy.impl.GeoLocationImpl <em>Geo Location</em>}' class.
@@ -242,14 +242,14 @@ public interface PrivacyPackage extends EPackage {
     int GEO_LOCATION_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.privacy.impl.ParameterPrivacyImpl <em>Parameter Privacy</em>}' class.
+     * The meta object id for the '{@link org.iobserve.model.privacy.impl.ParameterDataProtectionImpl <em>Parameter Data Protection</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.model.privacy.impl.ParameterPrivacyImpl
-     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getParameterPrivacy()
+     * @see org.iobserve.model.privacy.impl.ParameterDataProtectionImpl
+     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getParameterDataProtection()
      * @generated
      */
-    int PARAMETER_PRIVACY = 4;
+    int PARAMETER_DATA_PROTECTION = 4;
 
     /**
      * The feature id for the '<em><b>Level</b></em>' attribute.
@@ -258,7 +258,7 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int PARAMETER_PRIVACY__LEVEL = IPRIVACY_ANNOTATION__LEVEL;
+    int PARAMETER_DATA_PROTECTION__LEVEL = IDATA_PROTECTION_ANNOTATION__LEVEL;
 
     /**
      * The feature id for the '<em><b>Parameter</b></em>' reference.
@@ -267,25 +267,25 @@ public interface PrivacyPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int PARAMETER_PRIVACY__PARAMETER = IPRIVACY_ANNOTATION_FEATURE_COUNT + 0;
+    int PARAMETER_DATA_PROTECTION__PARAMETER = IDATA_PROTECTION_ANNOTATION_FEATURE_COUNT + 0;
 
     /**
-     * The number of structural features of the '<em>Parameter Privacy</em>' class.
+     * The number of structural features of the '<em>Parameter Data Protection</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int PARAMETER_PRIVACY_FEATURE_COUNT = IPRIVACY_ANNOTATION_FEATURE_COUNT + 1;
+    int PARAMETER_DATA_PROTECTION_FEATURE_COUNT = IDATA_PROTECTION_ANNOTATION_FEATURE_COUNT + 1;
 
     /**
-     * The number of operations of the '<em>Parameter Privacy</em>' class.
+     * The number of operations of the '<em>Parameter Data Protection</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int PARAMETER_PRIVACY_OPERATION_COUNT = IPRIVACY_ANNOTATION_OPERATION_COUNT + 0;
+    int PARAMETER_DATA_PROTECTION_OPERATION_COUNT = IDATA_PROTECTION_ANNOTATION_OPERATION_COUNT + 0;
 
     /**
      * The meta object id for the '{@link org.iobserve.model.privacy.impl.EncapsulatedDataSourceImpl <em>Encapsulated Data Source</em>}' class.
@@ -334,14 +334,14 @@ public interface PrivacyPackage extends EPackage {
     int ENCAPSULATED_DATA_SOURCE_OPERATION_COUNT = 0;
 
     /**
-     * The meta object id for the '{@link org.iobserve.model.privacy.EDataPrivacyLevel <em>EData Privacy Level</em>}' enum.
+     * The meta object id for the '{@link org.iobserve.model.privacy.EDataProtectionLevel <em>EData Protection Level</em>}' enum.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.model.privacy.EDataPrivacyLevel
-     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getEDataPrivacyLevel()
+     * @see org.iobserve.model.privacy.EDataProtectionLevel
+     * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getEDataProtectionLevel()
      * @generated
      */
-    int EDATA_PRIVACY_LEVEL = 6;
+    int EDATA_PROTECTION_LEVEL = 6;
 
     /**
      * The meta object id for the '{@link org.iobserve.model.privacy.EISOCode <em>EISO Code</em>}' enum.
@@ -355,89 +355,89 @@ public interface PrivacyPackage extends EPackage {
 
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.model.privacy.PrivacyModel <em>Model</em>}'.
+     * Returns the meta object for class '{@link org.iobserve.model.privacy.DataProtectionModel <em>Data Protection Model</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Model</em>'.
-     * @see org.iobserve.model.privacy.PrivacyModel
+     * @return the meta object for class '<em>Data Protection Model</em>'.
+     * @see org.iobserve.model.privacy.DataProtectionModel
      * @generated
      */
-    EClass getPrivacyModel();
+    EClass getDataProtectionModel();
 
     /**
-     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.PrivacyModel#getResourceContainerLocations <em>Resource Container Locations</em>}'.
+     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.DataProtectionModel#getResourceContainerLocations <em>Resource Container Locations</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the containment reference list '<em>Resource Container Locations</em>'.
-     * @see org.iobserve.model.privacy.PrivacyModel#getResourceContainerLocations()
-     * @see #getPrivacyModel()
+     * @see org.iobserve.model.privacy.DataProtectionModel#getResourceContainerLocations()
+     * @see #getDataProtectionModel()
      * @generated
      */
-    EReference getPrivacyModel_ResourceContainerLocations();
+    EReference getDataProtectionModel_ResourceContainerLocations();
 
     /**
-     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.PrivacyModel#getPrivacyLevels <em>Privacy Levels</em>}'.
+     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.DataProtectionModel#getPrivacyLevels <em>Privacy Levels</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the containment reference list '<em>Privacy Levels</em>'.
-     * @see org.iobserve.model.privacy.PrivacyModel#getPrivacyLevels()
-     * @see #getPrivacyModel()
+     * @see org.iobserve.model.privacy.DataProtectionModel#getDataProectionLevels()
+     * @see #getDataProtectionModel()
      * @generated
      */
-    EReference getPrivacyModel_PrivacyLevels();
+    EReference getDataProtectionModel_PrivacyLevels();
 
     /**
-     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}'.
+     * Returns the meta object for the containment reference list '{@link org.iobserve.model.privacy.DataProtectionModel#getEncapsulatedDataSources <em>Encapsulated Data Sources</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the containment reference list '<em>Encapsulated Data Sources</em>'.
-     * @see org.iobserve.model.privacy.PrivacyModel#getEncapsulatedDataSources()
-     * @see #getPrivacyModel()
+     * @see org.iobserve.model.privacy.DataProtectionModel#getEncapsulatedDataSources()
+     * @see #getDataProtectionModel()
      * @generated
      */
-    EReference getPrivacyModel_EncapsulatedDataSources();
+    EReference getDataProtectionModel_EncapsulatedDataSources();
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.model.privacy.ReturnTypePrivacy <em>Return Type Privacy</em>}'.
+     * Returns the meta object for class '{@link org.iobserve.model.privacy.ReturnTypeDataProtection <em>Return Type Data Protection</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Return Type Privacy</em>'.
-     * @see org.iobserve.model.privacy.ReturnTypePrivacy
+     * @return the meta object for class '<em>Return Type Data Protection</em>'.
+     * @see org.iobserve.model.privacy.ReturnTypeDataProtection
      * @generated
      */
-    EClass getReturnTypePrivacy();
+    EClass getReturnTypeDataProtection();
 
     /**
-     * Returns the meta object for the reference '{@link org.iobserve.model.privacy.ReturnTypePrivacy#getOperationSignature <em>Operation Signature</em>}'.
+     * Returns the meta object for the reference '{@link org.iobserve.model.privacy.ReturnTypeDataProtection#getOperationSignature <em>Operation Signature</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the reference '<em>Operation Signature</em>'.
-     * @see org.iobserve.model.privacy.ReturnTypePrivacy#getOperationSignature()
-     * @see #getReturnTypePrivacy()
+     * @see org.iobserve.model.privacy.ReturnTypeDataProtection#getOperationSignature()
+     * @see #getReturnTypeDataProtection()
      * @generated
      */
-    EReference getReturnTypePrivacy_OperationSignature();
+    EReference getReturnTypeDataProtection_OperationSignature();
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.model.privacy.IPrivacyAnnotation <em>IPrivacy Annotation</em>}'.
+     * Returns the meta object for class '{@link org.iobserve.model.privacy.IDataProtectionAnnotation <em>IData Protection Annotation</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>IPrivacy Annotation</em>'.
-     * @see org.iobserve.model.privacy.IPrivacyAnnotation
+     * @return the meta object for class '<em>IData Protection Annotation</em>'.
+     * @see org.iobserve.model.privacy.IDataProtectionAnnotation
      * @generated
      */
-    EClass getIPrivacyAnnotation();
+    EClass getIDataProtectionAnnotation();
 
     /**
-     * Returns the meta object for the attribute '{@link org.iobserve.model.privacy.IPrivacyAnnotation#getLevel <em>Level</em>}'.
+     * Returns the meta object for the attribute '{@link org.iobserve.model.privacy.IDataProtectionAnnotation#getLevel <em>Level</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the attribute '<em>Level</em>'.
-     * @see org.iobserve.model.privacy.IPrivacyAnnotation#getLevel()
-     * @see #getIPrivacyAnnotation()
+     * @see org.iobserve.model.privacy.IDataProtectionAnnotation#getLevel()
+     * @see #getIDataProtectionAnnotation()
      * @generated
      */
-    EAttribute getIPrivacyAnnotation_Level();
+    EAttribute getIDataProtectionAnnotation_Level();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.model.privacy.GeoLocation <em>Geo Location</em>}'.
@@ -472,25 +472,25 @@ public interface PrivacyPackage extends EPackage {
     EReference getGeoLocation_ResourceContainer();
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.model.privacy.ParameterPrivacy <em>Parameter Privacy</em>}'.
+     * Returns the meta object for class '{@link org.iobserve.model.privacy.ParameterDataProtection <em>Parameter Data Protection</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Parameter Privacy</em>'.
-     * @see org.iobserve.model.privacy.ParameterPrivacy
+     * @return the meta object for class '<em>Parameter Data Protection</em>'.
+     * @see org.iobserve.model.privacy.ParameterDataProtection
      * @generated
      */
-    EClass getParameterPrivacy();
+    EClass getParameterDataProtection();
 
     /**
-     * Returns the meta object for the reference '{@link org.iobserve.model.privacy.ParameterPrivacy#getParameter <em>Parameter</em>}'.
+     * Returns the meta object for the reference '{@link org.iobserve.model.privacy.ParameterDataProtection#getParameter <em>Parameter</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @return the meta object for the reference '<em>Parameter</em>'.
-     * @see org.iobserve.model.privacy.ParameterPrivacy#getParameter()
-     * @see #getParameterPrivacy()
+     * @see org.iobserve.model.privacy.ParameterDataProtection#getParameter()
+     * @see #getParameterDataProtection()
      * @generated
      */
-    EReference getParameterPrivacy_Parameter();
+    EReference getParameterDataProtection_Parameter();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.model.privacy.EncapsulatedDataSource <em>Encapsulated Data Source</em>}'.
@@ -525,14 +525,14 @@ public interface PrivacyPackage extends EPackage {
     EReference getEncapsulatedDataSource_Component();
 
     /**
-     * Returns the meta object for enum '{@link org.iobserve.model.privacy.EDataPrivacyLevel <em>EData Privacy Level</em>}'.
+     * Returns the meta object for enum '{@link org.iobserve.model.privacy.EDataProtectionLevel <em>EData Protection Level</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for enum '<em>EData Privacy Level</em>'.
-     * @see org.iobserve.model.privacy.EDataPrivacyLevel
+     * @return the meta object for enum '<em>EData Protection Level</em>'.
+     * @see org.iobserve.model.privacy.EDataProtectionLevel
      * @generated
      */
-    EEnum getEDataPrivacyLevel();
+    EEnum getEDataProtectionLevel();
 
     /**
      * Returns the meta object for enum '{@link org.iobserve.model.privacy.EISOCode <em>EISO Code</em>}'.
@@ -568,14 +568,14 @@ public interface PrivacyPackage extends EPackage {
      */
     interface Literals {
         /**
-         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.PrivacyModelImpl <em>Model</em>}' class.
+         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.DataProtectionModelImpl <em>Data Protection Model</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.model.privacy.impl.PrivacyModelImpl
-         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getPrivacyModel()
+         * @see org.iobserve.model.privacy.impl.DataProtectionModelImpl
+         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getDataProtectionModel()
          * @generated
          */
-        EClass PRIVACY_MODEL = eINSTANCE.getPrivacyModel();
+        EClass DATA_PROTECTION_MODEL = eINSTANCE.getDataProtectionModel();
 
         /**
          * The meta object literal for the '<em><b>Resource Container Locations</b></em>' containment reference list feature.
@@ -583,7 +583,7 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS = eINSTANCE.getPrivacyModel_ResourceContainerLocations();
+        EReference DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS = eINSTANCE.getDataProtectionModel_ResourceContainerLocations();
 
         /**
          * The meta object literal for the '<em><b>Privacy Levels</b></em>' containment reference list feature.
@@ -591,7 +591,7 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference PRIVACY_MODEL__PRIVACY_LEVELS = eINSTANCE.getPrivacyModel_PrivacyLevels();
+        EReference DATA_PROTECTION_MODEL__PRIVACY_LEVELS = eINSTANCE.getDataProtectionModel_PrivacyLevels();
 
         /**
          * The meta object literal for the '<em><b>Encapsulated Data Sources</b></em>' containment reference list feature.
@@ -599,17 +599,17 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES = eINSTANCE.getPrivacyModel_EncapsulatedDataSources();
+        EReference DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES = eINSTANCE.getDataProtectionModel_EncapsulatedDataSources();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl <em>Return Type Privacy</em>}' class.
+         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.ReturnTypeDataProtectionImpl <em>Return Type Data Protection</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl
-         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getReturnTypePrivacy()
+         * @see org.iobserve.model.privacy.impl.ReturnTypeDataProtectionImpl
+         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getReturnTypeDataProtection()
          * @generated
          */
-        EClass RETURN_TYPE_PRIVACY = eINSTANCE.getReturnTypePrivacy();
+        EClass RETURN_TYPE_DATA_PROTECTION = eINSTANCE.getReturnTypeDataProtection();
 
         /**
          * The meta object literal for the '<em><b>Operation Signature</b></em>' reference feature.
@@ -617,17 +617,17 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE = eINSTANCE.getReturnTypePrivacy_OperationSignature();
+        EReference RETURN_TYPE_DATA_PROTECTION__OPERATION_SIGNATURE = eINSTANCE.getReturnTypeDataProtection_OperationSignature();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.model.privacy.IPrivacyAnnotation <em>IPrivacy Annotation</em>}' class.
+         * The meta object literal for the '{@link org.iobserve.model.privacy.IDataProtectionAnnotation <em>IData Protection Annotation</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.model.privacy.IPrivacyAnnotation
-         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getIPrivacyAnnotation()
+         * @see org.iobserve.model.privacy.IDataProtectionAnnotation
+         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getIDataProtectionAnnotation()
          * @generated
          */
-        EClass IPRIVACY_ANNOTATION = eINSTANCE.getIPrivacyAnnotation();
+        EClass IDATA_PROTECTION_ANNOTATION = eINSTANCE.getIDataProtectionAnnotation();
 
         /**
          * The meta object literal for the '<em><b>Level</b></em>' attribute feature.
@@ -635,7 +635,7 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute IPRIVACY_ANNOTATION__LEVEL = eINSTANCE.getIPrivacyAnnotation_Level();
+        EAttribute IDATA_PROTECTION_ANNOTATION__LEVEL = eINSTANCE.getIDataProtectionAnnotation_Level();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.privacy.impl.GeoLocationImpl <em>Geo Location</em>}' class.
@@ -664,14 +664,14 @@ public interface PrivacyPackage extends EPackage {
         EReference GEO_LOCATION__RESOURCE_CONTAINER = eINSTANCE.getGeoLocation_ResourceContainer();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.ParameterPrivacyImpl <em>Parameter Privacy</em>}' class.
+         * The meta object literal for the '{@link org.iobserve.model.privacy.impl.ParameterDataProtectionImpl <em>Parameter Data Protection</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.model.privacy.impl.ParameterPrivacyImpl
-         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getParameterPrivacy()
+         * @see org.iobserve.model.privacy.impl.ParameterDataProtectionImpl
+         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getParameterDataProtection()
          * @generated
          */
-        EClass PARAMETER_PRIVACY = eINSTANCE.getParameterPrivacy();
+        EClass PARAMETER_DATA_PROTECTION = eINSTANCE.getParameterDataProtection();
 
         /**
          * The meta object literal for the '<em><b>Parameter</b></em>' reference feature.
@@ -679,7 +679,7 @@ public interface PrivacyPackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference PARAMETER_PRIVACY__PARAMETER = eINSTANCE.getParameterPrivacy_Parameter();
+        EReference PARAMETER_DATA_PROTECTION__PARAMETER = eINSTANCE.getParameterDataProtection_Parameter();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.privacy.impl.EncapsulatedDataSourceImpl <em>Encapsulated Data Source</em>}' class.
@@ -708,14 +708,14 @@ public interface PrivacyPackage extends EPackage {
         EReference ENCAPSULATED_DATA_SOURCE__COMPONENT = eINSTANCE.getEncapsulatedDataSource_Component();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.model.privacy.EDataPrivacyLevel <em>EData Privacy Level</em>}' enum.
+         * The meta object literal for the '{@link org.iobserve.model.privacy.EDataProtectionLevel <em>EData Protection Level</em>}' enum.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.model.privacy.EDataPrivacyLevel
-         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getEDataPrivacyLevel()
+         * @see org.iobserve.model.privacy.EDataProtectionLevel
+         * @see org.iobserve.model.privacy.impl.PrivacyPackageImpl#getEDataProtectionLevel()
          * @generated
          */
-        EEnum EDATA_PRIVACY_LEVEL = eINSTANCE.getEDataPrivacyLevel();
+        EEnum EDATA_PROTECTION_LEVEL = eINSTANCE.getEDataProtectionLevel();
 
         /**
          * The meta object literal for the '{@link org.iobserve.model.privacy.EISOCode <em>EISO Code</em>}' enum.

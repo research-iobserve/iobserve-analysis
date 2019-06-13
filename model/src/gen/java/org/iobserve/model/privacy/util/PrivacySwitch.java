@@ -5,13 +5,7 @@ package org.iobserve.model.privacy.util;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
-import org.iobserve.model.privacy.EncapsulatedDataSource;
-import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.IPrivacyAnnotation;
-import org.iobserve.model.privacy.ParameterPrivacy;
-import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.model.privacy.ReturnTypePrivacy;
+import org.iobserve.model.privacy.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -70,22 +64,22 @@ public class PrivacySwitch<T> extends Switch<T> {
     @Override
     protected T doSwitch(int classifierID, EObject theEObject) {
         switch (classifierID) {
-            case PrivacyPackage.PRIVACY_MODEL: {
-                PrivacyModel privacyModel = (PrivacyModel)theEObject;
-                T result = casePrivacyModel(privacyModel);
+            case PrivacyPackage.DATA_PROTECTION_MODEL: {
+                DataProtectionModel dataProtectionModel = (DataProtectionModel)theEObject;
+                T result = caseDataProtectionModel(dataProtectionModel);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case PrivacyPackage.RETURN_TYPE_PRIVACY: {
-                ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy)theEObject;
-                T result = caseReturnTypePrivacy(returnTypePrivacy);
-                if (result == null) result = caseIPrivacyAnnotation(returnTypePrivacy);
+            case PrivacyPackage.RETURN_TYPE_DATA_PROTECTION: {
+                ReturnTypeDataProtection returnTypeDataProtection = (ReturnTypeDataProtection)theEObject;
+                T result = caseReturnTypeDataProtection(returnTypeDataProtection);
+                if (result == null) result = caseIDataProtectionAnnotation(returnTypeDataProtection);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case PrivacyPackage.IPRIVACY_ANNOTATION: {
-                IPrivacyAnnotation iPrivacyAnnotation = (IPrivacyAnnotation)theEObject;
-                T result = caseIPrivacyAnnotation(iPrivacyAnnotation);
+            case PrivacyPackage.IDATA_PROTECTION_ANNOTATION: {
+                IDataProtectionAnnotation iDataProtectionAnnotation = (IDataProtectionAnnotation)theEObject;
+                T result = caseIDataProtectionAnnotation(iDataProtectionAnnotation);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -95,10 +89,10 @@ public class PrivacySwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case PrivacyPackage.PARAMETER_PRIVACY: {
-                ParameterPrivacy parameterPrivacy = (ParameterPrivacy)theEObject;
-                T result = caseParameterPrivacy(parameterPrivacy);
-                if (result == null) result = caseIPrivacyAnnotation(parameterPrivacy);
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION: {
+                ParameterDataProtection parameterDataProtection = (ParameterDataProtection)theEObject;
+                T result = caseParameterDataProtection(parameterDataProtection);
+                if (result == null) result = caseIDataProtectionAnnotation(parameterDataProtection);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -113,47 +107,47 @@ public class PrivacySwitch<T> extends Switch<T> {
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Model</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>Data Protection Model</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Model</em>'.
+     * @return the result of interpreting the object as an instance of '<em>Data Protection Model</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T casePrivacyModel(PrivacyModel object) {
+    public T caseDataProtectionModel(DataProtectionModel object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Return Type Privacy</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>Return Type Data Protection</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Return Type Privacy</em>'.
+     * @return the result of interpreting the object as an instance of '<em>Return Type Data Protection</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseReturnTypePrivacy(ReturnTypePrivacy object) {
+    public T caseReturnTypeDataProtection(ReturnTypeDataProtection object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>IPrivacy Annotation</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>IData Protection Annotation</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>IPrivacy Annotation</em>'.
+     * @return the result of interpreting the object as an instance of '<em>IData Protection Annotation</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseIPrivacyAnnotation(IPrivacyAnnotation object) {
+    public T caseIDataProtectionAnnotation(IDataProtectionAnnotation object) {
         return null;
     }
 
@@ -173,17 +167,17 @@ public class PrivacySwitch<T> extends Switch<T> {
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Parameter Privacy</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>Parameter Data Protection</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Parameter Privacy</em>'.
+     * @return the result of interpreting the object as an instance of '<em>Parameter Data Protection</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseParameterPrivacy(ParameterPrivacy object) {
+    public T caseParameterDataProtection(ParameterDataProtection object) {
         return null;
     }
 

@@ -25,7 +25,7 @@ import java.util.Set;
 import teetime.framework.test.StageTester;
 
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.filter.ModelProbeController;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
@@ -55,7 +55,7 @@ public class ModelProbeControllerTest {
         final AllocationContext allocationContext1 = Mockito.mock(AllocationContext.class);
         final AllocationContext allocationContext2 = Mockito.mock(AllocationContext.class);
 
-        final Warnings warnings1 = new Warnings();
+        final WarningModel warnings1 = new WarningModel();
         final Edge edge1 = new Edge(new Vertex("test vertex 1", EStereoType.DATASOURCE),
                 new Vertex("test vertex 2", EStereoType.DATASOURCE));
         edge1.setOperationSignature(operationSignature1);
@@ -104,7 +104,7 @@ public class ModelProbeControllerTest {
         edge5.setOperationSignature(operationSignature5);
         edge5.getSource().setAllocationContext(allocationContext3);
 
-        final Warnings warnings2 = new Warnings();
+        final WarningModel warnings2 = new WarningModel();
         warnings2.addWarningEdge(edge2);
         warnings2.addWarningEdge(edge3);
         warnings2.addWarningEdge(edge4);
@@ -126,7 +126,7 @@ public class ModelProbeControllerTest {
 
         final ProbeManagementData expectedOutcome2 = new ProbeManagementData(methodsToActivate2, methodsToDeactivate2);
 
-        final List<Warnings> input = new LinkedList<>();
+        final List<WarningModel> input = new LinkedList<>();
         input.add(warnings1);
         input.add(warnings2);
 
@@ -144,9 +144,9 @@ public class ModelProbeControllerTest {
 
     @Test
     public void testNullWarningList() {
-        final Warnings warnings = new Warnings();
+        final WarningModel warnings = new WarningModel();
         warnings.setWarningEdges(null);
-        final List<Warnings> input1 = new LinkedList<>();
+        final List<WarningModel> input1 = new LinkedList<>();
         input1.add(warnings);
 
         final List<ProbeManagementData> output = new LinkedList<>();
@@ -161,9 +161,9 @@ public class ModelProbeControllerTest {
 
     @Test
     public void testEmptyWarningList() {
-        final Warnings warnings = new Warnings();
+        final WarningModel warnings = new WarningModel();
         warnings.setWarningEdges(null);
-        final List<Warnings> input1 = new LinkedList<>();
+        final List<WarningModel> input1 = new LinkedList<>();
         input1.add(warnings);
 
         final List<ProbeManagementData> output = new LinkedList<>();

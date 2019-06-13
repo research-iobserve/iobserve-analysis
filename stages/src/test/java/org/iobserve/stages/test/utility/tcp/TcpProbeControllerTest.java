@@ -92,7 +92,7 @@ public class TcpProbeControllerTest {
      */
     // @Test(expected = RemoteControlFailedException.class)
     public void testUnknownHostFailure() throws RemoteControlFailedException {
-        TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern(TcpProbeControllerTest.ARBITRARY_IP,
+        TcpProbeControllerTest.tcpProbeController.activateOperationMonitoring(TcpProbeControllerTest.ARBITRARY_IP,
                 TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, TcpProbeControllerTest.PATTERN);
     }
 
@@ -109,7 +109,7 @@ public class TcpProbeControllerTest {
                 TcpProbeControllerTest.PORT));
         Assert.assertFalse(state.containsKey(TcpProbeControllerTest.PATTERN));
 
-        TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
+        TcpProbeControllerTest.tcpProbeController.activateOperationMonitoring(TcpProbeControllerTest.LOCALHOST_IP,
                 TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, TcpProbeControllerTest.PATTERN);
 
         Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,
@@ -119,7 +119,7 @@ public class TcpProbeControllerTest {
             Thread.yield();
         }
         Assert.assertTrue(state.get(TcpProbeControllerTest.PATTERN));
-        TcpProbeControllerTest.tcpProbeController.deactivateMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
+        TcpProbeControllerTest.tcpProbeController.deactivateOperationMonitoring(TcpProbeControllerTest.LOCALHOST_IP,
                 TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, TcpProbeControllerTest.PATTERN);
         while (state.get(TcpProbeControllerTest.PATTERN)) {
             Thread.yield();
@@ -147,7 +147,7 @@ public class TcpProbeControllerTest {
 
         Assert.assertFalse(state.containsKey(testPattern));
 
-        TcpProbeControllerTest.tcpProbeController.activateParameterMonitoredPattern(TcpProbeControllerTest.LOCALHOST_IP,
+        TcpProbeControllerTest.tcpProbeController.activateOperationMonitoringWithParameters(TcpProbeControllerTest.LOCALHOST_IP,
                 TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern, exampleParameter);
 
         Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,

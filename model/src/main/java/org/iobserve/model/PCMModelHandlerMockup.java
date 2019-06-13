@@ -48,6 +48,30 @@ public class PCMModelHandlerMockup implements IModelImporter {
     private final DecisionSpace designDecisionModel;
     private final QMLDeclarations qmlDeclarationsModel;
 
+    /**
+     * Create mockup handler for test purposes.
+     *
+     * @param allocationModel
+     *            allocation model
+     * @param resourceEnvironmentModel
+     *            resource environment
+     * @param systemModel
+     *            system model
+     * @param usageModel
+     *            usage model
+     * @param correspondenceModel
+     *            correspondence model
+     * @param repositoryModel
+     *            repository model
+     * @param cloudProfileModel
+     *            cloud profile model
+     * @param costModel
+     *            cost model
+     * @param designDecisionModel
+     *            design decision model
+     * @param qmlDeclarationsModel
+     *            qml declaration model
+     */
     public PCMModelHandlerMockup(final Allocation allocationModel, final ResourceEnvironment resourceEnvironmentModel,
             final System systemModel, final UsageModel usageModel, final CorrespondenceModel correspondenceModel,
             final Repository repositoryModel, final CloudProfile cloudProfileModel, final CostRepository costModel,

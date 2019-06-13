@@ -50,4 +50,8 @@ public class RemoteControlFailedException extends Exception {
         super(e);
     }
 
+    public RemoteControlFailedException(final String message, final Exception e) {
+        super(message, e);
+    }
+
 }

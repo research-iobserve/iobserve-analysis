@@ -18,7 +18,6 @@
 		<exclude name="AvoidFinalLocalVariable" />
 		<exclude name="AvoidInstantiatingObjectsInLoops" />
 		<exclude name="AvoidLiteralsInIfCondition" />
-		<exclude name="AvoidPrefixingMethodParameters" />
 		<exclude name="AvoidThrowingNullPointerException" />
 		<exclude name="AvoidUsingVolatile" />
 		<exclude name="AssignmentInOperand"/>
@@ -27,6 +26,7 @@
 		<exclude name="CommentSize" />
 		<exclude name="ConfusingTernary" />
 		<exclude name="CyclomaticComplexity" />
+		<exclude name="DataClass" />
 		<exclude name="DataflowAnomalyAnalysis" />
 		<exclude name="DoNotCallSystemExit" />
 		<exclude name="DoNotUseThreads" />
@@ -37,7 +37,6 @@
 		<exclude name="LawOfDemeter" />
 		<exclude name="LongVariable" />
 		<exclude name="LoosePackageCoupling" />
-		<exclude name="NcssMethodCount" />
 		<exclude name="NPathComplexity" />
 		<exclude name="OnlyOneReturn" />
 		<exclude name="PackageCase" />

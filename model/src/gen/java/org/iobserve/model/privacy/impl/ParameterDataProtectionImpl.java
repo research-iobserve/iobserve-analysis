@@ -3,31 +3,35 @@
 package org.iobserve.model.privacy.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+
+import org.iobserve.model.privacy.EDataProtectionLevel;
+import org.iobserve.model.privacy.ParameterDataProtection;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.model.privacy.ReturnTypePrivacy;
-import org.palladiosimulator.pcm.repository.OperationSignature;
+
+import org.palladiosimulator.pcm.repository.Parameter;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Return Type Privacy</b></em>'.
+ * An implementation of the model object '<em><b>Parameter Data Protection</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl#getLevel <em>Level</em>}</li>
- *   <li>{@link org.iobserve.model.privacy.impl.ReturnTypePrivacyImpl#getOperationSignature <em>Operation Signature</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.ParameterDataProtectionImpl#getLevel <em>Level</em>}</li>
+ *   <li>{@link org.iobserve.model.privacy.impl.ParameterDataProtectionImpl#getParameter <em>Parameter</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implements ReturnTypePrivacy {
+public class ParameterDataProtectionImpl extends MinimalEObjectImpl.Container implements ParameterDataProtection {
     /**
      * The default value of the '{@link #getLevel() <em>Level</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -36,7 +40,7 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * @generated
      * @ordered
      */
-    protected static final EDataPrivacyLevel LEVEL_EDEFAULT = EDataPrivacyLevel.ANONYMOUS;
+    protected static final EDataProtectionLevel LEVEL_EDEFAULT = EDataProtectionLevel.ANONYMOUS;
 
     /**
      * The cached value of the '{@link #getLevel() <em>Level</em>}' attribute.
@@ -46,24 +50,24 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * @generated
      * @ordered
      */
-    protected EDataPrivacyLevel level = LEVEL_EDEFAULT;
+    protected EDataProtectionLevel level = LEVEL_EDEFAULT;
 
     /**
-     * The cached value of the '{@link #getOperationSignature() <em>Operation Signature</em>}' reference.
+     * The cached value of the '{@link #getParameter() <em>Parameter</em>}' reference.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getOperationSignature()
+     * @see #getParameter()
      * @generated
      * @ordered
      */
-    protected OperationSignature operationSignature;
+    protected Parameter parameter;
 
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected ReturnTypePrivacyImpl() {
+    protected ParameterDataProtectionImpl() {
         super();
     }
 
@@ -74,7 +78,7 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      */
     @Override
     protected EClass eStaticClass() {
-        return PrivacyPackage.Literals.RETURN_TYPE_PRIVACY;
+        return PrivacyPackage.Literals.PARAMETER_DATA_PROTECTION;
     }
 
     /**
@@ -82,7 +86,7 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * <!-- end-user-doc -->
      * @generated
      */
-    public EDataPrivacyLevel getLevel() {
+    public EDataProtectionLevel getLevel() {
         return level;
     }
 
@@ -91,11 +95,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setLevel(EDataPrivacyLevel newLevel) {
-        EDataPrivacyLevel oldLevel = level;
+    public void setLevel(EDataProtectionLevel newLevel) {
+        EDataProtectionLevel oldLevel = level;
         level = newLevel == null ? LEVEL_EDEFAULT : newLevel;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, PrivacyPackage.RETURN_TYPE_PRIVACY__LEVEL, oldLevel, level));
+            eNotify(new ENotificationImpl(this, Notification.SET, PrivacyPackage.PARAMETER_DATA_PROTECTION__LEVEL, oldLevel, level));
     }
 
     /**
@@ -103,16 +107,16 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * <!-- end-user-doc -->
      * @generated
      */
-    public OperationSignature getOperationSignature() {
-        if (operationSignature != null && ((EObject)operationSignature).eIsProxy()) {
-            InternalEObject oldOperationSignature = (InternalEObject)operationSignature;
-            operationSignature = (OperationSignature)eResolveProxy(oldOperationSignature);
-            if (operationSignature != oldOperationSignature) {
+    public Parameter getParameter() {
+        if (parameter != null && ((EObject)parameter).eIsProxy()) {
+            InternalEObject oldParameter = (InternalEObject)parameter;
+            parameter = (Parameter)eResolveProxy(oldParameter);
+            if (parameter != oldParameter) {
                 if (eNotificationRequired())
-                    eNotify(new ENotificationImpl(this, Notification.RESOLVE, PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE, oldOperationSignature, operationSignature));
+                    eNotify(new ENotificationImpl(this, Notification.RESOLVE, PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER, oldParameter, parameter));
             }
         }
-        return operationSignature;
+        return parameter;
     }
 
     /**
@@ -120,8 +124,8 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * <!-- end-user-doc -->
      * @generated
      */
-    public OperationSignature basicGetOperationSignature() {
-        return operationSignature;
+    public Parameter basicGetParameter() {
+        return parameter;
     }
 
     /**
@@ -129,11 +133,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setOperationSignature(OperationSignature newOperationSignature) {
-        OperationSignature oldOperationSignature = operationSignature;
-        operationSignature = newOperationSignature;
+    public void setParameter(Parameter newParameter) {
+        Parameter oldParameter = parameter;
+        parameter = newParameter;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE, oldOperationSignature, operationSignature));
+            eNotify(new ENotificationImpl(this, Notification.SET, PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER, oldParameter, parameter));
     }
 
     /**
@@ -144,11 +148,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__LEVEL:
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__LEVEL:
                 return getLevel();
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE:
-                if (resolve) return getOperationSignature();
-                return basicGetOperationSignature();
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER:
+                if (resolve) return getParameter();
+                return basicGetParameter();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -161,11 +165,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__LEVEL:
-                setLevel((EDataPrivacyLevel)newValue);
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__LEVEL:
+                setLevel((EDataProtectionLevel)newValue);
                 return;
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE:
-                setOperationSignature((OperationSignature)newValue);
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER:
+                setParameter((Parameter)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -179,11 +183,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__LEVEL:
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__LEVEL:
                 setLevel(LEVEL_EDEFAULT);
                 return;
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE:
-                setOperationSignature((OperationSignature)null);
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER:
+                setParameter((Parameter)null);
                 return;
         }
         super.eUnset(featureID);
@@ -197,10 +201,10 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__LEVEL:
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__LEVEL:
                 return level != LEVEL_EDEFAULT;
-            case PrivacyPackage.RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE:
-                return operationSignature != null;
+            case PrivacyPackage.PARAMETER_DATA_PROTECTION__PARAMETER:
+                return parameter != null;
         }
         return super.eIsSet(featureID);
     }
@@ -214,11 +218,11 @@ public class ReturnTypePrivacyImpl extends MinimalEObjectImpl.Container implemen
     public String toString() {
         if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
+        StringBuilder result = new StringBuilder(super.toString());
         result.append(" (level: ");
         result.append(level);
         result.append(')');
         return result.toString();
     }
 
-} //ReturnTypePrivacyImpl
+} //ParameterDataProtectionImpl

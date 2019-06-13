@@ -29,7 +29,7 @@ import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -146,7 +146,7 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "usageModel"));
                 usageModelResource.storeModelPartition(modelHandler.getUsageModel());
 
-                final Neo4JModelResource<PrivacyModel> privacyModelResource = new Neo4JModelResource<>(
+                final Neo4JModelResource<DataProtectionModel> privacyModelResource = new Neo4JModelResource<>(
                         PrivacyPackage.eINSTANCE,
                         new File(this.parameterConfiguration.getModelDatabaseDirectory(), "privacy"));
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());

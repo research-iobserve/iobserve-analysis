@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.stages.data;
-
-import java.util.Date;
-import java.util.List;
+package org.iobserve.monitoring.probe.servlet;
 
 /**
- * Represents messages that contain errors warnings and so on that may occur during the execution of
- * the analysis.
- *
- * @author Marc Adolf
+ * @author Reiner Jung
  *
  */
-public interface IErrorMessages {
-
-    Date getDate();
-
-    void setDate(Date date);
-
-    /**
-     * Returns the list of saved messages.
-     *
-     * @return the contained (error) messages.
-     */
-    List<String> getMessages();
-
-    /**
-     * Adds one message to the list.
-     *
-     * @param message
-     *            the new message in the list.
-     */
-    void addMessage(String message);
-
+public enum EListType {
+    BLACKLIST, WHITELIST
 }

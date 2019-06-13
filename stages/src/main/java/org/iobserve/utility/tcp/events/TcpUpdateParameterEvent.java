@@ -32,15 +32,15 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
     /**
      * Creates a parameter update control event without content except the pattern and parameters.
      *
-     * @param pattern
-     *            The pattern of the method that is monitored.
+     * @param operationSignature
+     *            The operation signature of the method that is monitored.
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
      */
-    public TcpUpdateParameterEvent(final String pattern, final long triggerTimestamp,
+    public TcpUpdateParameterEvent(final String operationSignature, final long triggerTimestamp,
             final Map<String, List<String>> parameters) {
-        super(pattern, triggerTimestamp);
+        super(operationSignature, triggerTimestamp);
         this.parameters = parameters;
     }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.stages.data;
+package org.iobserve.runtime.reconfigurator;
 
-import java.util.Date;
-import java.util.List;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import com.beust.jcommander.IStringConverter;
 
 /**
- * Represents messages that contain errors warnings and so on that may occur during the execution of
- * the analysis.
  *
- * @author Marc Adolf
+ * @author Reiner Jung
  *
  */
-public interface IErrorMessages {
+public class ParameterIPConverter implements IStringConverter<Inet4Address> {
 
-    Date getDate();
-
-    void setDate(Date date);
-
-    /**
-     * Returns the list of saved messages.
-     *
-     * @return the contained (error) messages.
-     */
-    List<String> getMessages();
-
-    /**
-     * Adds one message to the list.
-     *
-     * @param message
-     *            the new message in the list.
-     */
-    void addMessage(String message);
+    @Override
+    public Inet4Address convert(final String host) {
+        try {
+            return (Inet4Address) InetAddress.getByName(host);
+        } catch (final UnknownHostException e) {
+            return null;
+        }
+    }
 
 }

@@ -38,16 +38,16 @@ import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.DataProtectionModel;
+import org.iobserve.model.privacy.EDataProtectionLevel;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.IPrivacyAnnotation;
-import org.iobserve.model.privacy.ParameterPrivacy;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.IDataProtectionAnnotation;
+import org.iobserve.model.privacy.ParameterDataProtection;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.model.privacy.ReturnTypePrivacy;
+import org.iobserve.model.privacy.ReturnTypeDataProtection;
 import org.iobserve.service.privacy.violation.PrivacyConfigurationsKeys;
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.PrivacyGraph;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex;
@@ -82,25 +82,25 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  * @author Clemens Brackmann -- analysis graph
  *
  */
-public class PrivacyWarner extends AbstractStage {
+public class DataProtectionWarner extends AbstractStage {
 
     private final IModelResource<Allocation> allocationModelResource;
     private final IModelResource<System> systemModelResource;
     private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
     private final IModelResource<Repository> repositoryResource;
-    private final IModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<DataProtectionModel> privacyModelResource;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
 
-    private final OutputPort<Warnings> probesOutputPort = this.createOutputPort(Warnings.class);
-    private final OutputPort<Warnings> warningsOutputPort = this.createOutputPort(Warnings.class);
+    private final OutputPort<WarningModel> probesOutputPort = this.createOutputPort(WarningModel.class);
+    private final OutputPort<WarningModel> warningsOutputPort = this.createOutputPort(WarningModel.class);
 
     /** HashMaps for faster queries. **/
     private final Map<String, GeoLocation> geolocations = new LinkedHashMap<>();
     private final Map<String, EncapsulatedDataSource> stereotypes = new LinkedHashMap<>();
-    private final Map<String, ParameterPrivacy> parameterprivacy = new LinkedHashMap<>();
-    private final Map<String, ReturnTypePrivacy> returntypeprivacy = new LinkedHashMap<>();
+    private final Map<String, ParameterDataProtection> parameterprivacy = new LinkedHashMap<>();
+    private final Map<String, ReturnTypeDataProtection> returntypeprivacy = new LinkedHashMap<>();
     private final Map<String, OperationInterface> interfaces = new LinkedHashMap<>();
 
     private final Map<String, Vertex> vertices = new LinkedHashMap<>();
@@ -108,7 +108,7 @@ public class PrivacyWarner extends AbstractStage {
     private Allocation allocationRootElement;
     private System systemRootElement;
     private Repository repositoryRootElement;
-    private PrivacyModel privacyRootElement;
+    private DataProtectionModel privacyRootElement;
     private final String[] policyList;
     private final String policyPackage;
 
@@ -128,10 +128,10 @@ public class PrivacyWarner extends AbstractStage {
      * @param privacyModelResource
      *            privacy model provider
      */
-    public PrivacyWarner(final Configuration configuration, final IModelResource<Repository> repositoryResource,
+    public DataProtectionWarner(final Configuration configuration, final IModelResource<Repository> repositoryResource,
             final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
             final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationModelResource,
-            final IModelResource<PrivacyModel> privacyModelResource) {
+            final IModelResource<DataProtectionModel> privacyModelResource) {
 
         /** get policy parameters. */
         this.policyPackage = configuration.getStringProperty(PrivacyConfigurationsKeys.POLICY_PACKAGE_PREFIX);
@@ -178,7 +178,7 @@ public class PrivacyWarner extends AbstractStage {
             IOException, InvocationException, DBException {
         final PrivacyGraph graph = this.createAnalysisGraph();
         // debug code this.print(graph);
-        final Warnings warnings = this.checkGraph(graph);
+        final WarningModel warnings = this.checkGraph(graph);
 
         warnings.setEvent(triggerEvent);
 
@@ -214,9 +214,9 @@ public class PrivacyWarner extends AbstractStage {
         }
     }
 
-    private Warnings checkGraph(final PrivacyGraph graph) throws FileNotFoundException, InstantiationException,
+    private WarningModel checkGraph(final PrivacyGraph graph) throws FileNotFoundException, InstantiationException,
             IllegalAccessException, ClassNotFoundException, IOException {
-        final Warnings warnings = new Warnings();
+        final WarningModel warnings = new WarningModel();
 
         final PrivacyChecker privacyChecker = new PrivacyChecker(this.policyList, this.policyPackage);
         final List<Edge> edges = privacyChecker.check(graph);
@@ -258,8 +258,8 @@ public class PrivacyWarner extends AbstractStage {
         this.systemRootElement = this.systemModelResource.getModelRootNode(System.class, SystemPackage.Literals.SYSTEM);
         this.allocationRootElement = this.allocationModelResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
-        this.privacyRootElement = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
-                PrivacyPackage.Literals.PRIVACY_MODEL);
+        this.privacyRootElement = this.privacyModelResource.getModelRootNode(DataProtectionModel.class,
+                PrivacyPackage.Literals.DATA_PROTECTION_MODEL);
     }
 
     /**
@@ -371,10 +371,10 @@ public class PrivacyWarner extends AbstractStage {
             final RepositoryComponent providingComponent, final RepositoryComponent requiringComponent)
             throws InvocationException, DBException {
         for (final OperationSignature operationSignature : operationInterface.getSignatures__OperationInterface()) {
-            final IPrivacyAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
+            final IDataProtectionAnnotation operationSignaturePrivacyAnnotation = this.returntypeprivacy
                     .get(operationSignature.getId());
-            EDataPrivacyLevel inEdgePrivacyLevel = null;
-            EDataPrivacyLevel outEdgePrivacyLevel = null;
+            EDataProtectionLevel inEdgeDataProtectionLevel = null;
+            EDataProtectionLevel outEdgePrivacyLevel = null;
 
             /** Check parameter. */
             for (final Parameter proxyParameter : operationSignature.getParameters__OperationSignature()) {
@@ -383,18 +383,18 @@ public class PrivacyWarner extends AbstractStage {
 
                 if (mod == ParameterModifier.IN || mod == ParameterModifier.INOUT) {
                     final String parameterName = parameter.getParameterName();
-                    outEdgePrivacyLevel = this.updatePrivacyLevel(outEdgePrivacyLevel,
+                    outEdgePrivacyLevel = this.updateDataProtectionLevel(outEdgePrivacyLevel,
                             this.parameterprivacy.get(parameterName).getLevel());
                 }
                 if (mod == ParameterModifier.OUT || mod == ParameterModifier.INOUT) {
-                    inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
+                    inEdgeDataProtectionLevel = this.updateDataProtectionLevel(inEdgeDataProtectionLevel,
                             this.parameterprivacy.get(parameter.getParameterName()).getLevel());
                 }
             }
 
             /** Check return type. */
             if (operationSignaturePrivacyAnnotation != null) {
-                inEdgePrivacyLevel = this.updatePrivacyLevel(inEdgePrivacyLevel,
+                inEdgeDataProtectionLevel = this.updateDataProtectionLevel(inEdgeDataProtectionLevel,
                         operationSignaturePrivacyAnnotation.getLevel());
             }
 
@@ -403,9 +403,9 @@ public class PrivacyWarner extends AbstractStage {
 
             if (providingComponentVertex != null && requiringComponentVertex != null) {
                 // Add Edges
-                if (inEdgePrivacyLevel != null) {
+                if (inEdgeDataProtectionLevel != null) {
                     final Edge edge = new Edge(providingComponentVertex, requiringComponentVertex);
-                    edge.setDPC(Policy.getDataClassification(inEdgePrivacyLevel));
+                    edge.setDPC(Policy.getDataClassification(inEdgeDataProtectionLevel));
                     edge.setOperationSignature(operationSignature);
                     graph.addEdge(edge);
                 }
@@ -415,7 +415,7 @@ public class PrivacyWarner extends AbstractStage {
                     edge.setOperationSignature(operationSignature);
                     graph.addEdge(edge);
                 }
-                if (inEdgePrivacyLevel == null && outEdgePrivacyLevel == null) {
+                if (inEdgeDataProtectionLevel == null && outEdgePrivacyLevel == null) {
                     this.logger.error("Missing privacy level");
                 }
             }
@@ -431,10 +431,10 @@ public class PrivacyWarner extends AbstractStage {
      *            new privacy level
      * @return the resulting privacy level
      */
-    private EDataPrivacyLevel updatePrivacyLevel(final EDataPrivacyLevel currentPrivacyLevel,
-            final EDataPrivacyLevel newPrivacyLevel) {
+    private EDataProtectionLevel updateDataProtectionLevel(final EDataProtectionLevel currentPrivacyLevel,
+            final EDataProtectionLevel newPrivacyLevel) {
         if (currentPrivacyLevel != null) {
-            if (this.isMoreCritical(currentPrivacyLevel, newPrivacyLevel)) {
+            if (this.isHigherLevel(currentPrivacyLevel, newPrivacyLevel)) {
                 return newPrivacyLevel;
             } else {
                 return currentPrivacyLevel;
@@ -471,17 +471,18 @@ public class PrivacyWarner extends AbstractStage {
                 this.logger.debug("missing {}", stereotype);
             }
         }
-        for (final IPrivacyAnnotation privacyAnnocation : this.privacyRootElement.getPrivacyLevels()) {
-            if (privacyAnnocation instanceof ParameterPrivacy) {
-                final ParameterPrivacy parameterPrivacy = (ParameterPrivacy) privacyAnnocation;
-                final Parameter parameter = this.repositoryResource.resolve(parameterPrivacy.getParameter());
-                this.parameterprivacy.put(parameter.getParameterName(), parameterPrivacy);
+        for (final IDataProtectionAnnotation dataProectionAnnocation : this.privacyRootElement
+                .getDataProectionLevels()) {
+            if (dataProectionAnnocation instanceof ParameterDataProtection) {
+                final ParameterDataProtection parameterDataProtection = (ParameterDataProtection) dataProectionAnnocation;
+                final Parameter parameter = this.repositoryResource.resolve(parameterDataProtection.getParameter());
+                this.parameterprivacy.put(parameter.getParameterName(), parameterDataProtection);
             }
-            if (privacyAnnocation instanceof ReturnTypePrivacy) {
-                final ReturnTypePrivacy returnTypePrivacy = (ReturnTypePrivacy) privacyAnnocation;
+            if (dataProectionAnnocation instanceof ReturnTypeDataProtection) {
+                final ReturnTypeDataProtection returnTypeDataProection = (ReturnTypeDataProtection) dataProectionAnnocation;
                 this.returntypeprivacy.put(
-                        this.repositoryResource.resolve(returnTypePrivacy.getOperationSignature()).getId(),
-                        returnTypePrivacy);
+                        this.repositoryResource.resolve(returnTypeDataProection.getOperationSignature()).getId(),
+                        returnTypeDataProection);
             }
         }
 
@@ -494,7 +495,7 @@ public class PrivacyWarner extends AbstractStage {
     }
 
     // TODO better method name
-    private boolean isMoreCritical(final EDataPrivacyLevel basis, final EDataPrivacyLevel compared) {
+    private boolean isHigherLevel(final EDataProtectionLevel basis, final EDataProtectionLevel compared) {
         return compared.ordinal() > basis.ordinal();
     }
 
@@ -508,11 +509,11 @@ public class PrivacyWarner extends AbstractStage {
 
     }
 
-    public OutputPort<Warnings> getProbesOutputPort() {
+    public OutputPort<WarningModel> getProbesOutputPort() {
         return this.probesOutputPort;
     }
 
-    public OutputPort<Warnings> getWarningsOutputPort() {
+    public OutputPort<WarningModel> getWarningsOutputPort() {
         return this.warningsOutputPort;
     }
 
