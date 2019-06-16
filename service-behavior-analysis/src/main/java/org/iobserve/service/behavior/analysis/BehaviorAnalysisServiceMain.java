@@ -22,39 +22,57 @@ import com.beust.jcommander.JCommander;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
 
-public class BehaviorAnalysisServiceMain
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
+public final class BehaviorAnalysisServiceMain
         extends AbstractService<BehaviorAnalysisTeetimeConfiguration, BehaviorAnalysisSettings> {
+
+    /**
+     * Default constructor.
+     */
+    private BehaviorAnalysisServiceMain() {
+        // do nothing here
+    }
 
     @Override
     protected BehaviorAnalysisTeetimeConfiguration createTeetimeConfiguration() throws ConfigurationException {
 
-        return null;
+        return new BehaviorAnalysisTeetimeConfiguration(this.kiekerConfiguration);
 
+    }
+
+    /**
+     * Main function.
+     *
+     * @param args
+     *            command line arguments.
+     */
+    public static void main(final String[] args) {
+        java.lang.System.exit(new BehaviorAnalysisServiceMain().run("Service Behavior Analysis",
+                "service-behavior-analysis", args, new BehaviorAnalysisSettings()));
     }
 
     @Override
     protected File getConfigurationFile() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.parameterConfiguration.getConfigurationFile();
     }
 
     @Override
     protected boolean checkConfiguration(final kieker.common.configuration.Configuration configuration,
             final JCommander commander) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     protected void shutdownService() {
-        // TODO Auto-generated method stub
-
     }
 
 }

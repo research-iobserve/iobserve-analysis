@@ -69,9 +69,6 @@ public class OpticsStage extends AbstractStage {
             final List<OpticsData> models = this.modelsInputQueue.poll();
 
             final OPTICS optics = new OPTICS(mtree, this.maxDistance, this.minPTs, models);
-            for (final OpticsData model : models) {
-                model.setOptics(optics);
-            }
 
             final List<OpticsData> result = optics.calculate();
 

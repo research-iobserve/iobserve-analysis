@@ -59,7 +59,7 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
                 model.getNodes().put(event.getOperationSignature(), currentNode);
 
-                this.addEdge(event, lastNode, currentNode);
+                this.addEdge(event, model, lastNode, currentNode);
                 lastNode = currentNode;
             }
         }
@@ -68,14 +68,15 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
     }
 
-    private void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelNode source,
-            final BehaviorModelNode target) {
+    private void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelGED model,
+            final BehaviorModelNode source, final BehaviorModelNode target) {
         final BehaviorModelEdge matchingEdge = source.getOutgoingEdges().get(target);
 
         if (matchingEdge == null) {
             final BehaviorModelEdge newEdge = new BehaviorModelEdge(event, source, target);
             source.getOutgoingEdges().put(target, newEdge);
             target.getIngoingEdges().put(source, newEdge);
+            model.getEdges().add(newEdge);
         } else {
             matchingEdge.addEvent(event);
         }

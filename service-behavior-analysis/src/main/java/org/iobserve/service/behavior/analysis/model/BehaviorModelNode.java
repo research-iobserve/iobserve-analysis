@@ -18,6 +18,8 @@ package org.iobserve.service.behavior.analysis.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * One node of a BehaviorModel.
  *
@@ -25,9 +27,9 @@ import java.util.Map;
  *
  */
 public class BehaviorModelNode {
-
+    @JsonIgnore
     private final Map<BehaviorModelNode, BehaviorModelEdge> outgoingEdges;
-
+    @JsonIgnore
     private final Map<BehaviorModelNode, BehaviorModelEdge> ingoingEdges;
 
     private final String name;

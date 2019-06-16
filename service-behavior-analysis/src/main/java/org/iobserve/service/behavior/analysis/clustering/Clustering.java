@@ -20,6 +20,11 @@ import java.util.Set;
 
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class Clustering {
 
     private Set<BehaviorModelGED> noise = new HashSet<>();

@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName='org.iobserve.collector.CollectorMain'
+mainClassName='org.iobserve.service.behavior.analysis.BehaviorAnalysisServiceMain'
 
 
 repositories {
@@ -19,6 +19,7 @@ dependencies {
 	   
 	compile name: 'mtree'
 	
+	compile group: 'com.edwardraff', name: 'JSAT', version: '0.0.9'
 	
 	testCompile 'org.mockito:mockito-core:2.21.0'	
 	

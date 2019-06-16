@@ -254,6 +254,20 @@ public final class ConfigurationKeys {
     public static final String LMETHOD_EVAL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.lmethodEvalStrategy";
 
     /**
+     * Optics Clustering.
+     */
+
+    public static final String OPTICS_PREFIX = "org.iobserve.service.behavior.analysis.";
+
+    public static final String EPSILON = ConfigurationKeys.OPTICS_PREFIX + "epsilon";
+
+    public static final String MIN_PTS = ConfigurationKeys.OPTICS_PREFIX + "minPts";
+
+    public static final String MAX_MODEL_AMOUNT = ConfigurationKeys.OPTICS_PREFIX + "maxModelAmount";
+
+    public static final String RESULT_URL = ConfigurationKeys.OPTICS_PREFIX + "outputUrl";
+
+    /**
      * Factory, do not instantiate.
      */
     private ConfigurationKeys() {

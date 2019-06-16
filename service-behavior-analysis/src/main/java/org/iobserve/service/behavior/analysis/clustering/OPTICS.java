@@ -29,7 +29,13 @@ import mtree.MTree;
  *
  */
 public class OPTICS {
+    private static Comparator<OpticsData> reachComparator = new Comparator<OpticsData>() {
 
+        @Override
+        public int compare(final OpticsData model1, final OpticsData model2) {
+            return (int) (model1.getReachabilityDistance() - model2.getReachabilityDistance());
+        }
+    };
     private final int minPTs;
     private final double maxDistance;
     private final MTree<OpticsData> mtree;
@@ -45,18 +51,43 @@ public class OPTICS {
     }
 
     private double reachabilityDistance(final OpticsData model1, final OpticsData model2) {
+        final double coreDistance = model1.getCoreDistance();
+        if (coreDistance == OpticsData.UNDEFINED) {
+            return OpticsData.UNDEFINED;
+        }
         final double distance = model1.distanceTo(model2);
-        final double core_distance = model1.getCoreDistance();
-        return Math.max(distance, core_distance);
+        return Math.max(distance, coreDistance);
     }
 
-    private List<OpticsData> getNeigbors(final OpticsData model) {
+    private void updateCoreDistance(final OpticsData model) {
+
+        final Iterator<MTree<OpticsData>.ResultItem> results = this.getMtree()
+                .getNearest(model, this.getMaxDistance(), this.getMinPTs()).iterator();
+
+        int resultAmount = 0;
+        OpticsData last = null;
+
+        while (results.hasNext()) {
+            resultAmount++;
+            last = results.next().data;
+        }
+
+        if (resultAmount < this.getMinPTs()) {
+            model.setCoreDistance(OpticsData.UNDEFINED);
+        } else {
+
+            model.setCoreDistance(model.distanceTo(last));
+
+        }
+
+    }
+
+    private List<OpticsData> getNeighbors(final OpticsData model) {
         final MTree<OpticsData>.Query query = this.mtree.getNearestByRange(model, this.maxDistance);
         final Iterator<MTree<OpticsData>.ResultItem> it = query.iterator();
 
         final List<OpticsData> neighbors = new ArrayList<>();
 
-        it.next(); // so it doesn't return itself
         while (it.hasNext()) {
             neighbors.add(it.next().data);
         }
@@ -79,34 +110,35 @@ public class OPTICS {
         return this.resultList;
     }
 
-    private void update(final List<OpticsData> neighbors, final OpticsData model1,
+    private void update(final List<OpticsData> neighbors, final OpticsData centerModel,
             final PriorityQueue<OpticsData> seeds) {
-        // System.out.println(neighbors);
 
-        for (final OpticsData model2 : neighbors) {
-            if (!model2.isVisited()) {
-                final double newReachDistance = this.reachabilityDistance(model1, model2);
+        for (final OpticsData model : neighbors) {
+            if (!model.isVisited()) {
 
-                // System.out.println(newReachDistance);
-                if (model2.getReachabilityDistance() == OpticsData.UNDEFINED) {
-                    model2.setReachabilityDistance(newReachDistance);
-                    seeds.add(model2);
+                final double newReachDistance = this.reachabilityDistance(centerModel, model);
+
+                if (model.getReachabilityDistance() == OpticsData.UNDEFINED) {
+                    model.setReachabilityDistance(newReachDistance);
+                    seeds.add(model);
                 } else {
-                    if (newReachDistance < model2.getReachabilityDistance()) {
-                        model2.setReachabilityDistance(newReachDistance);
-                        seeds.remove(model2);
-                        seeds.add(model2);
+                    if (newReachDistance < model.getReachabilityDistance()) {
+                        model.setReachabilityDistance(newReachDistance);
+                        seeds.remove(model);
+                        seeds.add(model);
                     }
                 }
+
             }
         }
     }
 
     private void expandClusterOrder(final OpticsData model1) {
-        final List<OpticsData> neighbors1 = this.getNeigbors(model1);
+        final List<OpticsData> neighbors1 = this.getNeighbors(model1);
 
         model1.setVisited(true);
-
+        model1.setReachabilityDistance(OpticsData.UNDEFINED);
+        this.updateCoreDistance(model1);
         this.resultList.add(model1);
 
         if (model1.getCoreDistance() != OpticsData.UNDEFINED) {
@@ -117,8 +149,10 @@ public class OPTICS {
             while (!seeds.isEmpty()) {
 
                 final OpticsData model2 = seeds.poll();
+                // TODO better naming
+                final List<OpticsData> neighbors2 = this.getNeighbors(model2);
 
-                final List<OpticsData> neighbors2 = this.getNeigbors(model2);
+                this.updateCoreDistance(model2);
 
                 model2.setVisited(true);
                 this.resultList.add(model2);
@@ -141,13 +175,5 @@ public class OPTICS {
     public MTree<OpticsData> getMtree() {
         return this.mtree;
     }
-
-    public static Comparator<OpticsData> reachComparator = new Comparator<OpticsData>() {
-
-        @Override
-        public int compare(final OpticsData model1, final OpticsData model2) {
-            return (int) (model1.getReachabilityDistance() - model2.getReachabilityDistance());
-        }
-    };
 
 }

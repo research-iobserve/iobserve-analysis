@@ -15,12 +15,9 @@
  ***************************************************************************/
 package org.iobserve.service.behavior.analysis.clustering;
 
-import java.util.Iterator;
-
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 
 import mtree.DistanceFunction;
-import mtree.MTree;
 
 /**
  *
@@ -29,17 +26,15 @@ import mtree.MTree;
  */
 public class OpticsData {
 
-    public static final int UNDEFINED = -2;
-    public static final int NOT_INITIALIZED = -1;
+    public static final int UNDEFINED = -1;
 
-    private OPTICS optics;
+    private static final OPTICSDataGED GED = new OPTICSDataGED();
 
     private double reachabilityDistance = OpticsData.UNDEFINED;
 
-    private double coreDistance = OpticsData.NOT_INITIALIZED;
+    private double coreDistance = OpticsData.UNDEFINED;
     private boolean visited = false;
 
-    private final OPTICSDataGED ged = new OPTICSDataGED();
     private final BehaviorModelGED data;
 
     public OpticsData(final BehaviorModelGED data) {
@@ -47,40 +42,17 @@ public class OpticsData {
     }
 
     public double getCoreDistance() {
-        if (this.coreDistance == OpticsData.NOT_INITIALIZED) {
-            final Iterator<MTree<OpticsData>.ResultItem> results = this.optics.getMtree()
-                    .getNearest(this, this.optics.getMaxDistance(), this.optics.getMinPTs()).iterator();
-
-            int resultAmount = 0;
-            OpticsData last = null;
-
-            while (results.hasNext()) {
-                resultAmount++;
-                last = results.next().data;
-            }
-            // System.out.println("getMaxDistance: " + this.optics.getMaxDistance());
-
-            // System.out.println("result amount: " + resultAmount);
-            if (resultAmount < this.optics.getMinPTs()) {
-                this.coreDistance = OpticsData.UNDEFINED;
-            } else {
-
-                this.coreDistance = this.ged.calculate(this, last);
-
-            }
-
-        }
         return this.coreDistance;
 
     }
 
     public double distanceTo(final OpticsData model) {
 
-        return this.ged.calculate(this, model);
+        return OpticsData.GED.calculate(this, model);
     }
 
-    public void setCoreDistance(final double core_distance) {
-        this.coreDistance = core_distance;
+    public void setCoreDistance(final double coreDistance) {
+        this.coreDistance = coreDistance;
     }
 
     public double getReachabilityDistance() {
@@ -103,10 +75,6 @@ public class OpticsData {
         this.reachabilityDistance = reachabilityDistance;
     }
 
-    public void setOptics(final OPTICS optics) {
-        this.optics = optics;
-    }
-
     public void reset() {
         this.reachabilityDistance = -1;
 
@@ -114,12 +82,11 @@ public class OpticsData {
         this.visited = false;
     }
 
-    @Override
-    public String toString() {
-        return "{" + this.data.getNodes().size() + "}";
+    public static OPTICSDataGED getDistanceFunction() {
+        return OpticsData.GED;
     }
 
-    public static class OPTICSDataGED implements DistanceFunction<OpticsData> {
+    private static class OPTICSDataGED implements DistanceFunction<OpticsData> {
 
         private final DistanceFunction<BehaviorModelGED> distanceFunction = new GraphEditDistance();
 

@@ -32,6 +32,11 @@ import org.mockito.Mockito;
 
 import mtree.MTree;
 
+/**
+ *
+ * @author Lars Jürgensen
+ *
+ */
 public class MTreeGeneratorTest {
 
     private MTreeGenerator<BehaviorModelGED> mtreeGenerator;

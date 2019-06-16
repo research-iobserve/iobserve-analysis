@@ -22,10 +22,8 @@ import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
-import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.service.behavior.analysis.BehaviorAnalysisTeetimeConfiguration;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.source.FileSourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
@@ -41,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModelGenerationCompositeStage extends CompositeStage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorAnalysisTeetimeConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationCompositeStage.class);
 
     private final OutputPort<BehaviorModelGED> modelOutputPort;
 
@@ -51,7 +49,7 @@ public class ModelGenerationCompositeStage extends CompositeStage {
             throws ConfigurationException {
 
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
-        if (!sourceClassName.isEmpty()) {
+        if (sourceClassName.isEmpty()) {
             ModelGenerationCompositeStage.LOGGER.error("Initialization incomplete: No source stage specified.");
             throw new ConfigurationException("Initialization incomplete: No source stage specified.");
         }
@@ -61,7 +59,7 @@ public class ModelGenerationCompositeStage extends CompositeStage {
         final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
                 configuration);
         final IEventMatcher<IFlowRecord> flowRecordMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
-        final UserSessionGeneratorCompositeStage sessionGenerator = new UserSessionGeneratorCompositeStage(
+        final UserSessionGeneratorCompositeStageWithTimeTrigger sessionGenerator = new UserSessionGeneratorCompositeStageWithTimeTrigger(
                 configuration);
         final UserSessionToModelConverter sessionToModel = new UserSessionToModelConverter();
 

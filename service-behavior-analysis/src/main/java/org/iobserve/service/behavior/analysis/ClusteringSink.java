@@ -13,56 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.sink;
+package org.iobserve.service.behavior.analysis;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.service.behavior.analysis.clustering.Clustering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Writes a behavior model into a file.
  *
- * @author unknown
+ * @author Lars Jürgensen
  *
  */
-public class BehaviorModelSink extends AbstractBehaviorModelOutputSink {
+public class ClusteringSink extends AbstractConsumerStage<Clustering> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelSink.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSink.class);
 
     private final ObjectMapper objectMapper;
 
-    private final String baseUrl;
+    private final String filename;
 
     /**
      * Create behavior model writer.
      *
      * @param baseUrl
      *            base url
-     * @param signatureStrategy
-     *            signature strategy
      */
-    public BehaviorModelSink(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
+    public ClusteringSink(final String filename) {
         this.objectMapper = new ObjectMapper();
-        this.baseUrl = baseUrl;
+        this.filename = filename;
     }
 
     @Override
-    protected void execute(final BehaviorModel model) throws IOException {
-        final String filename = this.baseUrl + File.separator + model.getName();
-        BehaviorModelSink.LOGGER.info("Write models to {}", filename);
-        final FileWriter fw = new FileWriter(filename);
+    protected void execute(final Clustering clustering) throws IOException {
+        ClusteringSink.LOGGER.info("Write models to " + this.filename);
+        final FileWriter fw = new FileWriter(this.filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.objectMapper.writeValue(bw, model);
+        this.objectMapper.writeValue(bw, clustering);
         fw.close();
     }
 

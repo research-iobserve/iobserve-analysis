@@ -51,9 +51,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
             if (match == null) {
                 distance += this.nodeInsertionCost(node);
-            }
-
-            else {
+            } else {
                 distance += this.nodeDistance(node, match);
             }
         }
