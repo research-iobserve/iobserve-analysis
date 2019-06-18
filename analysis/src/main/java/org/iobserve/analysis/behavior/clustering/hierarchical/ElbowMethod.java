@@ -155,14 +155,13 @@ public class ElbowMethod implements IClusterSelectionMethods {
 
         double maxDistance = 0.0;
         int elbowIndex = 1;
-        for (int i = 0; i < (wssSize - 1); i++) {
+        for (int i = 0; i < wssSize - 1; i++) {
             final double refPointX = i + 1;
             final double refPointY = wss.get(i);
             // Calculate distance of a point to a line defined by two points (equation from wiki).
-            final double distance = (Math
-                    .abs(((((endY - startY) * refPointX) - ((endX - startX) * refPointY)) + (endX * startY))
-                            - (endY * startX)))
-                    / (Math.sqrt(((endY - startY) * (endY - startY)) + ((endX - startX) * (endX - startX))));
+            final double distance = Math
+                    .abs((endY - startY) * refPointX - (endX - startX) * refPointY + endX * startY - endY * startX)
+                    / Math.sqrt((endY - startY) * (endY - startY) + (endX - startX) * (endX - startX));
 
             final double oldMaxDistance = maxDistance;
             maxDistance = Math.max(distance, maxDistance);
@@ -226,7 +225,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
         for (final List<Integer> v : assignments) {
             assignmentString += v.toString();
         }
-        ElbowMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
+        ElbowMethod.LOGGER.info("Assignments: {}", assignmentString);
     }
 
     /**
@@ -237,7 +236,7 @@ public class ElbowMethod implements IClusterSelectionMethods {
      */
     public void printClusteringResults(final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
         for (int i = 0; i < clusteringResults.size(); i++) {
-            ElbowMethod.LOGGER.info(clusteringResults.get(i).toString() + "\n");
+            ElbowMethod.LOGGER.info(clusteringResults.get(i).toString());
         }
     }
 }

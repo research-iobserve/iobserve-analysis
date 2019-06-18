@@ -24,8 +24,8 @@ import javax.json.JsonObject;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.analysis.service.util.ChangelogHelper;
+import org.iobserve.analysis.service.util.SendHttpRequestUtils;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
@@ -76,7 +76,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
     @Override
     protected void execute(final PCMUndeployedEvent undeployment) throws Exception {
-        SendHttpRequest.post(this.createData(undeployment), this.outputURL);
+        SendHttpRequestUtils.post(this.createData(undeployment), this.outputURL);
     }
 
     /**
@@ -102,7 +102,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
                         "entityName", asmContextName)
                 .get(0);
 
-        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
+        final JsonObject serviceInstanceObject = ChangelogHelper.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         return Json.createArrayBuilder().add(serviceInstanceObject).build();
     }

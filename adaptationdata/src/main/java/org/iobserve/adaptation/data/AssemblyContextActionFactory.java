@@ -34,7 +34,8 @@ import org.palladiosimulator.pcm.system.System;
  * @author Lars Bluemke (Refactoring of system adaptation model: terminology: "(de-)allocate" ->
  *         "(de-)replicate", changes to sources and targets of actions, addition of new attributes)
  */
-public final class AssemblyContextActionFactory {
+public final class AssemblyContextActionFactory { // NOPMD not a utility class, it is a factory
+                                                  // class
 
     /**
      * Empty default constructor.

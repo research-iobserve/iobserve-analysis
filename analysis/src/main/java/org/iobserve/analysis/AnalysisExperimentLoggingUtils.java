@@ -26,12 +26,20 @@ import org.iobserve.stages.data.ExperimentLogging;
  * @author Reiner Jung
  *
  */
-public final class AnalysisExperimentLogging {
+public final class AnalysisExperimentLoggingUtils {
 
-    private AnalysisExperimentLogging() {
+    private AnalysisExperimentLoggingUtils() {
 
     }
 
+    /**
+     * Measure a time stamp.
+     * 
+     * @param event
+     *            event being processed by the analysis
+     * @param point
+     *            kind of measurement point
+     */
     public static void measure(final IPCMDeploymentEvent event, final ObservationPoint point) {
         if (event instanceof PCMDeployedEvent) {
             ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);

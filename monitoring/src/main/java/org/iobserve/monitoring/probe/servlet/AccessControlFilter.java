@@ -147,7 +147,7 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
      * @return
      */
     private boolean isInList(final EListType listType, final String remoteAddr, final String operationSignature) {
-        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getParameters(operationSignature);
+        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getAllParameters(operationSignature);
         if (parameters != null) {
             final List<String> valueList = parameters.get(listType.name());
             if (valueList != null) {

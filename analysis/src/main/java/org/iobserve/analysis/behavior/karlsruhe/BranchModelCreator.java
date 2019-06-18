@@ -271,7 +271,7 @@ public class BranchModelCreator {
      *            if it is not the end of the sequence, it states at which position in the sequence
      *            it is added to the new branch
      */
-    private int splitBranch(Branch examinedBranch, final int positionInBranch, int numberOfBranches, // NOCS
+    private int splitBranch(final Branch examinedBranch, final int positionInBranch, int numberOfBranches, // NOCS
             final boolean isExit, // NOCS
             final UserSession userSession, final int indexOfCallEvent) { // NOCS
         // If there is already a split at that position add a new branch
@@ -283,14 +283,14 @@ public class BranchModelCreator {
             numberOfBranches = numberOfBranches + 2; // NOCS
         }
         final int indexOfNewAddedBranch = examinedBranch.getChildBranches().size() - 1;
-        examinedBranch = examinedBranch.getChildBranches().get(indexOfNewAddedBranch); // NOCS
+        final Branch childBranch = examinedBranch.getChildBranches().get(indexOfNewAddedBranch); // NOCS
 
         // Adds an exit element to the new exit branch
         if (isExit) {
-            this.setExitElement(examinedBranch);
+            this.setExitElement(childBranch);
             // Adds the branch sequence to the new branch
         } else {
-            this.setBranchSequence(examinedBranch, userSession.getEvents(), indexOfCallEvent);
+            this.setBranchSequence(childBranch, userSession.getEvents(), indexOfCallEvent);
         }
 
         return numberOfBranches;

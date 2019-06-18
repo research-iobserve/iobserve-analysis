@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.userbehavior;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -166,7 +169,8 @@ public class ClusteringEvaluation {
 
     private void writeResults(final List<Double> sseValues, final List<Double> mcValues) throws IOException {
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/ClusteringEvaluationResults");
+        final BufferedWriter writer = Files.newBufferedWriter(
+                new File("/Users/David/Desktop/ClusteringEvaluationResults").toPath(), StandardOpenOption.CREATE);
         writer.append(
                 "NumberOfUserSessionsOfUserGroupCustomer,NumberOfUserSessionsOfUserGroupStockManager,NumberOfUserSessionsOfUserGroupStoreManager,SSE,MC");
         writer.append('\n');

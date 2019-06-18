@@ -16,6 +16,8 @@
 package org.iobserve.runtime.reconfigurator;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.List;
 
 import teetime.framework.Configuration;
 
@@ -32,7 +34,8 @@ public class ReconfiguratorConfiguration extends Configuration {
 
     public ReconfiguratorConfiguration(final ReconfiguratorSettings parameterConfiguration) {
         final GenerateConfiguration generate = new GenerateConfiguration(parameterConfiguration.getHost(),
-                parameterConfiguration.getPort(), this.convert(parameterConfiguration.getWhiteStart()),
+                parameterConfiguration.getPort(), this.convert(parameterConfiguration.getWhiteList()),
+                this.convert(parameterConfiguration.getWhiteStart()),
                 this.convert(parameterConfiguration.getWhiteEnd()),
                 this.convert(parameterConfiguration.getBlackStart()),
                 this.convert(parameterConfiguration.getBlackEnd()));
@@ -47,6 +50,14 @@ public class ReconfiguratorConfiguration extends Configuration {
         final ProbeControlFilter probeController = new ProbeControlFilter(controller);
 
         this.connectPorts(generate.getOutputPort(), probeController.getInputPort());
+    }
+
+    private List<String> convert(final List<Inet4Address> whiteList) {
+        final List<String> result = new ArrayList<>();
+        whiteList.forEach(address -> {
+            result.add(address.getHostAddress());
+        });
+        return result;
     }
 
     private long convert(final Inet4Address address) {

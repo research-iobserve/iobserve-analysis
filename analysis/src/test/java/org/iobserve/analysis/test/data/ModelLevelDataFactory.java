@@ -26,7 +26,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  * @author Reiner Jung
  *
  */
-public final class ModelLevelDataFactory {
+public final class ModelLevelDataFactory { // NOPMD is not a usual utility class, but a factory
 
     private ModelLevelDataFactory() {
         // private factory constructor

@@ -161,10 +161,20 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
                         resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
                         usageModelResource, correspondenceModelResource);
             } catch (final IOException e) {
-                java.lang.System.err.println("Cannot load all models " + e.getLocalizedMessage());
+                // TODO should be replaced by logger
+                java.lang.System.err.println("Cannot load all models " + e.getLocalizedMessage()); // NOPMD
+                                                                                                   // pmd
+                                                                                                   // bug,
+                                                                                                   // FQN
+                                                                                                   // required
                 return null;
             } catch (final DBException e) {
-                java.lang.System.err.println("Cannot store all models in DB " + e.getLocalizedMessage());
+                // TODO should be replaced by logger
+                java.lang.System.err.println("Cannot store all models in DB " + e.getLocalizedMessage()); // NOPMD
+                                                                                                          // pmd
+                                                                                                          // bug,
+                                                                                                          // FQN
+                                                                                                          // required
                 return null;
             }
         } else {

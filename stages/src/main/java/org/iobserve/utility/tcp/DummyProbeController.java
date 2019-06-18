@@ -18,6 +18,7 @@ package org.iobserve.utility.tcp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
@@ -110,9 +111,11 @@ public class DummyProbeController implements IProbeController {
      */
     public void updateProbeParameter(final String ip, final int port, final String hostname, final String pattern,
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
-        this.sendTcpCommand(ip, port, hostname, new UpdateParameterEvent(pattern, parameterNames, parameterArray));
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new UpdateParameterEvent(pattern, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
@@ -144,7 +147,7 @@ public class DummyProbeController implements IProbeController {
      *            Port of the TCP controller.
      * @param hostname
      *            The name of the component which is using this IP and port.
-     * @param pattern
+     * @param operationSignature
      *            The pattern of the method that should be monitored.
      * @param parameters
      *            The map of parameters to be set, the key is the name and the values the values for
@@ -153,12 +156,13 @@ public class DummyProbeController implements IProbeController {
      *             if the connection can not be established within a set timeout.
      */
     public void activateParameterMonitoredPattern(final String ip, final int port, final String hostname,
-            final String pattern, final Map<String, List<String>> parameters) throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
-
-        this.sendTcpCommand(ip, port, hostname, new ActivationParameterEvent(pattern, parameterNames, parameterArray));
-
+            final String operationSignature, final Map<String, List<String>> parameters)
+            throws RemoteControlFailedException {
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new ActivationParameterEvent(operationSignature, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
@@ -187,7 +191,7 @@ public class DummyProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getServiceComponent() != hostname)) {
+        if (currentConnection == null || currentConnection.getServiceComponent() != hostname) {
             currentConnection = new TcpControlConnection(ip, port, hostname, null);
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -211,8 +215,8 @@ public class DummyProbeController implements IProbeController {
 
         if (monitoringRecord instanceof IRemoteParameterControlEvent) {
             DummyProbeController.LOGGER.debug("--------------- Parameter Control Event ---------------");
-            this.printParameters(((IRemoteParameterControlEvent) monitoringRecord).getParameterNames(),
-                    ((IRemoteParameterControlEvent) monitoringRecord).getParameters());
+            this.printParameters(((IRemoteParameterControlEvent) monitoringRecord).getName(),
+                    ((IRemoteParameterControlEvent) monitoringRecord).getValues());
             DummyProbeController.LOGGER.debug("-------------------------------------------------------");
 
         }
@@ -234,33 +238,14 @@ public class DummyProbeController implements IProbeController {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
     }
 
-    private String[][] computeParameterArray(final Map<String, List<String>> parameters) {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-
-        final int parameterLength = parameterNames.length;
-        final String[][] parameterArray = new String[parameterLength][];
-
-        for (int i = 0; i < parameterLength; i++) {
-            final List<String> list = parameters.get(parameterNames[i]);
-            if (list.isEmpty()) {
-                parameterArray[i] = new String[0];
-            } else {
-                final String[] array = list.toArray(new String[list.size()]);
-                parameterArray[i] = array;
-            }
-        }
-        return parameterArray;
+    private String[] computeParameterArray(final List<String> parameters) {
+        return parameters.toArray(new String[parameters.size()]);
     }
 
-    private void printParameters(final String[] parameterNames, final String[][] parameterArray) {
-        for (int i = 0; i < parameterArray.length; i++) {
-            final String[] a = parameterArray[i];
-
-            DummyProbeController.LOGGER.debug(">> {}", parameterNames[i]);
-            for (final String b : a) {
-                DummyProbeController.LOGGER.debug("\t - {}", b);
-            }
+    private void printParameters(final String name, final String[] values) {
+        DummyProbeController.LOGGER.debug(">> {}", name);
+        for (final String value : values) {
+            DummyProbeController.LOGGER.debug("\t - {}", value);
         }
-
     }
 }

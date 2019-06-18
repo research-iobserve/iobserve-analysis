@@ -21,7 +21,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.ChangelogHelper;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
 import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
@@ -100,7 +100,7 @@ public class ServiceInstanceService {
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {
                 if (maybeAssemblyConnectors.get(i) instanceof AssemblyConnector) {
-                    Changelog.delete(this.communicationInstanceService
+                    ChangelogHelper.delete(this.communicationInstanceService
                             .deleteCommunicationInstance((AssemblyConnector) maybeAssemblyConnectors.get(i)));
                 }
             }

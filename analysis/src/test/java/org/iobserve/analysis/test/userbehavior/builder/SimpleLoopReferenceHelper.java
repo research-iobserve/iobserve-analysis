@@ -46,12 +46,12 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
  * @author Reiner Jung -- refactoring
  *
  */
-public final class SimpleLoopReference {
+public final class SimpleLoopReferenceHelper {
 
     /**
      * Factory.
      */
-    private SimpleLoopReference() {
+    private SimpleLoopReferenceHelper() {
     }
 
     /**

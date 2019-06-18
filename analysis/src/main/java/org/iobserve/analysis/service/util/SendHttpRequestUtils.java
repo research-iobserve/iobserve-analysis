@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
  * @author jweg
  *
  */
-public final class SendHttpRequest {
+public final class SendHttpRequestUtils {
 
     private static final String USER_AGENT = "iObserve/0.0.3";
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequestUtils.class);
 
-    private SendHttpRequest() {
+    private SendHttpRequestUtils() {
 
     }
 
@@ -73,7 +73,7 @@ public final class SendHttpRequest {
         // add request header
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", SendHttpRequest.USER_AGENT);
+        connection.setRequestProperty("User-Agent", SendHttpRequestUtils.USER_AGENT);
         connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
         // Send post request
         connection.setDoOutput(true);
@@ -81,20 +81,20 @@ public final class SendHttpRequest {
         if ("system".equals(type.getString())) {
             jsonWriter.write(modelData);
 
-            SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", systemUrl);
-            SendHttpRequest.LOGGER.debug("Post parameters : {}", modelData);
+            SendHttpRequestUtils.LOGGER.debug("Sending 'POST' request to URL : {}", systemUrl);
+            SendHttpRequestUtils.LOGGER.debug("Post parameters : {}", modelData);
 
         } else {
             jsonWriter.writeArray(dataArray); // work in progress
 
-            SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
-            SendHttpRequest.LOGGER.debug("Post parameters : {}", dataArray);
+            SendHttpRequestUtils.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
+            SendHttpRequestUtils.LOGGER.debug("Post parameters : {}", dataArray);
         }
 
         jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
-        SendHttpRequest.LOGGER.debug("Response Code : {}", responseCode);
+        SendHttpRequestUtils.LOGGER.debug("Response Code : {}", responseCode);
 
         if (responseCode != 204) {
             final BufferedReader err = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
@@ -106,7 +106,7 @@ public final class SendHttpRequest {
             }
             err.close();
 
-            SendHttpRequest.LOGGER.error("error:", error);
+            SendHttpRequestUtils.LOGGER.error("error:", error);
         }
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -119,7 +119,7 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
-        SendHttpRequest.LOGGER.debug(response.toString());
+        SendHttpRequestUtils.LOGGER.debug(response.toString());
 
     }
 
@@ -138,7 +138,7 @@ public final class SendHttpRequest {
         // add request header
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", SendHttpRequest.USER_AGENT);
+        connection.setRequestProperty("User-Agent", SendHttpRequestUtils.USER_AGENT);
         connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
         // Send post request
@@ -151,9 +151,9 @@ public final class SendHttpRequest {
         jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
-        SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
-        SendHttpRequest.LOGGER.debug("Post parameters : {}", dataArray);
-        SendHttpRequest.LOGGER.debug("Response Code : {}", responseCode);
+        SendHttpRequestUtils.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
+        SendHttpRequestUtils.LOGGER.debug("Post parameters : {}", dataArray);
+        SendHttpRequestUtils.LOGGER.debug("Response Code : {}", responseCode);
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
@@ -165,7 +165,7 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
-        SendHttpRequest.LOGGER.info(response.toString());
+        SendHttpRequestUtils.LOGGER.info(response.toString());
 
     }
 

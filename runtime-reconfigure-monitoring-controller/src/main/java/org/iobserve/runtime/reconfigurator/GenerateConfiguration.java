@@ -38,13 +38,15 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
     private final long whiteEnd;
     private final String host;
     private final int port;
+    private final List<String> whitelist;
 
-    public GenerateConfiguration(final String host, final int port, final long whiteStart, final long whiteEnd,
-            final long blackStart, final long blackEnd) {
+    public GenerateConfiguration(final String host, final int port, final List<String> whitelist, final long whiteStart,
+            final long whiteEnd, final long blackStart, final long blackEnd) {
         this.host = host;
         this.port = port;
         this.whiteStart = whiteStart;
         this.whiteEnd = whiteEnd;
+        this.whitelist = whitelist;
         this.blackStart = blackStart;
         this.blackEnd = blackEnd;
     }
@@ -63,12 +65,12 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
 
         parameters.put(EListType.BLACKLIST.name(), blacklist);
 
-        final List<String> whitelist = new ArrayList<>();
+        final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
 
-        whitelist.add(this.ipv4Generator(127, 0, 0, 1));
+        completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
         this.populateList(blacklist, this.whiteStart, this.whiteEnd);
 
-        parameters.put(EListType.WHITELIST.name(), whitelist);
+        parameters.put(EListType.WHITELIST.name(), completeWhitelist);
 
         element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
                 triggerTimestamp, parameters);

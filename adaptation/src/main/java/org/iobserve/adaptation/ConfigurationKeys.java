@@ -21,7 +21,7 @@ package org.iobserve.adaptation;
  * @author Lars Bluemke
  *
  */
-public final class ConfigurationKeys {
+public final class ConfigurationKeys { // NOPMD class naming is perfect
 
     /**
      * Input port for receiving runtime models via TCP.

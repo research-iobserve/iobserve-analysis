@@ -16,6 +16,7 @@
 package org.iobserve.runtime.reconfigurator;
 
 import java.net.Inet4Address;
+import java.util.List;
 
 import com.beust.jcommander.Parameter;
 
@@ -29,6 +30,9 @@ public class ReconfiguratorSettings {
     private Inet4Address whiteStart;
     @Parameter(names = { "-we", "--whitelist-end" }, required = true, converter = ParameterIPConverter.class)
     private Inet4Address whiteEnd;
+    @Parameter(names = { "-w",
+            "--whitelist" }, variableArity = true, required = false, converter = ParameterIPConverter.class)
+    private List<Inet4Address> whiteList;
 
     @Parameter(names = { "-bs", "--blacklist-start" }, required = true, converter = ParameterIPConverter.class)
     private Inet4Address blackStart;
@@ -47,6 +51,10 @@ public class ReconfiguratorSettings {
 
     public Inet4Address getWhiteEnd() {
         return this.whiteEnd;
+    }
+
+    public List<Inet4Address> getWhiteList() {
+        return this.whiteList;
     }
 
     public Inet4Address getBlackStart() {

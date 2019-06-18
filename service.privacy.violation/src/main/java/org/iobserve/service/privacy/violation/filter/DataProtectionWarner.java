@@ -29,7 +29,7 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
@@ -149,7 +149,7 @@ public class DataProtectionWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
-            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+            AnalysisExperimentLoggingUtils.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
@@ -158,18 +158,18 @@ public class DataProtectionWarner extends AbstractStage {
             this.performPrivacyEvaluation(deployedEvent);
 
             this.logger.debug("Deployment processed");
-            AnalysisExperimentLogging.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
+            AnalysisExperimentLoggingUtils.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
 
         if (undeployedEvent != null) {
-            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+            AnalysisExperimentLoggingUtils.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
-            AnalysisExperimentLogging.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
+            AnalysisExperimentLoggingUtils.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 

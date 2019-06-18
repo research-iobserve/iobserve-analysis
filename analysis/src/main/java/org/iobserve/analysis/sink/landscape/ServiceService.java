@@ -18,12 +18,12 @@ package org.iobserve.analysis.sink.landscape;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.ChangelogHelper;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
  * This class prepares data such that the visualization element service is created. It has to be
- * added to a {@link Changelog} in order to be send to the deployment visualization.
+ * added to a {@link ChangelogHelper} in order to be send to the deployment visualization.
  *
  * @author jweg
  *

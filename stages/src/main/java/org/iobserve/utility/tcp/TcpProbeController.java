@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
@@ -111,10 +112,12 @@ public class TcpProbeController implements IProbeController {
      */
     public void updateProbeParameter(final String ip, final int port, final String hostname, final String pattern,
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
 
-        this.sendTcpCommand(ip, port, hostname, new UpdateParameterEvent(pattern, parameterNames, parameterArray));
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new UpdateParameterEvent(pattern, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
@@ -157,11 +160,11 @@ public class TcpProbeController implements IProbeController {
     public void activateOperationMonitoringWithParameters(final String ip, final int port, final String hostname,
             final String operationSignature, final Map<String, List<String>> parameters)
             throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
-
-        this.sendTcpCommand(ip, port, hostname,
-                new ActivationParameterEvent(operationSignature, parameterNames, parameterArray));
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new ActivationParameterEvent(operationSignature, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
@@ -216,7 +219,7 @@ public class TcpProbeController implements IProbeController {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
                 TcpProbeController.CONN_TIMEOUT_IN_MS);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 65535);
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 6553500);
         final SingleSocketTcpWriter tcpWriter;
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
@@ -244,21 +247,8 @@ public class TcpProbeController implements IProbeController {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
     }
 
-    private String[][] computeParameterArray(final Map<String, List<String>> parameters) {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-
-        final int parameterLength = parameterNames.length;
-        final String[][] parameterArray = new String[parameterLength][];
-
-        for (int i = 0; i < parameterLength; i++) {
-            final List<String> list = parameters.get(parameterNames[i]);
-            if (list.isEmpty()) {
-                parameterArray[i] = new String[0];
-            } else {
-                parameterArray[i] = (String[]) list.toArray();
-            }
-        }
-        return parameterArray;
+    private String[] computeParameterArray(final List<String> parameters) {
+        return parameters.toArray(new String[parameters.size()]);
     }
 
 }

@@ -32,7 +32,7 @@ import org.iobserve.stages.general.IEntryCallTraceMatcher;
  * @since 0.0.2
  *
  */
-public final class ConfigurationKeys {
+public final class ConfigurationKeys { // NOPMD is not a conventional utility class
     public static final String PREFIX = "iobserve.analysis.";
 
     /**

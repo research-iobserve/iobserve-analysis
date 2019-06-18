@@ -22,7 +22,7 @@ package org.iobserve.analysis.deployment;
  * @author Reiner Jung
  *
  */
-public final class DeploymentLock {
+public final class DeploymentLock { // NOPMD is not a usual utility class, but a lock handler
 
     private static boolean lockState;
 

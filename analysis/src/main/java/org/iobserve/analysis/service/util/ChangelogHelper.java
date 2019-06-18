@@ -24,9 +24,9 @@ import javax.json.JsonObject;
  * @author Josefine Wegert
  *
  */
-public final class Changelog {
+public final class ChangelogHelper { 
 
-    private Changelog() {
+    private ChangelogHelper() {
 
     }
 

@@ -20,7 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.correspondence.AllocationEntry;
@@ -88,7 +88,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
     @Override
     protected void execute(final PCMDeployedEvent event) throws NodeLookupException, InvocationException, DBException {
         DeploymentLock.lock();
-        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
+        AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
                 event.getAssemblyContext(), event.getResourceContainer(), event.getService());
@@ -137,7 +137,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         }
 
         // signal deployment update
-        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+        AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
         DeploymentLock.unlock();
         this.deployedNotifyOutputPort.send(event);
     }
