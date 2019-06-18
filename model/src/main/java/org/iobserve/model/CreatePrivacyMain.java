@@ -25,13 +25,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.DataProtectionModel;
+import org.iobserve.model.privacy.EDataProtectionLevel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.ParameterDataProtection;
 import org.iobserve.model.privacy.PrivacyFactory;
-import org.iobserve.model.privacy.PrivacyModel;
-import org.iobserve.model.privacy.ReturnTypePrivacy;
+import org.iobserve.model.privacy.ReturnTypeDataProtection;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationSignature;
@@ -51,7 +51,7 @@ public final class CreatePrivacyMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreatePrivacyMain.class);
 
     private static final Map<String, EISOCode> ISO_CODE_MAPS = new HashMap<>();
-    private static final Map<String, Map<String, OperationSignaturePrivacy>> PRIVACY_LEVEL_MAPS = new HashMap<>();
+    private static final Map<String, Map<String, OperationSignatureDataProtection>> PRIVACY_LEVEL_MAPS = new HashMap<>();
 
     private CreatePrivacyMain() {
 
@@ -73,7 +73,7 @@ public final class CreatePrivacyMain {
             final Repository repository = modelHandler.getRepositoryModel();
             final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
 
-            final PrivacyModel privacyModel = PrivacyFactory.eINSTANCE.createPrivacyModel();
+            final DataProtectionModel privacyModel = PrivacyFactory.eINSTANCE.createDataProtectionModel();
 
             CreatePrivacyMain.addGeoLocations(privacyModel, environment);
             CreatePrivacyMain.addPrivacyAnnotations(privacyModel, repository);
@@ -87,112 +87,114 @@ public final class CreatePrivacyMain {
 
     private static void createPrivacyAnnotations() {
         /** IAccountService. */
-        final Map<String, OperationSignaturePrivacy> accountServiceMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> accountServiceMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("IAccountService", accountServiceMap);
 
-        final Map<String, EDataPrivacyLevel> userRequestParameter = new HashMap<>();
-        userRequestParameter.put("username", EDataPrivacyLevel.PERSONAL);
-        userRequestParameter.put("password", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> userRequestParameter = new HashMap<>();
+        userRequestParameter.put("username", EDataProtectionLevel.PERSONAL);
+        userRequestParameter.put("password", EDataProtectionLevel.PERSONAL);
         accountServiceMap.put("userRequest",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, userRequestParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, userRequestParameter));
 
-        final Map<String, EDataPrivacyLevel> insertAccountParameter = new HashMap<>();
-        insertAccountParameter.put("account", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> insertAccountParameter = new HashMap<>();
+        insertAccountParameter.put("account", EDataProtectionLevel.PERSONAL);
         accountServiceMap.put("insertAccount",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, insertAccountParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, insertAccountParameter));
 
-        final Map<String, EDataPrivacyLevel> updateAccountParameter = new HashMap<>();
-        updateAccountParameter.put("account", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> updateAccountParameter = new HashMap<>();
+        updateAccountParameter.put("account", EDataProtectionLevel.PERSONAL);
         accountServiceMap.put("updateAccount",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, updateAccountParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, updateAccountParameter));
 
         /** ICatalogService. */
-        final Map<String, OperationSignaturePrivacy> catalogServiceMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> catalogServiceMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("ICatalogService", catalogServiceMap);
 
-        final Map<String, EDataPrivacyLevel> getCategoryListParameter = new HashMap<>();
+        final Map<String, EDataProtectionLevel> getCategoryListParameter = new HashMap<>();
         catalogServiceMap.put("getCategoryList",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, getCategoryListParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, getCategoryListParameter));
 
-        final Map<String, EDataPrivacyLevel> getCategoryByIdParameter = new HashMap<>();
-        getCategoryByIdParameter.put("id", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> getCategoryByIdParameter = new HashMap<>();
+        getCategoryByIdParameter.put("id", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("getCategoryById",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, getCategoryByIdParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, getCategoryByIdParameter));
 
-        final Map<String, EDataPrivacyLevel> itemInStockParameter = new HashMap<>();
-        itemInStockParameter.put("id", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> itemInStockParameter = new HashMap<>();
+        itemInStockParameter.put("id", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("itemInStock",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, itemInStockParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, itemInStockParameter));
 
-        final Map<String, EDataPrivacyLevel> itemListByProductParameter = new HashMap<>();
-        itemListByProductParameter.put("productId", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> itemListByProductParameter = new HashMap<>();
+        itemListByProductParameter.put("productId", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("itemListByProduct",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, itemListByProductParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, itemListByProductParameter));
 
-        final Map<String, EDataPrivacyLevel> itemByIdParameter = new HashMap<>();
-        itemByIdParameter.put("itemId", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> itemByIdParameter = new HashMap<>();
+        itemByIdParameter.put("itemId", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("itemById",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, itemByIdParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, itemByIdParameter));
 
-        final Map<String, EDataPrivacyLevel> productListByCategoryParameter = new HashMap<>();
-        productListByCategoryParameter.put("categoryId", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> productListByCategoryParameter = new HashMap<>();
+        productListByCategoryParameter.put("categoryId", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("productListByCategory",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, productListByCategoryParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, productListByCategoryParameter));
 
-        final Map<String, EDataPrivacyLevel> productByIdParameter = new HashMap<>();
-        productByIdParameter.put("productId", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> productByIdParameter = new HashMap<>();
+        productByIdParameter.put("productId", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("productById",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, productByIdParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, productByIdParameter));
 
-        final Map<String, EDataPrivacyLevel> searchProductListParameter = new HashMap<>();
-        searchProductListParameter.put("keywords", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> searchProductListParameter = new HashMap<>();
+        searchProductListParameter.put("keywords", EDataProtectionLevel.ANONYMOUS);
         catalogServiceMap.put("searchProductList",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, searchProductListParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, searchProductListParameter));
 
         /** OrderService. */
-        final Map<String, OperationSignaturePrivacy> orderServiceMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> orderServiceMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("IOrderService", orderServiceMap);
 
-        final Map<String, EDataPrivacyLevel> insertOrderParameter = new HashMap<>();
-        insertOrderParameter.put("order", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> insertOrderParameter = new HashMap<>();
+        insertOrderParameter.put("order", EDataProtectionLevel.PERSONAL);
         orderServiceMap.put("insertOrder",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, insertOrderParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, insertOrderParameter));
 
-        final Map<String, EDataPrivacyLevel> nextIdParameter = new HashMap<>();
-        nextIdParameter.put("name", EDataPrivacyLevel.ANONYMOUS);
-        orderServiceMap.put("nextId", new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, nextIdParameter));
+        final Map<String, EDataProtectionLevel> nextIdParameter = new HashMap<>();
+        nextIdParameter.put("name", EDataProtectionLevel.ANONYMOUS);
+        orderServiceMap.put("nextId",
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, nextIdParameter));
 
-        final Map<String, EDataPrivacyLevel> orderByIdParameter = new HashMap<>();
-        orderByIdParameter.put("oderId", EDataPrivacyLevel.DEPERSONALIZED);
-        orderServiceMap.put("orderById", new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, orderByIdParameter));
+        final Map<String, EDataProtectionLevel> orderByIdParameter = new HashMap<>();
+        orderByIdParameter.put("oderId", EDataProtectionLevel.DEPERSONALIZED);
+        orderServiceMap.put("orderById",
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, orderByIdParameter));
 
-        final Map<String, EDataPrivacyLevel> odersByUsernameParameter = new HashMap<>();
-        odersByUsernameParameter.put("username", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> odersByUsernameParameter = new HashMap<>();
+        odersByUsernameParameter.put("username", EDataProtectionLevel.PERSONAL);
         orderServiceMap.put("ordersByUsername",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, odersByUsernameParameter));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, odersByUsernameParameter));
 
         /** IAccountDatabase. */
-        final Map<String, OperationSignaturePrivacy> accountDatabaseMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> accountDatabaseMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("IAccountDatabase", accountDatabaseMap);
 
-        final Map<String, EDataPrivacyLevel> applySQLStatement = new HashMap<>();
-        applySQLStatement.put("sqlStatement", EDataPrivacyLevel.PERSONAL);
+        final Map<String, EDataProtectionLevel> applySQLStatement = new HashMap<>();
+        applySQLStatement.put("sqlStatement", EDataProtectionLevel.PERSONAL);
         accountDatabaseMap.put("applySQLStatement",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, applySQLStatement));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, applySQLStatement));
 
         /** IOrderDatabase. */
-        final Map<String, OperationSignaturePrivacy> orderDatabaseMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> orderDatabaseMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("IOrderDatabase", orderDatabaseMap);
         orderDatabaseMap.put("applySQLStatement",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.PERSONAL, applySQLStatement));
+                new OperationSignatureDataProtection(EDataProtectionLevel.PERSONAL, applySQLStatement));
 
         /** ICatalogDatabase. */
-        final Map<String, OperationSignaturePrivacy> catalogDatabaseMap = new HashMap<>();
+        final Map<String, OperationSignatureDataProtection> catalogDatabaseMap = new HashMap<>();
         CreatePrivacyMain.PRIVACY_LEVEL_MAPS.put("ICatalogDatabase", catalogDatabaseMap);
-        final Map<String, EDataPrivacyLevel> publicApplySQLStatement = new HashMap<>();
-        publicApplySQLStatement.put("sqlStatement", EDataPrivacyLevel.ANONYMOUS);
+        final Map<String, EDataProtectionLevel> publicApplySQLStatement = new HashMap<>();
+        publicApplySQLStatement.put("sqlStatement", EDataProtectionLevel.ANONYMOUS);
         catalogDatabaseMap.put("applySQLStatement",
-                new OperationSignaturePrivacy(EDataPrivacyLevel.ANONYMOUS, publicApplySQLStatement));
+                new OperationSignatureDataProtection(EDataProtectionLevel.ANONYMOUS, publicApplySQLStatement));
     }
 
     private static void createIsoCodes() {
@@ -203,7 +205,7 @@ public final class CreatePrivacyMain {
         CreatePrivacyMain.ISO_CODE_MAPS.put("Database", EISOCode.GERMANY);
     }
 
-    private static void addGeoLocations(final PrivacyModel privacyModel, final ResourceEnvironment environment) {
+    private static void addGeoLocations(final DataProtectionModel privacyModel, final ResourceEnvironment environment) {
         for (final ResourceContainer container : environment.getResourceContainer_ResourceEnvironment()) {
             CreatePrivacyMain.LOGGER.debug(String.format("have container %s\n", container.getEntityName()));
 
@@ -216,42 +218,45 @@ public final class CreatePrivacyMain {
         }
     }
 
-    private static void addPrivacyAnnotations(final PrivacyModel privacyModel, final Repository repository) {
+    private static void addPrivacyAnnotations(final DataProtectionModel privacyModel, final Repository repository) {
         for (final Interface iface : repository.getInterfaces__Repository()) {
             if (iface instanceof OperationInterface) {
                 CreatePrivacyMain.LOGGER.debug(String.format("interface %s\n", iface.getEntityName()));
                 final OperationInterface operationInterface = (OperationInterface) iface;
-                final Map<String, OperationSignaturePrivacy> ifacePrivacy = CreatePrivacyMain.PRIVACY_LEVEL_MAPS
+                final Map<String, OperationSignatureDataProtection> ifacePrivacy = CreatePrivacyMain.PRIVACY_LEVEL_MAPS
                         .get(iface.getEntityName());
                 for (final OperationSignature signature : operationInterface.getSignatures__OperationInterface()) {
                     CreatePrivacyMain.LOGGER.debug(String.format("\tsignature %s\n", signature.getEntityName()));
-                    final OperationSignaturePrivacy signaturePrivacy = ifacePrivacy.get(signature.getEntityName());
+                    final OperationSignatureDataProtection signaturePrivacy = ifacePrivacy
+                            .get(signature.getEntityName());
 
                     if (signature.getReturnType__OperationSignature() != null) {
-                        final ReturnTypePrivacy returnTypePrivacy = PrivacyFactory.eINSTANCE.createReturnTypePrivacy();
-                        returnTypePrivacy.setLevel(signaturePrivacy.getReturnTypePrivacy());
-                        returnTypePrivacy.setOperationSignature(signature);
+                        final ReturnTypeDataProtection returnTypeDataProection = PrivacyFactory.eINSTANCE
+                                .createReturnTypeDataProtection();
+                        returnTypeDataProection.setLevel(signaturePrivacy.getReturnTypePrivacy());
+                        returnTypeDataProection.setOperationSignature(signature);
 
-                        privacyModel.getPrivacyLevels().add(returnTypePrivacy);
+                        privacyModel.getDataProectionLevels().add(returnTypeDataProection);
                     }
 
                     for (final Parameter parameter : signature.getParameters__OperationSignature()) {
                         CreatePrivacyMain.LOGGER
                                 .debug(String.format("\t\tparameter %s\n", parameter.getParameterName()));
 
-                        final ParameterPrivacy parameterPrivacy = PrivacyFactory.eINSTANCE.createParameterPrivacy();
+                        final ParameterDataProtection parameterPrivacy = PrivacyFactory.eINSTANCE
+                                .createParameterDataProtection();
                         parameterPrivacy
                                 .setLevel(signaturePrivacy.getParameterPrivacy().get(parameter.getParameterName()));
                         parameterPrivacy.setParameter(parameter);
 
-                        privacyModel.getPrivacyLevels().add(parameterPrivacy);
+                        privacyModel.getDataProectionLevels().add(parameterPrivacy);
                     }
                 }
             }
         }
     }
 
-    private static void save(final PrivacyModel privacyModel, final URI writeModelURI) {
+    private static void save(final DataProtectionModel privacyModel, final URI writeModelURI) {
         final Resource.Factory.Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
         map.put("*", new XMIResourceFactoryImpl());

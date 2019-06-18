@@ -18,9 +18,9 @@ package org.iobserve.analysis.test.behavior.clustering.hierarchical;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -284,13 +284,14 @@ public class JUnitTestsHierarchicalClustering {
      * Tests CSVSinkFilter by checking if there is a file with the correct name at the output path
      * and checks the first and the last list of the file for the expected values.
      *
+     * @throws IOException
+     *             on io errors
+     *
      * @result CSVSinkFilter writes the clustering results correctly into a csv file at the given
      *         output path.
-     * @throws FileNotFoundException
-     *             if the csv file is not found
      */
     @Test
-    public void testCSVFilterSink() throws FileNotFoundException {
+    public void testCSVFilterSink() throws IOException {
         final String fileName = JUnitTestsHierarchicalClustering.CSVOUTPUTPATH + "/hierarchResults.csv";
         // Check if csv file exists.
         final File f = new File(fileName);
@@ -299,7 +300,7 @@ public class JUnitTestsHierarchicalClustering {
         }
         // Check first life on the CSV file.
         final List<String[]> records = new ArrayList<>();
-        final BufferedReader br = new BufferedReader(new FileReader(fileName));
+        final BufferedReader br = new BufferedReader(Files.newBufferedReader(Paths.get(fileName)));
         try {
             final String firstLine = br.readLine();
             String lastLine = "";
@@ -309,8 +310,10 @@ public class JUnitTestsHierarchicalClustering {
             }
             if (!(firstLine.equals(JUnitTestsHierarchicalClustering.EXPECTEDFIRSTLINECSVTWOCLUSTERS)
                     && lastLine.equals(JUnitTestsHierarchicalClustering.EXPECTEDLASTLINECSVTWOCLUSTERS))) {
+                br.close();
                 Assert.fail();
             }
+            br.close();
 
         } catch (final IOException e) {
             e.printStackTrace();

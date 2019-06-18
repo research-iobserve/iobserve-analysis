@@ -25,7 +25,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public final class NameFactory {
+public final class NameFactory { // NOPMD is not a usual utility class, but a factory
 
     private NameFactory() {
 

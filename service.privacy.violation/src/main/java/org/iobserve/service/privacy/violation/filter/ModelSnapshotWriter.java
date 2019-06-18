@@ -36,7 +36,7 @@ import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.ModelNeo4JUtil;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -61,7 +61,7 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
     private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
     private final IModelResource<System> assemblyResource;
     private final IModelResource<Allocation> allocationResource;
-    private final IModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<DataProtectionModel> dataProtectionModelResource;
 
     private final File modelDumpDirectory;
 
@@ -74,7 +74,7 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
             final IModelResource<Repository> repositoryResource,
             final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
             final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationResource,
-            final IModelResource<PrivacyModel> privacyModelResource) {
+            final IModelResource<DataProtectionModel> dataProtectionModelResource) {
         this.modelDumpDirectory = modelDumpDirectory;
         if (!modelDumpDirectory.exists()) {
             modelDumpDirectory.mkdirs();
@@ -85,7 +85,7 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.assemblyResource = systemModelResource;
         this.allocationResource = allocationResource;
-        this.privacyModelResource = privacyModelResource;
+        this.dataProtectionModelResource = dataProtectionModelResource;
     }
 
     @Override
@@ -124,14 +124,14 @@ public class ModelSnapshotWriter extends AbstractConsumerStage<PCMDeployedEvent>
                 Allocation.class, AllocationPackage.Literals.ALLOCATION, AllocationPackage.eINSTANCE,
                 revisionOutputDirectory);
 
-        final Resource privacyModelEMFResource = this.loadModel(resourceSet, this.privacyModelResource,
-                PrivacyModel.class, PrivacyPackage.Literals.PRIVACY_MODEL, PrivacyPackage.eINSTANCE,
+        final Resource privacyModelEMFResource = this.loadModel(resourceSet, this.dataProtectionModelResource,
+                DataProtectionModel.class, PrivacyPackage.Literals.DATA_PROTECTION_MODEL, PrivacyPackage.eINSTANCE,
                 revisionOutputDirectory);
 
         /** Resolve models. */
         ModelNeo4JUtil.resolveAll(resourceSet, this.correspondenceResource, this.repositoryResource,
                 this.resourceEnvironmentResource, this.assemblyResource, this.allocationResource,
-                this.privacyModelResource);
+                this.dataProtectionModelResource);
 
         /** store. */
         repositoryModelEMFResource.save(null);

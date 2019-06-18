@@ -37,15 +37,15 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      *            Port of the TCP controller.
      * @param hostname
      *            The name of the component which is using this IP and port.
-     * @param pattern
-     *            The pattern of the method that should be monitored.
+     * @param operationSignature
+     *            The operation signature of the method that should be monitored.
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
      */
     public TcpActivationParameterControlEvent(final String ip, final int port, final String hostname,
-            final String pattern, final long triggerTimestamp, final Map<String, List<String>> parameters) {
-        super(ip, port, hostname, pattern, triggerTimestamp);
+            final String operationSignature, final long triggerTimestamp, final Map<String, List<String>> parameters) {
+        super(ip, port, hostname, operationSignature, triggerTimestamp);
         this.parameters = parameters;
     }
 
@@ -53,14 +53,14 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      * Creates a parameter activation control event without content except the pattern and
      * parameters.
      *
-     * @param pattern
-     *            The pattern of the method that should be monitored.
+     * @param operationSignature
+     *            The operation signature of the method that should be monitored.
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      */
-    public TcpActivationParameterControlEvent(final String pattern, final long triggerTimestamp,
+    public TcpActivationParameterControlEvent(final String operationSignature, final long triggerTimestamp,
             final Map<String, List<String>> parameters) {
-        super(pattern, triggerTimestamp);
+        super(operationSignature, triggerTimestamp);
         this.parameters = parameters;
     }
 

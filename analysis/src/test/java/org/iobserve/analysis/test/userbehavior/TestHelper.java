@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.userbehavior;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,7 @@ public final class TestHelper {
      * @return random integer in the passed range
      */
     public static int getRandomInteger(final int max, final int min) {
-        return TestHelper.RAND.nextInt((max - min) + 1) + min;
+        return TestHelper.RAND.nextInt(max - min + 1) + min;
     }
 
     /**
@@ -113,7 +116,8 @@ public final class TestHelper {
      */
     public static void writeAccuracyResults(final List<AccuracyResults> accuracyResults) throws IOException {
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/AccuracyEvaluationResults");
+        final BufferedWriter writer = Files.newBufferedWriter(
+                new File("/Users/David/Desktop/AccuracyEvaluationResults").toPath(), StandardOpenOption.CREATE);
         writer.append("jc,srcc");
         writer.append('\n');
 
@@ -138,7 +142,8 @@ public final class TestHelper {
      */
     public static void writeRME(final List<Double> accuracyResults) throws IOException {
 
-        final FileWriter writer = new FileWriter("/Users/David/Desktop/RMEResults");
+        final BufferedWriter writer = Files.newBufferedWriter(new File("/Users/David/Desktop/RMEResults").toPath(),
+                StandardOpenOption.CREATE);
         writer.append("rme");
         writer.append('\n');
 

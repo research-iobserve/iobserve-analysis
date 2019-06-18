@@ -27,12 +27,12 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  * @author David Peter -- initial contribution
  *
  */
-public final class CallSequenceScalabilityReference {
+public final class CallSequenceScalabilityReferenceHelper {
 
     /**
      * Helper functionality. Do not instantiate.
      */
-    private CallSequenceScalabilityReference() {
+    private CallSequenceScalabilityReferenceHelper() {
 
     }
 

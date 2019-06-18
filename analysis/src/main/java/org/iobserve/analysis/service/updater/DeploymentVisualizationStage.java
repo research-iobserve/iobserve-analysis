@@ -25,8 +25,8 @@ import javax.json.JsonObject;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.analysis.service.util.ChangelogHelper;
+import org.iobserve.analysis.service.util.SendHttpRequestUtils;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
 import org.iobserve.model.persistence.DBException;
@@ -79,7 +79,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     @Override
     protected void execute(final PCMDeployedEvent deployment) throws Exception {
-        SendHttpRequest.post(this.createData(deployment), this.outputURL);
+        SendHttpRequestUtils.post(this.createData(deployment), this.outputURL);
     }
 
     /**
@@ -105,9 +105,9 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
-        final JsonObject serviceObject = Changelog
+        final JsonObject serviceObject = ChangelogHelper
                 .create(this.serviceService.createService(assemblyContext, this.systemId));
-        final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
+        final JsonObject serviceinstanceObject = ChangelogHelper.create(this.serviceinstanceService
                 .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
 
         return Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();

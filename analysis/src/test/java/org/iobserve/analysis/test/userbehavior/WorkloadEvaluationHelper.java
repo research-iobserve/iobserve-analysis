@@ -30,12 +30,12 @@ import org.palladiosimulator.pcm.usagemodel.impl.OpenWorkloadImpl;
  * @author David Peter
  * @author Robert Heinrich
  */
-public final class WorkloadEvaluation {
+public final class WorkloadEvaluationHelper {
 
     /**
      * Default constructor.
      */
-    private WorkloadEvaluation() {
+    private WorkloadEvaluationHelper() {
 
     }
 

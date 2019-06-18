@@ -35,11 +35,11 @@ import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.IModelResource;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
+import org.iobserve.service.privacy.violation.filter.DataProtectionWarner;
 import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
-import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.privacy.violation.filter.WhitelistFilter;
@@ -95,8 +95,8 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
             final IModelResource<Repository> repositoryResource,
             final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
             final IModelResource<System> systemModelResource, final IModelResource<Allocation> allocationResource,
-            final IModelResource<PrivacyModel> privacyModelResource, final File warningFile, final File alarmFile,
-            final File modelDumpDirectory) throws IOException, ConfigurationException {
+            final IModelResource<DataProtectionModel> privacyModelResource, final File warningFile,
+            final File alarmFile, final File modelDumpDirectory) throws IOException, ConfigurationException {
 
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -132,7 +132,7 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
             final GeoLocationStage geoLocationStage = new GeoLocationStage(resourceEnvironmentResource,
                     privacyModelResource);
 
-            final PrivacyWarner privacyWarner = new PrivacyWarner(configuration, repositoryResource,
+            final DataProtectionWarner privacyWarner = new DataProtectionWarner(configuration, repositoryResource,
                     resourceEnvironmentResource, systemModelResource, allocationResource, privacyModelResource);
             privacyWarner.declareActive();
 
@@ -178,17 +178,21 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
                     this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
                     this.connectPorts(deallocationEventMatcher.getOutputPort(), deallocationStage.getInputPort());
 
+                    /** deployment. */
                     this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
 
                     this.connectPorts(geoLocationStage.getOutputPort(), // modelDumper.getInputPort());
                             // this.connectPorts(modelDumper.getOutputPort(),
                             privacyWarner.getDeployedInputPort());
 
+                    /** undeployment. */
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
                             privacyWarner.getUndeployedInputPort());
 
+                    /** privacy. */
                     this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
 
+                    /** execution. */
                     this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                     this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
                     this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());

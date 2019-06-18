@@ -31,27 +31,22 @@ import org.iobserve.stages.data.IErrorMessages;
  *
  * @since 0.0.3
  */
-public class Warnings implements IErrorMessages, IWarningEdge {
+public class WarningModel implements IErrorMessages, IWarningEdge {
     private IPCMDeploymentEvent event;
-    private List<String> messages = new ArrayList<>();
+    private final List<String> messages = new ArrayList<>();
     private List<Edge> warningEdges = new ArrayList<>();
     private Date date;
 
     /**
      * Create a warnings result object.
      */
-    public Warnings() {
+    public WarningModel() {
         // empty data class constructor
     }
 
     @Override
     public final List<String> getMessages() {
         return this.messages;
-    }
-
-    @Override
-    public void setMessages(final List<String> messages) {
-        this.messages = messages;
     }
 
     @Override

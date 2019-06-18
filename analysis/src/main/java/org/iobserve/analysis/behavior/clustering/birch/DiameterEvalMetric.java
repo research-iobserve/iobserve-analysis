@@ -20,23 +20,21 @@ import java.util.List;
 import org.iobserve.analysis.behavior.clustering.birch.model.ClusteringFeature;
 
 /**
- * @author Melf Lorenzen
- * Metric for the lmethod of the 
- * ClusterSelection stage based on
- * the cluster diameter.
+ * @author Melf Lorenzen Metric for the lmethod of the ClusterSelection stage based on the cluster
+ *         diameter.
  */
 public class DiameterEvalMetric implements ILMethodEvalStrategy {
 
-	@Override
-	public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
-		double sum = 0.0;
-		double cnt = 0.0;
-		
-		for (ClusteringFeature cf : cluster) {
-			sum += (cf.getNumber() * (cf.getNumber() - 1)) * Math.pow(cf.getDiameter(), 2);
-			cnt += (cf.getNumber() * (cf.getNumber() - 1));
-		}
-			
-		return cnt != 0.0 ? sum / cnt : 0;
-	}
+    @Override
+    public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
+        double sum = 0.0;
+        double cnt = 0.0;
+
+        for (final ClusteringFeature cf : cluster) {
+            sum += cf.getNumber() * (cf.getNumber() - 1) * Math.pow(cf.getDiameter(), 2);
+            cnt += cf.getNumber() * (cf.getNumber() - 1);
+        }
+
+        return cnt != 0.0 ? sum / cnt : 0;
+    }
 }

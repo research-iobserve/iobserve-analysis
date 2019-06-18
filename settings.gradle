@@ -9,8 +9,9 @@ include "common", "monitoring", "model", "stages", "service",
 	"service.privacy.violation",
 	"evaluate-jss-performance",
         "simulate-petstore",
-	"service-behavior-analysis"
-	
+	"service-behavior-analysis",
+        "runtime-reconfigure-monitoring-controller"
+
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"

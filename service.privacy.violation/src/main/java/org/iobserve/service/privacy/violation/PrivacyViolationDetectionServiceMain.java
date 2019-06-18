@@ -34,7 +34,7 @@ import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.memory.MemoryModelResource;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -94,7 +94,7 @@ public final class PrivacyViolationDetectionServiceMain
             final IModelResource<Allocation> allocationModelResource = this
                     .loadResourceAndInitDB(AllocationPackage.eINSTANCE, modelHandler.getAllocationModel());
 
-            final IModelResource<PrivacyModel> privacyModelResource = this
+            final IModelResource<DataProtectionModel> privacyModelResource = this
                     .loadResourceAndInitDB(PrivacyPackage.eINSTANCE, modelHandler.getPrivacyModel());
 
             return new PrivacyViolationDetectionTeetimeConfiguration(this.kiekerConfiguration,

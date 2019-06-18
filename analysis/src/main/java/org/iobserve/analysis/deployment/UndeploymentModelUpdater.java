@@ -20,7 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLogging;
+import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
@@ -68,7 +68,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
     @Override
     protected void execute(final PCMUndeployedEvent event) throws DBException {
         DeploymentLock.lock();
-        AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
+        AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
@@ -81,16 +81,16 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
             this.allocationModelResource.deleteObject(allocationContext);
-            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+            AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             DeploymentLock.unlock();
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
-            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+            AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
                     allocationContextName);
             DeploymentLock.unlock();
         } else {
-            AnalysisExperimentLogging.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
+            AnalysisExperimentLoggingUtils.measure(event, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
             DeploymentLock.unlock();
         }

@@ -13,16 +13,16 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.DataProtectionModel;
+import org.iobserve.model.privacy.EDataProtectionLevel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.EncapsulatedDataSource;
 import org.iobserve.model.privacy.GeoLocation;
-import org.iobserve.model.privacy.IPrivacyAnnotation;
-import org.iobserve.model.privacy.ParameterPrivacy;
+import org.iobserve.model.privacy.IDataProtectionAnnotation;
+import org.iobserve.model.privacy.ParameterDataProtection;
 import org.iobserve.model.privacy.PrivacyFactory;
-import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.model.privacy.ReturnTypePrivacy;
+import org.iobserve.model.privacy.ReturnTypeDataProtection;
 import org.palladiosimulator.pcm.PcmPackage;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
@@ -39,21 +39,21 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass privacyModelEClass = null;
+    private EClass dataProtectionModelEClass = null;
 
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass returnTypePrivacyEClass = null;
+    private EClass returnTypeDataProtectionEClass = null;
 
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass iPrivacyAnnotationEClass = null;
+    private EClass iDataProtectionAnnotationEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -67,7 +67,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass parameterPrivacyEClass = null;
+    private EClass parameterDataProtectionEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -81,7 +81,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    private EEnum eDataPrivacyLevelEEnum = null;
+    private EEnum eDataProtectionLevelEEnum = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -118,7 +118,7 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
 
     /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     * 
+     *
      * <p>This method is used to initialize {@link PrivacyPackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
@@ -132,7 +132,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         if (isInited) return (PrivacyPackage)EPackage.Registry.INSTANCE.getEPackage(PrivacyPackage.eNS_URI);
 
         // Obtain or create and register package
-        PrivacyPackageImpl thePrivacyPackage = (PrivacyPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof PrivacyPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new PrivacyPackageImpl());
+        Object registeredPrivacyPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+        PrivacyPackageImpl thePrivacyPackage = registeredPrivacyPackage instanceof PrivacyPackageImpl ? (PrivacyPackageImpl)registeredPrivacyPackage : new PrivacyPackageImpl();
 
         isInited = true;
 
@@ -152,7 +153,6 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         // Mark meta-data to indicate it can't be changed
         thePrivacyPackage.freeze();
 
-  
         // Update the registry and return the package
         EPackage.Registry.INSTANCE.put(PrivacyPackage.eNS_URI, thePrivacyPackage);
         return thePrivacyPackage;
@@ -163,8 +163,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getPrivacyModel() {
-        return privacyModelEClass;
+    public EClass getDataProtectionModel() {
+        return dataProtectionModelEClass;
     }
 
     /**
@@ -172,8 +172,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getPrivacyModel_ResourceContainerLocations() {
-        return (EReference)privacyModelEClass.getEStructuralFeatures().get(0);
+    public EReference getDataProtectionModel_ResourceContainerLocations() {
+        return (EReference)dataProtectionModelEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -181,8 +181,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getPrivacyModel_PrivacyLevels() {
-        return (EReference)privacyModelEClass.getEStructuralFeatures().get(1);
+    public EReference getDataProtectionModel_PrivacyLevels() {
+        return (EReference)dataProtectionModelEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -190,8 +190,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getPrivacyModel_EncapsulatedDataSources() {
-        return (EReference)privacyModelEClass.getEStructuralFeatures().get(2);
+    public EReference getDataProtectionModel_EncapsulatedDataSources() {
+        return (EReference)dataProtectionModelEClass.getEStructuralFeatures().get(2);
     }
 
     /**
@@ -199,8 +199,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getReturnTypePrivacy() {
-        return returnTypePrivacyEClass;
+    public EClass getReturnTypeDataProtection() {
+        return returnTypeDataProtectionEClass;
     }
 
     /**
@@ -208,8 +208,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getReturnTypePrivacy_OperationSignature() {
-        return (EReference)returnTypePrivacyEClass.getEStructuralFeatures().get(0);
+    public EReference getReturnTypeDataProtection_OperationSignature() {
+        return (EReference)returnTypeDataProtectionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -217,8 +217,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getIPrivacyAnnotation() {
-        return iPrivacyAnnotationEClass;
+    public EClass getIDataProtectionAnnotation() {
+        return iDataProtectionAnnotationEClass;
     }
 
     /**
@@ -226,8 +226,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getIPrivacyAnnotation_Level() {
-        return (EAttribute)iPrivacyAnnotationEClass.getEStructuralFeatures().get(0);
+    public EAttribute getIDataProtectionAnnotation_Level() {
+        return (EAttribute)iDataProtectionAnnotationEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -262,8 +262,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getParameterPrivacy() {
-        return parameterPrivacyEClass;
+    public EClass getParameterDataProtection() {
+        return parameterDataProtectionEClass;
     }
 
     /**
@@ -271,8 +271,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getParameterPrivacy_Parameter() {
-        return (EReference)parameterPrivacyEClass.getEStructuralFeatures().get(0);
+    public EReference getParameterDataProtection_Parameter() {
+        return (EReference)parameterDataProtectionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -307,8 +307,8 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EEnum getEDataPrivacyLevel() {
-        return eDataPrivacyLevelEEnum;
+    public EEnum getEDataProtectionLevel() {
+        return eDataProtectionLevelEEnum;
     }
 
     /**
@@ -348,30 +348,30 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         isCreated = true;
 
         // Create classes and their features
-        privacyModelEClass = createEClass(PRIVACY_MODEL);
-        createEReference(privacyModelEClass, PRIVACY_MODEL__RESOURCE_CONTAINER_LOCATIONS);
-        createEReference(privacyModelEClass, PRIVACY_MODEL__PRIVACY_LEVELS);
-        createEReference(privacyModelEClass, PRIVACY_MODEL__ENCAPSULATED_DATA_SOURCES);
+        dataProtectionModelEClass = createEClass(DATA_PROTECTION_MODEL);
+        createEReference(dataProtectionModelEClass, DATA_PROTECTION_MODEL__RESOURCE_CONTAINER_LOCATIONS);
+        createEReference(dataProtectionModelEClass, DATA_PROTECTION_MODEL__PRIVACY_LEVELS);
+        createEReference(dataProtectionModelEClass, DATA_PROTECTION_MODEL__ENCAPSULATED_DATA_SOURCES);
 
-        returnTypePrivacyEClass = createEClass(RETURN_TYPE_PRIVACY);
-        createEReference(returnTypePrivacyEClass, RETURN_TYPE_PRIVACY__OPERATION_SIGNATURE);
+        returnTypeDataProtectionEClass = createEClass(RETURN_TYPE_DATA_PROTECTION);
+        createEReference(returnTypeDataProtectionEClass, RETURN_TYPE_DATA_PROTECTION__OPERATION_SIGNATURE);
 
-        iPrivacyAnnotationEClass = createEClass(IPRIVACY_ANNOTATION);
-        createEAttribute(iPrivacyAnnotationEClass, IPRIVACY_ANNOTATION__LEVEL);
+        iDataProtectionAnnotationEClass = createEClass(IDATA_PROTECTION_ANNOTATION);
+        createEAttribute(iDataProtectionAnnotationEClass, IDATA_PROTECTION_ANNOTATION__LEVEL);
 
         geoLocationEClass = createEClass(GEO_LOCATION);
         createEAttribute(geoLocationEClass, GEO_LOCATION__ISOCODE);
         createEReference(geoLocationEClass, GEO_LOCATION__RESOURCE_CONTAINER);
 
-        parameterPrivacyEClass = createEClass(PARAMETER_PRIVACY);
-        createEReference(parameterPrivacyEClass, PARAMETER_PRIVACY__PARAMETER);
+        parameterDataProtectionEClass = createEClass(PARAMETER_DATA_PROTECTION);
+        createEReference(parameterDataProtectionEClass, PARAMETER_DATA_PROTECTION__PARAMETER);
 
         encapsulatedDataSourceEClass = createEClass(ENCAPSULATED_DATA_SOURCE);
         createEAttribute(encapsulatedDataSourceEClass, ENCAPSULATED_DATA_SOURCE__DATA_SOURCE);
         createEReference(encapsulatedDataSourceEClass, ENCAPSULATED_DATA_SOURCE__COMPONENT);
 
         // Create enums
-        eDataPrivacyLevelEEnum = createEEnum(EDATA_PRIVACY_LEVEL);
+        eDataProtectionLevelEEnum = createEEnum(EDATA_PROTECTION_LEVEL);
         eisoCodeEEnum = createEEnum(EISO_CODE);
     }
 
@@ -407,37 +407,37 @@ public class PrivacyPackageImpl extends EPackageImpl implements PrivacyPackage {
         // Set bounds for type parameters
 
         // Add supertypes to classes
-        returnTypePrivacyEClass.getESuperTypes().add(this.getIPrivacyAnnotation());
-        parameterPrivacyEClass.getESuperTypes().add(this.getIPrivacyAnnotation());
+        returnTypeDataProtectionEClass.getESuperTypes().add(this.getIDataProtectionAnnotation());
+        parameterDataProtectionEClass.getESuperTypes().add(this.getIDataProtectionAnnotation());
 
         // Initialize classes, features, and operations; add parameters
-        initEClass(privacyModelEClass, PrivacyModel.class, "PrivacyModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getPrivacyModel_ResourceContainerLocations(), this.getGeoLocation(), null, "resourceContainerLocations", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getPrivacyModel_PrivacyLevels(), this.getIPrivacyAnnotation(), null, "privacyLevels", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getPrivacyModel_EncapsulatedDataSources(), this.getEncapsulatedDataSource(), null, "encapsulatedDataSources", null, 0, -1, PrivacyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEClass(dataProtectionModelEClass, DataProtectionModel.class, "DataProtectionModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getDataProtectionModel_ResourceContainerLocations(), this.getGeoLocation(), null, "resourceContainerLocations", null, 0, -1, DataProtectionModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDataProtectionModel_PrivacyLevels(), this.getIDataProtectionAnnotation(), null, "privacyLevels", null, 0, -1, DataProtectionModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDataProtectionModel_EncapsulatedDataSources(), this.getEncapsulatedDataSource(), null, "encapsulatedDataSources", null, 0, -1, DataProtectionModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(returnTypePrivacyEClass, ReturnTypePrivacy.class, "ReturnTypePrivacy", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getReturnTypePrivacy_OperationSignature(), theRepositoryPackage.getOperationSignature(), null, "operationSignature", null, 1, 1, ReturnTypePrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEClass(returnTypeDataProtectionEClass, ReturnTypeDataProtection.class, "ReturnTypeDataProtection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getReturnTypeDataProtection_OperationSignature(), theRepositoryPackage.getOperationSignature(), null, "operationSignature", null, 1, 1, ReturnTypeDataProtection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(iPrivacyAnnotationEClass, IPrivacyAnnotation.class, "IPrivacyAnnotation", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getIPrivacyAnnotation_Level(), this.getEDataPrivacyLevel(), "level", null, 1, 1, IPrivacyAnnotation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEClass(iDataProtectionAnnotationEClass, IDataProtectionAnnotation.class, "IDataProtectionAnnotation", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getIDataProtectionAnnotation_Level(), this.getEDataProtectionLevel(), "level", null, 1, 1, IDataProtectionAnnotation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(geoLocationEClass, GeoLocation.class, "GeoLocation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getGeoLocation_Isocode(), this.getEISOCode(), "isocode", null, 0, 1, GeoLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getGeoLocation_ResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "resourceContainer", null, 1, 1, GeoLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
-        initEClass(parameterPrivacyEClass, ParameterPrivacy.class, "ParameterPrivacy", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getParameterPrivacy_Parameter(), theRepositoryPackage.getParameter(), null, "parameter", null, 1, 1, ParameterPrivacy.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEClass(parameterDataProtectionEClass, ParameterDataProtection.class, "ParameterDataProtection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getParameterDataProtection_Parameter(), theRepositoryPackage.getParameter(), null, "parameter", null, 1, 1, ParameterDataProtection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(encapsulatedDataSourceEClass, EncapsulatedDataSource.class, "EncapsulatedDataSource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getEncapsulatedDataSource_DataSource(), ecorePackage.getEBoolean(), "dataSource", null, 0, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getEncapsulatedDataSource_Component(), theRepositoryPackage.getBasicComponent(), null, "component", null, 1, 1, EncapsulatedDataSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
-        initEEnum(eDataPrivacyLevelEEnum, EDataPrivacyLevel.class, "EDataPrivacyLevel");
-        addEEnumLiteral(eDataPrivacyLevelEEnum, EDataPrivacyLevel.ANONYMOUS);
-        addEEnumLiteral(eDataPrivacyLevelEEnum, EDataPrivacyLevel.DEPERSONALIZED);
-        addEEnumLiteral(eDataPrivacyLevelEEnum, EDataPrivacyLevel.PERSONAL);
+        initEEnum(eDataProtectionLevelEEnum, EDataProtectionLevel.class, "EDataProtectionLevel");
+        addEEnumLiteral(eDataProtectionLevelEEnum, EDataProtectionLevel.ANONYMOUS);
+        addEEnumLiteral(eDataProtectionLevelEEnum, EDataProtectionLevel.DEPERSONALIZED);
+        addEEnumLiteral(eDataProtectionLevelEEnum, EDataProtectionLevel.PERSONAL);
 
         initEEnum(eisoCodeEEnum, EISOCode.class, "EISOCode");
         addEEnumLiteral(eisoCodeEEnum, EISOCode.AFGHANISTAN);

@@ -39,14 +39,6 @@ public interface IErrorMessages {
     List<String> getMessages();
 
     /**
-     * Sets the list of saved messages.
-     *
-     * @param messages
-     *            the list of messages.
-     */
-    void setMessages(List<String> messages);
-
-    /**
      * Adds one message to the list.
      *
      * @param message

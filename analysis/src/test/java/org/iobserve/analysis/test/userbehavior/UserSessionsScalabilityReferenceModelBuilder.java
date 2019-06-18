@@ -24,7 +24,8 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  * @author David Peters -- initial contribution
  *
  */
-public final class UserSessionsScalabilityReferenceModelBuilder {
+public final class UserSessionsScalabilityReferenceModelBuilder { // NOPMD is not a usual utility
+                                                                  // class, but a builder
 
     /**
      * Helper class.

@@ -294,7 +294,7 @@ public class ProbeMapperTest {
     }
 
     private Boolean areEventsEqual(final AbstractTcpControlEvent event1, final AbstractTcpControlEvent event2) {
-        if (event1.getHostname().equals(event2.getHostname()) && event1.getPattern().equals(event2.getPattern())
+        if (event1.getServiceComponent().equals(event2.getServiceComponent()) && event1.getOperationSignature().equals(event2.getOperationSignature())
                 && event1.getIp() == event2.getIp() && event1.getPort() == event2.getPort()) {
             return true;
         }

@@ -24,8 +24,8 @@ import javax.json.JsonObject;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.analysis.service.util.ChangelogHelper;
+import org.iobserve.analysis.service.util.SendHttpRequestUtils;
 import org.iobserve.analysis.sink.landscape.NodeService;
 import org.iobserve.analysis.sink.landscape.NodegroupService;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -63,7 +63,7 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<Resource
 
     @Override
     protected void execute(final ResourceContainer allocation) throws Exception {
-        SendHttpRequest.post(this.createData(allocation), this.outputURL);
+        SendHttpRequestUtils.post(this.createData(allocation), this.outputURL);
     }
 
     /**
@@ -77,8 +77,8 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<Resource
      */
     private JsonArray createData(final ResourceContainer resourceContainer) throws MalformedURLException {
         // Each node has its own nodegroup now. This can/should change in future.
-        final JsonObject nodegroupObject = Changelog.create(this.nodegroupService.createNodegroup(this.systemId));
-        final JsonObject nodeObject = Changelog.create(
+        final JsonObject nodegroupObject = ChangelogHelper.create(this.nodegroupService.createNodegroup(this.systemId));
+        final JsonObject nodeObject = ChangelogHelper.create(
                 this.nodeService.createNode(resourceContainer, this.systemId, this.nodegroupService.getNodegroupId()));
         return Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
     }

@@ -17,16 +17,16 @@ package org.iobserve.model;
 
 import java.util.Map;
 
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.EDataProtectionLevel;
 
 /**
  * @author Reiner Jung
  *
  */
-public class OperationSignaturePrivacy {
+public class OperationSignatureDataProtection {
 
-    private final EDataPrivacyLevel returnTypePrivacy;
-    private final Map<String, EDataPrivacyLevel> parameterPrivacy;
+    private final EDataProtectionLevel returnTypePrivacy;
+    private final Map<String, EDataProtectionLevel> parameterPrivacy;
 
     /**
      * Create a new operation signature privacy object.
@@ -36,17 +36,17 @@ public class OperationSignaturePrivacy {
      * @param parameterPrivacy
      *            privacy values for parameter types
      */
-    public OperationSignaturePrivacy(final EDataPrivacyLevel returnTypePrivacy,
-            final Map<String, EDataPrivacyLevel> parameterPrivacy) {
+    public OperationSignatureDataProtection(final EDataProtectionLevel returnTypePrivacy,
+            final Map<String, EDataProtectionLevel> parameterPrivacy) {
         this.returnTypePrivacy = returnTypePrivacy;
         this.parameterPrivacy = parameterPrivacy;
     }
 
-    public final EDataPrivacyLevel getReturnTypePrivacy() {
+    public final EDataProtectionLevel getReturnTypePrivacy() {
         return this.returnTypePrivacy;
     }
 
-    public final Map<String, EDataPrivacyLevel> getParameterPrivacy() {
+    public final Map<String, EDataProtectionLevel> getParameterPrivacy() {
         return this.parameterPrivacy;
     }
 

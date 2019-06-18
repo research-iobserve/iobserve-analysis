@@ -18,8 +18,9 @@ package org.iobserve.analysis.behavior.clustering.hierarchical;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -60,8 +61,7 @@ public class CSVSinkFilter {
 
             // Creates the csv file.
             file.createNewFile();
-            final FileWriter fw = new FileWriter(file);
-            final BufferedWriter writer = new BufferedWriter(fw);
+            final BufferedWriter writer = Files.newBufferedWriter(file.toPath(), StandardOpenOption.CREATE);
             writer.append("# of cluster");
             writer.append(',');
             writer.append(String.valueOf(data.size()));

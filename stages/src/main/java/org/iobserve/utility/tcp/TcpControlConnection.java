@@ -26,7 +26,7 @@ import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 public class TcpControlConnection {
 
     private final String ip;
-    private final String hostname;
+    private final String serviceComponent;
     private final int port;
     private final SingleSocketTcpWriter tcpWriter;
 
@@ -35,17 +35,17 @@ public class TcpControlConnection {
      *
      * @param ip
      *            The IP the tcpWriter is connected to.
-     * @param hostname
+     * @param serviceComponent
      *            The name of the component.
      * @param port
      *            The port the tcpWriter is connected to.
      * @param tcpWriter
      *            the TCP writer which has the connection established.
      */
-    public TcpControlConnection(final String ip, final int port, final String hostname,
+    public TcpControlConnection(final String ip, final int port, final String serviceComponent,
             final SingleSocketTcpWriter tcpWriter) {
         this.ip = ip;
-        this.hostname = hostname;
+        this.serviceComponent = serviceComponent;
         this.port = port;
         this.tcpWriter = tcpWriter;
     }
@@ -54,8 +54,8 @@ public class TcpControlConnection {
         return this.ip;
     }
 
-    public String getHostname() {
-        return this.hostname;
+    public String getServiceComponent() {
+        return this.serviceComponent;
     }
 
     public int getPort() {

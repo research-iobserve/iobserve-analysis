@@ -26,6 +26,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.DeploymentLock;
+import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
@@ -33,7 +34,7 @@ import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -57,7 +58,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Reiner Jung -- initial
  *
  */
-public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warnings> {
+public class NonAdaptiveModelProbeController extends AbstractConsumerStage<WarningModel> {
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
     private final IModelResource<Allocation> allocationResource;
@@ -82,66 +83,75 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
     }
 
     @Override
-    protected void execute(final Warnings element) throws Exception {
-        if (element.getEvent() instanceof PCMDeployedEvent) {
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
-        } else {
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
-        }
+    protected void execute(final WarningModel warningModel) throws Exception {
+        this.logEvent(warningModel.getEvent(), ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
 
         DeploymentLock.lock();
-        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this.computeReceivedWarnings(element);
 
-        // no probe should be changed
-        final ProbeManagementData probeMethodInformation = new ProbeManagementData(
-                new HashMap<AllocationContext, Set<OperationSignature>>(),
-                new HashMap<AllocationContext, Set<OperationSignature>>());
-        probeMethodInformation.setTriggerTime(element.getEvent().getTimestamp());
+        final ProbeManagementData probeManagementData = new ProbeManagementData();
 
-        final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate = this.computeAvailableProbes();
-
-        probeMethodInformation.setWarnedMethods(receivedWarnings);
-        probeMethodInformation.setMethodsToUpdate(methodsToUpdate);
-
-        if (element.getEvent() instanceof PCMDeployedEvent) {
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.DEPLOYMENT,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
-        } else {
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.UNDEPLOYMENT,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
-        }
+        probeManagementData.setTriggerTime(warningModel.getEvent().getTimestamp());
+        probeManagementData.setProtectedOperations(this.idenitifyProtectedOperations(warningModel.getWarningEdges()));
+        probeManagementData.setOperationsToUpdate(this.computeAvailableProbes());
 
         DeploymentLock.unlock();
-        this.outputPort.send(probeMethodInformation);
+
+        this.logEvent(warningModel.getEvent(), ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
+
+        this.outputPort.send(probeManagementData);
     }
 
-    private Map<AllocationContext, Set<OperationSignature>> computeReceivedWarnings(final Warnings element) {
-        final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = new HashMap<>();
+    /** Logging. */
+    private void logEvent(final IPCMDeploymentEvent event, final ObservationPoint observationPoint) {
+        if (event instanceof PCMDeployedEvent) {
+            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, observationPoint);
+        } else {
+            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, observationPoint);
+        }
 
-        if (!(element.getWarningEdges() == null) || element.getWarningEdges().isEmpty()) {
+    }
 
-            for (final Edge edge : element.getWarningEdges()) {
+    /**
+     * Identify the set of allocations which are mentioned by the warnings collect all operation
+     * signatures which are considered relevant for data protection.
+     *
+     * @param warningEdges
+     *            the privacy analysis warnings model edges
+     * @return map of {@link AllocationContext}s and {@link OperationSignature}s relevant for data
+     *         protection
+     */
+    private Map<AllocationContext, Set<OperationSignature>> idenitifyProtectedOperations(
+            final List<Edge> warningEdges) {
+        final Map<AllocationContext, Set<OperationSignature>> protectedOperationsPerAllocation = new HashMap<>();
+
+        if (warningEdges != null && warningEdges.isEmpty()) {
+            for (final Edge edge : warningEdges) {
                 // multiple methods per allocation possible
                 final AllocationContext allocation = edge.getSource().getAllocationContext();
-                Set<OperationSignature> methodSignatures = receivedWarnings.get(allocation);
+                Set<OperationSignature> operationSignatures = protectedOperationsPerAllocation.get(allocation);
                 // if not present, add new entry
-                if (methodSignatures == null) {
-                    methodSignatures = new HashSet<>();
+                if (operationSignatures == null) {
+                    operationSignatures = new HashSet<>();
                 }
                 if (edge.getOperationSignature() != null) {
-                    methodSignatures.add(edge.getOperationSignature());
-                    receivedWarnings.put(allocation, methodSignatures);
+                    operationSignatures.add(edge.getOperationSignature());
+                    protectedOperationsPerAllocation.put(allocation, operationSignatures);
                 } else {
                     this.logger.debug("Recevied warning without operation signature");
                 }
 
             }
         }
-        return receivedWarnings;
+        return protectedOperationsPerAllocation;
     }
 
+    /**
+     * Compute available probes.
+     *
+     * @return returns a map of {@link AllocationContext}s and their relevant
+     *         {@link OperationSignature}s
+     * @throws DBException
+     */
     private Map<AllocationContext, Set<OperationSignature>> computeAvailableProbes() throws DBException {
 
         final Repository repositoryModel = this.repositoryResource.getModelRootNode(Repository.class,
@@ -150,6 +160,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
         final List<AllocationContext> allocations = this.allocationResource
                 .collectAllObjectsByType(AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT);
         final Map<AllocationContext, Set<OperationSignature>> availableProbes = new HashMap<>();
+
         this.logger.debug("Found " + allocations.size() + " allocation context entries");
 
         for (final AllocationContext allocation : allocations) {

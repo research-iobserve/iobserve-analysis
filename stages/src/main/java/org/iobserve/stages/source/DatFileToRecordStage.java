@@ -16,11 +16,12 @@
 package org.iobserve.stages.source;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.CharBuffer;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.analysisteetime.plugin.reader.filesystem.util.MappingException;
@@ -69,7 +70,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
     protected void execute(final File textFile) {
         final ReaderRegistry<String> classNameRegistry = this.classNameRegistryRepository.get(textFile.getParentFile());
         try {
-            final FileInputStream inputStream = new FileInputStream(textFile);
+            final InputStream inputStream = Files.newInputStream(textFile.toPath(), StandardOpenOption.READ);
             if (inputStream != null) {
                 this.processInputChannel(classNameRegistry, inputStream);
                 inputStream.close();

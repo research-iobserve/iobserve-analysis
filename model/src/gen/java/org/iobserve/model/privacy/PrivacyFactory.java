@@ -22,22 +22,22 @@ public interface PrivacyFactory extends EFactory {
     PrivacyFactory eINSTANCE = org.iobserve.model.privacy.impl.PrivacyFactoryImpl.init();
 
     /**
-     * Returns a new object of class '<em>Model</em>'.
+     * Returns a new object of class '<em>Data Protection Model</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return a new object of class '<em>Model</em>'.
+     * @return a new object of class '<em>Data Protection Model</em>'.
      * @generated
      */
-    PrivacyModel createPrivacyModel();
+    DataProtectionModel createDataProtectionModel();
 
     /**
-     * Returns a new object of class '<em>Return Type Privacy</em>'.
+     * Returns a new object of class '<em>Return Type Data Protection</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return a new object of class '<em>Return Type Privacy</em>'.
+     * @return a new object of class '<em>Return Type Data Protection</em>'.
      * @generated
      */
-    ReturnTypePrivacy createReturnTypePrivacy();
+    ReturnTypeDataProtection createReturnTypeDataProtection();
 
     /**
      * Returns a new object of class '<em>Geo Location</em>'.
@@ -49,13 +49,13 @@ public interface PrivacyFactory extends EFactory {
     GeoLocation createGeoLocation();
 
     /**
-     * Returns a new object of class '<em>Parameter Privacy</em>'.
+     * Returns a new object of class '<em>Parameter Data Protection</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return a new object of class '<em>Parameter Privacy</em>'.
+     * @return a new object of class '<em>Parameter Data Protection</em>'.
      * @generated
      */
-    ParameterPrivacy createParameterPrivacy();
+    ParameterDataProtection createParameterDataProtection();
 
     /**
      * Returns a new object of class '<em>Encapsulated Data Source</em>'.

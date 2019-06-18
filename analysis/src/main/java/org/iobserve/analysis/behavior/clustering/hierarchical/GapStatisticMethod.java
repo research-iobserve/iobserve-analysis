@@ -186,7 +186,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
             }
             res /= GapStatisticMethod.numRefDataSets;
             final double sd = Math.sqrt(res);
-            final double sk = sd * Math.sqrt(1 + (1 / GapStatisticMethod.numRefDataSets));
+            final double sk = sd * Math.sqrt(1 + 1 / GapStatisticMethod.numRefDataSets);
             sks.add(sk);
         }
 
@@ -205,11 +205,11 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
     private int findGoodNumberOfClusters(final List<Double> gapStatistics, final List<Double> sks) {
         int goodNumberOfClusters = 1;
 
-        for (int k = 0; k < (gapStatistics.size() - 1); k++) {
+        for (int k = 0; k < gapStatistics.size() - 1; k++) {
             final double gapK = gapStatistics.get(k);
             final double gapKPlus1 = gapStatistics.get(k + 1);
 
-            if (gapK >= (gapKPlus1 - sks.get(k + 1))) {
+            if (gapK >= gapKPlus1 - sks.get(k + 1)) {
                 goodNumberOfClusters = k + 1;
                 break;
             }
@@ -318,7 +318,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
      **/
     public double calcESS(final List<Integer> cluster) {
 
-        if ((cluster.size() == 0) || (cluster.size() == 1)) {
+        if (cluster.size() == 0 || cluster.size() == 1) {
             return 0.0;
         }
         final DistanceFunction distanceFunction = this.hierarchicalClusterer.getDistanceFunction();
@@ -389,7 +389,7 @@ public class GapStatisticMethod implements IClusterSelectionMethods {
         for (final List<Integer> v : assignments) {
             assignmentString += v.toString();
         }
-        GapStatisticMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
+        GapStatisticMethod.LOGGER.info("Assignments: {}", assignmentString);
     }
 
     private void setMinAttributeValues(final List<Double> minAttributeValues) {

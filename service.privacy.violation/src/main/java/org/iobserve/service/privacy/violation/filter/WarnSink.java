@@ -18,13 +18,13 @@ package org.iobserve.service.privacy.violation.filter;
 import java.io.File;
 import java.io.IOException;
 
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.data.WarningModel;
 
 /**
  * @author Reiner Jung
  *
  */
-public class WarnSink extends AbstractFileSink<Warnings> {
+public class WarnSink extends AbstractFileSink<WarningModel> {
 
     /**
      * Create a warning sink.
@@ -39,7 +39,7 @@ public class WarnSink extends AbstractFileSink<Warnings> {
     }
 
     @Override
-    protected void execute(final Warnings element) throws Exception {
+    protected void execute(final WarningModel element) throws Exception {
         AbstractFileSink.LOGGER.debug(String.format("Warnings for %s %s %s", element.getEvent().getService(),
                 element.getEvent().getAssemblyContext().getEntityName(),
                 element.getEvent().getResourceContainer().getEntityName()));

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
@@ -69,28 +70,25 @@ public class TcpProbeController implements IProbeController {
      */
     @Override
     public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
-        if (TcpProbeController.LOGGER.isDebugEnabled()) {
-            TcpProbeController.LOGGER
-                    .debug("control probe [" + event.getHostname() + "] [" + event.getIp() + "] [" + event.getPort());
-        }
+        TcpProbeController.LOGGER.debug("control probe [{}] [{}] [{}]", event.getServiceComponent(), event.getIp(),
+                event.getPort());
+
         final String ip = event.getIp();
         final int port = event.getPort();
-        final String hostname = event.getHostname();
-        final String pattern = event.getPattern();
+        final String hostname = event.getServiceComponent();
+        final String pattern = event.getOperationSignature();
 
         if (event instanceof TcpActivationControlEvent) {
             if (event instanceof TcpActivationParameterControlEvent) {
-                this.activateParameterMonitoredPattern(ip, port, hostname, pattern,
+                this.activateOperationMonitoringWithParameters(ip, port, hostname, pattern,
                         ((TcpActivationParameterControlEvent) event).getParameters());
             } else {
-                this.activateMonitoredPattern(ip, port, hostname, pattern);
+                this.activateOperationMonitoring(ip, port, hostname, pattern);
             }
         } else if (event instanceof TcpDeactivationControlEvent) {
-            this.deactivateMonitoredPattern(ip, port, hostname, pattern);
+            this.deactivateOperationMonitoring(ip, port, hostname, pattern);
         } else {
-            if (TcpProbeController.LOGGER.isErrorEnabled()) {
-                TcpProbeController.LOGGER.error("Received Unknown TCP control event: " + event.getClass().getName());
-            }
+            TcpProbeController.LOGGER.error("Received Unknown TCP control event: {}", event.getClass().getName());
         }
 
     }
@@ -114,14 +112,16 @@ public class TcpProbeController implements IProbeController {
      */
     public void updateProbeParameter(final String ip, final int port, final String hostname, final String pattern,
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
 
-        this.sendTcpCommand(ip, port, hostname, new UpdateParameterEvent(pattern, parameterNames, parameterArray));
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new UpdateParameterEvent(pattern, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
-     * Activates monitoring of a method (pattern) on one monitored application via TCP.
+     * Activates monitoring of a method on one monitored application via TCP.
      *
      * @param ip
      *            Address of the monitored application.
@@ -129,18 +129,18 @@ public class TcpProbeController implements IProbeController {
      *            Port of the TCP controller.
      * @param hostname
      *            The name of the component which is using this IP and port.
-     * @param pattern
-     *            The pattern of the method that should be monitored.
+     * @param operationSignature
+     *            The operation signature of the method that should be monitored.
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
-    public void activateMonitoredPattern(final String ip, final int port, final String hostname, final String pattern)
-            throws RemoteControlFailedException {
-        this.sendTcpCommand(ip, port, hostname, new ActivationEvent(pattern));
+    public void activateOperationMonitoring(final String ip, final int port, final String hostname,
+            final String operationSignature) throws RemoteControlFailedException {
+        this.sendTcpCommand(ip, port, hostname, new ActivationEvent(operationSignature));
     }
 
     /**
-     * Activates monitoring of a method (pattern) on one monitored application via TCP and transfers
+     * Activates monitoring of a method on one monitored application via TCP and transfers
      * parameter.
      *
      * @param ip
@@ -149,42 +149,44 @@ public class TcpProbeController implements IProbeController {
      *            Port of the TCP controller.
      * @param hostname
      *            The name of the component which is using this IP and port.
-     * @param pattern
-     *            The pattern of the method that should be monitored.
+     * @param operationSignature
+     *            The operation signature of the method that should be monitored.
      * @param parameters
-     *            The map of parameters to be set, the key is the name and the values the values for
-     *            the parameter.
+     *            The map of parameters to be set, the key is the name and the values are the values
+     *            for the parameter.
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
-    public void activateParameterMonitoredPattern(final String ip, final int port, final String hostname,
-            final String pattern, final Map<String, List<String>> parameters) throws RemoteControlFailedException {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-        final String[][] parameterArray = this.computeParameterArray(parameters);
-
-        this.sendTcpCommand(ip, port, hostname, new ActivationParameterEvent(pattern, parameterNames, parameterArray));
+    public void activateOperationMonitoringWithParameters(final String ip, final int port, final String hostname,
+            final String operationSignature, final Map<String, List<String>> parameters)
+            throws RemoteControlFailedException {
+        for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
+            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            this.sendTcpCommand(ip, port, hostname,
+                    new ActivationParameterEvent(operationSignature, parameter.getKey(), parameterArray));
+        }
     }
 
     /**
-     * Deactivates monitoring of a method (pattern) on one monitored application via TCP.
+     * Deactivates monitoring of a method on one monitored application via TCP.
      *
      * @param ip
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
-     * @param hostname
+     * @param serviceComponent
      *            The name of the component which is using this IP and port.
-     * @param pattern
-     *            The pattern of the method that should no longer be monitored.
+     * @param operationSignature
+     *            The operation signature of the method that should no longer be monitored.
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
-    public void deactivateMonitoredPattern(final String ip, final int port, final String hostname, final String pattern)
-            throws RemoteControlFailedException {
-        this.sendTcpCommand(ip, port, hostname, new DeactivationEvent(pattern));
+    public void deactivateOperationMonitoring(final String ip, final int port, final String serviceComponent,
+            final String operationSignature) throws RemoteControlFailedException {
+        this.sendTcpCommand(ip, port, serviceComponent, new DeactivationEvent(operationSignature));
     }
 
-    private void sendTcpCommand(final String ip, final int port, final String hostname,
+    private void sendTcpCommand(final String ip, final int port, final String serviceComponent,
             final IRemoteControlEvent monitoringRecord) throws RemoteControlFailedException {
         final String writerKey = ip + ":" + port;
         final SingleSocketTcpWriter tcpWriter;
@@ -192,8 +194,8 @@ public class TcpProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if (currentConnection == null || currentConnection.getHostname() != hostname) {
-            currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
+        if (currentConnection == null || currentConnection.getServiceComponent() != serviceComponent) {
+            currentConnection = new TcpControlConnection(ip, port, serviceComponent, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
         tcpWriter = currentConnection.getTcpWriter();
@@ -204,10 +206,8 @@ public class TcpProbeController implements IProbeController {
         // currently we have no means to check if the write process was successful or the channel is
         // still active
         tcpWriter.writeMonitoringRecord(monitoringRecord);
-        if (TcpProbeController.LOGGER.isDebugEnabled()) {
-            TcpProbeController.LOGGER
-                    .debug("Send record " + monitoringRecord.getClass().getName() + " to " + ip + " on port: " + port);
-        }
+        TcpProbeController.LOGGER.debug(
+                String.format("Send record %s to %s on port: %d", monitoringRecord.getClass().getName(), ip, port));
     }
 
     private SingleSocketTcpWriter createNewTcpWriter(final String hostname, final int port)
@@ -219,19 +219,17 @@ public class TcpProbeController implements IProbeController {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
                 TcpProbeController.CONN_TIMEOUT_IN_MS);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 65535);
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 6553500);
         final SingleSocketTcpWriter tcpWriter;
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
             tcpWriter.onStarting();
         } catch (final IOException | ConnectionTimeoutException e) {
             // runtime exception is thrown after timeout
-            if (TcpProbeController.LOGGER.isDebugEnabled()) {
-                TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,
-                        e);
-            }
-            throw new RemoteControlFailedException("Could not create TCP connections to " + hostname + " on port "
-                    + port + ", writer was not created ");
+            TcpProbeController.LOGGER
+                    .debug(String.format("Could not create TCP connections to %s on port %d", hostname, port), e);
+            throw new RemoteControlFailedException(String.format(
+                    "Could not create TCP connections to %s on port %d, writer was not created.", hostname, port), e);
         }
         return tcpWriter;
     }
@@ -249,21 +247,8 @@ public class TcpProbeController implements IProbeController {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
     }
 
-    private String[][] computeParameterArray(final Map<String, List<String>> parameters) {
-        final String[] parameterNames = parameters.keySet().toArray(new String[0]);
-
-        final int parameterLength = parameterNames.length;
-        final String[][] parameterArray = new String[parameterLength][];
-
-        for (int i = 0; i < parameterLength; i++) {
-            final List<String> list = parameters.get(parameterNames[i]);
-            if (list.isEmpty()) {
-                parameterArray[i] = new String[0];
-            } else {
-                parameterArray[i] = (String[]) list.toArray();
-            }
-        }
-        return parameterArray;
+    private String[] computeParameterArray(final List<String> parameters) {
+        return parameters.toArray(new String[parameters.size()]);
     }
 
 }

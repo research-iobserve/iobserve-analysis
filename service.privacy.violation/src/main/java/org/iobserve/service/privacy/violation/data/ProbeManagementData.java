@@ -35,19 +35,29 @@ public class ProbeManagementData {
 
     private final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate;
 
-    private Map<AllocationContext, Set<OperationSignature>> methodsToUpdate;
+    private Map<AllocationContext, Set<OperationSignature>> operationsToUpdate;
 
-    private Map<AllocationContext, Set<OperationSignature>> warnedMethods;
+    private Map<AllocationContext, Set<OperationSignature>> protectedOperations;
 
     private List<String> whitelist = null; // NOPMD document null
 
     private long triggerTime;
 
     /**
+     * Create an empty probe management model.
+     */
+    public ProbeManagementData() {
+        this(new HashMap<AllocationContext, Set<OperationSignature>>(),
+                new HashMap<AllocationContext, Set<OperationSignature>>());
+    }
+
+    /**
      * Create a probe management model.
      *
      * @param methodsToActivate
+     *            set of operations to activate
      * @param methodsToDeactivate
+     *            set of operations to deactivate
      */
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate) {
@@ -57,18 +67,19 @@ public class ProbeManagementData {
 
     public ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
-            final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
-        this(methodsToActivate, methodsToDeactivate, warnedMethods,
+            final Map<AllocationContext, Set<OperationSignature>> protectedOperations) {
+        this(methodsToActivate, methodsToDeactivate, protectedOperations,
                 new HashMap<AllocationContext, Set<OperationSignature>>());
     }
 
     private ProbeManagementData(final Map<AllocationContext, Set<OperationSignature>> methodsToActivate,
             final Map<AllocationContext, Set<OperationSignature>> methodsToDeactivate,
-            final Map<AllocationContext, Set<OperationSignature>> warnedMethods,
-            final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
+            final Map<AllocationContext, Set<OperationSignature>> protectedOperations,
+            final Map<AllocationContext, Set<OperationSignature>> operationsToUpdate) {
         this.methodsToActivate = methodsToActivate;
         this.methodsToDeactivate = methodsToDeactivate;
-        this.methodsToUpdate = methodsToUpdate;
+        this.protectedOperations = protectedOperations;
+        this.operationsToUpdate = operationsToUpdate;
     }
 
     public Map<AllocationContext, Set<OperationSignature>> getMethodsToActivate() {
@@ -79,20 +90,20 @@ public class ProbeManagementData {
         return this.methodsToDeactivate;
     }
 
-    public Map<AllocationContext, Set<OperationSignature>> getWarnedMethods() {
-        return this.warnedMethods;
+    public Map<AllocationContext, Set<OperationSignature>> getProtectedOperations() {
+        return this.protectedOperations;
     }
 
-    public void setWarnedMethods(final Map<AllocationContext, Set<OperationSignature>> warnedMethods) {
-        this.warnedMethods = warnedMethods;
+    public void setProtectedOperations(final Map<AllocationContext, Set<OperationSignature>> protectedOperations) {
+        this.protectedOperations = protectedOperations;
     }
 
-    public void setMethodsToUpdate(final Map<AllocationContext, Set<OperationSignature>> methodsToUpdate) {
-        this.methodsToUpdate = methodsToUpdate;
+    public void setOperationsToUpdate(final Map<AllocationContext, Set<OperationSignature>> operationsToUpdate) {
+        this.operationsToUpdate = operationsToUpdate;
     }
 
     public Map<AllocationContext, Set<OperationSignature>> getMethodsToUpdate() {
-        return this.methodsToUpdate;
+        return this.operationsToUpdate;
     }
 
     /**

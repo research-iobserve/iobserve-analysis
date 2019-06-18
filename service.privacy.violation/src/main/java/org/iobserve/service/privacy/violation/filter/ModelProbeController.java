@@ -28,7 +28,7 @@ import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.common.record.EventTypes;
 import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
 import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -43,7 +43,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
  * @author Reiner Jung -- initial
  *
  */
-public class ModelProbeController extends AbstractConsumerStage<Warnings> {
+public class ModelProbeController extends AbstractConsumerStage<WarningModel> {
 
     private final OutputPort<ProbeManagementData> outputPort = this.createOutputPort(ProbeManagementData.class);
 
@@ -58,7 +58,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
     }
 
     @Override
-    protected void execute(final Warnings element) throws Exception {
+    protected void execute(final WarningModel element) throws Exception {
         if (element.getWarningEdges() == null || element.getWarningEdges().isEmpty()) {
             this.logger.error("Received warning with empty edge list");
             return;
@@ -76,8 +76,8 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
             this.currentActiveWarnings = this.computeNewWarningMap(currentWarnings,
                     probeMethodInformation.getMethodsToActivate(), probeMethodInformation.getMethodsToDeactivate());
 
-            probeMethodInformation.setWarnedMethods(receivedWarnings);
-            probeMethodInformation.setMethodsToUpdate(this.currentActiveWarnings);
+            probeMethodInformation.setProtectedOperations(receivedWarnings);
+            probeMethodInformation.setOperationsToUpdate(this.currentActiveWarnings);
 
             ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
                     ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);

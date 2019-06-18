@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.transformation.privacycheck;
 
-import org.iobserve.model.privacy.EDataPrivacyLevel;
+import org.iobserve.model.privacy.EDataProtectionLevel;
 import org.iobserve.model.privacy.EISOCode;
 
 /**
@@ -83,7 +83,7 @@ public class Policy {
      * @return the data classification
      */
     // TODO this is mostly useless, you could EDataPrivacyLevel instead
-    public static EDataClassification getDataClassification(final EDataPrivacyLevel level) {
+    public static EDataClassification getDataClassification(final EDataProtectionLevel level) {
         for (final EDataClassification data : EDataClassification.values()) {
             if (data.name().equalsIgnoreCase(level.getName())) {
                 return data;

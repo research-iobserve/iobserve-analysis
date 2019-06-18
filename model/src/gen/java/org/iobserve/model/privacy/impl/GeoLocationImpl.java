@@ -214,7 +214,7 @@ public class GeoLocationImpl extends MinimalEObjectImpl.Container implements Geo
     public String toString() {
         if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
+        StringBuilder result = new StringBuilder(super.toString());
         result.append(" (isocode: ");
         result.append(isocode);
         result.append(')');

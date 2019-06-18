@@ -10,14 +10,14 @@ import org.eclipse.emf.common.util.Enumerator;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the literals of the enumeration '<em><b>EData Privacy Level</b></em>',
+ * A representation of the literals of the enumeration '<em><b>EData Protection Level</b></em>',
  * and utility methods for working with them.
  * <!-- end-user-doc -->
- * @see org.iobserve.model.privacy.PrivacyPackage#getEDataPrivacyLevel()
+ * @see org.iobserve.model.privacy.PrivacyPackage#getEDataProtectionLevel()
  * @model
  * @generated
  */
-public enum EDataPrivacyLevel implements Enumerator {
+public enum EDataProtectionLevel implements Enumerator {
     /**
      * The '<em><b>ANONYMOUS</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -52,7 +52,7 @@ public enum EDataPrivacyLevel implements Enumerator {
      * The '<em><b>ANONYMOUS</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of '<em><b>Anonymous</b></em>' literal object isn't clear,
+     * If the meaning of '<em><b>ANONYMOUS</b></em>' literal object isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
@@ -67,7 +67,7 @@ public enum EDataPrivacyLevel implements Enumerator {
      * The '<em><b>DEPERSONALIZED</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of '<em><b>Depersonalized</b></em>' literal object isn't clear,
+     * If the meaning of '<em><b>DEPERSONALIZED</b></em>' literal object isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
@@ -82,7 +82,7 @@ public enum EDataPrivacyLevel implements Enumerator {
      * The '<em><b>PERSONAL</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of '<em><b>Personal</b></em>' literal object isn't clear,
+     * If the meaning of '<em><b>PERSONAL</b></em>' literal object isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
@@ -94,37 +94,37 @@ public enum EDataPrivacyLevel implements Enumerator {
     public static final int PERSONAL_VALUE = 2;
 
     /**
-     * An array of all the '<em><b>EData Privacy Level</b></em>' enumerators.
+     * An array of all the '<em><b>EData Protection Level</b></em>' enumerators.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    private static final EDataPrivacyLevel[] VALUES_ARRAY =
-        new EDataPrivacyLevel[] {
+    private static final EDataProtectionLevel[] VALUES_ARRAY =
+        new EDataProtectionLevel[] {
             ANONYMOUS,
             DEPERSONALIZED,
             PERSONAL,
         };
 
     /**
-     * A public read-only list of all the '<em><b>EData Privacy Level</b></em>' enumerators.
+     * A public read-only list of all the '<em><b>EData Protection Level</b></em>' enumerators.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public static final List<EDataPrivacyLevel> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
+    public static final List<EDataProtectionLevel> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
     /**
-     * Returns the '<em><b>EData Privacy Level</b></em>' literal with the specified literal value.
+     * Returns the '<em><b>EData Protection Level</b></em>' literal with the specified literal value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @param literal the literal.
      * @return the matching enumerator or <code>null</code>.
      * @generated
      */
-    public static EDataPrivacyLevel get(String literal) {
+    public static EDataProtectionLevel get(String literal) {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
-            EDataPrivacyLevel result = VALUES_ARRAY[i];
+            EDataProtectionLevel result = VALUES_ARRAY[i];
             if (result.toString().equals(literal)) {
                 return result;
             }
@@ -133,16 +133,16 @@ public enum EDataPrivacyLevel implements Enumerator {
     }
 
     /**
-     * Returns the '<em><b>EData Privacy Level</b></em>' literal with the specified name.
+     * Returns the '<em><b>EData Protection Level</b></em>' literal with the specified name.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @param name the name.
      * @return the matching enumerator or <code>null</code>.
      * @generated
      */
-    public static EDataPrivacyLevel getByName(String name) {
+    public static EDataProtectionLevel getByName(String name) {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
-            EDataPrivacyLevel result = VALUES_ARRAY[i];
+            EDataProtectionLevel result = VALUES_ARRAY[i];
             if (result.getName().equals(name)) {
                 return result;
             }
@@ -151,14 +151,14 @@ public enum EDataPrivacyLevel implements Enumerator {
     }
 
     /**
-     * Returns the '<em><b>EData Privacy Level</b></em>' literal with the specified integer value.
+     * Returns the '<em><b>EData Protection Level</b></em>' literal with the specified integer value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @param value the integer value.
      * @return the matching enumerator or <code>null</code>.
      * @generated
      */
-    public static EDataPrivacyLevel get(int value) {
+    public static EDataProtectionLevel get(int value) {
         switch (value) {
             case ANONYMOUS_VALUE: return ANONYMOUS;
             case DEPERSONALIZED_VALUE: return DEPERSONALIZED;
@@ -194,7 +194,7 @@ public enum EDataPrivacyLevel implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    private EDataPrivacyLevel(int value, String name, String literal) {
+    private EDataProtectionLevel(int value, String name, String literal) {
         this.value = value;
         this.name = name;
         this.literal = literal;
@@ -238,4 +238,4 @@ public enum EDataPrivacyLevel implements Enumerator {
         return literal;
     }
     
-} //EDataPrivacyLevel
+} //EDataProtectionLevel

@@ -8,31 +8,283 @@
   <foreignModel>PrivacyModel.ecore</foreignModel>
   <genPackages prefix="Privacy" basePackage="org.iobserve.model" disposableProviderFactory="true"
       ecorePackage="PrivacyModel.ecore#/" publicationLocation="">
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="PrivacyModel.ecore#//EDataPrivacyLevel">
-      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataPrivacyLevel/anonymous"/>
-      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataPrivacyLevel/depersonalized"/>
-      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataPrivacyLevel/personal"/>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="PrivacyModel.ecore#//EDataProtectionLevel">
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataProtectionLevel/ANONYMOUS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataProtectionLevel/DEPERSONALIZED"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataProtectionLevel/PERSONAL"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="PrivacyModel.ecore#//EISOCode">
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/AFGHANISTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ALBANIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ANTARCTICA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ALGERIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/AMERICAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ANDORRA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ANGOLA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ANTIGUA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/AZERBAIJAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ARGENTINA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/AUSTRALIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/AUSTRIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BAHAMAS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BAHRAIN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BANGLADESH"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ARMENIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BARBADOS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BELGIUM"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BERMUDA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BHUTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BOLIVIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BOSNIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BOTSWANA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BOUVET"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BRAZIL"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BELIZE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BRITISH_INDIAN_OCEAN_TERRITORY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOLOMON_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/VIRGIN_ISLANDS_UK"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BRUNEI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BULGARIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MYANMAR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BURUNDI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BELARUS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CAMBODIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CAMEROON"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CANADA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CABO_VERDE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CAYMAN_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CENTRAL_AFRICAN_REPUBLIC"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SRI_LANKA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CHAD"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CHILE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CHINA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TAIWAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CHRISTMAS_ISLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COCOS_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COLOMBIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COMOROS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MAYOTTE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CONGO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DR_CONGO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COOK_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COSTA_RICA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CROATIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CUBA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CYPRUS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CZECHIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BENIN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DENMARK"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DOMINICA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DOMINICAN_REPUBLIC"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ECUADOR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/EL_SALVADOR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/EQUATORIAL_GUINEA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ETHIOPIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ERITREA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ESTONIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FAROE_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FALKLAND_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOUTH_GEORGIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FIJI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FINLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ALAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FRANCE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FRENCH_GUINEA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FRENCH_POLINESIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/FRENCH_SOUTHERN_TERRITORIES"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DJIBOUTI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GABON"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GEORGIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GAMBIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PALESTINE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GERMANY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GHANA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GIBRALTAR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/KIRIBATI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GREECE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GREENLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GRENADA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUADELOUPE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUAM"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUATEMALA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUINEA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUYANA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HAITI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HEARD_ISLAND_AND_MC_DONALD_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HOLY_SEE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HONDURAS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HONG_KONG"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/HUNGARY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ICELAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/INDIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/INDONESIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/IRAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/IRAQ"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/IRELAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ISRAEL"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ITALY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/COTE_D_IVOIRE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/JAMAICA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/JAPAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/KAZAKHSTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/JORDAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/KENYA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NORTH_KOREA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOUTH_KOREA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/KUWAIT"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/KYRGYZSTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/DEMOCRATIC_PEOPLE_S_REPUBLIC_OF_LAO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LEBANON"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LESOTHO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LATVIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LIBERIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LIBYA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LIECHTENSTEIN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LITHUANIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/LUXEMBOURG"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MACAO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MADAGASCAR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MALAWI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MALAYSIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MALDIVES"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MALI"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MALTA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MARTINIQUE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MAURITANIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MAURITIUS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MEXICO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MONACO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MONGOLIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MOLDOVA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MONTENEGRO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MONTSERRAT"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MOROCCO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MOZAMBIQUE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/OMAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NAMIBIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NAURU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NEPAL"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NETHERLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/CURACAO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ARUBA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SINT_MAARTEN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BONAIRE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NEW_CALEDONIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/VANUATU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NEW_ZEALAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NICARAGUA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NIGER"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NIGERIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NIUE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NORFOLK_ISLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NORWAY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/NORTHERN_MARIANA_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UNITED_STATES_MINOR_OUTLYING_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MICRONESIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MARSHALL_ISLANDS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PALAU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PAKISTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PANAMA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PAPUA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PARAGUAY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PERU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PHILIPPINES"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PITCAIRN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/POLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PORTUGAL"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUINEA_BISSAU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TIMOR_LESTE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/PUERTO_RICO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/QATAR"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/REUNION"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ROMANIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/RUSSIAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/RWANDA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_BARTHELEMY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_HELENA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_KITTS_AND_NAVIS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ANGUILLA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_LUCIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_MARTIN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_PIERRE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAINT_VINCENT"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAN_MARINO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAO_TOME"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAUDI_ARABIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SENEGAL"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SERBIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SEYCHELLES"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SIERRA_LEONE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SINGAPORE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SLOVAKIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/VIETNAM"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SLOVENIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOMALIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOUTH_AFRICA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ZIMBABWE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SPAIN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SOUTH_SUDAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SUDAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/WESTERN_SAHARA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SURINAME"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SVALBARD"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SWAZILAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SWEDEN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SWITZERLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SYRIAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TAJIKISTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/THAILAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TOGO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TOKELAU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TONGA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TRINIDAD"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UNITED_ARAB_EMIRATES"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TUNISIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TURKEY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TURKMENISTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TURKS_ISLAND"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TUVALU"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UGANDA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UKRAINE"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/MACEDONIA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/EGYPT"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UNITED_KINGDOM"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/GUERNSEY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/JERSEY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ISLE_OF_MEN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/TANZANIA"/>
       <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/USA"/>
-      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/Germany"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/VIRGIN_ISLANDS_US"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/BURKINA_FASO"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/URUGUAY"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/UZBEKISTAN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/VENEZUELA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/WALLIS"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/SAMOA"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/YEMEN"/>
+      <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EISOCode/ZAMBIA"/>
     </genEnums>
-    <genClasses ecoreClass="PrivacyModel.ecore#//PrivacyModel">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//PrivacyModel/resourceContainerLocations"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//PrivacyModel/privacyLevels"/>
+    <genClasses ecoreClass="PrivacyModel.ecore#//DataProtectionModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//DataProtectionModel/resourceContainerLocations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//DataProtectionModel/privacyLevels"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//DataProtectionModel/encapsulatedDataSources"/>
     </genClasses>
-    <genClasses ecoreClass="PrivacyModel.ecore#//ReturnTypePrivacy">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//ReturnTypePrivacy/operationSignature"/>
+    <genClasses ecoreClass="PrivacyModel.ecore#//ReturnTypeDataProtection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//ReturnTypeDataProtection/operationSignature"/>
     </genClasses>
-    <genClasses image="false" ecoreClass="PrivacyModel.ecore#//IPrivacyAnnotation">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PrivacyModel.ecore#//IPrivacyAnnotation/level"/>
+    <genClasses image="false" ecoreClass="PrivacyModel.ecore#//IDataProtectionAnnotation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PrivacyModel.ecore#//IDataProtectionAnnotation/level"/>
     </genClasses>
     <genClasses ecoreClass="PrivacyModel.ecore#//GeoLocation">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PrivacyModel.ecore#//GeoLocation/isocode"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//GeoLocation/resourceContainer"/>
     </genClasses>
-    <genClasses ecoreClass="PrivacyModel.ecore#//ParameterPrivacy">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//ParameterPrivacy/parameter"/>
+    <genClasses ecoreClass="PrivacyModel.ecore#//ParameterDataProtection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//ParameterDataProtection/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="PrivacyModel.ecore#//EncapsulatedDataSource">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PrivacyModel.ecore#//EncapsulatedDataSource/dataSource"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PrivacyModel.ecore#//EncapsulatedDataSource/component"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

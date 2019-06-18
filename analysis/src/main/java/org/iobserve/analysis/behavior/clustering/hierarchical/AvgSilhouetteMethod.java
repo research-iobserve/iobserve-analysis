@@ -160,9 +160,9 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
                     if (avgDissimFromISameCluster == minAvgDissimFromIToOtherClusters) {
                         silhouetteI = 0.0;
                     } else if (avgDissimFromISameCluster < minAvgDissimFromIToOtherClusters) {
-                        silhouetteI = 1 - (avgDissimFromISameCluster / minAvgDissimFromIToOtherClusters);
+                        silhouetteI = 1 - avgDissimFromISameCluster / minAvgDissimFromIToOtherClusters;
                     } else {
-                        silhouetteI = (minAvgDissimFromIToOtherClusters / avgDissimFromISameCluster) - 1;
+                        silhouetteI = minAvgDissimFromIToOtherClusters / avgDissimFromISameCluster - 1;
                     }
 
                     // Add silhouette of i to silhouette list in order to calculate the average.
@@ -309,7 +309,7 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
         for (final List<Integer> v : assignments) {
             assignmentString += v.toString();
         }
-        AvgSilhouetteMethod.LOGGER.info("Assignments: " + assignmentString + "\n");
+        AvgSilhouetteMethod.LOGGER.info("Assignments: {}", assignmentString);
     }
 
     /**
@@ -320,7 +320,7 @@ public class AvgSilhouetteMethod implements IClusterSelectionMethods {
      */
     public void printClusteringResults(final Map<Integer, List<Pair<Instance, Double>>> clusteringResults) {
         for (int i = 0; i < clusteringResults.size(); i++) {
-            AvgSilhouetteMethod.LOGGER.info(clusteringResults.get(i).toString() + "\n");
+            AvgSilhouetteMethod.LOGGER.info(clusteringResults.get(i).toString());
         }
     }
 }

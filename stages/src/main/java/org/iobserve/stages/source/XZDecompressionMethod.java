@@ -18,8 +18,10 @@ package org.iobserve.stages.source;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.tukaani.xz.XZInputStream;
 
@@ -33,8 +35,8 @@ public class XZDecompressionMethod implements IDecompressionMethod {
 
     @Override
     public DataInputStream decompressFile(final File inputFile, final int bufferSize) throws IOException {
-        return new DataInputStream(
-                new BufferedInputStream(new XZInputStream(new FileInputStream(inputFile)), bufferSize));
+        final InputStream inputStream = Files.newInputStream(inputFile.toPath(), StandardOpenOption.READ);
+        return new DataInputStream(new BufferedInputStream(new XZInputStream(inputStream), bufferSize));
     }
 
 }

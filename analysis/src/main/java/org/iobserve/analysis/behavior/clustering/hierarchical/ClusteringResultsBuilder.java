@@ -35,7 +35,7 @@ import weka.core.Instances;
  * @author SL
  * @since 0.0.3
  */
-public final class ClusteringResultsBuilder {
+public final class ClusteringResultsBuilder { // NOPMD is not a usual utility class, but a builder
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalClusterer.class);
 

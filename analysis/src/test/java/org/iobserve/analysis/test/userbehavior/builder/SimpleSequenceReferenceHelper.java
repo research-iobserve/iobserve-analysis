@@ -49,12 +49,12 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
  * @author Reiner Jung -- refactoring
  *
  */
-public final class SimpleSequenceReference {
+public final class SimpleSequenceReferenceHelper {
 
     /**
      * Factory.
      */
-    private SimpleSequenceReference() {
+    private SimpleSequenceReferenceHelper() {
     }
 
     /**
@@ -169,7 +169,7 @@ public final class SimpleSequenceReference {
         referenceElements.setUsageModel(usageModel);
         referenceElements.setMeanInterArrivalTime(meanInterArrivalTime + numberOfCalls * 2);
         referenceElements.setMeanConcurrentUserSessions(
-                SimpleSequenceReference.calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions()));
+                SimpleSequenceReferenceHelper.calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions()));
 
         return referenceElements;
     }
@@ -189,8 +189,8 @@ public final class SimpleSequenceReference {
 
                 @Override
                 public int compare(final UserSession o1, final UserSession o2) {
-                    final long entryO1 = SimpleSequenceReference.getEntryTime(o1.getEvents());
-                    final long entryO2 = SimpleSequenceReference.getEntryTime(o2.getEvents());
+                    final long entryO1 = SimpleSequenceReferenceHelper.getEntryTime(o1.getEvents());
+                    final long entryO2 = SimpleSequenceReferenceHelper.getEntryTime(o2.getEvents());
                     if (entryO1 > entryO2) {
                         return 1;
                     } else if (entryO1 < entryO2) {
@@ -201,7 +201,7 @@ public final class SimpleSequenceReference {
             });
 
             for (int i = 0; i < sessions.size(); i++) {
-                final long entryTimeUS1 = SimpleSequenceReference.getEntryTime(sessions.get(i).getEvents());
+                final long entryTimeUS1 = SimpleSequenceReferenceHelper.getEntryTime(sessions.get(i).getEvents());
                 final long exitTimeUS1 = sessions.get(i).getExitTime();
                 int numberOfConcurrentUserSessionsDuringThisSession = 1;
                 for (int j = 0; j < sessions.size(); j++) {

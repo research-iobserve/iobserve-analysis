@@ -26,10 +26,10 @@ import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
-import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -44,7 +44,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
-    private final IModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<DataProtectionModel> privacyModelResource;
 
     private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
@@ -57,7 +57,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
      *            privacy model resource
      */
     public GeoLocationStage(final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final IModelResource<PrivacyModel> privacyModelResource) {
+            final IModelResource<DataProtectionModel> privacyModelResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.privacyModelResource = privacyModelResource;
     }
@@ -72,8 +72,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         final GeoLocation geoLocation = this.getGeoLocationForContainer(event.getResourceContainer());
         if (geoLocation == null) {
             /** create a geo location. */
-            final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
-                    PrivacyPackage.Literals.PRIVACY_MODEL);
+            final DataProtectionModel privacyModel = this.privacyModelResource
+                    .getModelRootNode(DataProtectionModel.class, PrivacyPackage.Literals.DATA_PROTECTION_MODEL);
             privacyModel.getResourceContainerLocations()
                     .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
             this.privacyModelResource.updatePartition(privacyModel);

@@ -34,7 +34,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.file.FileModelHandler;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -76,7 +76,7 @@ public final class ModelImporter implements IModelImporter {
     private final DecisionSpace designDecisionModel;
     private final QMLDeclarations qmlDeclarationsModel;
 
-    private final PrivacyModel privacyModel;
+    private final DataProtectionModel privacyModel;
 
     /**
      * Create model provider.
@@ -256,7 +256,7 @@ public final class ModelImporter implements IModelImporter {
     /**
      * @return PrivacyModel
      */
-    public PrivacyModel getPrivacyModel() {
+    public DataProtectionModel getPrivacyModel() {
         return this.privacyModel;
     }
 
@@ -285,7 +285,7 @@ public final class ModelImporter implements IModelImporter {
                 this.usageModel);
         new FileModelHandler<QMLDeclarations>(this.resourceSet, QMLDeclarationsPackage.eINSTANCE).save(fileLocationURI,
                 this.qmlDeclarationsModel);
-        new FileModelHandler<PrivacyModel>(this.resourceSet, PrivacyPackage.eINSTANCE).save(fileLocationURI,
+        new FileModelHandler<DataProtectionModel>(this.resourceSet, PrivacyPackage.eINSTANCE).save(fileLocationURI,
                 this.privacyModel);
     }
 

@@ -40,7 +40,7 @@ import org.palladiosimulator.pcm.system.System;
  *         getProvidingAssemblyContexts(), getRequiringAssemblyContexts() and
  *         getConnectedLinkingResources
  */
-public final class ActionFactory {
+public final class ActionFactory { // NOPMD not a utility class, it is a factory class
 
     private static IModelImporter runtimeModelHandler;
     private static IModelImporter redeploymentModelHandler;
