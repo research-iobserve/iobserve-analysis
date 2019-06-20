@@ -44,25 +44,30 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
         UserSessionToModelConverter.LOGGER.info("Received user session");
         final BehaviorModelGED model = new BehaviorModelGED();
 
+        session.sortEventsBy(UserSession.SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME);
         final List<EntryCallEvent> entryCalls = session.getEvents();
+
         final Iterator<EntryCallEvent> iterator = entryCalls.iterator();
 
-        if (iterator.hasNext()) {
-            PayloadAwareEntryCallEvent event = (PayloadAwareEntryCallEvent) iterator.next();
-            BehaviorModelNode lastNode = new BehaviorModelNode(event.getOperationSignature());
-            model.getNodes().put(event.getOperationSignature(), lastNode);
-            BehaviorModelNode currentNode;
+        BehaviorModelNode currentNode = new BehaviorModelNode("Init");
+        model.getNodes().put("Init", currentNode);
 
-            while (iterator.hasNext()) {
-                event = (PayloadAwareEntryCallEvent) iterator.next();
+        BehaviorModelNode lastNode = currentNode;
+
+        while (iterator.hasNext()) {
+            final PayloadAwareEntryCallEvent event = (PayloadAwareEntryCallEvent) iterator.next();
+
+            currentNode = model.getNodes().get(event.getOperationSignature());
+            if (currentNode == null) {
                 currentNode = new BehaviorModelNode(event.getOperationSignature());
-
-                model.getNodes().put(event.getOperationSignature(), currentNode);
-
-                this.addEdge(event, model, lastNode, currentNode);
-                lastNode = currentNode;
             }
+
+            model.getNodes().put(event.getOperationSignature(), currentNode);
+
+            this.addEdge(event, model, lastNode, currentNode);
+            lastNode = currentNode;
         }
+
         this.outputPort.send(model);
         UserSessionToModelConverter.LOGGER.info("Created BehaviorModelGED");
 
