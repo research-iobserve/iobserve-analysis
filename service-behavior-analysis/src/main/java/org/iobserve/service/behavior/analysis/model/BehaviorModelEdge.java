@@ -28,7 +28,7 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  */
 public class BehaviorModelEdge {
 
-    private final List<PayloadAwareEntryCallEvent> events;
+    private final List<EventGroup> eventGroups;
 
     private final BehaviorModelNode source;
 
@@ -46,8 +46,8 @@ public class BehaviorModelEdge {
      */
     public BehaviorModelEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelNode source,
             final BehaviorModelNode target) {
-        this.events = new ArrayList<>();
-        this.events.add(event);
+        this.eventGroups = new ArrayList<>();
+        this.addEvent(event);
         this.source = source;
         this.target = target;
     }
@@ -59,11 +59,19 @@ public class BehaviorModelEdge {
      *            the event which should be added to the edge
      */
     public void addEvent(final PayloadAwareEntryCallEvent event) {
-        this.events.add(event);
-    }
-
-    public List<PayloadAwareEntryCallEvent> getEvents() {
-        return this.events;
+        boolean success = false;
+        for (final EventGroup eventGroup : this.eventGroups) {
+            if (eventGroup.hasSameParameters(event)) {
+                eventGroup.getEvents().add(event);
+                success = true;
+                break;
+            }
+        }
+        if (!success) {
+            final EventGroup newEventGroup = new EventGroup(event.getParameters());
+            newEventGroup.getEvents().add(event);
+            this.eventGroups.add(newEventGroup);
+        }
     }
 
     public BehaviorModelNode getSource() {
@@ -72,6 +80,10 @@ public class BehaviorModelEdge {
 
     public BehaviorModelNode getTarget() {
         return this.target;
+    }
+
+    public List<EventGroup> getEventGroups() {
+        return this.eventGroups;
     }
 
 }
