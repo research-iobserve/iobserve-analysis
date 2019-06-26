@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,11 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 		String.class, // ServletTraceHelper.requestURI
 	};
 	
+	/** default constants. */
+	public static final String HOST = "";
+	public static final String REQUEST_URI = "";
+	private static final long serialVersionUID = 2363353535794190244L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"traceId",
@@ -52,11 +57,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 		"port",
 		"requestURI",
 	};
-	
-	/** default constants. */
-	public static final String HOST = "";
-	public static final String REQUEST_URI = "";
-	private static final long serialVersionUID = 2363353535794190244L;
 	
 	/** property declarations. */
 	private final long traceId;

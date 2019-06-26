@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,10 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 		String.class, // IUserInformation.informations
 	};
 	
+	/** default constants. */
+	public static final String INFORMATIONS = "";
+	private static final long serialVersionUID = 6122298903309699183L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -57,10 +61,6 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 		"classSignature",
 		"informations",
 	};
-	
-	/** default constants. */
-	public static final String INFORMATIONS = "";
-	private static final long serialVersionUID = 6122298903309699183L;
 	
 	/** property declarations. */
 	private final String informations;

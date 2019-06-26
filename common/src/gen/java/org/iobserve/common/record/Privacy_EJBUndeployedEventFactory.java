@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,23 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class Privacy_EJBUndeployedEventFactory implements IRecordFactory<Privacy_EJBUndeployedEvent> {
 	
-
 	@Override
 	public Privacy_EJBUndeployedEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new Privacy_EJBUndeployedEvent(deserializer);
 	}
-
-
 	@Override
-	public String[] getValueNames() {
-		return Privacy_EJBUndeployedEvent.VALUE_NAMES; // NOPMD
-	}
-
+			public String[] getValueNames() {
+				return Privacy_EJBUndeployedEvent.VALUE_NAMES; // NOPMD
+			}
 	@Override
-	public Class<?>[] getValueTypes() {
-		return Privacy_EJBUndeployedEvent.TYPES; // NOPMD
-	}
-
+			public Class<?>[] getValueTypes() {
+				return Privacy_EJBUndeployedEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return Privacy_EJBUndeployedEvent.SIZE;
 	}

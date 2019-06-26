@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,8 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		ObservationPoint.class, // MeasureEventOccurance.point
 	};
 	
+	private static final long serialVersionUID = 2782001322842515724L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -50,8 +52,6 @@ public class MeasureEventOccurance extends AbstractMonitoringRecord  {
 		"type",
 		"point",
 	};
-	
-	private static final long serialVersionUID = 2782001322842515724L;
 	
 	/** property declarations. */
 	private long timestamp;

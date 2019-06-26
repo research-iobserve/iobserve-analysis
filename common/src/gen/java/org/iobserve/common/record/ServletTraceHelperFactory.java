@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,23 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
 	
-
 	@Override
 	public ServletTraceHelper create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ServletTraceHelper(deserializer);
 	}
-
-
 	@Override
-	public String[] getValueNames() {
-		return ServletTraceHelper.VALUE_NAMES; // NOPMD
-	}
-
+			public String[] getValueNames() {
+				return ServletTraceHelper.VALUE_NAMES; // NOPMD
+			}
 	@Override
-	public Class<?>[] getValueTypes() {
-		return ServletTraceHelper.TYPES; // NOPMD
-	}
-
+			public Class<?>[] getValueTypes() {
+				return ServletTraceHelper.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return ServletTraceHelper.SIZE;
 	}

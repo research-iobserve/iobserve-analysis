@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,11 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 		String.class, // ServerGeoLocation.address
 	};
 	
+	/** default constants. */
+	public static final String HOSTNAME = "";
+	public static final String ADDRESS = "";
+	private static final long serialVersionUID = -2727780590184532240L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -52,11 +57,6 @@ public class ServerGeoLocation extends AbstractMonitoringRecord implements IEven
 		"hostname",
 		"address",
 	};
-	
-	/** default constants. */
-	public static final String HOSTNAME = "";
-	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -2727780590184532240L;
 	
 	/** property declarations. */
 	private long timestamp;

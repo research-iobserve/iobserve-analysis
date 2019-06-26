@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 		int.class, // IPayloadCharacterization.requestType
 	};
 	
+	private static final long serialVersionUID = -4017422430129179625L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -66,8 +68,6 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 		"values",
 		"requestType",
 	};
-	
-	private static final long serialVersionUID = -4017422430129179625L;
 	
 	/** property declarations. */
 	private final String[] parameters;

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,12 @@ public class EJBDeployedEvent extends AbstractMonitoringRecord implements IDeplo
 		String.class, // EJBDescriptor.deploymentId
 	};
 	
+	/** default constants. */
+	public static final String SERVICE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -2004438408341989115L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -52,12 +58,6 @@ public class EJBDeployedEvent extends AbstractMonitoringRecord implements IDeplo
 		"context",
 		"deploymentId",
 	};
-	
-	/** default constants. */
-	public static final String SERVICE = "";
-	public static final String CONTEXT = "";
-	public static final String DEPLOYMENT_ID = "";
-	private static final long serialVersionUID = -2004438408341989115L;
 	
 	/** property declarations. */
 	private long timestamp;
