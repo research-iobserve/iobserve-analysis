@@ -26,7 +26,7 @@ import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.common.record.remotecontrol.IRemoteParameterControlEvent;
-import kieker.common.record.tcp.SingleSocketRecordReader;
+import kieker.monitoring.core.controller.tcp.SingleSocketRecordReader;
 
 import org.iobserve.utility.tcp.RemoteControlFailedException;
 import org.iobserve.utility.tcp.TcpProbeController;
@@ -207,7 +207,7 @@ public class TcpProbeControllerTest {
                                 ((IRemoteParameterControlEvent) arg0).getValues()));
             }
 
-            this.state.put(pattern, arg0 instanceof ActivationEvent || arg0 instanceof ActivationParameterEvent);
+            this.state.put(pattern, (arg0 instanceof ActivationEvent) || (arg0 instanceof ActivationParameterEvent));
 
         }
 

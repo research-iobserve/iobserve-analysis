@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
+import kieker.common.record.remotecontrol.AddParameterValueEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.common.record.remotecontrol.UpdateParameterEvent;
@@ -114,7 +115,7 @@ public class TcpProbeController implements IProbeController {
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
 
         for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
-            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            final String[] parameterArray = parameter.getValue().toArray(new String[parameter.getValue().size()]);
             this.sendTcpCommand(ip, port, hostname,
                     new UpdateParameterEvent(pattern, parameter.getKey(), parameterArray));
         }
@@ -161,9 +162,14 @@ public class TcpProbeController implements IProbeController {
             final String operationSignature, final Map<String, List<String>> parameters)
             throws RemoteControlFailedException {
         for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
-            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            // final String[] parameterArray = parameter.getValue().toArray(new
+            // String[parameter.getValue().size()]);
             this.sendTcpCommand(ip, port, hostname,
-                    new ActivationParameterEvent(operationSignature, parameter.getKey(), parameterArray));
+                    new ActivationParameterEvent(operationSignature, parameter.getKey(), new String[0]));
+            for (final String value : parameter.getValue()) {
+                this.sendTcpCommand(ip, port, hostname,
+                        new AddParameterValueEvent(operationSignature, parameter.getKey(), value));
+            }
         }
     }
 
@@ -194,7 +200,7 @@ public class TcpProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if (currentConnection == null || currentConnection.getServiceComponent() != serviceComponent) {
+        if ((currentConnection == null) || (currentConnection.getServiceComponent() != serviceComponent)) {
             currentConnection = new TcpControlConnection(ip, port, serviceComponent, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -245,10 +251,6 @@ public class TcpProbeController implements IProbeController {
      */
     public boolean isKnownHost(final String ip, final int port) {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
-    }
-
-    private String[] computeParameterArray(final List<String> parameters) {
-        return parameters.toArray(new String[parameters.size()]);
     }
 
 }
