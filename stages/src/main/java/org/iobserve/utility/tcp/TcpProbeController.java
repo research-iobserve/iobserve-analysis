@@ -219,7 +219,7 @@ public class TcpProbeController implements IProbeController {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
                 TcpProbeController.CONN_TIMEOUT_IN_MS);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 6553500);
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 655350);
         final SingleSocketTcpWriter tcpWriter;
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);

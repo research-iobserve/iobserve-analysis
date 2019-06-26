@@ -56,7 +56,8 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
         AbstractTcpControlEvent element;
 
         final String hostname = "account-service";
-        final String operationSignature = "changePassword";
+        final String operationSignature = this.createOperationSignaturePattern(new String[] { "public" }, "void",
+                "org.mybatis.jpetstore.AccountService", "userRequest", new String[] { "String", "String" });
         final long triggerTimestamp = 0;
         final Map<String, List<String>> parameters = new HashMap<>();
         final List<String> blacklist = new ArrayList<>();
@@ -78,6 +79,46 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
         this.outputPort.send(element);
 
         this.workCompleted();
+    }
+
+    private String createOperationSignaturePattern(final String[] modifiers, final String returnTypeName,
+            final String className, final String operationName, final String[] parameters) {
+        String result = "";
+
+        if (modifiers != null) {
+            if (modifiers.length > 0) {
+                for (final String modifier : modifiers) {
+                    result += modifier + " ";
+                }
+            } else {
+                result += "default ";
+            }
+        } else {
+            result += "default ";
+        }
+
+        if (returnTypeName == null) {
+            result += "void ";
+        } else {
+            result += returnTypeName + " ";
+        }
+
+        if (className == null || operationName == null) {
+            throw new InternalError("Class and operation names are required.");
+        } else {
+            result += className + "." + operationName;
+        }
+
+        result += "(";
+        if (parameters != null) {
+            for (final String type : parameters) {
+                result += type + ",";
+            }
+            result = result.substring(0, result.lastIndexOf(','));
+        }
+        result += ")";
+
+        return result;
     }
 
     private void populateList(final List<String> list, final long start, final long end) {
