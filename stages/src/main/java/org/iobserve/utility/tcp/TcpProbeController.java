@@ -162,8 +162,6 @@ public class TcpProbeController implements IProbeController {
             final String operationSignature, final Map<String, List<String>> parameters)
             throws RemoteControlFailedException {
         for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
-            // final String[] parameterArray = parameter.getValue().toArray(new
-            // String[parameter.getValue().size()]);
             this.sendTcpCommand(ip, port, hostname,
                     new ActivationParameterEvent(operationSignature, parameter.getKey(), new String[0]));
             for (final String value : parameter.getValue()) {
@@ -200,7 +198,7 @@ public class TcpProbeController implements IProbeController {
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getServiceComponent() != serviceComponent)) {
+        if (currentConnection == null || currentConnection.getServiceComponent() != serviceComponent) {
             currentConnection = new TcpControlConnection(ip, port, serviceComponent, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
