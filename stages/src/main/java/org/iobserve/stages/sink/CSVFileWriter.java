@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluate.jss;
+package org.iobserve.stages.sink;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,18 +26,26 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class CSVFileWriter extends AbstractConsumerStage<Map<String, Long>> {
+public class CSVFileWriter extends AbstractConsumerStage<Map<String, Object>> {
 
-    final PrintWriter writer;
+    private final PrintWriter writer;
     private boolean first;
 
+    /**
+     * Create a csv writer stage.
+     *
+     * @param resultFile
+     *            result file handle
+     * @throws FileNotFoundException
+     *             if file creation is not possible
+     */
     public CSVFileWriter(final File resultFile) throws FileNotFoundException {
         this.writer = new PrintWriter(resultFile);
         this.first = true;
     }
 
     @Override
-    protected void execute(final Map<String, Long> element) throws Exception {
+    protected void execute(final Map<String, Object> element) throws Exception {
         if (this.first) {
             boolean firstEntry = true;
             for (final String key : element.keySet()) {
@@ -52,12 +60,24 @@ public class CSVFileWriter extends AbstractConsumerStage<Map<String, Long>> {
             this.first = false;
         }
         boolean firstEntry = true;
-        for (final Long value : element.values()) {
+        for (final Object value : element.values()) {
             if (firstEntry) {
-                this.writer.printf("%d", value);
+                if (value instanceof String) {
+                    this.writer.printf("\"%s\"", value);
+                } else if (value instanceof Long || value instanceof Integer) {
+                    this.writer.printf("%d", value);
+                } else {
+                    this.writer.print(value);
+                }
                 firstEntry = false;
             } else {
-                this.writer.printf(",%d", value);
+                if (value instanceof String) {
+                    this.writer.printf(",\"%s\"", value);
+                } else if (value instanceof Long || value instanceof Integer) {
+                    this.writer.printf(",%d", value);
+                } else {
+                    this.writer.print("," + value);
+                }
             }
         }
         this.writer.println();

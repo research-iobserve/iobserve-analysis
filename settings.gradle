@@ -9,7 +9,8 @@ include "common", "monitoring", "model", "stages", "service",
 	"service.privacy.violation",
 	"evaluate-jss-performance",
         "simulate-petstore",
-        "runtime-reconfigure-monitoring-controller"
+        "runtime-reconfigure-monitoring-controller",
+        "calculate-response-selenium-response-time"
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"

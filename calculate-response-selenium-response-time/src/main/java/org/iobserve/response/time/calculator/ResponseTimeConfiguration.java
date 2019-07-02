@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluate.jss;
+package org.iobserve.response.time.calculator;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import kieker.common.exception.ConfigurationException;
+import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.common.record.MeasureEventOccurance;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
@@ -33,26 +34,24 @@ import org.iobserve.stages.sink.CSVFileWriter;
  * @author Reiner Jung
  *
  */
-public class EvaluationTeetimeConfiguration extends Configuration {
+public class ResponseTimeConfiguration extends Configuration {
 
-    public EvaluationTeetimeConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
-            final EvaluationParamterConfiguration configuration) throws ConfigurationException, FileNotFoundException {
-
+    public ResponseTimeConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
+            final ResponseTimeCalculatorSettings configuration) throws ConfigurationException, FileNotFoundException {
         final ISourceCompositeStage sourceCompositeStage = InstantiationFactory.createWithConfiguration(
                 ISourceCompositeStage.class, configuration.getSourceClassName(), kiekerConfiguration);
 
-        final IEventMatcher<MeasureEventOccurance> rootEventMatcher = new ImplementsEventMatcher<>(
-                MeasureEventOccurance.class, null);
+        final IEventMatcher<IFlowRecord> rootEventMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
 
         final DynamicEventDispatcher eventdispatcher = new DynamicEventDispatcher(rootEventMatcher, true, true, false);
-        final EventCollector eventCollector = new EventCollector();
-        final ComputeResults computeResults = new ComputeResults();
-        final CSVFileWriter writeResults = new CSVFileWriter(configuration.getOutputFile());
+
+        final CalculateResponseTimeStage calculateResponseTimeStage = new CalculateResponseTimeStage();
+
+        final CSVFileWriter fileWriter = new CSVFileWriter(new File("result.csv"));
 
         this.connectPorts(sourceCompositeStage.getOutputPort(), eventdispatcher.getInputPort());
-        this.connectPorts(rootEventMatcher.getOutputPort(), eventCollector.getInputPort());
-        this.connectPorts(eventCollector.getOutputPort(), computeResults.getInputPort());
-        this.connectPorts(computeResults.getOutputPort(), writeResults.getInputPort());
+        this.connectPorts(rootEventMatcher.getOutputPort(), calculateResponseTimeStage.getInputPort());
+        this.connectPorts(calculateResponseTimeStage.getOutputPort(), fileWriter.getInputPort());
     }
 
 }

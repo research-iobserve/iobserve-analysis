@@ -43,7 +43,7 @@ public class ComputeResults extends AbstractConsumerStage<List<MeasureEventOccur
 
     private static final String TRIGGER_TIME = "date";
 
-    private final OutputPort<Map<String, Long>> outputPort = this.createOutputPort();
+    private final OutputPort<Map<String, Object>> outputPort = this.createOutputPort();
 
     private int sequenceCount;
 
@@ -54,7 +54,7 @@ public class ComputeResults extends AbstractConsumerStage<List<MeasureEventOccur
         this.logger.debug("Sequence {}", this.sequenceCount);
         this.sequenceCount++;
 
-        final Map<String, Long> result = new HashMap<>();
+        final Map<String, Object> result = new HashMap<>();
 
         final Long eventTime = this.getFirstEventTime(events, ObservationPoint.EVENT_CREATION_TIME);
         final Long entryTime = this.getFirstEventTime(events, ObservationPoint.DISPATCHER_ENTRY);
@@ -161,7 +161,7 @@ public class ComputeResults extends AbstractConsumerStage<List<MeasureEventOccur
         }
     }
 
-    public OutputPort<Map<String, Long>> getOutputPort() {
+    public OutputPort<Map<String, Object>> getOutputPort() {
         return this.outputPort;
     }
 
