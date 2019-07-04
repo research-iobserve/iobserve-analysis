@@ -25,6 +25,7 @@ import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinBranchReference;
+import org.iobserve.analysis.userbehavior.test.builder.BranchWithinBranchReference2;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinLoopReference;
 import org.iobserve.analysis.userbehavior.test.builder.CallSequenceScalabilityReference;
 import org.iobserve.analysis.userbehavior.test.builder.LoopWithinBranchReference;
@@ -37,7 +38,7 @@ import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
 /**
  * Test of the TEntryEventSequence filter.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
 public final class TEntryEventSequenceTest {
 
@@ -45,7 +46,7 @@ public final class TEntryEventSequenceTest {
     private static final int NUMBER_OF_USER_GROUPS = 1;
     private static final boolean CLOSED_WORKLOAD = true;
     private static final int VARIANCE_OF_USER_GROUPS = 0;
-    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 1;//500;
+    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 500;//1;
     private static final int STEP_SIZE = 1;
 
     private static final String TEST_FOLDER = "D:\\Dokumente\\Uni\\HiWi\\UsageBehaviourTransformationTest\\TEntryEventSequenceTest\\";
@@ -67,31 +68,43 @@ public final class TEntryEventSequenceTest {
     	correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(CORRESPONDENCE_MODEL_PATH);
     }
     
-    public void startTests() throws IOException {
-//    	System.out.println("Start SimpleSequence test");
-//    	testSimpleSequence();
-//    	System.out.println("Start SimpleBranch test");
-//    	testSimpleBranch();
-//    	System.out.println("Start SimpleLoop test");
-//    	testSimpleLoop();
-//    	System.out.println("Start OverlappingLoops test");
-//    	testOverlappingIteration();
-//    	System.out.println("Start BranchWithinBranch test");
-//    	testBranchWithinBranch();
-//    	System.out.println("Start LoopWithinBranch test");
-//    	testLoopWithinBranch();
-//    	System.out.println("Start LoopWithinLoop test");
-//    	testLoopWithinLoop();
-    	System.out.println("Start BranchWithinLoop test");
-    	testBranchWithinLoop();
+    public void startTests() {
+    	try {
+	    	System.out.println("Start SimpleSequence test");
+	    	testSimpleSequence();
+	    	System.out.println("Start SimpleLoop test");
+	    	testSimpleLoop();
+	    	System.out.println("Start SimpleBranch test");
+	    	testSimpleBranch();
+	    	System.out.println("Start OverlappingLoops test");
+	    	testOverlappingIteration();
+	    	System.out.println("Start LoopWithinLoop test");
+	    	testLoopWithinLoop();
+			System.out.println("Start BranchWithinBranch test");
+	    	testBranchWithinBranch();
+			System.out.println("Start LoopWithinBranch test");
+	    	testLoopWithinBranch();
+	    	System.out.println("Start BranchWithinLoop test");
+			testBranchWithinLoop();
+
+		
+		} catch (IOException e) {
+			System.out.println("IO Error in testing. Maybe testdata missing/paths incorrect.");
+			e.printStackTrace();
+		}
     }
     
-    public void startRMETest() throws IOException {
-    	System.out.println("Start SimpleSequence RME openWorkload test");
-    	testSimpleSequenceRME(false);
-    	
-    	System.out.println("Start SimpleSequence RME closedWorkload test");
-    	testSimpleSequenceRME(true);
+    public void startRMETest() {
+    	try {
+	    	System.out.println("Start SimpleSequence RME openWorkload test");
+	    	testSimpleSequenceRME(false);
+	    	
+	    	System.out.println("Start SimpleSequence RME closedWorkload test");
+			testSimpleSequenceRME(true);
+		} catch (IOException e) {
+			System.out.println("IO Error in testing RME. Maybe testdata missing/paths incorrect.");
+			e.printStackTrace();
+		}
     }
     
     public void testSimpleSequence() throws IOException {
@@ -187,7 +200,7 @@ public final class TEntryEventSequenceTest {
         List<AccuracyResults> results = new ArrayList<>();
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = BranchWithinBranchReference.getModel(
+            ReferenceElements referenceElements = BranchWithinBranchReference2.getModel(
                     REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(

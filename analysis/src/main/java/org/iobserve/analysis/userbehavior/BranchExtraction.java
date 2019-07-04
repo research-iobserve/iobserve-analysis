@@ -31,6 +31,7 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
  *
  * @author David Peter
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class BranchExtraction {
 
@@ -52,6 +53,7 @@ public class BranchExtraction {
     public void createCallBranchModels() {
 
         final BranchModelCreator modelCreator = new BranchModelCreator();
+        final BranchModelCompactor modelCompactor = new BranchModelCompactor();
         this.branchModels = new ArrayList<>();
 
         for (final EntryCallSequenceModel entryCallSequenceModel : this.entryCallSequenceModels) {
@@ -68,7 +70,7 @@ public class BranchExtraction {
             /**
              * 3. Tries to fuse branches to obtain a more compact model
              */
-            modelCreator.compactBranchModel(branchModel);
+            modelCompactor.compactBranchModel(branchModel);
 
             this.branchModels.add(branchModel);
         }

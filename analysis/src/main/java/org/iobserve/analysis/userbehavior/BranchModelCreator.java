@@ -24,9 +24,7 @@ import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.userbehavior.data.Branch;
-import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
-import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
 import org.iobserve.analysis.userbehavior.data.ISequenceElement;
@@ -37,6 +35,7 @@ import org.iobserve.analysis.userbehavior.data.ISequenceElement;
  *
  * @author David Peter
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class BranchModelCreator {
 
@@ -59,7 +58,7 @@ public class BranchModelCreator {
         }
     };
 
-    private boolean fusionPerformed = false;
+    
 
     /**
      * empty default constructor.
@@ -68,22 +67,7 @@ public class BranchModelCreator {
 
     }
 
-    /**
-     * Iterates through the branches and sets the branches' treeLevels. The treeLevel determines the
-     * tree depth of the branch. For example the treeLevel of the rootBranch is 0. Its
-     * childBranches' treeLevel is 1 and so on.
-     *
-     * @param branch
-     *            whose branches' treeLevel is set
-     * @param treeLevel
-     *            is the current treeLevel
-     */
-    public void setBranchTreeLevels(final Branch branch, final int treeLevel) {
-        branch.setTreeLevel(treeLevel);
-        for (int i = 0; i < branch.getChildBranches().size(); i++) {
-            this.setBranchTreeLevels(branch.getChildBranches().get(i), treeLevel + 1);
-        }
-    }
+
 
     /**
      * It calculates for each branch of the passed BranchModel its likelihood.
@@ -548,271 +532,4 @@ public class BranchModelCreator {
     private boolean isPositionLastElementInBranchSequence(final Branch examinedBranch, final int positionInBranch) {
         return examinedBranch.getBranchSequence().size() == positionInBranch;
     }
-
-    /**
-     * Examines a BranchModel whether child branches that have the same parent branch can be merged.
-     * Child branches whose sequences contain equal calls at their endings can be merged. Therefore,
-     * it is looped over its branches
-     *
-     * @param branchModel
-     *            that is examined whether branches of the BranchModel can be merged
-     */
-    public void compactBranchModel(final BranchModel branchModel) {
-        this.compactBranch(branchModel.getRootBranch());
-        if (this.fusionPerformed) {
-            final int maxBranchId = this.setBranchIds(branchModel.getRootBranch(), 1, 1);
-            branchModel.setNumberOfBranches(maxBranchId);
-        }
-        this.setBranchTreeLevels(branchModel.getRootBranch(), branchModel.getRootBranch().getTreeLevel());
-    }
-
-    /**
-     * Examines for each branch its child branches to check whether they can be merged.
-     *
-     * @param branch
-     *            that is examined whether its child branches can be merged
-     */
-    private void compactBranch(final Branch branch) {
-        boolean continueCompacting = false;
-        do {
-            continueCompacting = this.compactChildBranches(branch);
-        } while (continueCompacting);
-        for (int i = 0; i < branch.getChildBranches().size(); i++) {
-            this.compactBranch(branch.getChildBranches().get(i));
-        }
-    }
-
-    /**
-     * Ascending numbering of the branches of a BranchModel. Therefore, over all branches is looped
-     *
-     * @param branch
-     *            that is numbered
-     * @param branchId
-     *            the id of the branch that is set
-     * @param topBranchId
-     *            the current highest branch id
-     * @return the highest branch id
-     */
-    private int setBranchIds(final Branch branch, final int branchId, final int topBranchId) {
-        int newTopBranchId = topBranchId;
-        branch.setBranchId(branchId);
-        if (newTopBranchId < branchId) {
-            newTopBranchId = branchId;
-        }
-        for (int i = 0; i < branch.getChildBranches().size(); i++) {
-            final int newBranchId = branchId + i + 1;
-            newTopBranchId = this.setBranchIds(branch.getChildBranches().get(i), newBranchId, newTopBranchId);
-        }
-        return topBranchId;
-    }
-
-    /**
-     * Examines the child branches of a branch whether they can be merged. Therefore, some
-     * plausibilities are checked
-     *
-     * @param branch
-     *            whose child branches are examined whether they an be merged
-     * @return whether branches could be merged
-     */
-    private boolean compactChildBranches(final Branch branch) {
-        if (branch.getChildBranches().size() > 0) {
-            if (this.checkForEqualNumberOfChildBranches(branch.getChildBranches())) {
-                if (this.doBranchContainChildBranches(branch.getChildBranches().get(0))) {
-                    if (this.checkForEqualSubsequentBranches(branch.getChildBranches())) {
-                        return this.mergeBranches(branch, true);
-                    }
-                } else {
-                    return this.mergeBranches(branch, false);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Merges branches.
-     *
-     * @param branch
-     *            whose child branches are merged
-     * @param doChildBranchesExist
-     * @return
-     */
-    private boolean mergeBranches(final Branch branch, final boolean doChildBranchesExist) {
-        int indexOfEqualElements = 0;
-        boolean isElementEqual = false;
-        // Checks whether the sequenes of the child branches contain equal calls at the ending of
-        // their sequences
-        for (int i = branch.getChildBranches().get(0).getBranchSequence().size() - 1; i >= 0; i--) {
-            final ISequenceElement branchElement = branch.getChildBranches().get(0).getBranchSequence().get(i);
-            isElementEqual = false;
-            for (final Branch childBranch : branch.getChildBranches()) {
-                if ((childBranch.getBranchSequence().size() - 1 - indexOfEqualElements) < 0) {
-                    isElementEqual = false;
-                    break;
-                } else if (this.doBranchElementsMatch(branchElement, childBranch.getBranchSequence()
-                        .get(childBranch.getBranchSequence().size() - 1 - indexOfEqualElements))) {
-                    isElementEqual = true;
-                } else {
-                    isElementEqual = false;
-                    break;
-                }
-            }
-            if (!isElementEqual) {
-                break;
-            }
-            indexOfEqualElements++;
-        }
-
-        // Creates a new branch element that replaces the child branches that are merged
-        final BranchElement branchElement = new BranchElement();
-        final List<ISequenceElement> sequenceToAddToBranch = new ArrayList<>();
-        for (int i = 0; i < indexOfEqualElements; i++) {
-            sequenceToAddToBranch.add(0, branch.getChildBranches().get(0).getBranchSequence()
-                    .get(branch.getChildBranches().get(0).getBranchSequence().size() - 1));
-            for (final Branch childBranch : branch.getChildBranches()) {
-                childBranch.getBranchSequence().remove(childBranch.getBranchSequence().size() - 1);
-            }
-        }
-        for (final Branch childBranch : branch.getChildBranches()) {
-            final BranchTransitionElement branchTransition = new BranchTransitionElement();
-            branchTransition.setBranchSequence(childBranch.getBranchSequence());
-            branchTransition.setTransitionLikelihood(childBranch.getBranchLikelihood());
-            branchElement.addBranchTransition(branchTransition);
-        }
-        branch.getBranchSequence().add(branchElement);
-        branch.getBranchSequence().addAll(sequenceToAddToBranch);
-
-        // Removes the replaced child branches
-        if (doChildBranchesExist) {
-            final List<Branch> newChildBranches = branch.getChildBranches().get(0).getChildBranches();
-            branch.getChildBranches().clear();
-            branch.setChildBranches(newChildBranches);
-        } else {
-            branch.getChildBranches().clear();
-        }
-
-        if (doChildBranchesExist || (indexOfEqualElements > 0)) {
-            this.fusionPerformed = true;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Checks whether branches contain equal child branches.
-     *
-     * @param branches
-     *            whose child branches are checked for equality
-     * @return whether child branches are equal
-     */
-    private boolean checkForEqualSubsequentBranches(final List<Branch> branches) {
-        if (!this.doChildBranchesMatch(branches)) {
-            return false;
-        }
-        final List<Branch> branchesToCheck = new ArrayList<>();
-        for (final Branch branch : branches) {
-            branchesToCheck.addAll(branch.getChildBranches());
-        }
-        if (branchesToCheck.size() == 0) {
-            return true;
-        }
-
-        return !this.checkForEqualSubsequentBranches(branchesToCheck);
-    }
-
-    /**
-     * Checks whether child branches match.
-     *
-     * @param branches
-     *            whose child branches are matched against each other
-     * @return whether the child branches match
-     */
-    private boolean doChildBranchesMatch(final List<Branch> branches) {
-        if (this.checkForEqualNumberOfChildBranches(branches)) {
-            final List<Branch> branchesToMatch = new ArrayList<>();
-            for (int i = 0; i < branches.get(0).getChildBranches().size(); i++) {
-                branchesToMatch.add(branches.get(0).getChildBranches().get(i));
-            }
-            for (int i = 0; i < branches.size(); i++) {
-                if (branches.get(i).getChildBranches().size() != branchesToMatch.size()) {
-                    return false;
-                }
-                for (int k = 0; k < branchesToMatch.size(); k++) {
-                    boolean matchingElementFound = false;
-                    for (int j = 0; j < branches.get(i).getChildBranches().size(); j++) {
-                        if (this.doBranchElementsMatch(branchesToMatch.get(k).getBranchSequence().get(0),
-                                branches.get(i).getChildBranches().get(j).getBranchSequence().get(0))
-                                && (branchesToMatch.get(k).getBranchLikelihood() == branches.get(i).getChildBranches()
-                                        .get(j).getBranchLikelihood())) {
-                            matchingElementFound = true;
-                            break;
-                        }
-                    }
-                    if (!matchingElementFound) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Checks whether branches contain the equal number of child branches.
-     *
-     * @param branches
-     *            whose number of child branches are checked
-     * @return whether the number of child branches are equal
-     */
-    private boolean checkForEqualNumberOfChildBranches(final List<Branch> branches) {
-
-        final int numberOfChildBranches = branches.get(0).getChildBranches().size();
-        for (final Branch branch : branches) {
-            if (branch.getChildBranches().size() != numberOfChildBranches) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks whether a branch contains child branches.
-     *
-     * @param branch
-     * @return whether a branch contains child branches
-     */
-    private boolean doBranchContainChildBranches(final Branch branch) {
-        return !((branch.getChildBranches() == null) || (branch.getChildBranches().size() == 0));
-    }
-
-    /**
-     * Checks whether two elements match.
-     *
-     * @param sequenceElement1
-     *            matched against element 2
-     * @param sequenceElement2
-     *            matched against element 1
-     * @return whether two elements match
-     */
-    private boolean doBranchElementsMatch(final ISequenceElement sequenceElement1,
-            final ISequenceElement sequenceElement2) {
-        if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
-            return false;
-        }
-        if (sequenceElement1.getClass().equals(CallElement.class)
-                && sequenceElement2.getClass().equals(CallElement.class)) {
-            if ((!sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature()))
-                    || (!sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature()))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

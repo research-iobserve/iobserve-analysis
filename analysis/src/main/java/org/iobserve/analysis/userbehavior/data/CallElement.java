@@ -15,13 +15,15 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
+import java.util.Objects;
+
 /**
  * Represents an EntryCallEvent within a BranchModel. The count states the occurrence frequency of
  * the call to calculate the branch likelihoods within a branchModel
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
-public class CallElement implements ISequenceElement {
+public class CallElement extends ISequenceElement {
 
     private final String classSignature;
     private final String operationSignature;
@@ -40,12 +42,18 @@ public class CallElement implements ISequenceElement {
         this.operationSignature = operationSignature;
     }
 
-    @Override
+    /**
+    *
+    * @return returns the class signature for the element.
+    */
     public String getClassSignature() {
         return this.classSignature;
     }
-
-    @Override
+    
+    /**
+    *
+    * @return returns the operation signature for the element.
+    */
     public String getOperationSignature() {
         return this.operationSignature;
     }
@@ -58,6 +66,24 @@ public class CallElement implements ISequenceElement {
     @Override
     public void setAbsoluteCount(final int absoluteCount) {
         this.absoluteCount = absoluteCount;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if(o instanceof CallElement) {
+    		CallElement callElement2 = (CallElement)o;
+    		if ((this.getClassSignature().equals(callElement2.getClassSignature()))
+                    && (this.getOperationSignature().equals(callElement2.getOperationSignature()))) {
+                return true;
+            }
+        }
+    	
+    	return false;
+    }
+    
+    @Override
+    public int hashCode() {
+    	return Objects.hash(this.getClass(), this.getClassSignature(), this.getOperationSignature());
     }
 
 }

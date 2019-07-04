@@ -15,34 +15,37 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
+import java.util.List;
+
 /**
  * Interface that state the elements of a call sequence.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
-public interface ISequenceElement {
+public abstract class ISequenceElement {
 
     /**
      * @return returns the count
      */
-    public int getAbsoluteCount();
+    abstract public int getAbsoluteCount();
 
     /**
      * @param absoluteCount
      *            sets the count.
      */
-    public void setAbsoluteCount(int absoluteCount);
-
-    /**
-     *
-     * @return returns the class signature for the element.
-     */
-    public String getClassSignature();
-
-    /**
-     *
-     * @return returns the operation signature for the element.
-     */
-    public String getOperationSignature();
-
+    abstract public void setAbsoluteCount(int absoluteCount);
+    
+    public static boolean doSequencesMatch(List<ISequenceElement> sequence1, List<ISequenceElement> sequence2) {
+    	if(sequence1.size() != sequence2.size()) {
+    		return false;
+    	}
+    	
+    	for(int i = 0; i < sequence1.size(); i++) {
+    		if(!sequence1.get(i).equals(sequence2.get(i))) {
+    			return false;
+    		}
+    	}
+    	
+    	return true;
+    }
 }

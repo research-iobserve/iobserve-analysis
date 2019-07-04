@@ -17,15 +17,16 @@ package org.iobserve.analysis.userbehavior.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a loop element. It contains the iterated sequence and the number of iterations as loop
  * count. The start and end index states at which index the iterated segment that is represented by
  * the loop element starts and ends within the sequence
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
-public class LoopElement implements ISequenceElement {
+public class LoopElement extends ISequenceElement {
 
     private int loopId;
     private List<ISequenceElement> loopSequence = new ArrayList<>();
@@ -40,6 +41,15 @@ public class LoopElement implements ISequenceElement {
      * Entity constructor.
      */
     public LoopElement() {
+    }
+    
+    @Override
+    public int getAbsoluteCount() {
+        return 0;
+    }
+
+    @Override
+    public void setAbsoluteCount(final int absoluteCount) {
     }
 
     /**
@@ -104,25 +114,6 @@ public class LoopElement implements ISequenceElement {
         this.numberOfReplacedElements = numberOfReplacedElements;
     }
 
-    @Override
-    public int getAbsoluteCount() {
-        return 0;
-    }
-
-    @Override
-    public void setAbsoluteCount(final int absoluteCount) {
-    }
-
-    @Override
-    public String getClassSignature() {
-        return null;
-    }
-
-    @Override
-    public String getOperationSignature() {
-        return null;
-    }
-
     public int getCurrentIndexToCheck() {
         return this.currentIndexToCheck;
     }
@@ -161,6 +152,21 @@ public class LoopElement implements ISequenceElement {
 
     public void setDoContainBranchElement(final boolean doContainBranchElement) {
         this.doContainBranchElement = doContainBranchElement;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if(o instanceof LoopElement) {
+    		LoopElement element = (LoopElement)o;
+    		return (doSequencesMatch(this.getLoopSequence(), element.getLoopSequence()) && this.getLoopCount() == element.getLoopCount());
+    	}
+    	
+    	return false;
+    }
+    
+    @Override
+    public int hashCode() {
+    	return Objects.hash(this.getClass(), this.getLoopCount());
     }
 
 }

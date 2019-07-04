@@ -17,11 +17,11 @@ package org.iobserve.analysis.userbehavior.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents branched behavior and the probability of reaching the behavior.
- *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
 public class Branch {
 
@@ -86,5 +86,46 @@ public class Branch {
     public void setTreeLevel(final int treeLevel) {
         this.treeLevel = treeLevel;
     }
+	
+    @Override
+    public boolean equals(Object o) {
+    	if(o instanceof Branch) {
+    		Branch branch2 = (Branch)o;
+        	return doBranchElementsMatch(this, branch2);
+        }
+    	
+    	return false;
+    }
+    
+    private static boolean doBranchElementsMatch(Branch branch1, Branch branch2) {
+    	if(branch1.getChildBranches().size() != branch2.getChildBranches().size()) {
+    		return false;
+    	}
+    	if(!ISequenceElement.doSequencesMatch(branch1.getBranchSequence(), branch2.getBranchSequence())) {
+    		return false;
+    	}
+		for(Branch subBranch1 : branch1.getChildBranches()) {
+			boolean branchesMatch = false;
+			for(Branch subBranch2 : branch2.getChildBranches())  {
+				// Better performance, comparing likelihood is enough to rule out most branch transitions
+				if(subBranch1.getBranchLikelihood() == subBranch2.getBranchLikelihood()) {
+					if(ISequenceElement.doSequencesMatch(subBranch1.getBranchSequence(), subBranch2.getBranchSequence())) {
+						branchesMatch = true;
+						break;
+					}
+				}
+				
+				
+			}
+			if(branchesMatch == false) {
+				return false;
+			}
+    	}
+		return true;
+    }
 
+    @Override
+    public int hashCode() {
+    	return Objects.hash(this.getClass(), this.childBranches.size());
+    }
 }

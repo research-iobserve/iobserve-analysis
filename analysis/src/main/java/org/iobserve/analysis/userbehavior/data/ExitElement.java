@@ -15,12 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
+import java.util.Objects;
+
 /**
  * States the end of a call sequence.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
-public class ExitElement implements ISequenceElement {
+public class ExitElement extends ISequenceElement {
 
     private int absoluteCount;
 
@@ -40,15 +42,17 @@ public class ExitElement implements ISequenceElement {
     public void setAbsoluteCount(final int absoluteCount) {
         this.absoluteCount = absoluteCount;
     }
-
+    
     @Override
-    public String getClassSignature() {
-        return null;
+    public boolean equals(Object o) {
+    	if(o instanceof ExitElement) {
+    		return true;
+    	}
+    	return false;
     }
-
+    
     @Override
-    public String getOperationSignature() {
-        return null;
+    public int hashCode() {
+    	return Objects.hash(this.getClass());
     }
-
 }

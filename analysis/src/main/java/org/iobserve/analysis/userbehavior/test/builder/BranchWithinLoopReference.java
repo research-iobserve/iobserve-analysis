@@ -128,33 +128,33 @@ public final class BranchWithinLoopReference {
         final BranchTransition branchTransition2 = BranchWithinLoopReference.createBranchTransition(3,
                 repositoryModelProvider, branch, correspondenceModel);
 
-        // Additional call after branch, not as specified in thesis has been commented out
-        final Optional<Correspondent> optionCorrespondent1 = correspondenceModel.getCorrespondent(
-                ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
-        final Optional<Correspondent> optionCorrespondent2 = correspondenceModel.getCorrespondent(
-                ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1]);
-        if (optionCorrespondent1.isPresent() && optionCorrespondent2.isPresent()) {
-            final Correspondent correspondent1 = optionCorrespondent1.get();
-            final EntryLevelSystemCall ratsTail1 = UsageModelBuilder
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent1);
-            final Correspondent correspondent2 = optionCorrespondent2.get();
-            final EntryLevelSystemCall ratsTail2 = UsageModelBuilder
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent2);
-            
-            UsageModelBuilder.addUserAction(loopScenarioBehaviour, ratsTail1);
-            UsageModelBuilder.addUserAction(loopScenarioBehaviour, ratsTail2);
-            UsageModelBuilder.connect(branch, ratsTail1);
-            UsageModelBuilder.connect(ratsTail1, ratsTail2);
-            UsageModelBuilder.connect(ratsTail2, loopStop);
-        }
+        // Additional call(s) after branch, not as specified in thesis, has been commented out
+//        final Optional<Correspondent> optionCorrespondent1 = correspondenceModel.getCorrespondent(
+//                ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
+//        final Optional<Correspondent> optionCorrespondent2 = correspondenceModel.getCorrespondent(
+//                ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1]);
+//        if (optionCorrespondent1.isPresent() && optionCorrespondent2.isPresent()) {
+//            final Correspondent correspondent1 = optionCorrespondent1.get();
+//            final EntryLevelSystemCall ratsTail1 = UsageModelBuilder
+//                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent1);
+//            final Correspondent correspondent2 = optionCorrespondent2.get();
+//            final EntryLevelSystemCall ratsTail2 = UsageModelBuilder
+//                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent2);
+//            
+//            UsageModelBuilder.addUserAction(loopScenarioBehaviour, ratsTail1);
+//            UsageModelBuilder.addUserAction(loopScenarioBehaviour, ratsTail2);
+//            UsageModelBuilder.connect(branch, ratsTail1);
+//            UsageModelBuilder.connect(ratsTail1, ratsTail2);
+//            UsageModelBuilder.connect(ratsTail2, loopStop);
+//        }
         
 
         // User sessions according to the reference usage model are created. Thereby, it must be
         // ensured that each iteration of the branch the branch probabilities stay the same because
         // the branch is iterated. This can be achieved by an equal number of user sessions for each
         // branch transition at each iteration of the branch
+        int countOfCallEvent2 = 0;
         int countOfCallEvent3 = 0;
-        int countOfCallEvent4 = 0;
         int entryTime = 0;
         int exitTime = 1;
         boolean branchDecision = false;
@@ -166,22 +166,22 @@ public final class BranchWithinLoopReference {
         startList.add(entryCallSequenceModel.getUserSessions());
         userSessionGroups.put(0, startList);
         
-        for(int j = 0; j < userSessionGroups.get(0).size(); j++) {
-    		for(UserSession session : userSessionGroups.get(0).get(j)) {
-    			final EntryCallEvent entryCallEvent5 = new EntryCallEvent(entryTime, exitTime,
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(j), "hostname");
-    			session.add(entryCallEvent5, true);
-    			entryTime += 2;
-                exitTime += 2;
-    		}
-    	}
+//        for(int j = 0; j < userSessionGroups.get(0).size(); j++) {
+//    		for(UserSession session : userSessionGroups.get(0).get(j)) {
+//    			final EntryCallEvent entryCallEvent5 = new EntryCallEvent(entryTime, exitTime,
+//                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
+//                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(j), "hostname");
+//    			session.add(entryCallEvent5, true);
+//    			entryTime += 2;
+//              exitTime += 2;
+//    		}
+//    	}
 
         // The loop that contains the branch
         for (int j = 0; j < numberOfLoops; j++) {
 
+            countOfCallEvent2 = 0;
             countOfCallEvent3 = 0;
-            countOfCallEvent4 = 0;
 
             final List<List<UserSession>> newUserSessionGroups = new ArrayList<>();
 
@@ -193,13 +193,13 @@ public final class BranchWithinLoopReference {
                     newUserSessionGroups.add(userSessions);
                 }
 
-                final int indexGroupCallEvent3 = newUserSessionGroups.size() - 2;
-                final int indexGroupCallEvent4 = newUserSessionGroups.size() - 1;
+                final int indexGroupCallEvent2 = newUserSessionGroups.size() - 2;
+                final int indexGroupCallEvent3 = newUserSessionGroups.size() - 1;
 
                 for (int i = 0; i < userSessionGroups.get(j).get(k).size(); i++) {
 
-                    if (newUserSessionGroups.get(indexGroupCallEvent3).size() > newUserSessionGroups
-                            .get(indexGroupCallEvent4).size()) {
+                    if (newUserSessionGroups.get(indexGroupCallEvent2).size() > newUserSessionGroups
+                            .get(indexGroupCallEvent3).size()) {
                         branchDecision = false;
                     } else {
                         branchDecision = true;
@@ -208,18 +208,19 @@ public final class BranchWithinLoopReference {
                     // The branch within the loop
                     if (branchDecision) {
                         BranchWithinLoopReference.createEntryCall(entryTime, exitTime, 2, k, j, i, userSessionGroups,
-                                newUserSessionGroups, indexGroupCallEvent3);
-                        countOfCallEvent3++;
+                                newUserSessionGroups, indexGroupCallEvent2);
+                        countOfCallEvent2++;
                         entryTime += 2;
                         exitTime += 2;
                     } else {
                         BranchWithinLoopReference.createEntryCall(entryTime, exitTime, 3, k, j, i, userSessionGroups,
-                                newUserSessionGroups, indexGroupCallEvent4);
-                        countOfCallEvent4++;
+                                newUserSessionGroups, indexGroupCallEvent3);
+                        countOfCallEvent3++;
                         entryTime += 2;
                         exitTime += 2;
                     }
-
+                    
+                 // Additional call(s) after branch, not as specified in thesis, has been commented out
 //                    final EntryCallEvent entryCallEvent5 = new EntryCallEvent(entryTime, exitTime,
 //                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
 //                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(i), "hostname");
@@ -235,20 +236,21 @@ public final class BranchWithinLoopReference {
             exitTime += 2;
         }
         
-    	for(int j = 0; j < userSessionGroups.get(0).size(); j++) {
-    		for(UserSession session : userSessionGroups.get(0).get(j)) {
-    			final EntryCallEvent entryCallEvent5 = new EntryCallEvent(entryTime, exitTime,
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1],
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], String.valueOf(j), "hostname");
-    			session.add(entryCallEvent5, true);
-    			entryTime += 2;
-                exitTime += 2;
-    		}
-    	}
+     // Additional call(s) after branch, not as specified in thesis, has been commented out
+//    	for(int j = 0; j < userSessionGroups.get(0).size(); j++) {
+//    		for(UserSession session : userSessionGroups.get(0).get(j)) {
+//    			final EntryCallEvent entryCallEvent5 = new EntryCallEvent(entryTime, exitTime,
+//                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1],
+//                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], String.valueOf(j), "hostname");
+//    			session.add(entryCallEvent5, true);
+//    			entryTime += 2;
+//                exitTime += 2;
+//    		}
+//    	}
 
         // Sets the likelihoods of branch transitions
-        final double likelihoodOfCallEvent3 = (double) countOfCallEvent3 / (double) numberOfConcurrentUsers;
-        final double likelihoodOfCallEvent4 = (double) countOfCallEvent4 / (double) numberOfConcurrentUsers;
+        final double likelihoodOfCallEvent3 = (double) countOfCallEvent2 / (double) numberOfConcurrentUsers;
+        final double likelihoodOfCallEvent4 = (double) countOfCallEvent3 / (double) numberOfConcurrentUsers;
         branchTransition1.setBranchProbability(likelihoodOfCallEvent3);
         branchTransition2.setBranchProbability(likelihoodOfCallEvent4);
 

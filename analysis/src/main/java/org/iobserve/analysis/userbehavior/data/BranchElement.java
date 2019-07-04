@@ -17,14 +17,15 @@ package org.iobserve.analysis.userbehavior.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a branch by branch transitions that is contained within a sequence. Used for branches
  * that are merged. It can be added to a sequence
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
-public class BranchElement implements ISequenceElement {
+public class BranchElement extends ISequenceElement {
 
     private List<BranchTransitionElement> branchTransitions;
 
@@ -61,15 +62,43 @@ public class BranchElement implements ISequenceElement {
     @Override
     public void setAbsoluteCount(final int absoluteCount) {
     }
-
+    
     @Override
-    public String getClassSignature() {
-        return null;
+    public boolean equals(Object o) {
+    	if(o instanceof BranchElement) {
+    		BranchElement branchElement2 = (BranchElement)o;
+        	return doBranchElementsMatch(this, branchElement2);
+        }
+    	
+    	return false;
+    }
+    
+    private static boolean doBranchElementsMatch(BranchElement branchElement1, BranchElement branchElement2) {
+    	if(branchElement1.getBranchTransitions().size() != branchElement2.getBranchTransitions().size()) {
+    		return false;
+    	}
+		for(BranchTransitionElement branchTransitionElement1 : branchElement1.getBranchTransitions()) {
+			boolean transitionsMatch = false;
+			for(BranchTransitionElement branchTransitionElement2 : branchElement2.getBranchTransitions())  {
+				// Better performance, comparing likelihood is enough to rule out most branch transitions
+				if(branchTransitionElement1.getTransitionLikelihood() == branchTransitionElement2.getTransitionLikelihood()) {
+					if(doSequencesMatch(branchTransitionElement1.getBranchSequence(), branchTransitionElement2.getBranchSequence())) {
+						transitionsMatch = true;
+						break;
+					}
+				}
+				
+				
+			}
+			if(transitionsMatch == false) {
+				return false;
+			}
+    	}
+		return true;
     }
 
     @Override
-    public String getOperationSignature() {
-        return null;
+    public int hashCode() {
+    	return Objects.hash(this.getClass(), this.branchTransitions.size());
     }
-
 }

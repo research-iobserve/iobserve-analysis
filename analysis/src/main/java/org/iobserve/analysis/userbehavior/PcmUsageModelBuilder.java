@@ -31,7 +31,6 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ISequenceElement;
-import org.iobserve.analysis.userbehavior.data.LoopBranchElement;
 import org.iobserve.analysis.userbehavior.data.LoopElement;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -52,7 +51,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  * its specific workload is created.
  *
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter, Robert Heinrich, Nicolas Boltz
  */
 public class PcmUsageModelBuilder {
 
@@ -190,9 +189,10 @@ public class PcmUsageModelBuilder {
 
             // Element is a entryLevelSystemCall
             if (branchElement.getClass().equals(CallElement.class)) {
+            	CallElement callElement = (CallElement) branchElement;
                 EntryLevelSystemCall eSysCall = null;
                 final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
-                        .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
+                        .getCorrespondent(callElement.getClassSignature(), callElement.getOperationSignature());
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                    
@@ -236,26 +236,26 @@ public class PcmUsageModelBuilder {
                 isLastElementACall = false;
                 isLastElementALoopBranch = false;
                 isLastElementABranch = false;
-            } else if (branchElement.getClass().equals(LoopBranchElement.class)) { // Element is a
-                                                                                   // looped Branch
-                final org.palladiosimulator.pcm.usagemodel.Branch loopBranch = this.createLoopBranch(scenarioBehaviour,
-                        (LoopBranchElement) branchElement);
-                if (isLastElementACall) {
-                    UsageModelBuilder.connect(lastESysCall, loopBranch);
-                } else if (isLastElementALoop) {
-                    UsageModelBuilder.connect(lastLoop, loopBranch);
-                } else if (isLastElementALoopBranch) {
-                    UsageModelBuilder.connect(lastLoopBranch, loopBranch);
-                } else if (isLastElementABranch) {
-                    UsageModelBuilder.connect(lastBranch, loopBranch);
-                } else {
-                    UsageModelBuilder.connect(start, loopBranch);
-                }
-                lastLoopBranch = loopBranch;
-                isLastElementALoopBranch = true;
-                isLastElementACall = false;
-                isLastElementALoop = false;
-                isLastElementABranch = false;
+//            } else if (branchElement.getClass().equals(LoopBranchElement.class)) { // Element is a
+//                                                                                   // looped Branch
+//                final org.palladiosimulator.pcm.usagemodel.Branch loopBranch = this.createLoopBranch(scenarioBehaviour,
+//                        (LoopBranchElement) branchElement);
+//                if (isLastElementACall) {
+//                    UsageModelBuilder.connect(lastESysCall, loopBranch);
+//                } else if (isLastElementALoop) {
+//                    UsageModelBuilder.connect(lastLoop, loopBranch);
+//                } else if (isLastElementALoopBranch) {
+//                    UsageModelBuilder.connect(lastLoopBranch, loopBranch);
+//                } else if (isLastElementABranch) {
+//                    UsageModelBuilder.connect(lastBranch, loopBranch);
+//                } else {
+//                    UsageModelBuilder.connect(start, loopBranch);
+//                }
+//                lastLoopBranch = loopBranch;
+//                isLastElementALoopBranch = true;
+//                isLastElementACall = false;
+//                isLastElementALoop = false;
+//                isLastElementABranch = false;
             } else if (branchElement.getClass().equals(BranchElement.class)) { // Element is a
                                                                                // Branch
                 final org.palladiosimulator.pcm.usagemodel.Branch branchInter = this.createBranch(scenarioBehaviour,
@@ -409,30 +409,30 @@ public class PcmUsageModelBuilder {
         return null;
     }
 
-    /**
-     * Creates a PCM branch for a LoopBranchElement.
-     *
-     * @param scenarioBehaviour
-     *            to that the PCM branch is added
-     * @param loopBranch
-     *            that is transformed to a PCM branch
-     * @return a PCM branch
-     */
-    private org.palladiosimulator.pcm.usagemodel.Branch createLoopBranch(final ScenarioBehaviour scenarioBehaviour,
-            final LoopBranchElement loopBranch) {
-
-        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
-                scenarioBehaviour);
-        for (final Branch branch : loopBranch.getLoopBranches()) {
-            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
-            final ScenarioBehaviour branchScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
-                    branch.getBranchSequence(), null);
-            branchTransition.setBranchedBehaviour_BranchTransition(branchScenarioBehaviour);
-            branchTransition.setBranch_BranchTransition(branchUM);
-            branchTransition.setBranchProbability(branch.getBranchLikelihood());
-        }
-
-        return branchUM;
-    }
+//    /**
+//     * Creates a PCM branch for a LoopBranchElement.
+//     *
+//     * @param scenarioBehaviour
+//     *            to that the PCM branch is added
+//     * @param loopBranch
+//     *            that is transformed to a PCM branch
+//     * @return a PCM branch
+//     */
+//    private org.palladiosimulator.pcm.usagemodel.Branch createLoopBranch(final ScenarioBehaviour scenarioBehaviour,
+//            final LoopBranchElement loopBranch) {
+//
+//        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
+//                scenarioBehaviour);
+//        for (final Branch branch : loopBranch.getLoopBranches()) {
+//            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
+//            final ScenarioBehaviour branchScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
+//                    branch.getBranchSequence(), null);
+//            branchTransition.setBranchedBehaviour_BranchTransition(branchScenarioBehaviour);
+//            branchTransition.setBranch_BranchTransition(branchUM);
+//            branchTransition.setBranchProbability(branch.getBranchLikelihood());
+//        }
+//
+//        return branchUM;
+//    }
 
 }
