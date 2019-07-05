@@ -12,11 +12,11 @@ if (group.isEmpty()) {
 
 dependencies {
     compile project(":adaptationdata")
-    compile project(":service")
     compile project(":stages")
 
     clover 'org.openclover:clover:4.2.0'
 
+	compile 'com.beust:jcommander:1.72'
     compile 'commons-daemon:commons-daemon:1.0.15'
     compile 'javax.json:javax.json-api:1.0'
     compile 'org.glassfish:javax.json:1.0.4'

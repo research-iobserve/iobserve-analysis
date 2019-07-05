@@ -15,16 +15,15 @@
  ***************************************************************************/
 package org.iobserve.response.time.calculator;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
+import kieker.analysis.source.ISourceCompositeStage;
 import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.tools.source.SourceStageFactory;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.service.InstantiationFactory;
-import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -38,8 +37,8 @@ public class ResponseTimeConfiguration extends Configuration {
 
     public ResponseTimeConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
             final ResponseTimeCalculatorSettings configuration) throws ConfigurationException, FileNotFoundException {
-        final ISourceCompositeStage sourceCompositeStage = InstantiationFactory.createWithConfiguration(
-                ISourceCompositeStage.class, configuration.getSourceClassName(), kiekerConfiguration);
+        final ISourceCompositeStage sourceCompositeStage = SourceStageFactory
+                .createSourceCompositeStage(kiekerConfiguration);
 
         final IEventMatcher<IFlowRecord> rootEventMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
 
@@ -47,7 +46,7 @@ public class ResponseTimeConfiguration extends Configuration {
 
         final CalculateResponseTimeStage calculateResponseTimeStage = new CalculateResponseTimeStage();
 
-        final CSVFileWriter fileWriter = new CSVFileWriter(new File("result.csv"));
+        final CSVFileWriter fileWriter = new CSVFileWriter(configuration.getOutputFile());
 
         this.connectPorts(sourceCompositeStage.getOutputPort(), eventdispatcher.getInputPort());
         this.connectPorts(rootEventMatcher.getOutputPort(), calculateResponseTimeStage.getInputPort());

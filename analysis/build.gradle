@@ -46,9 +46,10 @@ dependencies {
 
 	testCompile project(':model').sourceSets.test.output
 		
-	compile project(":service")
 	compile project(":planning.systemadaptation")
 	compile project(":adaptationdata")
+
+	compile 'com.beust:jcommander:1.72'
 
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'commons-io:commons-io:2.5'

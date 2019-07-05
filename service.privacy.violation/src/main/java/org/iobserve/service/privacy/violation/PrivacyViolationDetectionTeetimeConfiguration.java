@@ -18,6 +18,7 @@ package org.iobserve.service.privacy.violation;
 import java.io.File;
 import java.io.IOException;
 
+import kieker.analysis.source.ISourceCompositeStage;
 import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
 
@@ -36,14 +37,12 @@ import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.privacy.DataProtectionModel;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataProtectionWarner;
 import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.service.privacy.violation.filter.WhitelistFilter;
-import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -101,7 +100,7 @@ public class PrivacyViolationDetectionTeetimeConfiguration extends Configuration
         /** instantiating filters. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
         if (!sourceClassName.isEmpty()) {
-            final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
+            final ISourceCompositeStage sourceCompositeStage = kieker.common.util.classpath.InstantiationFactory
                     .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
             final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);

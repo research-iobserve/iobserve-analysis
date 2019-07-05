@@ -23,7 +23,9 @@ import com.beust.jcommander.JCommander;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-import kieker.tools.common.ParameterEvaluation;
+import kieker.tools.common.ParameterEvaluationUtils;
+
+import org.iobserve.stages.sink.CSVFileWriter;
 
 /**
  * Evaluate iobserve logs.
@@ -33,7 +35,7 @@ import kieker.tools.common.ParameterEvaluation;
  */
 public class EvaluateMain extends AbstractService<EvaluationTeetimeConfiguration, EvaluationParamterConfiguration> {
 
-    private static final String OUTPUT_FILE = EvaluateMain.class.getCanonicalName() + ".outputFile";
+    private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
 
     @Override
     protected EvaluationTeetimeConfiguration createTeetimeConfiguration() throws ConfigurationException {
@@ -59,14 +61,13 @@ public class EvaluateMain extends AbstractService<EvaluationTeetimeConfiguration
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         this.parameterConfiguration
                 .setOutputFile(new File(configuration.getStringProperty(EvaluateMain.OUTPUT_FILE, "result.csv")));
-        this.parameterConfiguration.setSourceClassName(configuration.getStringProperty("iobserve.analysis.source"));
-
-        return true;
+        return ParameterEvaluationUtils.checkDirectory(this.parameterConfiguration.getOutputFile().getParentFile(),
+                "output file", commander);
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        return ParameterEvaluation.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
+        return ParameterEvaluationUtils.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
                 "configuration file", commander);
     }
 

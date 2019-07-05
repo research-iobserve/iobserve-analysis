@@ -23,7 +23,9 @@ import com.beust.jcommander.JCommander;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-import kieker.tools.common.ParameterEvaluation;
+import kieker.tools.common.ParameterEvaluationUtils;
+
+import org.iobserve.stages.sink.CSVFileWriter;
 
 /**
  * @author Reiner Jung
@@ -31,6 +33,8 @@ import kieker.tools.common.ParameterEvaluation;
  */
 public class ResponseTimeCalculatorMain
         extends AbstractService<ResponseTimeConfiguration, ResponseTimeCalculatorSettings> {
+
+    private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
 
     /**
      * @param args
@@ -56,12 +60,15 @@ public class ResponseTimeCalculatorMain
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        return true;
+        this.parameterConfiguration.setOutputFile(
+                new File(configuration.getStringProperty(ResponseTimeCalculatorMain.OUTPUT_FILE, "result.csv")));
+        return ParameterEvaluationUtils.checkDirectory(this.parameterConfiguration.getOutputFile().getParentFile(),
+                "output file", commander);
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        return ParameterEvaluation.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
+        return ParameterEvaluationUtils.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
                 "configuration file", commander);
     }
 

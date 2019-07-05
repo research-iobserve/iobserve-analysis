@@ -15,12 +15,12 @@
  ***************************************************************************/
 package org.iobserve.collector;
 
+import kieker.analysis.source.ISourceCompositeStage;
 import kieker.common.exception.ConfigurationException;
+import kieker.tools.source.SourceStageFactory;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.service.source.ISourceCompositeStage;
-import org.iobserve.service.source.SourceStageFactory;
 import org.iobserve.stages.sink.DataSinkStage;
 
 /**

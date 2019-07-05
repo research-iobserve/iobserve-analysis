@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.em;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -30,7 +31,6 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
 
 /**
@@ -65,7 +65,7 @@ public class EMBehaviorCompositeStage extends CompositeStage implements IBehavio
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
         final String representativeStrategyClassName = configuration
                 .getStringProperty(EMBehaviorCompositeStage.REPRESENTATIVE_STRATEGY);
-        final IRepresentativeStrategy representativeStrategy = InstantiationFactory
+        final IRepresentativeStrategy representativeStrategy = InstantiationFactory.getInstance(configuration)
                 .create(IRepresentativeStrategy.class, representativeStrategyClassName, null);
         final boolean keepEmptyTransitions = true;
 

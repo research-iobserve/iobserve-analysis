@@ -25,8 +25,7 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-
-import org.iobserve.service.CommandLineParameterEvaluation;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 /**
  * Splitter main class.
@@ -75,12 +74,8 @@ public final class SplitterMain extends AbstractService<SimpleSplitterConfigurat
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.checkDirectory(this.sourceLocation, "Source", commander)
-                    && CommandLineParameterEvaluation.checkDirectory(this.targetLocation, "Target", commander);
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.checkDirectory(this.sourceLocation, "Source", commander)
+                && ParameterEvaluationUtils.checkDirectory(this.targetLocation, "Target", commander);
     }
 
     @Override

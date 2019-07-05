@@ -23,6 +23,7 @@ import com.beust.jcommander.JCommander;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.ecore.EObject;
@@ -36,7 +37,6 @@ import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.memory.MemoryModelResource;
 import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -128,12 +128,8 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
-                    "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
+                "Configuration File", commander);
     }
 
     @Override
@@ -149,49 +145,45 @@ public final class PrivacyViolationDetectionServiceMain
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         boolean configurationGood = true;
-        try {
-            /** process configuration parameter. */
-            final String modelInitDirectoryName = configuration
-                    .getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY);
-            if (modelInitDirectoryName == null) {
-                this.logger.info("Reuse PCM model in database.");
-            } else {
-                this.parameterConfiguration.setModelInitDirectory(new File(modelInitDirectoryName));
-                configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                        this.parameterConfiguration.getModelInitDirectory(),
-                        String.format("PCM startup model (%s)", ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY), commander);
-            }
 
-            this.parameterConfiguration.setModelDatabaseDirectory(
-                    new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY)));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                    this.parameterConfiguration.getModelDatabaseDirectory(),
-                    String.format("PCM database directory (%s)", ConfigurationKeys.PCM_MODEL_DB_DIRECTORY), commander);
-
-            this.parameterConfiguration
-                    .setAlarmsFile(new File(configuration.getPathProperty(PrivacyConfigurationsKeys.ALARM_FILE_PATH)));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                    this.parameterConfiguration.getAlarmsFile().getParentFile(),
-                    String.format("alarm location (%s)", PrivacyConfigurationsKeys.ALARM_FILE_PATH), commander);
-
-            this.parameterConfiguration.setWarningFile(
-                    new File(configuration.getPathProperty(PrivacyConfigurationsKeys.WARNING_FILE_PATH)));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                    this.parameterConfiguration.getWarningFile().getParentFile(),
-                    String.format("warnings location (%s)", PrivacyConfigurationsKeys.WARNING_FILE_PATH), commander);
-
-            this.parameterConfiguration.setModelDumpDirectory(
-                    new File(configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH)));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                    this.parameterConfiguration.getModelDumpDirectory().getParentFile(),
-                    String.format("model dump location (%s)", PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH),
-                    commander);
-
-            return configurationGood;
-        } catch (final IOException e) {
-            this.logger.error("Evaluating command line parameter failed.", e);
-            return false;
+        /** process configuration parameter. */
+        final String modelInitDirectoryName = configuration
+                .getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY);
+        if (modelInitDirectoryName == null) {
+            this.logger.info("Reuse PCM model in database.");
+        } else {
+            this.parameterConfiguration.setModelInitDirectory(new File(modelInitDirectoryName));
+            configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                    this.parameterConfiguration.getModelInitDirectory(),
+                    String.format("PCM startup model (%s)", ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY), commander);
         }
+
+        this.parameterConfiguration.setModelDatabaseDirectory(
+                new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY)));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                this.parameterConfiguration.getModelDatabaseDirectory(),
+                String.format("PCM database directory (%s)", ConfigurationKeys.PCM_MODEL_DB_DIRECTORY), commander);
+
+        this.parameterConfiguration
+                .setAlarmsFile(new File(configuration.getPathProperty(PrivacyConfigurationsKeys.ALARM_FILE_PATH)));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                this.parameterConfiguration.getAlarmsFile().getParentFile(),
+                String.format("alarm location (%s)", PrivacyConfigurationsKeys.ALARM_FILE_PATH), commander);
+
+        this.parameterConfiguration
+                .setWarningFile(new File(configuration.getPathProperty(PrivacyConfigurationsKeys.WARNING_FILE_PATH)));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                this.parameterConfiguration.getWarningFile().getParentFile(),
+                String.format("warnings location (%s)", PrivacyConfigurationsKeys.WARNING_FILE_PATH), commander);
+
+        this.parameterConfiguration.setModelDumpDirectory(
+                new File(configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH)));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                this.parameterConfiguration.getModelDumpDirectory().getParentFile(),
+                String.format("model dump location (%s)", PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH),
+                commander);
+
+        return configurationGood;
     }
 
 }

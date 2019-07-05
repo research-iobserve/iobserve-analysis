@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -27,7 +28,6 @@ import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.general.DecollectorStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +82,8 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
             SimilarityMatchingStage.LOGGER.error("Initialization incomplete: No structure metric strategy specified.");
             throw new ConfigurationException("Initialization incomplete: No structure metric strategy specified.");
         }
-        final IStructureMetricStrategy structureMetric = InstantiationFactory.create(IStructureMetricStrategy.class,
-                structureMetricClassName, null);
+        final IStructureMetricStrategy structureMetric = InstantiationFactory.getInstance(configuration)
+                .create(IStructureMetricStrategy.class, structureMetricClassName, null);
 
         /** For TVectorization */
         final String parameterMetricClassName = configuration
@@ -92,8 +92,8 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
             SimilarityMatchingStage.LOGGER.error("Initialization incomplete: No parameter metric strategy specified.");
             throw new ConfigurationException("Initialization incomplete: No parameter metric strategy specified.");
         }
-        final IParameterMetric parameterMetric = InstantiationFactory.create(IParameterMetric.class,
-                parameterMetricClassName, null);
+        final IParameterMetric parameterMetric = InstantiationFactory.getInstance(configuration)
+                .create(IParameterMetric.class, parameterMetricClassName, null);
 
         /** For TModelGeneration */
         final String modelStrategyClassName = configuration
@@ -102,7 +102,7 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
             SimilarityMatchingStage.LOGGER.error("Initialization incomplete: No model generation strategy specified.");
             throw new ConfigurationException("Initialization incomplete: No model generation strategy specified.");
         }
-        final IModelGenerationStrategy modelGenerationStrategy = InstantiationFactory
+        final IModelGenerationStrategy modelGenerationStrategy = InstantiationFactory.getInstance(configuration)
                 .create(IModelGenerationStrategy.class, modelStrategyClassName, null);
 
         final String prefix = "similarity";

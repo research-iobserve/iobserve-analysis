@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.clustering.birch;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -31,7 +32,6 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
-import org.iobserve.service.InstantiationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +82,13 @@ public class BirchClassificaton extends CompositeStage implements IClassificatio
         final String clusterComparisonStrategyClassName = configuration
                 .getStringProperty(ConfigurationKeys.CLUSTER_METRIC_STRATEGY);
         BirchClassificaton.LOGGER.error("clusterComparisonStrategyClassName: {}", clusterComparisonStrategyClassName);
-        final ICFComparisonStrategy clusterComparisonStrategy = InstantiationFactory.create(ICFComparisonStrategy.class,
-                clusterComparisonStrategyClassName, null);
+        final ICFComparisonStrategy clusterComparisonStrategy = InstantiationFactory.getInstance(configuration)
+                .create(ICFComparisonStrategy.class, clusterComparisonStrategyClassName, null);
         final String lmethodStrategyClassName = configuration
                 .getStringProperty(ConfigurationKeys.LMETHOD_EVAL_STRATEGY);
         BirchClassificaton.LOGGER.error("lmethodStrategyClassName: {}", lmethodStrategyClassName);
-        final ILMethodEvalStrategy evalStrategy = InstantiationFactory.create(ILMethodEvalStrategy.class,
-                lmethodStrategyClassName, null);
+        final ILMethodEvalStrategy evalStrategy = InstantiationFactory.getInstance(configuration)
+                .create(ILMethodEvalStrategy.class, lmethodStrategyClassName, null);
 
         final double leafThresholdValue = configuration.getDoubleProperty(ConfigurationKeys.LEAF_TH, -1.0);
         if (leafThresholdValue < 0) {

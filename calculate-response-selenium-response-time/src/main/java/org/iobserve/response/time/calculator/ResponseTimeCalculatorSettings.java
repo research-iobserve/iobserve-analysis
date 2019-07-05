@@ -28,17 +28,17 @@ public class ResponseTimeCalculatorSettings {
     @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
     private File configurationFile;
 
-    private String sourceClassName;
+    private File outputFile;
 
     public File getConfigurationFile() {
         return this.configurationFile;
     }
 
-    public String getSourceClassName() {
-        return this.sourceClassName;
+    public File getOutputFile() {
+        return this.outputFile;
     }
 
-    public void setSourceClassName(final String sourceClassName) {
-        this.sourceClassName = sourceClassName;
+    public void setOutputFile(final File outputFile) {
+        this.outputFile = outputFile;
     }
 }

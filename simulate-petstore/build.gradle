@@ -4,8 +4,11 @@ mainClassName='org.iobserve.simulate.petstore.SimulatePetStoreMain'
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
-
-	compile project(":service")
+	
+	compile project(":common")
+	compile project(":stages")
+	
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

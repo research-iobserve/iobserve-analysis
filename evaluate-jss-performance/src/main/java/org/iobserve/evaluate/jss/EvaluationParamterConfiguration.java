@@ -28,17 +28,7 @@ public class EvaluationParamterConfiguration {
     @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
     private File configurationFile;
 
-    private String sourceClassName;
-
     private File outputFile;
-
-    public String getSourceClassName() {
-        return this.sourceClassName;
-    }
-
-    public void setSourceClassName(final String sourceClassName) {
-        this.sourceClassName = sourceClassName;
-    }
 
     public File getConfigurationFile() {
         return this.configurationFile;

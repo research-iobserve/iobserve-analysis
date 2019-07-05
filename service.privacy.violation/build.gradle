@@ -14,7 +14,8 @@ dependencies {
 	compile project(":stages")
 	compile project(":analysis")
 	compile project(":model")
-	compile project(":service")
+
+	compile 'com.beust:jcommander:1.72'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 

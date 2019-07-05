@@ -17,13 +17,13 @@ package org.iobserve.evaluate.jss;
 
 import java.io.FileNotFoundException;
 
+import kieker.analysis.source.ISourceCompositeStage;
 import kieker.common.exception.ConfigurationException;
+import kieker.tools.source.SourceStageFactory;
 
 import teetime.framework.Configuration;
 
 import org.iobserve.common.record.MeasureEventOccurance;
-import org.iobserve.service.InstantiationFactory;
-import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -38,8 +38,8 @@ public class EvaluationTeetimeConfiguration extends Configuration {
     public EvaluationTeetimeConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
             final EvaluationParamterConfiguration configuration) throws ConfigurationException, FileNotFoundException {
 
-        final ISourceCompositeStage sourceCompositeStage = InstantiationFactory.createWithConfiguration(
-                ISourceCompositeStage.class, configuration.getSourceClassName(), kiekerConfiguration);
+        final ISourceCompositeStage sourceCompositeStage = SourceStageFactory
+                .createSourceCompositeStage(kiekerConfiguration);
 
         final IEventMatcher<MeasureEventOccurance> rootEventMatcher = new ImplementsEventMatcher<>(
                 MeasureEventOccurance.class, null);

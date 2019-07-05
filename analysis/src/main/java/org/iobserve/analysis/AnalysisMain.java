@@ -23,6 +23,7 @@ import com.beust.jcommander.JCommander;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
@@ -31,7 +32,6 @@ import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -74,35 +74,31 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         boolean configurationGood = true;
-        try {
-            this.parameterConfiguration.setPcmFeature(configuration.getBooleanProperty(ConfigurationKeys.PCM_FEATURE));
-            if (this.parameterConfiguration.isPcmFeature()) {
-                /** process configuration parameter. */
-                this.parameterConfiguration.setModelInitDirectory(
-                        new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY)));
-                if (this.parameterConfiguration.getModelInitDirectory() == null) {
-                    this.logger.info("Reuse PCM model in database.");
-                } else {
-                    configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                            this.parameterConfiguration.getModelInitDirectory(), "PCM startup model", commander);
-                }
-
-                this.parameterConfiguration.setModelDatabaseDirectory(
-                        new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY)));
-                configurationGood &= CommandLineParameterEvaluation.checkDirectory(
-                        this.parameterConfiguration.getModelDatabaseDirectory(), "PCM database directory", commander);
+        this.parameterConfiguration.setPcmFeature(configuration.getBooleanProperty(ConfigurationKeys.PCM_FEATURE));
+        if (this.parameterConfiguration.isPcmFeature()) {
+            /** process configuration parameter. */
+            this.parameterConfiguration.setModelInitDirectory(
+                    new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY)));
+            if (this.parameterConfiguration.getModelInitDirectory() == null) {
+                this.logger.info("Reuse PCM model in database.");
+            } else {
+                configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                        this.parameterConfiguration.getModelInitDirectory(), "PCM startup model", commander);
             }
 
-            if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE)) {
-                configurationGood &= CommandLineParameterEvaluation.createURL(
-                        configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
-                        "Management visualization URL") != null;
-            }
-
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
+            this.parameterConfiguration.setModelDatabaseDirectory(
+                    new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY)));
+            configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                    this.parameterConfiguration.getModelDatabaseDirectory(), "PCM database directory", commander);
         }
+
+        if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE)) {
+            configurationGood &= ParameterEvaluationUtils.createURL(
+                    configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
+                    "Management visualization URL") != null;
+        }
+
+        return configurationGood;
     }
 
     @Override
@@ -184,11 +180,7 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.getConfigurationFile(), "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.getConfigurationFile(), "Configuration File", commander);
     }
 
     @Override

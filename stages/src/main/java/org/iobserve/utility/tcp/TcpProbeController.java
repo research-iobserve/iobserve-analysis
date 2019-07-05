@@ -91,7 +91,6 @@ public class TcpProbeController implements IProbeController {
         } else {
             TcpProbeController.LOGGER.error("Received Unknown TCP control event: {}", event.getClass().getName());
         }
-
     }
 
     /**

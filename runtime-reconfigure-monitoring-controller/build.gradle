@@ -14,8 +14,9 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 
 	compile project(":analysis") // behavior model data
-	compile project(":service")
 	compile project(":monitoring")
+	
+	compile 'com.beust:jcommander:1.72'
 }
 
 // SHADOW

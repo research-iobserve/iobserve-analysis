@@ -16,15 +16,12 @@
 package org.iobserve.replayer;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
-import kieker.common.configuration.Configuration;
-import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
-import org.iobserve.service.CommandLineParameterEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,19 +75,15 @@ public final class ReplayerMain extends AbstractService<ReplayerTeetimeConfigura
     }
 
     @Override
-    protected ReplayerTeetimeConfiguration createTeetimeConfiguration() throws ConfigurationException {
+    protected ReplayerTeetimeConfiguration createTeetimeConfiguration() {
         this.configuration = new ReplayerTeetimeConfiguration(this.parameter);
         return this.configuration;
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.checkDirectory(this.parameter.getDataLocation(),
-                    "Output Kieker directory", commander);
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+    protected boolean checkParameters(final JCommander commander) {
+        return ParameterEvaluationUtils.checkDirectory(this.parameter.getDataLocation(), "Output Kieker directory",
+                commander);
     }
 
     @Override
@@ -99,7 +92,8 @@ public final class ReplayerMain extends AbstractService<ReplayerTeetimeConfigura
     }
 
     @Override
-    protected boolean checkConfiguration(final Configuration kiekerConfiguration, final JCommander commander) {
+    protected boolean checkConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
+            final JCommander commander) {
         return true;
     }
 

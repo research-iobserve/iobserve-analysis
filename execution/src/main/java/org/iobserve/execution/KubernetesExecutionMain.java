@@ -16,7 +16,6 @@
 package org.iobserve.execution;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -25,9 +24,9 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
-import org.iobserve.service.CommandLineParameterEvaluation;
 
 /**
  * Main class for iObserve's execution service.
@@ -62,29 +61,23 @@ public class KubernetesExecutionMain
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         boolean configurationGood = true;
 
-        try {
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
-                    .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
-            final File workingDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
-                    "Executionplan Directory", commander);
-            final File correspondenceModelFile = new File(workingDirectory,
-                    configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
-            configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
-                    "Correspondence Model File");
+        final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(workingDirectory, "Executionplan Directory",
+                commander);
+        final File correspondenceModelFile = new File(workingDirectory,
+                configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
+        configurationGood &= ParameterEvaluationUtils.isFileReadable(correspondenceModelFile,
+                "Correspondence Model File", commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN).isEmpty();
 
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
-        }
+        return configurationGood;
     }
 
     @Override
@@ -117,11 +110,7 @@ public class KubernetesExecutionMain
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

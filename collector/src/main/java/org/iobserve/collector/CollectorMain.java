@@ -16,7 +16,6 @@
 package org.iobserve.collector;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -25,9 +24,8 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.service.CommonConfigurationKeys;
+import kieker.tools.common.CommonConfigurationKeys;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 /**
  * The collector allows to collect input from different input sources, including TCP and Kieker
@@ -66,11 +64,7 @@ public final class CollectorMain extends AbstractService<CollectorConfiguration,
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

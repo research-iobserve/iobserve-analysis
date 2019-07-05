@@ -17,6 +17,7 @@ package org.iobserve.analysis.behavior.filter;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -36,7 +37,6 @@ import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
@@ -145,7 +145,7 @@ public class UserSessionGeneratorCompositeStage extends CompositeStage {
             UserSessionGeneratorCompositeStage.LOGGER.error("Initialization incomplete: {}", errorMessage);
             throw new ConfigurationException(String.format("Initialization incomplete: %s", errorMessage));
         }
-        return InstantiationFactory.create(clazz, className, null);
+        return InstantiationFactory.getInstance(configuration).create(clazz, className, null);
     }
 
     public InputPort<EventBasedTrace> getTraceInputPort() {
