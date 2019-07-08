@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
@@ -29,7 +30,6 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
-import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -41,8 +41,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 /**
  * BranchWithinBranchReference.
  *
- * @author David Peter -- initial contribution
- * @author Reiner Jung -- refactoring *
+ * @author Nicolas Boltz
  */
 public final class BranchWithinBranchReference {
 
@@ -87,18 +86,58 @@ public final class BranchWithinBranchReference {
 
         final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
-
+        
+        ArrayList<Integer> exteriorCallIds = new ArrayList<Integer>();
+        int[] exteriorCallAmounts = new int[numberOfTransitionsOfExteriorBranch];
+        ArrayList<List<Integer>> interiorCallIds = new ArrayList<>();
+        ArrayList<int[]> interiorCallAmounts = new ArrayList<>();
+        
+        for(int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
+        	//create 2-3 random exterior calls
+        	int operationSignature;
+        	do
+        	{
+        		operationSignature = TestHelper.getRandomInteger(49,0) % 5;
+        	} while(exteriorCallIds.contains(operationSignature));
+        	
+        	exteriorCallIds.add(operationSignature);
+        	exteriorCallAmounts[i] = 0;
+        	
+        	// create 2-3 interior calls for each
+        	// Create unique interior calls for each exterior call to prevent compacting of branches
+        	List<Integer> branchInteriorCallIds;
+        	boolean uniqueInteriorCalls;
+        	do
+        	{
+        		branchInteriorCallIds = createRandomInternalTransitionCalls(numberOfTransitionsOfInteriorBranches);
+        		uniqueInteriorCalls = true;
+            	for(int x = 0; x < i; x++) {
+            		if(compareCallLists(branchInteriorCallIds, interiorCallIds.get(x))) {
+            			uniqueInteriorCalls = false;
+            			break;
+            		}
+            	}
+        	} while(!uniqueInteriorCalls);
+        	
+        	interiorCallIds.add(branchInteriorCallIds);
+        	
+        	// Initialize interiorCallAmounts
+        	interiorCallAmounts.add(new int[numberOfTransitionsOfInteriorBranches]);
+        	for(int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
+            	interiorCallAmounts.get(i)[k] = 0;
+            }
+        }
+        
+        // optional -> Test, dass interior calls zweier pfade nicht gleich sind
+        
         final ReferenceElements referenceElements = new ReferenceElements();
 
-        final List<Integer> branchTransitionCounter = new ArrayList<>();
-        final List<List<Integer>> listOfbranchTransitionCounterInterior = new ArrayList<>();
-
-        BranchWithinBranchReference.createUserSessions(branchTransitionCounter, listOfbranchTransitionCounterInterior,
+        BranchWithinBranchReference.createUserSessions(exteriorCallIds, exteriorCallAmounts, interiorCallIds, interiorCallAmounts,
                 numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, entryCallSequenceModel);
 
         final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(repositoryModelProvider, 
         		correspondenceModel, numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, 
-        		numberOfConcurrentUsers, branchTransitionCounter, listOfbranchTransitionCounterInterior);
+        		numberOfConcurrentUsers, exteriorCallIds, exteriorCallAmounts, interiorCallIds, interiorCallAmounts);
 
         // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
         // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
@@ -108,6 +147,30 @@ public final class BranchWithinBranchReference {
         referenceElements.setUsageModel(usageModel);
 
         return referenceElements;
+    }
+    
+    private static List<Integer> createRandomInternalTransitionCalls(int numberOfInternalTransitions) {
+    	ArrayList<Integer> branchInteriorCallId = new ArrayList<Integer>();
+    	for(int k = 0; k < numberOfInternalTransitions; k++) {
+        	int internalOperationSignature;
+        	do
+        	{
+        		internalOperationSignature = TestHelper.getRandomInteger(49,0) % 5;
+        	} while(branchInteriorCallId.contains(internalOperationSignature));
+        	
+        	branchInteriorCallId.add(internalOperationSignature);
+        	
+        }
+    	
+    	return branchInteriorCallId;
+    }
+    
+    private static boolean compareCallLists(List<Integer> list1, List<Integer> list2) {
+    	if(list1.size() == list2.size()) {
+    		return list1.containsAll(list2);
+    	}
+    	
+    	return false;
     }
 
     /**
@@ -122,62 +185,54 @@ public final class BranchWithinBranchReference {
      * @param numberOfTransitionsOfInteriorBranches
      * @param entryCallSequenceModel
      */
-    private static void createUserSessions(final List<Integer> branchTransitionCounter,
-            final List<List<Integer>> listOfbranchTransitionCounterInterior,
+    private static void createUserSessions(final List<Integer> exteriorCallIds, int[] exteriorCallAmounts,
+    		final List<List<Integer>> interiorCallIds, List<int[]> interiorCallAmounts,
             final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
             final EntryCallSequenceModel entryCallSequenceModel) {
-        boolean areAllBranchesVisited = true;
-
-        do {
-            for (int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
-                branchTransitionCounter.add(i, 0);
-                final List<Integer> branchTransitionCounterInterior = new ArrayList<>();
-                for (int j = 0; j < numberOfTransitionsOfInteriorBranches; j++) {
-                    branchTransitionCounterInterior.add(j, 0);
-                }
-                listOfbranchTransitionCounterInterior.add(i, branchTransitionCounterInterior);
-            }
-            int entryTime = 1;
-
-            for (int userSessionIndex = 0; userSessionIndex < entryCallSequenceModel.getUserSessions()
-                    .size(); userSessionIndex++) {
-                entryTime = 1;
-                // Each user sessions represents randomly one of the branch transitions
-                final int branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfExteriorBranch - 1, 0);
-                if (branchDecisioner < 3) {
-                    entryTime = BranchWithinBranchReference.createBranch(branchTransitionCounter, entryTime,
-                            entryCallSequenceModel, numberOfTransitionsOfInteriorBranches,
-                            listOfbranchTransitionCounterInterior, userSessionIndex, branchDecisioner);
-                }
-            }
-            // Checks whether all branch transitions of the exterior branch are represented
-            // within
-            // the user sessions
-            for (int i = 0; i < branchTransitionCounter.size(); i++) {
-                if (branchTransitionCounter.get(i) == 0) {
-                    areAllBranchesVisited = false;
-                    break;
-                }
-            }
-            // Checks whether all branch transitions of the interior branches are represented
-            // within
-            // the user sessions
-            for (final List<Integer> branchTransitionCounterInterior : listOfbranchTransitionCounterInterior) {
-                for (int j = 0; j < branchTransitionCounterInterior.size(); j++) {
-                    if (branchTransitionCounterInterior.get(j) == 0) {
-                        areAllBranchesVisited = false;
-                        break;
-                    }
-                }
-                if (!areAllBranchesVisited) {
-                    break;
-                }
-            }
-            if (!areAllBranchesVisited) {
-                listOfbranchTransitionCounterInterior.clear();
-                branchTransitionCounter.clear();
-            }
-        } while (!areAllBranchesVisited);
+    	
+    	// Do each call path at least once
+    	int minimumSessionAmount = 0;
+    	for(int exteriorSessionIt = 0; exteriorSessionIt < exteriorCallIds.size(); exteriorSessionIt++) {
+    		for(int interiorSessionIt = 0; interiorSessionIt < interiorCallIds.get(exteriorSessionIt).size(); interiorSessionIt++) {
+    			int entryTime = 1;
+            	UserSession session = entryCallSequenceModel.getUserSessions().get(minimumSessionAmount);
+            	
+            	int exteriorBranchId = exteriorSessionIt;
+            	exteriorCallAmounts[exteriorBranchId]++;
+            	final EntryCallEvent externalBranchEvent = new EntryCallEvent(entryTime, entryTime + 1,
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[exteriorCallIds.get(exteriorBranchId)],
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[exteriorCallIds.get(exteriorBranchId)], String.valueOf(minimumSessionAmount), "hostname");
+            	session.add(externalBranchEvent, true);
+            	
+            	int internalBranchId = interiorSessionIt;
+            	interiorCallAmounts.get(exteriorBranchId)[internalBranchId]++;
+            	final EntryCallEvent internalBranchEvent = new EntryCallEvent(entryTime + 2, entryTime + 3,
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[interiorCallIds.get(exteriorBranchId).get(internalBranchId)],
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[interiorCallIds.get(exteriorBranchId).get(internalBranchId)], String.valueOf(minimumSessionAmount), "hostname");
+            	session.add(internalBranchEvent, true);
+            	minimumSessionAmount++;
+    		}
+    	}
+    	
+    	
+        for(int sessionIt = minimumSessionAmount; sessionIt < entryCallSequenceModel.getUserSessions().size(); sessionIt++) {
+        	int entryTime = 1;
+        	UserSession session = entryCallSequenceModel.getUserSessions().get(sessionIt);
+        	
+        	int exteriorBranchId = TestHelper.getRandomInteger(numberOfTransitionsOfExteriorBranch - 1, 0);
+        	exteriorCallAmounts[exteriorBranchId]++;
+        	final EntryCallEvent externalBranchEvent = new EntryCallEvent(entryTime, entryTime + 1,
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[exteriorCallIds.get(exteriorBranchId)],
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[exteriorCallIds.get(exteriorBranchId)], String.valueOf(sessionIt), "hostname");
+        	session.add(externalBranchEvent, true);
+        	
+        	int internalBranchId = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
+        	interiorCallAmounts.get(exteriorBranchId)[internalBranchId]++;
+        	final EntryCallEvent internalBranchEvent = new EntryCallEvent(entryTime + 2, entryTime + 3,
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[interiorCallIds.get(exteriorBranchId).get(internalBranchId)],
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[interiorCallIds.get(exteriorBranchId).get(internalBranchId)], String.valueOf(sessionIt), "hostname");
+        	session.add(internalBranchEvent, true);
+        }
     }
 
     /**
@@ -195,177 +250,63 @@ public final class BranchWithinBranchReference {
     private static UsageModel createTheReferenceModel(final RepositoryModelProvider repositoryModelProvider, 
     		final ICorrespondence correspondenceModel, final int numberOfTransitionsOfExteriorBranch,
     		final int numberOfTransitionsOfInteriorBranches, final int numberOfConcurrentUsers, 
-    		final List<Integer> branchTransitionCounter, final List<List<Integer>> listOfbranchTransitionCounterInterior) {
+    		final List<Integer> exteriorCallIds, int[] exteriorCallAmounts,
+    		final List<List<Integer>> interiorCallIds, List<int[]> interiorCallAmounts) {
         // In the following the reference usage model is created
-        AbstractUserAction lastAction;
-        Optional<Correspondent> optionCorrespondent;
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+    	Optional<Correspondent> optionCorrespondent;
+        final UsageModel referenceModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", referenceModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
         final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
         final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
-        lastAction = start;
-
-        // The exterior branch is created
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
-                scenarioBehaviour);
-        UsageModelBuilder.connect(lastAction, branch);
+        
+     // The exterior branch is created
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("", scenarioBehaviour);
+        UsageModelBuilder.connect(start, branch);
         UsageModelBuilder.connect(branch, stop);
-
-        // Creates branch transitions according to the random countOfBranchTransitions
-        for (int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
-            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
-            final ScenarioBehaviour branchTransitionBehaviour = branchTransition
-                    .getBranchedBehaviour_BranchTransition();
-            branchTransition
-                    .setBranchProbability((double) branchTransitionCounter.get(i) / (double) numberOfConcurrentUsers);
+        
+        for(int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
+        	final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
+            final ScenarioBehaviour branchTransitionBehaviour = branchTransition.getBranchedBehaviour_BranchTransition();
+            branchTransition.setBranchProbability((double) exteriorCallAmounts[i] / (double) numberOfConcurrentUsers);
             final Start startBranchTransition = UsageModelBuilder.createStart("");
             UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
             final Stop stopBranchTransition = UsageModelBuilder.createStop("");
             UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
-            lastAction = startBranchTransition;
-            if ((i >= 0) && (i < 3)) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
-            } else {
-                throw new IllegalArgumentException("Illegal value of model element parameter");
-            }
+            optionCorrespondent = correspondenceModel.getCorrespondent(
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[exteriorCallIds.get(i)],
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[exteriorCallIds.get(i)]);
+            final org.palladiosimulator.pcm.usagemodel.Branch internalBranch = UsageModelBuilder.createBranch("", branchTransitionBehaviour);
             if (optionCorrespondent.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
                         .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
                 UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
-                lastAction = entryLevelSystemCall;
+                UsageModelBuilder.connect(startBranchTransition, entryLevelSystemCall);
+                UsageModelBuilder.connect(entryLevelSystemCall, internalBranch);
+                UsageModelBuilder.connect(internalBranch, stopBranchTransition);
             }
-
-            // The interior branch is created
-            final org.palladiosimulator.pcm.usagemodel.Branch branchInterior = UsageModelBuilder.createBranch("",
-                    branchTransitionBehaviour);
-            UsageModelBuilder.connect(lastAction, branchInterior);
-            UsageModelBuilder.connect(branchInterior, stopBranchTransition);
-
-            for (int j = 0; j < numberOfTransitionsOfInteriorBranches; j++) {
-                final BranchTransition branchTransitionInterior = UsageModelBuilder
-                        .createBranchTransition(branchInterior);
-                final ScenarioBehaviour branchTransitionBehaviourInterior = branchTransitionInterior
-                        .getBranchedBehaviour_BranchTransition();
-                branchTransitionInterior
-                        .setBranchProbability((double) listOfbranchTransitionCounterInterior.get(i).get(j)
-                                / (double) branchTransitionCounter.get(i));
-
-                final Start startBranchTransitionInterior = UsageModelBuilder.createAddStartAction("",
-                        branchTransitionBehaviourInterior);
-                final Stop stopBranchTransitionInterior = UsageModelBuilder.createAddStopAction("",
-                        branchTransitionBehaviourInterior);
-                lastAction = startBranchTransitionInterior;
-                switch (j) {
-                case 0:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
-                    break;
-                case 1:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
-                    break;
-                case 2:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Illegal value of model element parameter");
-                }
+            
+            for(int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
+            	final BranchTransition internalBranchTransition = UsageModelBuilder.createBranchTransition(internalBranch);
+                final ScenarioBehaviour internalBranchTransitionBehaviour = internalBranchTransition.getBranchedBehaviour_BranchTransition();
+                internalBranchTransition.setBranchProbability((double) interiorCallAmounts.get(i)[k] / (double) exteriorCallAmounts[i]);
+                final Start startInternalBranchTransition = UsageModelBuilder.createStart("");
+                UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, startInternalBranchTransition);
+                final Stop stopInternalBranchTransition = UsageModelBuilder.createStop("");
+                UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, stopInternalBranchTransition);
+                optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[interiorCallIds.get(i).get(k)],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[interiorCallIds.get(i).get(k)]);
                 if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
-                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                    UsageModelBuilder.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
-                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
-                    lastAction = entryLevelSystemCall;
+                            .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
+                    UsageModelBuilder.addUserAction(internalBranchTransitionBehaviour, entryLevelSystemCall);
+                    UsageModelBuilder.connect(startInternalBranchTransition, entryLevelSystemCall);
+                    UsageModelBuilder.connect(entryLevelSystemCall, stopInternalBranchTransition);
                 }
-                UsageModelBuilder.connect(lastAction, stopBranchTransitionInterior);
-
             }
         }
 
-        return usageModel;
-    }
-
-    /**
-     * Create a branch.
-     *
-     * @param branchTransitionCounter
-     * @param entryTime
-     * @param entryCallSequenceModel
-     * @param numberOfTransitionsOfInteriorBranches
-     * @param listOfbranchTransitionCounterInterior
-     * @param userSessionIndex
-     * @param operationId
-     * @return
-     */
-    private static int createBranch(final List<Integer> branchTransitionCounter, final int entryTime,
-            final EntryCallSequenceModel entryCallSequenceModel, final int numberOfTransitionsOfInteriorBranches,
-            final List<List<Integer>> listOfbranchTransitionCounterInterior, final int userSessionIndex,
-            final int operationId) {
-        final int countOfBranchTransition = branchTransitionCounter.get(operationId) + 1;
-        branchTransitionCounter.set(operationId, countOfBranchTransition);
-        final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
-                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[operationId],
-                ReferenceUsageModelBuilder.CLASS_SIGNATURE[operationId], String.valueOf(userSessionIndex), "hostname");
-        entryCallSequenceModel.getUserSessions().get(userSessionIndex).add(entryCallEvent, true);
-
-        int branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
-        for (int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
-            if (listOfbranchTransitionCounterInterior.get(operationId).get(k) == 0) {
-                branchDecisioner = k;
-                break;
-            }
-        }
-        // Within the branch transition again a random branch transition is chosen
-        if (branchDecisioner == 0) {
-            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 0, 0,
-                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
-        } else if (branchDecisioner == 1) {
-            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 1, 3,
-                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
-        } else if (branchDecisioner == 2) {
-            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 2, 4,
-                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
-        } else {
-            return entryTime + 2;
-        }
-    }
-
-    /**
-     * Helper function to create and add an entry call event to a call sequence model.
-     *
-     * @param index
-     *            user session index
-     * @param branchDecisioner
-     *            branch decision
-     * @param entryCallSequenceModel
-     *            the sequence call model
-     * @param entryTime
-     *            call entry time
-     * @param exitTime
-     *            call exit time
-     * @param listOfbranchTransitionCounterInterior
-     *            list of iterators
-     */
-    private static int createEntryCallEventForBranch(final int index, final int iteratorId, final int branchDecisioner,
-            final int signatureId, final EntryCallSequenceModel entryCallSequenceModel, final int entryTime,
-            final List<List<Integer>> listOfbranchTransitionCounterInterior) {
-        final int countOfBranchTransition = listOfbranchTransitionCounterInterior.get(iteratorId).get(branchDecisioner)
-                + 1;
-        listOfbranchTransitionCounterInterior.get(iteratorId).set(branchDecisioner, countOfBranchTransition);
-        final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
-                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[signatureId],
-                ReferenceUsageModelBuilder.CLASS_SIGNATURE[signatureId], String.valueOf(index), "hostname");
-        entryCallSequenceModel.getUserSessions().get(index).add(entryCallEvent, true);
-
-        return entryTime + 2;
+        return referenceModel;
     }
 }

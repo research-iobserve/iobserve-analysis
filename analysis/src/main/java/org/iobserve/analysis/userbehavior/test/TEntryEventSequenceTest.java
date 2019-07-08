@@ -25,7 +25,6 @@ import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinBranchReference;
-import org.iobserve.analysis.userbehavior.test.builder.BranchWithinBranchReference2;
 import org.iobserve.analysis.userbehavior.test.builder.BranchWithinLoopReference;
 import org.iobserve.analysis.userbehavior.test.builder.CallSequenceScalabilityReference;
 import org.iobserve.analysis.userbehavior.test.builder.LoopWithinBranchReference;
@@ -217,7 +216,7 @@ public final class TEntryEventSequenceTest {
         List<AccuracyResults> results = new ArrayList<>();
         
         for (int i = 1; i <= NUMBER_OF_ITERATIONS_PER_TEST; i += STEP_SIZE) {
-            ReferenceElements referenceElements = BranchWithinBranchReference2.getModel(
+            ReferenceElements referenceElements = BranchWithinBranchReference.getModel(
                     REFERENCE_USAGE_MODEL ,repositoryModelProvider, correspondenceModel);
             
             UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
