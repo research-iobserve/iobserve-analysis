@@ -14,6 +14,8 @@ import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 /**
  * This class contains all functionality to compact an existing BranchModel, by performing an depth search approach.
  * The branch tree is iterated and compacted bottom up, merging equal (parts of) child branches.
+ * Branch Elements are inserted in the branches sequence and the child branches are removed,
+ * resulting in the complete branch sequence in the root branch of the branch model.
  * 
  * @author Nicolas Boltz
  * @author Robert Heinrich

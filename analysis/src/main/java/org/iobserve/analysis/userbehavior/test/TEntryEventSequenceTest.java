@@ -46,7 +46,7 @@ public final class TEntryEventSequenceTest {
     private static final int NUMBER_OF_USER_GROUPS = 1;
     private static final boolean CLOSED_WORKLOAD = true;
     private static final int VARIANCE_OF_USER_GROUPS = 0;
-    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 500;//1;
+    private static final int NUMBER_OF_ITERATIONS_PER_TEST = 5000;//1, 500;
     private static final int STEP_SIZE = 1;
 
     private static final String TEST_FOLDER = "D:\\Dokumente\\Uni\\HiWi\\UsageBehaviourTransformationTest\\TEntryEventSequenceTest\\";
@@ -80,12 +80,13 @@ public final class TEntryEventSequenceTest {
 	    	testOverlappingIteration();
 	    	System.out.println("Start LoopWithinLoop test");
 	    	testLoopWithinLoop();
-			System.out.println("Start BranchWithinBranch test");
-	    	testBranchWithinBranch();
 			System.out.println("Start LoopWithinBranch test");
 	    	testLoopWithinBranch();
 	    	System.out.println("Start BranchWithinLoop test");
 			testBranchWithinLoop();
+	    	System.out.println("Start BranchWithinBranch test");
+	    	testBranchWithinBranch();
+
 
 		
 		} catch (IOException e) {
@@ -125,6 +126,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleSequenceAccuracy");
@@ -147,6 +152,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleBranchAccuracy");
@@ -169,6 +178,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "SimpleLoopAccuracy");
@@ -191,6 +204,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "OverlappingIterationAccuracy");
@@ -213,6 +230,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinBranchAccuracy");
@@ -235,6 +256,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinBranchAccuracy");
@@ -257,6 +282,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "LoopWithinLoopAccuracy");
@@ -279,6 +308,10 @@ public final class TEntryEventSequenceTest {
             results.add(accuracyResults);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), OUTPUT_USAGE_MODEL);
+            
+            if (accuracyResults.getJc() != 1.0 || accuracyResults.getSrcc() != 1.0) {
+            	System.out.println("Error in Usage Modelling");
+            }
         }
 
         TestHelper.writeAccuracyResults(results, TEST_RESULTS_FOLDER + "BranchWithinLoopAccuracy");
