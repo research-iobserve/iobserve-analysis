@@ -80,23 +80,19 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        chain.doFilter(request, response);
-
         if (AccessControlFilter.CTRLINST.isMonitoringEnabled()) {
             if (request instanceof HttpServletRequest) {
                 final String remoteAddr = request.getRemoteAddr();
-                if (this.isInList(EListType.WHITELIST, remoteAddr,
-                        this.computeOperationSignature((HttpServletRequest) request))) {
+                final String operationSignature = this.computeOperationSignature((HttpServletRequest) request);
+                if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
                     chain.doFilter(request, response);
-                } else if (this.isInList(EListType.BLACKLIST, remoteAddr,
-                        this.computeOperationSignature((HttpServletRequest) request))) {
+                } else if (this.isInList(EListType.BLACKLIST, remoteAddr, operationSignature)) {
                     ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
                     chain.doFilter(request, response);
                 } else {
                     try {
                         Thread.sleep(200);
-                        if (this.isInList(EListType.WHITELIST, remoteAddr,
-                                this.computeOperationSignature((HttpServletRequest) request))) {
+                        if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
                             chain.doFilter(request, response);
                         } else {
                             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
