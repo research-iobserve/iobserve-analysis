@@ -40,6 +40,13 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
     private final int port;
     private final List<String> whitelist;
 
+    private final String[] operations = new String[] { "/jpetstore-account/request-user",
+            "/jpetstore-account/request-user", "/jpetstore-account/update-account",
+            "/jpetstore-account/insert-account" };
+
+    private final String[][] parameters = new String[][] { { "username", "password" }, { "username" }, { "Object" },
+            { "Object" } };
+
     public GenerateConfiguration(final String host, final int port, final List<String> whitelist, final long whiteStart,
             final long whiteEnd, final long blackStart, final long blackEnd) {
         this.host = host;
@@ -56,69 +63,42 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
         AbstractTcpControlEvent element;
 
         final String hostname = "account-service";
-        final String operationSignature = this.createOperationSignaturePattern(new String[] { "public" }, "void",
-                "org.mybatis.jpetstore.AccountService", "userRequest", new String[] { "String", "String" });
-        final long triggerTimestamp = 0;
-        final Map<String, List<String>> parameters = new HashMap<>();
-        final List<String> blacklist = new ArrayList<>();
 
-        this.populateList(blacklist, this.blackStart, this.blackEnd);
+        for (int i = 0; i < this.operations.length; i++) {
+            final String operationSignature = this.createSignaturePattern(this.operations[i], this.parameters[i]);
+            final long triggerTimestamp = 0;
+            final Map<String, List<String>> parameters = new HashMap<>();
+            final List<String> blacklist = new ArrayList<>();
 
-        parameters.put(EListType.BLACKLIST.name(), blacklist);
+            this.populateList(blacklist, this.blackStart, this.blackEnd);
 
-        final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
+            parameters.put(EListType.BLACKLIST.name(), blacklist);
 
-        completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
-        this.populateList(blacklist, this.whiteStart, this.whiteEnd);
+            final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
 
-        parameters.put(EListType.WHITELIST.name(), completeWhitelist);
+            completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
+            this.populateList(blacklist, this.whiteStart, this.whiteEnd);
 
-        element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
-                triggerTimestamp, parameters);
+            parameters.put(EListType.WHITELIST.name(), completeWhitelist);
 
-        this.outputPort.send(element);
+            element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
+                    triggerTimestamp, parameters);
 
+            this.outputPort.send(element);
+        }
         this.workCompleted();
     }
 
-    private String createOperationSignaturePattern(final String[] modifiers, final String returnTypeName,
-            final String className, final String operationName, final String[] parameters) {
-        String result = "";
-
-        if (modifiers != null) {
-            if (modifiers.length > 0) {
-                for (final String modifier : modifiers) {
-                    result += modifier + " ";
-                }
+    private String createSignaturePattern(final String uri, final String[] parameters) {
+        String parameterSequence = "";
+        for (final String parameter : parameters) {
+            if ("".equals(parameterSequence)) {
+                parameterSequence = parameter;
             } else {
-                result += "default ";
+                parameterSequence += ", " + parameter;
             }
-        } else {
-            result += "default ";
         }
-
-        if (returnTypeName == null) {
-            result += "void ";
-        } else {
-            result += returnTypeName + " ";
-        }
-
-        if (className == null || operationName == null) {
-            throw new InternalError("Class and operation names are required.");
-        } else {
-            result += className + "." + operationName;
-        }
-
-        result += "(";
-        if (parameters != null) {
-            for (final String type : parameters) {
-                result += type + ",";
-            }
-            result = result.substring(0, result.lastIndexOf(','));
-        }
-        result += ")";
-
-        return result;
+        return String.format("%s (%s)", uri, parameterSequence);
     }
 
     private void populateList(final List<String> list, final long start, final long end) {
