@@ -20,6 +20,7 @@ import java.util.Map;
 
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
+import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
 import teetime.framework.AbstractConsumerStage;
@@ -47,11 +48,24 @@ public class CalculateResponseTimeStage extends AbstractConsumerStage<IFlowRecor
         if (element instanceof BeforeOperationEvent) {
             final BeforeOperationEvent event = (BeforeOperationEvent) element;
             this.map.put(event.getTraceId(), event.getTimestamp());
+        } else if (element instanceof AfterOperationFailedEvent) {
+            final AfterOperationEvent event = (AfterOperationEvent) element;
+            final long responseTime = event.getTimestamp() - this.map.remove(event.getTraceId());
+            this.output.clear();
+            this.output.put("time", event.getTimestamp());
+            this.output.put("event-type", "AfterOperationFailedEvent");
+            this.output.put("operation", event.getOperationSignature());
+            this.output.put("task", event.getClassSignature());
+            this.output.put("response-time", responseTime);
+            this.outputPort.send(this.output);
         } else if (element instanceof AfterOperationEvent) {
             final AfterOperationEvent event = (AfterOperationEvent) element;
             final long responseTime = event.getTimestamp() - this.map.remove(event.getTraceId());
             this.output.clear();
+            this.output.put("time", event.getTimestamp());
+            this.output.put("event-type", "AfterOperationEvent");
             this.output.put("operation", event.getOperationSignature());
+            this.output.put("task", event.getClassSignature());
             this.output.put("response-time", responseTime);
             this.outputPort.send(this.output);
         }

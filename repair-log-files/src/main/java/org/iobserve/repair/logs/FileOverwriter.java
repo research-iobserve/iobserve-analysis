@@ -63,7 +63,7 @@ public class FileOverwriter extends AbstractConsumerStage<String> {
             this.input.renameTo(new File(this.input.getPath() + ".old"));
             this.tempFile.renameTo(oldInputFile);
         } catch (final IOException e) {
-            this.logger.error("IO error while terminating.");
+            this.logger.error("IO error while terminating.", e);
         }
         super.onTerminating();
     }
