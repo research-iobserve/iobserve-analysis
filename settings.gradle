@@ -11,7 +11,9 @@ include "common", "monitoring", "model", "stages",
         "simulate-petstore",
         "runtime-reconfigure-monitoring-controller",
         "calculate-response-selenium-response-time",
-	"repair-log-files"
+	"repair-log-files",
+	"drive-accounting",
+	"calculate-reconfigure-time"
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"
