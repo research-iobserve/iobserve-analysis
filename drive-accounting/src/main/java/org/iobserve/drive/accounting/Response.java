@@ -15,20 +15,26 @@
  ***************************************************************************/
 package org.iobserve.drive.accounting;
 
-import java.net.URL;
-
-import com.beust.jcommander.Parameter;
-
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
-public class AccountDriverSettings {
+public class Response {
+    private final int responseCode;
 
-    @Parameter(names = { "-u", "--url" }, required = true, description = "Component request URL")
-    private URL url;
+    private final char[] responseMessage;
 
-    public URL getUrl() {
-        return this.url;
+    public Response(final int responseCode, final char[] responseMessage) {
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
+    }
+
+    public int getResponseCode() {
+        return this.responseCode;
+    }
+
+    public char[] getResponseMessage() {
+        return this.responseMessage;
     }
 }

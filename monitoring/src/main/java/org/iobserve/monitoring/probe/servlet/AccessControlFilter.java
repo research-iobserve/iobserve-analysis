@@ -129,9 +129,16 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
         if ("GET".equals(request.getMethod())) {
             parameters = this.createParameters(request);
         } else {
-            if ("application/json".equals(request.getContentType())) {
+            String contentType = request.getContentType();
+            final int semicolon = contentType.indexOf(";");
+            if (semicolon > 0) {
+                contentType = contentType.substring(0, semicolon).trim();
+            } else {
+                contentType = contentType.trim();
+            }
+            if ("application/json".equals(contentType)) {
                 parameters = "Object";
-            } else if ("application/x-www-form-urlencoded".equals(request.getContentType())) {
+            } else if ("application/x-www-form-urlencoded".equals(contentType)) {
                 parameters = this.createParameters(request);
             } else {
                 parameters = "<unknown mime type>";

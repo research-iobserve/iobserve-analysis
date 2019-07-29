@@ -38,7 +38,9 @@ public class DrivePipelineConfiguration extends Configuration {
     public DrivePipelineConfiguration(final URL url) throws IOException {
         final GenerateAccountingRequests accountingRequests = new GenerateAccountingRequests();
         final SendRequests jsonRequest = new SendRequests(url);
+        final LogResponses logResponses = new LogResponses();
 
         this.connectPorts(accountingRequests.getOutputPort(), jsonRequest.getInputPort());
+        this.connectPorts(jsonRequest.getOutputPort(), logResponses.getInputPort());
     }
 }

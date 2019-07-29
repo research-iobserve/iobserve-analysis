@@ -15,20 +15,25 @@
  ***************************************************************************/
 package org.iobserve.drive.accounting;
 
-import java.net.URL;
+import kieker.monitoring.probe.aspectj.flow.operationExecution.AbstractAspect;
 
-import com.beust.jcommander.Parameter;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 
 /**
  * @author Reiner Jung
  *
  */
-public class AccountDriverSettings {
+@Aspect
+public class DriverMonitoringProbe extends AbstractAspect {
 
-    @Parameter(names = { "-u", "--url" }, required = true, description = "Component request URL")
-    private URL url;
+    public DriverMonitoringProbe() {
+        // empty default constructor
+    }
 
-    public URL getUrl() {
-        return this.url;
+    // @Override
+    @Pointcut("(call(* org.iobserve.drive.accounting.HttpRequestUtils.get(..)) || call(* org.iobserve.drive.accounting.HttpRequestUtils.post(..))) && noGetterAndSetter()")
+    public void monitoredOperation() {
+        // Aspect Declaration (MUST be empty)
     }
 }

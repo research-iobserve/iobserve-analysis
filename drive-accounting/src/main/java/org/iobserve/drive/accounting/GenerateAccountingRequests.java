@@ -23,16 +23,19 @@ import teetime.framework.AbstractProducerStage;
  */
 public class GenerateAccountingRequests extends AbstractProducerStage<Object> {
 
+    private static final int REPEAT_REQUESTS = 100000;
+
     int count = 0;
 
     @Override
     protected void execute() throws Exception {
-        if (this.count < 100000) {
+        if (this.count < GenerateAccountingRequests.REPEAT_REQUESTS) {
             this.createLoginRequest();
             this.createChangeRequest();
         } else {
             this.workCompleted();
         }
+        this.count++;
     }
 
     private void createLoginRequest() {

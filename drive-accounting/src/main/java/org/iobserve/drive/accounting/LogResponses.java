@@ -15,20 +15,17 @@
  ***************************************************************************/
 package org.iobserve.drive.accounting;
 
-import java.net.URL;
-
-import com.beust.jcommander.Parameter;
+import teetime.framework.AbstractConsumerStage;
 
 /**
  * @author Reiner Jung
  *
  */
-public class AccountDriverSettings {
+public class LogResponses extends AbstractConsumerStage<Response> {
 
-    @Parameter(names = { "-u", "--url" }, required = true, description = "Component request URL")
-    private URL url;
-
-    public URL getUrl() {
-        return this.url;
+    @Override
+    protected void execute(final Response element) throws Exception {
+        this.logger.info("Response core {} content {}", element.getResponseCode(),
+                String.valueOf(element.getResponseMessage()));
     }
 }

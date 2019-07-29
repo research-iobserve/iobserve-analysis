@@ -23,7 +23,6 @@ import com.beust.jcommander.JCommander;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-import kieker.tools.common.ParameterEvaluationUtils;
 
 /**
  * @author Reiner Jung
@@ -68,8 +67,7 @@ public class DriveAccountingMain extends AbstractService<DrivePipelineConfigurat
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        return ParameterEvaluationUtils.isFileReadable(this.parameterConfiguration.getInput(), "Log input file",
-                commander);
+        return true;
     }
 
     @Override
