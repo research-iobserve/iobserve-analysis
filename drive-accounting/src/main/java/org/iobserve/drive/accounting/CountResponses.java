@@ -38,7 +38,7 @@ public class CountResponses extends AbstractConsumerStage<Response> {
 
     @Override
     protected void execute(final Response element) throws Exception {
-        if (element.getResponseCode() >= 200 && element.getResponseCode() >= 299) {
+        if (element.getResponseCode() >= 200 && element.getResponseCode() <= 299) {
             this.count++;
             if (this.count % this.reportModulo == 0) {
                 this.logger.info("Response count {}", this.count);

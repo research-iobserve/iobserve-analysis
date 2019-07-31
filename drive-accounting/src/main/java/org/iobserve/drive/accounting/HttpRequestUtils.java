@@ -72,7 +72,13 @@ public final class HttpRequestUtils {
             }
         }
 
-        return new URL(urlString.substring(0, urlString.length() - 1));
+        final char last = urlString.charAt(urlString.length() - 1);
+
+        if (last == '&' || last == '=') {
+            urlString = urlString.substring(0, urlString.length() - 1);
+        }
+
+        return new URL(urlString);
     }
 
     /**
