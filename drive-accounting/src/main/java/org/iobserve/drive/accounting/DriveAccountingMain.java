@@ -49,7 +49,7 @@ public class DriveAccountingMain extends AbstractService<DrivePipelineConfigurat
     @Override
     protected DrivePipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new DrivePipelineConfiguration(this.parameterConfiguration.getUrl());
+            return new DrivePipelineConfiguration(this.parameterConfiguration);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -67,6 +67,12 @@ public class DriveAccountingMain extends AbstractService<DrivePipelineConfigurat
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        if (this.parameterConfiguration.getDelay() == null) {
+            this.parameterConfiguration.setDelay(1000);
+        }
+        if (this.parameterConfiguration.getRepetition() == null) {
+            this.parameterConfiguration.setRepetition(1);
+        }
         return true;
     }
 

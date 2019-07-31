@@ -34,8 +34,19 @@ public class SendRequests extends AbstractConsumerStage<Object> {
 
     private final URL url;
 
-    public SendRequests(final URL url) {
+    private final int delay;
+
+    /**
+     * Send requests with a predefined delay in between.
+     *
+     * @param url
+     *            request base url
+     * @param delay
+     *            delay between two requests. if null, delay is set to 1000 ms
+     */
+    public SendRequests(final URL url, final int delay) {
         this.url = url;
+        this.delay = delay;
     }
 
     /*
@@ -44,12 +55,13 @@ public class SendRequests extends AbstractConsumerStage<Object> {
      * @see teetime.framework.AbstractConsumerStage#execute(java.lang.Object)
      */
     @Override
-    protected void execute(final Object element) throws Exception {
+    protected void execute(final Object element) throws IOException, InterruptedException {
         if (element instanceof Login) {
             this.outputPort.send(this.sendLogin((Login) element));
         } else if (element instanceof Account) {
             this.outputPort.send(this.sendAccount((Account) element));
         }
+        Thread.sleep(this.delay);
     }
 
     private Response sendLogin(final Login element) throws IOException {

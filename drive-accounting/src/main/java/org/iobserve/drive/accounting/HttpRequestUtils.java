@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
@@ -43,6 +42,19 @@ public final class HttpRequestUtils {
         // nothing to do factory
     }
 
+    /**
+     * Create a complete URL based on a base url, an operation handle and a sequence of parameters.
+     *
+     * @param baseUrl
+     *            base url
+     * @param operation
+     *            operation
+     * @param parameters
+     *            sequence of parameter names and values
+     * @return the complete URL
+     * @throws MalformedURLException
+     *             on errors when forming the URL
+     */
     public static URL createUrl(final URL baseUrl, final String operation, final String... parameters)
             throws MalformedURLException {
         String urlString = baseUrl.toString() + "/" + operation;
@@ -60,11 +72,18 @@ public final class HttpRequestUtils {
             }
         }
 
-        final URL completeUrl = new URL(urlString);
-
-        return completeUrl;
+        return new URL(urlString.substring(0, urlString.length() - 1));
     }
 
+    /**
+     * Create a get request.
+     *
+     * @param url
+     *            url for the request
+     * @return response
+     * @throws IOException
+     *             on io errors
+     */
     public static Response get(final URL url) throws IOException {
         HttpRequestUtils.LOGGER.debug("Get {}", url.toString());
 
@@ -85,6 +104,7 @@ public final class HttpRequestUtils {
      *            url
      * @param value
      *            data
+     * @return response
      * @throws IOException
      *             if the input stream could not be read
      */
@@ -121,7 +141,7 @@ public final class HttpRequestUtils {
 
         final char[] message;
         if (responseCode != 204) {
-            if ((responseCode >= 200) && (responseCode <= 299)) {
+            if (responseCode >= 200 && responseCode <= 299) {
                 message = HttpRequestUtils.readData(connection.getInputStream(), connection.getContentLength());
 
                 HttpRequestUtils.LOGGER.debug("HTTP response message {}", String.valueOf(message));
@@ -137,14 +157,13 @@ public final class HttpRequestUtils {
     }
 
     private static char[] readData(final InputStream inputStream, final int contentLength) throws IOException {
-        final CharBuffer buffer = CharBuffer.allocate(contentLength);
+        final char[] buffer = new char[contentLength];
 
         final BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
-        while ((input.read(buffer) != -1) && (buffer.position() < contentLength)) {
-        }
-        buffer.flip();
+        input.read(buffer, 0, contentLength);
         input.close();
-        return buffer.array();
+
+        return buffer;
     }
 
 }

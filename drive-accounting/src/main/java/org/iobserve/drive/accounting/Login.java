@@ -18,12 +18,21 @@ package org.iobserve.drive.accounting;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public class Login {
 
     private String username;
     private String password;
 
+    /**
+     * Creating a login.
+     *
+     * @param username
+     *            user name
+     * @param password
+     *            password
+     */
     public Login(final String username, final String password) {
         this.username = username;
         this.password = password;

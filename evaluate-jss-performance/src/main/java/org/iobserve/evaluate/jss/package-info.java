@@ -13,21 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.utility.tcp.events;
-
-import java.util.List;
-import java.util.Map;
-
-/**
- * Interface for events that contain parameters.
- *
- * @author Marc Adolf
- *
- */
-public interface IParameterEvent {
-
-    /**
-     * @return returns a map of parameter names to lists of values
-     */
-    public Map<String, List<String>> getParameters();
-}
+package org.iobserve.evaluate.jss;

@@ -23,16 +23,20 @@ import org.aspectj.lang.annotation.Pointcut;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 @Aspect
 public class DriverMonitoringProbe extends AbstractAspect {
 
+    /** Aspect constructor. */
     public DriverMonitoringProbe() {
         // empty default constructor
     }
 
-    // @Override
-    @Pointcut("(call(* org.iobserve.drive.accounting.HttpRequestUtils.get(..)) || call(* org.iobserve.drive.accounting.HttpRequestUtils.post(..))) && noGetterAndSetter()")
+    /**
+     * pointcut to monitor responses.
+     */
+    @Pointcut("(call(* org.iobserve.drive.accounting.HttpRequestUtils.get(..)) || call(* org.iobserve.drive.accounting.HttpRequestUtils.post(..)))")
     public void monitoredOperation() {
         // Aspect Declaration (MUST be empty)
     }

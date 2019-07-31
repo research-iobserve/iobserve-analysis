@@ -41,7 +41,8 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      *            The operation signature of the method that should be monitored.
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
-     *
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
     public TcpActivationParameterControlEvent(final String ip, final int port, final String hostname,
             final String operationSignature, final long triggerTimestamp, final Map<String, List<String>> parameters) {
@@ -55,6 +56,8 @@ public class TcpActivationParameterControlEvent extends TcpActivationControlEven
      *
      * @param operationSignature
      *            The operation signature of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      */

@@ -33,7 +33,6 @@ import org.iobserve.utility.tcp.TcpProbeController;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,55 +128,6 @@ public class TcpProbeControllerTest {
 
     }
 
-    // interface changes have to rework test
-    @Ignore
-    @Test(timeout = 30000)
-    public void testActivateParameterPatternAndUpdate() throws RemoteControlFailedException {
-        final Map<String, Boolean> state = TcpProbeControllerTest.listener.getState();
-        final Map<String, Map<String, List<String>>> recordedParameters = TcpProbeControllerTest.listener
-                .getRecordedParameters();
-
-        final String testPattern = "update.pattern";
-
-        final String[] parameterNames = new String[] { "Pos1", "Pos2" };
-        final String[][] parameters = new String[][] {
-                { "Pos1Parameter1", "Pos1Parameter2", "Pos1Parameter3", "Pos1Parameter4" },
-                { "Pos2Parameter1", "Pos2Parameter2", "Pos2Parameter3", "Pos2Parameter4" } };
-
-        final Map<String, List<String>> exampleParameter = new HashMap<>();
-        exampleParameter.put(parameterNames[0], Arrays.asList(parameters[0]));
-        exampleParameter.put(parameterNames[1], Arrays.asList(parameters[1]));
-
-        Assert.assertFalse(state.containsKey(testPattern));
-
-        TcpProbeControllerTest.tcpProbeController.activateOperationMonitoringWithParameters(
-                TcpProbeControllerTest.LOCALHOST_IP, TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST,
-                testPattern, exampleParameter);
-
-        Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(TcpProbeControllerTest.LOCALHOST_IP,
-                TcpProbeControllerTest.PORT));
-        // wait for the other thread
-        while (!state.containsKey(testPattern)) {
-            Thread.yield();
-        }
-        Assert.assertTrue(state.get(testPattern));
-
-        Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter));
-
-        final Map<String, List<String>> exampleParameter2 = new HashMap<>(exampleParameter);
-        exampleParameter.put(parameterNames[1],
-                Arrays.asList(new String[] { "Change1", "Change2", "Change3", "Change4" }));
-
-        TcpProbeControllerTest.tcpProbeController.updateProbeParameter(TcpProbeControllerTest.LOCALHOST_IP,
-                TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, testPattern, exampleParameter2);
-        while (recordedParameters.get(testPattern).equals(exampleParameter)) {
-            Thread.yield();
-        }
-
-        Assert.assertTrue(recordedParameters.get(testPattern).equals(exampleParameter2));
-
-    }
-
     /**
      * Terminate the thread that runs the TCP Reader.
      */
@@ -207,7 +157,7 @@ public class TcpProbeControllerTest {
                                 ((IRemoteParameterControlEvent) arg0).getValues()));
             }
 
-            this.state.put(pattern, (arg0 instanceof ActivationEvent) || (arg0 instanceof ActivationParameterEvent));
+            this.state.put(pattern, arg0 instanceof ActivationEvent || arg0 instanceof ActivationParameterEvent);
 
         }
 

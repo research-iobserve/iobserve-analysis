@@ -16,8 +16,8 @@
 package org.iobserve.drive.accounting;
 
 import java.io.IOException;
-import java.net.URL;
 
+import teetime.framework.AbstractConsumerStage;
 import teetime.framework.Configuration;
 
 /**
@@ -30,17 +30,23 @@ public class DrivePipelineConfiguration extends Configuration {
     /**
      * Create the teetime configuration.
      *
-     * @param input
-     *            input file
+     * @param settings
+     *            all settings
      * @throws IOException
      *             on io errors
      */
-    public DrivePipelineConfiguration(final URL url) throws IOException {
-        final GenerateAccountingRequests accountingRequests = new GenerateAccountingRequests();
-        final SendRequests jsonRequest = new SendRequests(url);
-        final LogResponses logResponses = new LogResponses();
+    public DrivePipelineConfiguration(final AccountDriverSettings settings) throws IOException {
+        final GenerateAccountingRequests accountingRequests = new GenerateAccountingRequests(settings.getRepetition());
+        final SendRequests jsonRequest = new SendRequests(settings.getUrl(), settings.getDelay());
+
+        final AbstractConsumerStage<Response> handleResponses;
+        if (settings.getReportModulo() == null) {
+            handleResponses = new LogResponses();
+        } else {
+            handleResponses = new CountResponses(settings.getReportModulo());
+        }
 
         this.connectPorts(accountingRequests.getOutputPort(), jsonRequest.getInputPort());
-        this.connectPorts(jsonRequest.getOutputPort(), logResponses.getInputPort());
+        this.connectPorts(jsonRequest.getOutputPort(), handleResponses.getInputPort());
     }
 }

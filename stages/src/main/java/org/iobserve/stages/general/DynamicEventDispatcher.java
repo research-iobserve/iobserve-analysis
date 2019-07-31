@@ -105,8 +105,8 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
             // collecting event observation time (if possible); only for performance tests.
             if (event instanceof IEventRecord) {
                 final IEventRecord specialEvent = (IEventRecord) event;
-                ExperimentLogging.measureEventTime(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
-                ExperimentLogging.measure(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
+                ExperimentLogging.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
+                ExperimentLogging.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
             }
             selectedOutputPort.send(event);
         } else {

@@ -23,13 +23,23 @@ import teetime.framework.AbstractProducerStage;
  */
 public class GenerateAccountingRequests extends AbstractProducerStage<Object> {
 
-    private static final int REPEAT_REQUESTS = 100000;
+    private int count = 0; // NOPMD document initialization
 
-    int count = 0;
+    private final int repetitions;
+
+    /**
+     * Generate a sequence of requests repeating login and update.
+     *
+     * @param repetitions
+     *            number of repetitions
+     */
+    public GenerateAccountingRequests(final int repetitions) {
+        this.repetitions = repetitions;
+    }
 
     @Override
     protected void execute() throws Exception {
-        if (this.count < GenerateAccountingRequests.REPEAT_REQUESTS) {
+        if (this.count < this.repetitions) {
             this.createLoginRequest();
             this.createChangeRequest();
         } else {
@@ -45,7 +55,7 @@ public class GenerateAccountingRequests extends AbstractProducerStage<Object> {
 
     private void createChangeRequest() {
         final Account account = new Account();
-        account.setAddress1("Christian-ALbrechts-Platz 4");
+        account.setAddress1("Christian-Albrechts-Platz 4");
         account.setAddress2("201");
         account.setBannerName("");
         account.setBannerOption(false);

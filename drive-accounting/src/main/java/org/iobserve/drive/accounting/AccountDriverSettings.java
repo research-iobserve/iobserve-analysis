@@ -28,7 +28,38 @@ public class AccountDriverSettings {
     @Parameter(names = { "-u", "--url" }, required = true, description = "Component request URL")
     private URL url;
 
+    @Parameter(names = { "-d", "--delay" }, required = false, description = "Delay between requests in milliseconds")
+    private Integer delay;
+
+    @Parameter(names = { "-c",
+            "--count" }, required = false, description = "Count instead of display responses; report only every n-th response")
+    private Integer reportModulo;
+
+    @Parameter(names = { "-r",
+            "--repeat" }, required = false, description = "Repeat sequence of login and update n times, default 1")
+    private Integer repetition;
+
     public URL getUrl() {
         return this.url;
+    }
+
+    public Integer getDelay() {
+        return this.delay;
+    }
+
+    public Integer getReportModulo() {
+        return this.reportModulo;
+    }
+
+    public void setDelay(final int delay) {
+        this.delay = delay;
+    }
+
+    public Integer getRepetition() {
+        return this.repetition;
+    }
+
+    public void setRepetition(final Integer repetition) {
+        this.repetition = repetition;
     }
 }

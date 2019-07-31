@@ -40,6 +40,9 @@ public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControl
 
     /**
      * Initiates the filter with a new {@link TcpProbeController}.
+     *
+     * @param probeController
+     *            corresponding probe controller
      */
     public ProbeControlFilter(final IProbeController probeController) {
         this.probeController = probeController;
@@ -48,11 +51,11 @@ public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControl
     @Override
     protected void execute(final AbstractTcpControlEvent event) {
         try {
-            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_ENTRY);
+            ExperimentLogging.measureControlEvent(event, ObservationPoint.CONTROL_PROBES_ENTRY);
             this.probeController.controlProbe(event);
-            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_EXIT);
+            ExperimentLogging.measureControlEvent(event, ObservationPoint.CONTROL_PROBES_EXIT);
         } catch (final RemoteControlFailedException e) {
-            ExperimentLogging.measure(event, ObservationPoint.CONTROL_PROBES_ERROR);
+            ExperimentLogging.measureControlEvent(event, ObservationPoint.CONTROL_PROBES_ERROR);
             final String alarmMessage = "Could not send probe control event " + e.getMessage();
             final Alarms alarms = new Alarms();
             alarms.addMessage(alarmMessage);

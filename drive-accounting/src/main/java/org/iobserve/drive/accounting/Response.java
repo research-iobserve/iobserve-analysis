@@ -25,7 +25,16 @@ public class Response {
 
     private final char[] responseMessage;
 
-    public Response(final int responseCode, final char[] responseMessage) {
+    /**
+     * Response.
+     *
+     * @param responseCode
+     *            response code
+     * @param responseMessage
+     *            content
+     */
+    public Response(final int responseCode, final char[] responseMessage) { // NOPMD storing array
+                                                                            // is acceptable here
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
     }
@@ -34,7 +43,10 @@ public class Response {
         return this.responseCode;
     }
 
+    /**
+     * @return return chars of the response message
+     */
     public char[] getResponseMessage() {
-        return this.responseMessage;
+        return this.responseMessage; // NOPMD exposing array is acceptable here
     }
 }
