@@ -25,10 +25,13 @@ import mtree.MTree;
 
 /**
  *
- * @author Lars Jürgensen
- *
+ * @author Lars Jürgensen An implementation of the OPTICS algorithm. A detailed explanation of the
+ *         algorithm can be found in the paper "OPTICS: ordering points to identify the clustering
+ *         structure"
  */
 public class OPTICS {
+    // This comparator, checks from which model the reachability distance is bigger.
+    // It is used, to keep the priority queue in order
     private static Comparator<OpticsData> reachComparator = new Comparator<OpticsData>() {
 
         @Override
@@ -36,12 +39,25 @@ public class OPTICS {
             return (int) (model1.getReachabilityDistance() - model2.getReachabilityDistance());
         }
     };
+
     private final int minPTs;
     private final double maxDistance;
     private final MTree<OpticsData> mtree;
     private final List<OpticsData> models;
     private final List<OpticsData> resultList = new ArrayList<>();
 
+    /**
+     *
+     * @param mtree
+     *            The M-Tree with the behavior models to be clustered
+     * @param maxDistance
+     *            The maximal distance two neighbors can have (the epsilon value of the algorithm)
+     * @param minPTs
+     *            The minimal amount of neighbors a object must have to be called a core-object
+     * @param models
+     *            A list of all models to be clustered. They have to be the same as the models in
+     *            the M-Tree
+     */
     public OPTICS(final MTree<OpticsData> mtree, final double maxDistance, final int minPTs,
             final List<OpticsData> models) {
         this.mtree = mtree;
@@ -59,6 +75,14 @@ public class OPTICS {
         return Math.max(distance, coreDistance);
     }
 
+    /**
+     * Updates the core distance of a model. The core-distance is the epsilon value (radius) an
+     * object must have, so it has minPts neighbors. If the result is larger than maxDistance the
+     * core distance is UNDEFINED.
+     *
+     * @param model
+     *            The model, of which the core distance should be updated.
+     */
     private void updateCoreDistance(final OpticsData model) {
 
         final Iterator<MTree<OpticsData>.ResultItem> results = this.getMtree()
@@ -96,6 +120,12 @@ public class OPTICS {
 
     }
 
+    /**
+     * This calculates the OPTICS result.
+     *
+     * @return An ordered list of the behavior models. The reachability distances of the models are
+     *         important for the evaluation.
+     */
     public List<OpticsData> calculate() {
 
         for (final OpticsData model : this.models) {
@@ -110,6 +140,17 @@ public class OPTICS {
         return this.resultList;
     }
 
+    /**
+     * Updates the reachablity distances of all unvisited neighbors around one centermodel and and
+     * puts it in the priorityQueue (if it isn't already in it)
+     *
+     * @param neighbors
+     *            All neighbors of the center model
+     * @param centerModel
+     *            The model, from which the update is initialized
+     * @param seeds
+     *            The current Priority Queue
+     */
     private void update(final List<OpticsData> neighbors, final OpticsData centerModel,
             final PriorityQueue<OpticsData> seeds) {
 
@@ -124,6 +165,9 @@ public class OPTICS {
                 } else {
                     if (newReachDistance < model.getReachabilityDistance()) {
                         model.setReachabilityDistance(newReachDistance);
+
+                        // Update the position of the model in priority queue. This can be done by
+                        // removing and adding it back in
                         seeds.remove(model);
                         seeds.add(model);
                     }
@@ -133,6 +177,13 @@ public class OPTICS {
         }
     }
 
+    /**
+     * Expands the cluster order by adding the next model together with close neighbors to the
+     * result.
+     *
+     * @param model1
+     *            An unvisited behavior model.
+     */
     private void expandClusterOrder(final OpticsData model1) {
         final List<OpticsData> neighbors1 = this.getNeighbors(model1);
 

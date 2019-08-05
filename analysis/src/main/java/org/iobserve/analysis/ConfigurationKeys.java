@@ -257,15 +257,25 @@ public final class ConfigurationKeys { // NOPMD is not a conventional utility cl
      * Optics Clustering.
      */
 
-    public static final String OPTICS_PREFIX = "org.iobserve.service.behavior.analysis.";
+    public static final String GED_PREFIX = "org.iobserve.service.behavior.analysis.";
 
-    public static final String EPSILON = ConfigurationKeys.OPTICS_PREFIX + "epsilon";
+    public static final String EPSILON = ConfigurationKeys.GED_PREFIX + "epsilon";
 
-    public static final String MIN_PTS = ConfigurationKeys.OPTICS_PREFIX + "minPts";
+    public static final String MIN_PTS = ConfigurationKeys.GED_PREFIX + "minPts";
 
-    public static final String MAX_MODEL_AMOUNT = ConfigurationKeys.OPTICS_PREFIX + "maxModelAmount";
+    public static final String MAX_MODEL_AMOUNT = ConfigurationKeys.GED_PREFIX + "maxModelAmount";
 
-    public static final String RESULT_URL = ConfigurationKeys.OPTICS_PREFIX + "outputUrl";
+    public static final String RESULT_URL = ConfigurationKeys.GED_PREFIX + "outputUrl";
+
+    /**
+     * Graph Edit Distance.
+     */
+
+    public static final String NODE_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "nodeInsertionCost";
+
+    public static final String EDGE_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "edgeInsertionCost";
+
+    public static final String EVENT_GROUP_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "eventGroupInsertionCost";
 
     /**
      * Factory, do not instantiate.

@@ -35,6 +35,8 @@ public class ClusteringCompositeStage extends CompositeStage {
 
     public ClusteringCompositeStage(final kieker.common.configuration.Configuration configuration) {
 
+        GraphEditDistance.setConfiguration(configuration);
+
         final double clusteringDistance = configuration.getDoubleProperty(ConfigurationKeys.EPSILON, 10);
 
         final int minPts = configuration.getIntProperty(ConfigurationKeys.MIN_PTS, 20);

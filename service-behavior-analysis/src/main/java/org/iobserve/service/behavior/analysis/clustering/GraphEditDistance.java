@@ -15,12 +15,21 @@
  ***************************************************************************/
 package org.iobserve.service.behavior.analysis.clustering;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
+import kieker.common.configuration.Configuration;
+
+import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelEdge;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelNode;
 import org.iobserve.service.behavior.analysis.model.EventGroup;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 import mtree.DistanceFunction;
 
@@ -28,21 +37,38 @@ import mtree.DistanceFunction;
  *
  * @author Lars Jürgensen
  *
+ *         This class calculates a custom graph edit distance between two Behavior Models.
+ *
+ *         The following operations are allowed:
+ *
+ *         insert/delete nodes insert/delete edges insert/delete EventGroups insert/delete Events
+ *         duplicate/remove duplicate events
+ *
+ *         Insertion and Deletion always costs the same to satisfy the symmetry property.
+ *
  */
 public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
-    private static final double NODE_INSERT_COST = 10;
+    // The operation costs. They can be changed by the "setConfiguration" function
+    private static double nodeInsertCost = 10;
+    private static double edgeInsertCost = 5;
+    private static double eventGroupInsertCost = 4;
 
-    private static final double EDGE_INSERT_COST = 5;
+    // the weighting assigns events a insertion and duplication costs
+    private final JPetStoreParameterWeighting weighting = new JPetStoreParameterWeighting();
 
-    private static final double EVENT_GROUP_INSERT_COST = 4;
-
-    private static final double EVENT_INSERT_COST = 1;
-
+    // the models to be compared
     private BehaviorModelGED model1;
     private BehaviorModelGED model2;
 
-    // costs to convert model1 into model2
+    /**
+     * Calculates the Graph Edit Distance between two objects
+     * 
+     * @param modelA
+     *            The first model.
+     * @param modelB
+     *            The second model.
+     */
     @Override
     public double calculate(final BehaviorModelGED modelA, final BehaviorModelGED modelB) {
         this.model1 = modelA;
@@ -57,9 +83,12 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
             final BehaviorModelNode match = this.model2.getNodes().get(signature);
 
+            // node only occurs in one objects => must be inserted
             if (match == null) {
                 distance += this.nodeInsertionCost(node);
-            } else {
+            }
+            // node occurs in both objects => must be compared
+            else {
                 distance += this.nodeDistance(node, match);
             }
         }
@@ -71,6 +100,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
             final BehaviorModelNode match = this.model1.getNodes().get(signature);
 
+            // node only occurs in one objects => must be inserted
             if (match == null) {
                 distance += this.nodeInsertionCost(node);
             }
@@ -78,6 +108,14 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
         return distance;
     }
 
+    /**
+     * Calculates the distance between two nodes. This includes the distance between the ingoing
+     * edges
+     * 
+     * @param node1
+     * @param node2
+     * @return
+     */
     private double nodeDistance(final BehaviorModelNode node1, final BehaviorModelNode node2) {
         double distance = 0;
         for (final BehaviorModelEdge edge : node1.getIngoingEdges().values()) {
@@ -85,9 +123,12 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
             final BehaviorModelNode source2 = this.model2.getNodes().get(source1.getName());
 
             final BehaviorModelEdge match = node2.getIngoingEdges().get(source2);
+            // edge only occurs in one node => must be inserted
             if (match == null) {
                 distance += this.edgeInsertionCost(edge);
-            } else {
+            }
+            // edge occurs in both nodes => must be compared
+            else {
                 distance += this.edgeDistance(edge, match);
             }
         }
@@ -95,6 +136,8 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
             final BehaviorModelNode source2 = edge.getSource();
             final BehaviorModelNode source1 = this.model1.getNodes().get(source2.getName());
             final BehaviorModelEdge match = node1.getIngoingEdges().get(source1);
+
+            // edge only occurs in one node => must be inserted
             if (match == null) {
                 distance += this.edgeInsertionCost(edge);
             }
@@ -102,18 +145,28 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
         return distance;
     }
 
+    /**
+     * Calculates the distance between two edges. This includes the distance between the contained
+     * eventgroups
+     * 
+     * @param edge1
+     * @param edge2
+     * @return
+     */
     private double edgeDistance(final BehaviorModelEdge edge1, final BehaviorModelEdge edge2) {
         double distance = 0;
-        // TODO this method can be more efficient
+
         for (final EventGroup eventGroup1 : edge1.getEventGroups()) {
             boolean success = false;
             for (final EventGroup eventGroup2 : edge2.getEventGroups()) {
                 if (eventGroup1.hasSameParameters(eventGroup2)) {
+                    // matching eventGroup found => must be compared
                     distance += this.eventGroupDistance(eventGroup1, eventGroup2);
                     success = true;
                     break;
                 }
             }
+            // no matching eventGroup found => must be inserted
             if (!success) {
                 distance += this.eventGroupInsertionCost(eventGroup1);
             }
@@ -127,7 +180,9 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
                     break;
                 }
             }
+            // if not necessary, as success should always be false
             if (!success) {
+                // no matching eventGroup found => must be inserted
                 distance += this.eventGroupInsertionCost(eventGroup2);
             }
         }
@@ -135,15 +190,76 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
         return distance;
     }
 
+    /**
+     * Calculates the distance between two eventgroups. This includes the distance between the
+     * contained events
+     * 
+     * @param eventGroup1
+     * @param eventGroup2
+     * @return
+     */
     private double eventGroupDistance(final EventGroup eventGroup1, final EventGroup eventGroup2) {
-        final int amountDifference = Math.abs(eventGroup1.getEvents().size() - eventGroup2.getEvents().size());
+        double distance = 0;
 
-        final double distance = amountDifference * GraphEditDistance.EVENT_INSERT_COST;
+        final Queue<PayloadAwareEntryCallEvent> unvisitedEvents1 = new LinkedList<>(eventGroup1.getEvents());
+        final Queue<PayloadAwareEntryCallEvent> unvisitedEvents2 = new LinkedList<>(eventGroup2.getEvents());
+
+        while (!unvisitedEvents1.isEmpty()) {
+
+            final List<PayloadAwareEntryCallEvent> matches1 = new ArrayList<>();
+            final List<PayloadAwareEntryCallEvent> matches2 = new ArrayList<>();
+
+            final PayloadAwareEntryCallEvent event = unvisitedEvents1.poll();
+            matches1.add(event);
+
+            for (final PayloadAwareEntryCallEvent potentialMatch : unvisitedEvents1) {
+
+                if (GraphEditDistance.haveSameValues(event, potentialMatch)) {
+
+                    matches1.add(potentialMatch);
+                }
+            }
+            unvisitedEvents1.removeAll(matches1);
+
+            for (final PayloadAwareEntryCallEvent potentialMatch : unvisitedEvents2) {
+                if (GraphEditDistance.haveSameValues(event, potentialMatch)) {
+                    matches2.add(potentialMatch);
+                }
+            }
+            unvisitedEvents2.removeAll(matches2);
+
+            if (matches2.isEmpty()) {
+                distance += this.weighting.getInsertCost(event.getParameters());
+                distance += this.weighting.getDuplicateCost(event.getParameters()) * (matches1.size() - 1);
+            } else {
+                final int amountDifference = Math.abs(matches1.size() - matches2.size());
+                distance += this.weighting.getInsertCost(event.getParameters()) * amountDifference;
+            }
+
+        }
+
+        while (!unvisitedEvents2.isEmpty()) {
+
+            final PayloadAwareEntryCallEvent event1 = unvisitedEvents2.poll();
+
+            final List<PayloadAwareEntryCallEvent> equalEvents = new ArrayList<>();
+
+            for (final PayloadAwareEntryCallEvent event2 : unvisitedEvents2) {
+                if (GraphEditDistance.haveSameValues(event1, event2)) {
+
+                    equalEvents.add(event2);
+                }
+            }
+            unvisitedEvents2.removeAll(equalEvents);
+            distance += equalEvents.size() * this.weighting.getDuplicateCost(event1.getParameters());
+            distance += this.weighting.getInsertCost(event1.getParameters());
+
+        }
         return distance;
     }
 
     private double nodeInsertionCost(final BehaviorModelNode node) {
-        double distance = GraphEditDistance.NODE_INSERT_COST;
+        double distance = GraphEditDistance.nodeInsertCost;
 
         for (final BehaviorModelEdge edge : node.getOutgoingEdges().values()) {
             distance += this.edgeInsertionCost(edge);
@@ -152,7 +268,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
     }
 
     private double edgeInsertionCost(final BehaviorModelEdge edge) {
-        double distance = GraphEditDistance.EDGE_INSERT_COST;
+        double distance = GraphEditDistance.edgeInsertCost;
         for (final EventGroup eventGroup : edge.getEventGroups()) {
             distance += this.eventGroupInsertionCost(eventGroup);
         }
@@ -160,8 +276,41 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
     }
 
     private double eventGroupInsertionCost(final EventGroup eventGroup) {
-        double distance = GraphEditDistance.EVENT_GROUP_INSERT_COST;
-        distance += eventGroup.getEvents().size() * GraphEditDistance.EVENT_INSERT_COST;
+        double distance = GraphEditDistance.eventGroupInsertCost;
+
+        final Queue<PayloadAwareEntryCallEvent> queue = new LinkedList<>(eventGroup.getEvents());
+
+        final List<PayloadAwareEntryCallEvent> equalEvents = new ArrayList<>();
+
+        while (!queue.isEmpty()) {
+            final PayloadAwareEntryCallEvent event1 = queue.poll();
+            for (final PayloadAwareEntryCallEvent event2 : queue) {
+                if (GraphEditDistance.haveSameValues(event1, event2)) {
+                    equalEvents.add(event2);
+
+                }
+            }
+            queue.removeAll(equalEvents);
+            distance += equalEvents.size() * this.weighting.getDuplicateCost(event1.getParameters());
+            distance += this.weighting.getInsertCost(event1.getParameters());
+
+        }
+
         return distance;
+    }
+
+    private static boolean haveSameValues(final PayloadAwareEntryCallEvent event1,
+            final PayloadAwareEntryCallEvent event2) {
+        return Arrays.equals(event1.getValues(), event2.getValues());
+    }
+
+    public static void setConfiguration(final Configuration configuration) {
+        GraphEditDistance.nodeInsertCost = configuration.getDoubleProperty(ConfigurationKeys.NODE_INSERTION_COST, 10);
+
+        GraphEditDistance.edgeInsertCost = configuration.getDoubleProperty(ConfigurationKeys.EDGE_INSERTION_COST, 5);
+
+        GraphEditDistance.eventGroupInsertCost = configuration
+                .getDoubleProperty(ConfigurationKeys.EVENT_GROUP_INSERTION_COST, 4);
+
     }
 }
