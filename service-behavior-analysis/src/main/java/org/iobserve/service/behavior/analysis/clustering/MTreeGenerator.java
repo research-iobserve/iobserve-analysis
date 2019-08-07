@@ -28,10 +28,12 @@ import mtree.DistanceFunction;
 import mtree.MTree;
 
 /**
+ * A stage to generate an M-Tree with objects of a generic type, with a given distance function
  *
  * @author Lars Jürgensen
  *
  * @param <T>
+ *            The type, which the objects should have
  */
 public class MTreeGenerator<T> extends AbstractStage {
 
@@ -42,8 +44,9 @@ public class MTreeGenerator<T> extends AbstractStage {
     private final OutputPort<MTree<T>> outputPort = this.createOutputPort();
 
     private final DistanceFunction<T> distanceFunction;
-    private int minNodeCapacity = 50;
-    private int maxNodeCapacity = 99;
+
+    private int minNodeCapacity = 25;
+    private int maxNodeCapacity = 49;
 
     public MTreeGenerator(final DistanceFunction<T> distanceFunction) {
         this.distanceFunction = distanceFunction;
@@ -65,8 +68,6 @@ public class MTreeGenerator<T> extends AbstractStage {
 
             this.outputPort.send(mtree);
 
-        } else {
-            MTreeGenerator.LOGGER.warn("Received null as model list");
         }
     }
 

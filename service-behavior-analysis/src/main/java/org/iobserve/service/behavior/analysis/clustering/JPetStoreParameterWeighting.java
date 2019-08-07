@@ -21,7 +21,8 @@ import java.util.Map;
 
 /**
  *
- * @author Lars Jürgensen
+ * @author Lars Jürgensen A weighting function, which defines events from the JPetStore a insert and
+ *         duplication cost
  *
  */
 public final class JPetStoreParameterWeighting implements IParameterWeighting {
@@ -37,12 +38,17 @@ public final class JPetStoreParameterWeighting implements IParameterWeighting {
         this.duplicationCost = new HashMap<>();
 
         this.insertionCost.put("order.cardType", 0.0);
+
+        // the login events have no costs, as the parameter values don't matter
         this.insertionCost.put("username", 0.0);
         this.insertionCost.put("password", 0.0);
+
+        // the category id is an important piece of information
         this.insertionCost.put("categoryId", 3.0);
         this.insertionCost.put("workingItemId", 1.0);
         this.insertionCost.put("productId", 1.0);
 
+        // the costs to duplicate an equal event
         this.duplicationCost.put("username", 0.0);
         this.duplicationCost.put("password", 0.0);
         this.duplicationCost.put("categoryId", 0.1);

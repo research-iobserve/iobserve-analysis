@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis;
+package org.iobserve.service.behavior.analysis.evaluation;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -25,41 +26,34 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.service.behavior.analysis.clustering.Clustering;
-import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.EventSerializer;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * Sync all incoming records with a Kieker writer to a text file log.
  *
  * @author Lars Jürgensen
  *
  */
-public class ClusteringSink extends AbstractConsumerStage<Clustering<BehaviorModelGED>> {
+public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResult> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSink.class);
+    private final File outputFile;
 
-    private final ObjectMapper objectMapper;
-
-    private final String filename;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Create behavior model writer.
+     * Configure and setup a file writer for the output of the result comparison.
      *
-     * @param baseUrl
-     *            base url
+     * @param outputFile
+     *            file descriptor for the output file
      */
-    public ClusteringSink(final String filename) {
-        this.objectMapper = new ObjectMapper();
-        this.filename = filename;
+    public ComparisonOutputStage(final File outputFile) {
+        this.outputFile = outputFile;
     }
 
     @Override
-    protected void execute(final Clustering<BehaviorModelGED> clustering) throws IOException {
-        ClusteringSink.LOGGER.info("Write models to " + this.filename);
-        final FileWriter fw = new FileWriter(this.filename);
+    protected void execute(final ComparisonResult result) throws IOException {
+        final FileWriter fw = new FileWriter(this.outputFile);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -68,8 +62,7 @@ public class ClusteringSink extends AbstractConsumerStage<Clustering<BehaviorMod
         module.addSerializer(PayloadAwareEntryCallEvent.class, new EventSerializer());
         this.objectMapper.registerModule(module);
 
-        this.objectMapper.writeValue(bw, clustering);
+        this.objectMapper.writeValue(bw, result);
         fw.close();
     }
-
 }

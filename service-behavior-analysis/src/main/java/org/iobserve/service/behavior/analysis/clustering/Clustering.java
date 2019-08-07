@@ -18,36 +18,36 @@ package org.iobserve.service.behavior.analysis.clustering;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
-
 /**
  *
  * @author Lars Jürgensen
  *
+ * @param <T>
+ *            The type of the data in the clusters
  */
-public class Clustering {
+public class Clustering<T> {
 
-    private Set<BehaviorModelGED> noise = new HashSet<>();
+    private Set<T> noise = new HashSet<>();
 
-    private Set<Set<BehaviorModelGED>> clusters = new HashSet<>();
+    private Set<Set<T>> clusters = new HashSet<>();
 
-    public Set<BehaviorModelGED> getNoise() {
+    public Set<T> getNoise() {
         return this.noise;
     }
 
-    public void setNoise(final Set<BehaviorModelGED> noise) {
+    public void setNoise(final Set<T> noise) {
         this.noise = noise;
     }
 
-    public Set<Set<BehaviorModelGED>> getClusters() {
+    public Set<Set<T>> getClusters() {
         return this.clusters;
     }
 
-    public void setClusters(final Set<Set<BehaviorModelGED>> clusters) {
+    public void setClusters(final Set<Set<T>> clusters) {
         this.clusters = clusters;
     }
 
-    public void addCluster(final Set<BehaviorModelGED> cluster) {
+    public void addCluster(final Set<T> cluster) {
         this.clusters.add(cluster);
     }
 }

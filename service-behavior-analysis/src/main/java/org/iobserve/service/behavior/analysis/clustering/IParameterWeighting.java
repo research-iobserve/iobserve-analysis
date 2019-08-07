@@ -17,13 +17,27 @@
 package org.iobserve.service.behavior.analysis.clustering;
 
 /**
+ * An interface to assign insertion and duplication costs to events
  *
  * @author Lars Jürgensen
  *
  */
 public interface IParameterWeighting {
+
+    /**
+     *
+     * @param parameterNames
+     *            The array of parameter names, an event has.
+     * @return The cost to insert the event with the given parameters
+     */
     double getInsertCost(String[] parameterNames);
 
+    /**
+     *
+     * @param parameterNames
+     *            The array of parameter names, an event has.
+     * @return The cost to duplicate the event with the given parameters
+     */
     double getDuplicateCost(String[] parameterNames);
 
 }

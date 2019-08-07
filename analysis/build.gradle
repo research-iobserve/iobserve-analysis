@@ -117,7 +117,7 @@ dependencies {
 	compile 'org.neo4j:neo4j:3.2.0'
 	
 	compile 'org.nanohttpd:nanohttpd:2.3.0'
-	
+		
     testCompile 'junit:junit:4.12'
   
 	testCompile 'org.hamcrest:hamcrest-all:1.3'

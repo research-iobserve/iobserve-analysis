@@ -17,7 +17,6 @@ package org.iobserve.service.behavior.analysis;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,7 +24,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.service.behavior.analysis.clustering.Clustering;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.EventSerializer;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
@@ -37,13 +35,15 @@ import org.slf4j.LoggerFactory;
  * @author Lars Jürgensen
  *
  */
-public class ClusteringSink extends AbstractConsumerStage<Clustering<BehaviorModelGED>> {
+public class ClusterMedoidSink extends AbstractConsumerStage<BehaviorModelGED> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSink.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterMedoidSink.class);
 
     private final ObjectMapper objectMapper;
 
     private final String filename;
+
+    private final int clusterNumber = 0;
 
     /**
      * Create behavior model writer.
@@ -51,14 +51,15 @@ public class ClusteringSink extends AbstractConsumerStage<Clustering<BehaviorMod
      * @param baseUrl
      *            base url
      */
-    public ClusteringSink(final String filename) {
+    public ClusterMedoidSink(final String filename) {
         this.objectMapper = new ObjectMapper();
         this.filename = filename;
     }
 
     @Override
-    protected void execute(final Clustering<BehaviorModelGED> clustering) throws IOException {
-        ClusteringSink.LOGGER.info("Write models to " + this.filename);
+    protected void execute(final BehaviorModelGED model) throws Exception {
+        final String numberedFilename = "_cluster_" + this.clusterNumber;
+        ClusterMedoidSink.LOGGER.info("Write cluster medoid to " + numberedFilename);
         final FileWriter fw = new FileWriter(this.filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -68,8 +69,9 @@ public class ClusteringSink extends AbstractConsumerStage<Clustering<BehaviorMod
         module.addSerializer(PayloadAwareEntryCallEvent.class, new EventSerializer());
         this.objectMapper.registerModule(module);
 
-        this.objectMapper.writeValue(bw, clustering);
+        this.objectMapper.writeValue(bw, model);
         fw.close();
+
     }
 
 }

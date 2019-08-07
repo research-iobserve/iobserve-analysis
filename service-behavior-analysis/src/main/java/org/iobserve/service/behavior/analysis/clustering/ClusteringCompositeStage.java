@@ -23,6 +23,10 @@ import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 
 /**
+ * A composite stage, to perform the entire clustering. First the models are converted into the
+ * wrapper class OpticsData. These are ordered in an M-Tree with the Graph-Edit-Distance metric
+ * Then, the optics algorithm sorts the models and assigns reachability-distances The
+ * ExtractDBScanClusters stage is used to extract the clusters from the optisc result
  *
  * @author Lars Jürgensen
  *
@@ -31,7 +35,7 @@ public class ClusteringCompositeStage extends CompositeStage {
 
     private final InputPort<BehaviorModelGED> modelInputPort;
     private final InputPort<Long> timerInputPort;
-    private final OutputPort<Clustering> outputPort;
+    private final OutputPort<Clustering<BehaviorModelGED>> outputPort;
 
     public ClusteringCompositeStage(final kieker.common.configuration.Configuration configuration) {
 
@@ -86,7 +90,7 @@ public class ClusteringCompositeStage extends CompositeStage {
         return this.timerInputPort;
     }
 
-    public OutputPort<Clustering> getOutputPort() {
+    public OutputPort<Clustering<BehaviorModelGED>> getOutputPort() {
         return this.outputPort;
     }
 

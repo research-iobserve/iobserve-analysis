@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Lars Jürgensen
  *
  */
-public class ExtractDBScanClusters extends AbstractTransformation<List<OpticsData>, Clustering> {
+public class ExtractDBScanClusters extends AbstractTransformation<List<OpticsData>, Clustering<BehaviorModelGED>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtractDBScanClusters.class);
 
@@ -48,7 +48,7 @@ public class ExtractDBScanClusters extends AbstractTransformation<List<OpticsDat
             ExtractDBScanClusters.LOGGER.debug(Double.toString(model.getReachabilityDistance()) + " and core: "
                     + Double.toString(model.getCoreDistance()));
         }
-        final Clustering clustering = new Clustering();
+        final Clustering<BehaviorModelGED> clustering = new Clustering<>();
 
         Set<BehaviorModelGED> currentCluster = clustering.getNoise();
 
