@@ -23,7 +23,6 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
 import org.iobserve.model.correspondence.CorrespondenceModel;
@@ -31,7 +30,6 @@ import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -76,14 +74,12 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     @Override
     protected void execute(final IUndeployedEvent event) throws InvocationException, DBException {
-        ExperimentLogging.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
         this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);
         } else if (event instanceof EJBUndeployedEvent) {
             this.ejbMapper((EJBUndeployedEvent) event);
         }
-        ExperimentLogging.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_EXIT);
     }
 
     private void servletMapper(final ServletUndeployedEvent event) throws InvocationException, DBException {

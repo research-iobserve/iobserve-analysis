@@ -29,12 +29,10 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
@@ -149,8 +147,6 @@ public class DataProtectionWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
-            AnalysisExperimentLoggingUtils.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
-
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
             this.logger.debug("Service: " + deployedEvent.getService());
@@ -158,18 +154,14 @@ public class DataProtectionWarner extends AbstractStage {
             this.performPrivacyEvaluation(deployedEvent);
 
             this.logger.debug("Deployment processed");
-            AnalysisExperimentLoggingUtils.measure(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
 
         if (undeployedEvent != null) {
-            AnalysisExperimentLoggingUtils.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
-
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
-            AnalysisExperimentLoggingUtils.measure(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 

@@ -19,13 +19,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.common.exception.ConfigurationException;
-import kieker.common.record.flow.IEventRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.common.record.ObservationPoint;
-import org.iobserve.stages.data.ExperimentLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,12 +99,6 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
         final OutputPort<Object> selectedOutputPort = (OutputPort<Object>) this.selectOutputPort(this.rootEventMatcher,
                 event);
         if (selectedOutputPort != null) {
-            // collecting event observation time (if possible); only for performance tests.
-            if (event instanceof IEventRecord) {
-                final IEventRecord specialEvent = (IEventRecord) event;
-                ExperimentLogging.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
-                ExperimentLogging.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
-            }
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {

@@ -26,13 +26,10 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.DeploymentLock;
-import org.iobserve.common.record.EventTypes;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
-import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -74,13 +71,11 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
      */
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
-        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_ENTRY);
         DeploymentLock.lock();
         final List<String> whitelist = this.computeBlackAndWhitelist(element.getProtectedOperations());
         element.setWhitelist(whitelist);
         DeploymentLock.unlock();
         this.outputPort.send(element);
-        ExperimentLogging.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_EXIT);
     }
 
     private List<String> computeBlackAndWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods)

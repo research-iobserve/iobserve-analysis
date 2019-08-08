@@ -24,7 +24,7 @@ import org.iobserve.stages.data.ExperimentLogging;
  * @author Reiner Jung
  *
  */
-public final class PrivacyExperimentLogger {
+public final class PrivacyExperimentLogger { // NOPMD
 
     private PrivacyExperimentLogger() {
 

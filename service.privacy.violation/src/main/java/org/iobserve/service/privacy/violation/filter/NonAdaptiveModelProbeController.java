@@ -26,17 +26,12 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.DeploymentLock;
-import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
-import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.common.record.EventTypes;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
-import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -84,8 +79,6 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
 
     @Override
     protected void execute(final WarningModel warningModel) throws Exception {
-        this.logEvent(warningModel.getEvent(), ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
-
         DeploymentLock.lock();
 
         final ProbeManagementData probeManagementData = new ProbeManagementData();
@@ -96,19 +89,7 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
 
         DeploymentLock.unlock();
 
-        this.logEvent(warningModel.getEvent(), ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
-
         this.outputPort.send(probeManagementData);
-    }
-
-    /** Logging. */
-    private void logEvent(final IPCMDeploymentEvent event, final ObservationPoint observationPoint) {
-        if (event instanceof PCMDeployedEvent) {
-            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, observationPoint);
-        } else {
-            ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, observationPoint);
-        }
-
     }
 
     /**

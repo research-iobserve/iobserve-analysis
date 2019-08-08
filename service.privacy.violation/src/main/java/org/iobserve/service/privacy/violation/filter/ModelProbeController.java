@@ -25,12 +25,9 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
-import org.iobserve.common.record.EventTypes;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.service.privacy.violation.data.ProbeManagementData;
 import org.iobserve.service.privacy.violation.data.WarningModel;
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Edge;
-import org.iobserve.stages.data.ExperimentLogging;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
@@ -63,8 +60,6 @@ public class ModelProbeController extends AbstractConsumerStage<WarningModel> {
             this.logger.error("Received warning with empty edge list");
             return;
         } else {
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
             final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this
                     .computeReceivedWarnings(element.getWarningEdges());
             final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
@@ -79,8 +74,6 @@ public class ModelProbeController extends AbstractConsumerStage<WarningModel> {
             probeMethodInformation.setProtectedOperations(receivedWarnings);
             probeMethodInformation.setOperationsToUpdate(this.currentActiveWarnings);
 
-            ExperimentLogging.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
-                    ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
             this.outputPort.send(probeMethodInformation);
         }
     }

@@ -17,11 +17,17 @@ package org.iobserve.service.privacy.violation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
+import kieker.monitoring.core.controller.IMonitoringController;
+import kieker.monitoring.core.controller.MonitoringController;
+import kieker.monitoring.core.sampler.ISampler;
+import kieker.monitoring.sampler.sigar.ISigarSamplerFactory;
+import kieker.monitoring.sampler.sigar.SigarSamplerFactory;
 import kieker.tools.common.AbstractService;
 import kieker.tools.common.ParameterEvaluationUtils;
 
@@ -54,6 +60,8 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 public final class PrivacyViolationDetectionServiceMain
         extends AbstractService<PrivacyViolationDetectionTeetimeConfiguration, PrivacyViolationDetectionSettings> {
 
+    private static final IMonitoringController CTRL = MonitoringController.getInstance();
+
     /**
      * This is a simple main class which does not need to be instantiated.
      */
@@ -68,8 +76,18 @@ public final class PrivacyViolationDetectionServiceMain
      *            arguments are ignored
      */
     public static void main(final String[] args) {
+        PrivacyViolationDetectionServiceMain.createSamplers();
         java.lang.System.exit(new PrivacyViolationDetectionServiceMain().run("Privacy Violation Detection Service",
                 "privacy", args, new PrivacyViolationDetectionSettings()));
+    }
+
+    private static void createSamplers() {
+        final ISigarSamplerFactory sigarFactory = SigarSamplerFactory.INSTANCE;
+        final ISampler[] samplers = { sigarFactory.createSensorCPUsDetailedPerc(),
+                sigarFactory.createSensorMemSwapUsage() };
+        for (final ISampler sampler : samplers) {
+            PrivacyViolationDetectionServiceMain.CTRL.schedulePeriodicSampler(sampler, 0, 100, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
@@ -102,9 +120,7 @@ public final class PrivacyViolationDetectionServiceMain
                     systemModelResource, allocationModelResource, privacyModelResource,
                     this.parameterConfiguration.getWarningFile(), this.parameterConfiguration.getAlarmsFile(),
                     this.parameterConfiguration.getModelDumpDirectory());
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        } catch (final DBException e) {
+        } catch (final DBException | IOException e) {
             throw new ConfigurationException(e);
         }
     }
