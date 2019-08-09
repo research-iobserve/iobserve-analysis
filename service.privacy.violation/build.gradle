@@ -16,7 +16,7 @@ dependencies {
 	compile project(":model")
 
 	compile 'com.beust:jcommander:1.72'
-
+		
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 
 	compile 'javax.json:javax.json-api:1.0'

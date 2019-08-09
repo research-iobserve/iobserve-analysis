@@ -82,6 +82,8 @@ subprojects {
     group = 'org.iobserve'
     
     repositories {
+	maven {url "https://mvnrepository.com/artifact/org.hyperic/sigar"}
+
         mavenCentral()
         jcenter()
         maven {url project.properties['api.baseline']}
