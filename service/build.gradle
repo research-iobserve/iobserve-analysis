@@ -9,7 +9,8 @@ dependencies {
 
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
     	
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	compile 'com.beust:jcommander:1.72'
 }
 
 sourceSets {
