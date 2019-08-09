@@ -76,14 +76,14 @@ public class UndeployPCMMapperStage extends AbstractConsumerStage<IUndeployedEve
 
     @Override
     protected void execute(final IUndeployedEvent event) throws InvocationException, DBException {
-        ExperimentLogging.measure(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
+        ExperimentLogging.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
         this.logger.debug("received undeployment event {}", event);
         if (event instanceof ServletUndeployedEvent) {
             this.servletMapper((ServletUndeployedEvent) event);
         } else if (event instanceof EJBUndeployedEvent) {
             this.ejbMapper((EJBUndeployedEvent) event);
         }
-        ExperimentLogging.measure(event, ObservationPoint.CODE_TO_MODEL_EXIT);
+        ExperimentLogging.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_EXIT);
     }
 
     private void servletMapper(final ServletUndeployedEvent event) throws InvocationException, DBException {

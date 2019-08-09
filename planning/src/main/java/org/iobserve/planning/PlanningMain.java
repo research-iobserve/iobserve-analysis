@@ -16,7 +16,6 @@
 package org.iobserve.planning;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -24,9 +23,9 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.planning.configurations.PlanningConfiguration;
-import org.iobserve.service.CommandLineParameterEvaluation;
 
 /**
  * Main class for iObserve's planning service.
@@ -61,36 +60,32 @@ public class PlanningMain extends AbstractService<PlanningConfiguration, Plannin
             final JCommander commander) {
         boolean configurationGood = true;
 
-        try {
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
 
-            final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
-                    "Runtime Model Directory", commander);
+        final File runtimeModelDirectory = new File(
+                configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(runtimeModelDirectory, "Runtime Model Directory",
+                commander);
 
-            final File perOpteryxHeadlessDir = new File(
-                    configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(perOpteryxHeadlessDir,
-                    "PerOpteryx RCP Executable Directory", commander);
+        final File perOpteryxHeadlessDir = new File(
+                configuration.getStringProperty(ConfigurationKeys.PEROPTERYX_HEADLESS_DIRECTORY));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(perOpteryxHeadlessDir,
+                "PerOpteryx RCP Executable Directory", commander);
 
-            // LQNS directory is not mandatory
-            if (!configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY).isEmpty()) {
-                final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
-                configurationGood &= CommandLineParameterEvaluation.checkDirectory(lqnsDir, "LQNS Executable Directory",
-                        commander);
-            }
-
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
-                    .isEmpty();
-            configurationGood &= !configuration
-                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
-
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
+        // LQNS directory is not mandatory
+        if (!configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY).isEmpty()) {
+            final File lqnsDir = new File(configuration.getStringProperty(ConfigurationKeys.LQNS_DIRECTORY));
+            configurationGood &= ParameterEvaluationUtils.checkDirectory(lqnsDir, "LQNS Executable Directory",
+                    commander);
         }
+
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
+                .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT)
+                .isEmpty();
+
+        return configurationGood;
     }
 
     @Override
@@ -123,11 +118,7 @@ public class PlanningMain extends AbstractService<PlanningConfiguration, Plannin
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,17 +43,17 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IEven
 		String.class, // ISessionEvent.sessionId
 	};
 	
+	/** default constants. */
+	public static final String HOSTNAME = "";
+	public static final String SESSION_ID = "";
+	private static final long serialVersionUID = -2432476605280542594L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
 		"hostname",
 		"sessionId",
 	};
-	
-	/** default constants. */
-	public static final String HOSTNAME = "";
-	public static final String SESSION_ID = "";
-	private static final long serialVersionUID = -2432476605280542594L;
 	
 	/** property declarations. */
 	private long timestamp;

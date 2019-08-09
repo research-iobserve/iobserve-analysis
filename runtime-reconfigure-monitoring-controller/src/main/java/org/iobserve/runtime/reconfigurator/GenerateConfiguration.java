@@ -40,6 +40,13 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
     private final int port;
     private final List<String> whitelist;
 
+    private final String[] operations = new String[] { "/jpetstore-account/request-user",
+            "/jpetstore-account/request-user", "/jpetstore-account/update-account",
+            "/jpetstore-account/insert-account" };
+
+    private final String[][] parameters = new String[][] { { "username", "password" }, { "username" }, { "Object" },
+            { "Object" } };
+
     public GenerateConfiguration(final String host, final int port, final List<String> whitelist, final long whiteStart,
             final long whiteEnd, final long blackStart, final long blackEnd) {
         this.host = host;
@@ -56,28 +63,42 @@ public class GenerateConfiguration extends AbstractProducerStage<AbstractTcpCont
         AbstractTcpControlEvent element;
 
         final String hostname = "account-service";
-        final String operationSignature = "changePassword";
-        final long triggerTimestamp = 0;
-        final Map<String, List<String>> parameters = new HashMap<>();
-        final List<String> blacklist = new ArrayList<>();
 
-        this.populateList(blacklist, this.blackStart, this.blackEnd);
+        for (int i = 0; i < this.operations.length; i++) {
+            final String operationSignature = this.createSignaturePattern(this.operations[i], this.parameters[i]);
+            final long triggerTimestamp = 0;
+            final Map<String, List<String>> parameters = new HashMap<>();
+            final List<String> blacklist = new ArrayList<>();
 
-        parameters.put(EListType.BLACKLIST.name(), blacklist);
+            this.populateList(blacklist, this.blackStart, this.blackEnd);
 
-        final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
+            parameters.put(EListType.BLACKLIST.name(), blacklist);
 
-        completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
-        this.populateList(blacklist, this.whiteStart, this.whiteEnd);
+            final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
 
-        parameters.put(EListType.WHITELIST.name(), completeWhitelist);
+            completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
+            this.populateList(blacklist, this.whiteStart, this.whiteEnd);
 
-        element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
-                triggerTimestamp, parameters);
+            parameters.put(EListType.WHITELIST.name(), completeWhitelist);
 
-        this.outputPort.send(element);
+            element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
+                    triggerTimestamp, parameters);
 
+            this.outputPort.send(element);
+        }
         this.workCompleted();
+    }
+
+    private String createSignaturePattern(final String uri, final String[] parameters) {
+        String parameterSequence = "";
+        for (final String parameter : parameters) {
+            if ("".equals(parameterSequence)) {
+                parameterSequence = parameter;
+            } else {
+                parameterSequence += ", " + parameter;
+            }
+        }
+        return String.format("%s (%s)", uri, parameterSequence);
     }
 
     private void populateList(final List<String> list, final long start, final long end) {

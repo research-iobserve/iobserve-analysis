@@ -1,4 +1,4 @@
-include "common", "monitoring", "model", "stages", "service", 
+include "common", "monitoring", "model", "stages",
 	"analysis",
 	"planning", "planning.systemadaptation", "planning.cloudprofile",
 	"adaptationdata", "adaptation",
@@ -8,10 +8,12 @@ include "common", "monitoring", "model", "stages", "service",
 	"reconstructor",
 	"service.privacy.violation",
 	"evaluate-jss-performance",
-        "simulate-petstore",
 	"service-behavior-analysis",
-        "runtime-reconfigure-monitoring-controller"
-
+	"simulate-petstore",
+	"runtime-reconfigure-monitoring-controller",
+	"calculate-response-time",
+	"repair-log-files",
+	"drive-accounting"
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"

@@ -40,12 +40,30 @@ public final class ExperimentLogging {
     private ExperimentLogging() {
     }
 
+    /**
+     * Log an experiment event.
+     *
+     * @param id
+     *            event id aka event timestamp
+     * @param type
+     *            event type
+     * @param point
+     *            location
+     */
     public static void logEvent(final long id, final EventTypes type, final ObservationPoint point) {
         ExperimentLogging.CTRL.newMonitoringRecord(
                 new MeasureEventOccurance(ExperimentLogging.TIME_SOURCE.getTime(), id, type, point));
     }
 
-    public static void measure(final IEventRecord event, final ObservationPoint point) {
+    /**
+     * Measure a deployment/undeployment event.
+     *
+     * @param event
+     *            the event
+     * @param point
+     *            measurement location
+     */
+    public static void measureDeploymentEvent(final IEventRecord event, final ObservationPoint point) {
         if (event instanceof IDeploymentChange) {
             if (event instanceof IDeployedEvent) {
                 ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
@@ -55,17 +73,15 @@ public final class ExperimentLogging {
         }
     }
 
-    public static void measureEventTime(final IEventRecord event, final ObservationPoint point) {
-        if (event instanceof IDeploymentChange) {
-            if (event instanceof IDeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
-            } else if (event instanceof IUndeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
-            }
-        }
-    }
-
-    public static void measure(final AbstractTcpControlEvent event, final ObservationPoint point) {
+    /**
+     * Measure control events.
+     *
+     * @param event
+     *            control event
+     * @param point
+     *            location
+     */
+    public static void measureControlEvent(final AbstractTcpControlEvent event, final ObservationPoint point) {
         ExperimentLogging.logEvent(event.getTriggerTimestamp(), EventTypes.NONE, point);
     }
 

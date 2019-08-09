@@ -34,6 +34,8 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
      *
      * @param operationSignature
      *            The operation signature of the method that is monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
@@ -55,6 +57,8 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
      *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that is monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 		ISOCountryCode.class, // GeoLocation.countryCode
 	};
 	
+	private static final long serialVersionUID = 558619872261869010L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"timestamp",
@@ -54,8 +56,6 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 		"deploymentId",
 		"countryCode",
 	};
-	
-	private static final long serialVersionUID = 558619872261869010L;
 	
 	/** property declarations. */
 	private final ISOCountryCode countryCode;

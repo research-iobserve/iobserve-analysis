@@ -6,7 +6,6 @@ mainClassName = 'org.iobserve.planning.PlanningMain'
 dependencies {
 	compile project(":adaptationdata")
     compile project(":stages")
-	compile project(":service")
 
 	clover 'org.openclover:clover:4.2.0'
 

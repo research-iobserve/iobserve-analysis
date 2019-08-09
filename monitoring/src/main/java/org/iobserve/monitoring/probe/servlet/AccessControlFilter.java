@@ -34,6 +34,9 @@ import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.core.registry.SessionRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
  * this class (i) registers session and trace information into the thread-local data structures
@@ -72,6 +75,8 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     /** Host name of the host the code is running on. */
     protected static final String VM_NAME = SessionAndTraceRegistrationPayloadFilter.CTRLINST.getHostname();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessControlFilter.class);
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
         // no parameters required
@@ -80,23 +85,22 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        chain.doFilter(request, response);
-
+        AccessControlFilter.LOGGER.debug("filter access control {}", request.getRemoteHost());
         if (AccessControlFilter.CTRLINST.isMonitoringEnabled()) {
+            AccessControlFilter.LOGGER.debug("Monitoring enabled");
             if (request instanceof HttpServletRequest) {
                 final String remoteAddr = request.getRemoteAddr();
-                if (this.isInList(EListType.WHITELIST, remoteAddr,
-                        this.computeOperationSignature((HttpServletRequest) request))) {
+                final String operationSignature = this.computeOperationSignature((HttpServletRequest) request);
+                AccessControlFilter.LOGGER.debug("HTTP request {} {}", remoteAddr, operationSignature);
+                if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
                     chain.doFilter(request, response);
-                } else if (this.isInList(EListType.BLACKLIST, remoteAddr,
-                        this.computeOperationSignature((HttpServletRequest) request))) {
+                } else if (this.isInList(EListType.BLACKLIST, remoteAddr, operationSignature)) {
                     ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
                     chain.doFilter(request, response);
                 } else {
                     try {
                         Thread.sleep(200);
-                        if (this.isInList(EListType.WHITELIST, remoteAddr,
-                                this.computeOperationSignature((HttpServletRequest) request))) {
+                        if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
                             chain.doFilter(request, response);
                         } else {
                             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -118,20 +122,44 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
      *
      * @param request
      *            servlet request
-     * @return retuns operation signature
+     * @return returns the request uri as operation signature
      */
     private String computeOperationSignature(final HttpServletRequest request) {
-        String parameters = null;
+        final String parameters;
+        if ("GET".equals(request.getMethod())) {
+            parameters = this.createParameters(request);
+        } else {
+            String contentType = request.getContentType();
+            final int semicolon = contentType.indexOf(";");
+            if (semicolon > 0) {
+                contentType = contentType.substring(0, semicolon).trim();
+            } else {
+                contentType = contentType.trim();
+            }
+            if ("application/json".equals(contentType)) {
+                parameters = "Object";
+            } else if ("application/x-www-form-urlencoded".equals(contentType)) {
+                parameters = this.createParameters(request);
+            } else {
+                parameters = "<unknown mime type>";
+            }
+        }
+
+        return String.format("%s (%s)", request.getRequestURI(), parameters);
+    }
+
+    private String createParameters(final HttpServletRequest request) {
+        String parameters = "";
         final Enumeration<String> names = request.getParameterNames();
         while (names.hasMoreElements()) {
-            if (parameters == null) {
+            if ("".equals(parameters)) {
                 parameters = names.nextElement();
             } else {
                 parameters += ", " + names.nextElement();
             }
         }
 
-        return String.format("%s (%s)", request.getRequestURI(), parameters);
+        return parameters;
     }
 
     /**
@@ -147,15 +175,21 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
      * @return
      */
     private boolean isInList(final EListType listType, final String remoteAddr, final String operationSignature) {
-        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getAllParameters(operationSignature);
+        AccessControlFilter.LOGGER.debug("isInList {} {}", listType.name(), remoteAddr);
+        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST
+                .getAllPatternParameters(operationSignature);
         if (parameters != null) {
+            AccessControlFilter.LOGGER.debug("Has parameters for operation {}", operationSignature);
             final List<String> valueList = parameters.get(listType.name());
             if (valueList != null) {
+                AccessControlFilter.LOGGER.debug("Has parameters values for list {}", valueList.size());
                 return valueList.contains(remoteAddr);
             } else {
+                AccessControlFilter.LOGGER.debug("No parameters for list.");
                 return false;
             }
         } else {
+            AccessControlFilter.LOGGER.debug("No parameters for operation {} found", operationSignature);
             return false;
         }
     }

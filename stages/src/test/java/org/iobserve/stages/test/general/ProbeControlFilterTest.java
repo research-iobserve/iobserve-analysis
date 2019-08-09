@@ -20,7 +20,7 @@ import java.util.List;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
-import kieker.common.record.tcp.SingleSocketRecordReader;
+import kieker.monitoring.core.controller.tcp.SingleSocketRecordReader;
 
 import teetime.framework.test.StageTester;
 

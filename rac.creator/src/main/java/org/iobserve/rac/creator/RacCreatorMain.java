@@ -29,8 +29,8 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
-import org.iobserve.service.CommandLineParameterEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -126,12 +126,12 @@ public class RacCreatorMain extends AbstractService<ObservationConfiguration, Ra
                 return false;
             }
 
-            if (!CommandLineParameterEvaluation.isFileReadable(this.mappingFile, "Mapping file")) {
+            if (!ParameterEvaluationUtils.isFileReadable(this.mappingFile, "Mapping file", commander)) {
                 commander.usage();
                 return false;
             }
 
-            if (!CommandLineParameterEvaluation.isFileReadable(this.repositoryFile, "Repository file")) {
+            if (!ParameterEvaluationUtils.isFileReadable(this.repositoryFile, "Repository file", commander)) {
                 commander.usage();
                 return false;
             }

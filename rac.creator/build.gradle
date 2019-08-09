@@ -6,10 +6,10 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 
 	compile project(":stages")
-	compile project(":service")
 	compile project(":model")
 	
 	compile 'xml-apis:xml-apis:1.4.01'
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.ActivationParameterEvent;
+import kieker.common.record.remotecontrol.AddParameterValueEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.common.record.remotecontrol.UpdateParameterEvent;
@@ -90,7 +91,6 @@ public class TcpProbeController implements IProbeController {
         } else {
             TcpProbeController.LOGGER.error("Received Unknown TCP control event: {}", event.getClass().getName());
         }
-
     }
 
     /**
@@ -114,7 +114,7 @@ public class TcpProbeController implements IProbeController {
             final Map<String, List<String>> parameters) throws RemoteControlFailedException {
 
         for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
-            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
+            final String[] parameterArray = parameter.getValue().toArray(new String[parameter.getValue().size()]);
             this.sendTcpCommand(ip, port, hostname,
                     new UpdateParameterEvent(pattern, parameter.getKey(), parameterArray));
         }
@@ -161,9 +161,12 @@ public class TcpProbeController implements IProbeController {
             final String operationSignature, final Map<String, List<String>> parameters)
             throws RemoteControlFailedException {
         for (final Entry<String, List<String>> parameter : parameters.entrySet()) {
-            final String[] parameterArray = this.computeParameterArray(parameter.getValue());
             this.sendTcpCommand(ip, port, hostname,
-                    new ActivationParameterEvent(operationSignature, parameter.getKey(), parameterArray));
+                    new ActivationParameterEvent(operationSignature, parameter.getKey(), new String[0]));
+            for (final String value : parameter.getValue()) {
+                this.sendTcpCommand(ip, port, hostname,
+                        new AddParameterValueEvent(operationSignature, parameter.getKey(), value));
+            }
         }
     }
 
@@ -219,7 +222,7 @@ public class TcpProbeController implements IProbeController {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
                 TcpProbeController.CONN_TIMEOUT_IN_MS);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 6553500);
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 655350);
         final SingleSocketTcpWriter tcpWriter;
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
@@ -245,10 +248,6 @@ public class TcpProbeController implements IProbeController {
      */
     public boolean isKnownHost(final String ip, final int port) {
         return this.knownAddresses.keySet().contains(ip + ":" + port);
-    }
-
-    private String[] computeParameterArray(final List<String> parameters) {
-        return parameters.toArray(new String[parameters.size()]);
     }
 
 }

@@ -16,15 +16,14 @@
 package org.iobserve.adaptation;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.adaptation.configurations.AdaptationConfiguration;
-import org.iobserve.service.CommandLineParameterEvaluation;
 
 /**
  * Main class for iObserve's adaptation service.
@@ -51,29 +50,23 @@ public class AdaptationMain extends AbstractService<AdaptationConfiguration, Ada
             final JCommander commander) {
         boolean configurationGood = true;
 
-        try {
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
-                    .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
-            final File workingDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
-                    "Runtime Model Directory", commander);
+        final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(workingDirectory, "Runtime Model Directory",
+                commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_NAME).isEmpty();
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT)
-                    .isEmpty();
-            configurationGood &= !configuration
-                    .getStringProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_HOSTNAME).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_PLAN_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_RUNTIMEMODEL_INPUTPORT)
+                .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTION_REDEPLOYMENTMODEL_INPUTPORT)
+                .isEmpty();
 
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
-        }
+        return configurationGood;
     }
 
     @Override
@@ -110,11 +103,7 @@ public class AdaptationMain extends AbstractService<AdaptationConfiguration, Ada
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.getConfigurationFile(), "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.getConfigurationFile(), "Configuration File", commander);
     }
 
     @Override

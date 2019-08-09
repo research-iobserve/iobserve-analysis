@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2019 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,13 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 		String.class, // EntryCallEvent.hostname
 	};
 	
+	/** default constants. */
+	public static final String OPERATION_SIGNATURE = "";
+	public static final String CLASS_SIGNATURE = "";
+	public static final String SESSION_ID = "";
+	public static final String HOSTNAME = "";
+	private static final long serialVersionUID = -9019303768669463280L;
+	
 	/** property name array. */
 	public static final String[] VALUE_NAMES = {
 		"entryTime",
@@ -56,13 +63,6 @@ public class EntryCallEvent extends AbstractMonitoringRecord  {
 		"sessionId",
 		"hostname",
 	};
-	
-	/** default constants. */
-	public static final String OPERATION_SIGNATURE = "";
-	public static final String CLASS_SIGNATURE = "";
-	public static final String SESSION_ID = "";
-	public static final String HOSTNAME = "";
-	private static final long serialVersionUID = -9019303768669463280L;
 	
 	/** property declarations. */
 	private final long entryTime;

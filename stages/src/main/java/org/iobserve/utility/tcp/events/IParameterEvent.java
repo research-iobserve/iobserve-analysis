@@ -26,5 +26,8 @@ import java.util.Map;
  */
 public interface IParameterEvent {
 
+    /**
+     * @return returns a map of parameter names to lists of values
+     */
     public Map<String, List<String>> getParameters();
 }
