@@ -42,12 +42,19 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
     protected void execute(final UserSession session) throws Exception {
 
         UserSessionToModelConverter.LOGGER.info("Received user session");
-        final BehaviorModelGED model = new BehaviorModelGED();
 
         session.sortEventsBy(UserSession.SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME);
         final List<EntryCallEvent> entryCalls = session.getEvents();
 
-        final Iterator<EntryCallEvent> iterator = entryCalls.iterator();
+        this.outputPort.send(UserSessionToModelConverter.eventsToModel(entryCalls));
+        UserSessionToModelConverter.LOGGER.info("Created BehaviorModelGED");
+
+    }
+
+    public static BehaviorModelGED eventsToModel(final List<EntryCallEvent> events) {
+        final BehaviorModelGED model = new BehaviorModelGED();
+
+        final Iterator<EntryCallEvent> iterator = events.iterator();
 
         BehaviorModelNode currentNode = new BehaviorModelNode("Init");
         model.getNodes().put("Init", currentNode);
@@ -64,16 +71,14 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
             model.getNodes().put(event.getOperationSignature(), currentNode);
 
-            this.addEdge(event, model, lastNode, currentNode);
+            UserSessionToModelConverter.addEdge(event, model, lastNode, currentNode);
             lastNode = currentNode;
         }
-
-        this.outputPort.send(model);
-        UserSessionToModelConverter.LOGGER.info("Created BehaviorModelGED");
+        return model;
 
     }
 
-    private void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelGED model,
+    public static void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelGED model,
             final BehaviorModelNode source, final BehaviorModelNode target) {
         final BehaviorModelEdge matchingEdge = source.getOutgoingEdges().get(target);
 
@@ -86,4 +91,5 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
             matchingEdge.addEvent(event);
         }
     }
+
 }

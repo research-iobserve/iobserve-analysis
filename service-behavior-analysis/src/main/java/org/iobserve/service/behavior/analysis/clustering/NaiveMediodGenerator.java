@@ -23,18 +23,24 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import mtree.DistanceFunction;
+
 /**
  *
  * @author Lars Jürgensen
  *
  */
-public class NaiveMediodGenerator extends AbstractTransformation<Clustering, BehaviorModelGED> {
+public class NaiveMediodGenerator extends AbstractTransformation<Clustering<BehaviorModelGED>, BehaviorModelGED> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NaiveMediodGenerator.class);
 
-    private final GraphEditDistance ged = new GraphEditDistance();
+    private final DistanceFunction<BehaviorModelGED> dm;
+
+    public NaiveMediodGenerator(final DistanceFunction<BehaviorModelGED> dm) {
+        this.dm = dm;
+    }
 
     @Override
-    protected void execute(final Clustering clustering) throws Exception {
+    protected void execute(final Clustering<BehaviorModelGED> clustering) throws Exception {
 
         for (final Set<BehaviorModelGED> clusterSet : clustering.getClusters()) {
 
@@ -53,7 +59,7 @@ public class NaiveMediodGenerator extends AbstractTransformation<Clustering, Beh
                 for (int j = 0; j < cluster.length; j++) {
 
                     if (i != j) {
-                        distanceSum += this.ged.calculate(cluster[i], cluster[j]);
+                        distanceSum += this.dm.calculate(cluster[i], cluster[j]);
                     }
 
                 }

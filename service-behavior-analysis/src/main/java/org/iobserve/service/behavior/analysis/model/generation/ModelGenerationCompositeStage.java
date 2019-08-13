@@ -17,15 +17,14 @@ package org.iobserve.service.behavior.analysis.model.generation;
 
 import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.tools.source.LogsReaderCompositeStage;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
-import org.iobserve.service.source.FileSourceCompositeStage;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -48,13 +47,7 @@ public class ModelGenerationCompositeStage extends CompositeStage {
     public ModelGenerationCompositeStage(final kieker.common.configuration.Configuration configuration)
             throws ConfigurationException {
 
-        final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
-        if (sourceClassName.isEmpty()) {
-            ModelGenerationCompositeStage.LOGGER.error("Initialization incomplete: No source stage specified.");
-            throw new ConfigurationException("Initialization incomplete: No source stage specified.");
-        }
-
-        final FileSourceCompositeStage reader = new FileSourceCompositeStage(configuration);
+        final LogsReaderCompositeStage reader = new LogsReaderCompositeStage(configuration);
         final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
         final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
                 configuration);

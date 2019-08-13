@@ -44,9 +44,9 @@ public class EventSerializer extends StdSerializer<PayloadAwareEntryCallEvent> {
     public void serialize(final PayloadAwareEntryCallEvent event, final JsonGenerator jgen,
             final SerializerProvider provider) throws IOException, JsonGenerationException {
         jgen.writeStartObject();
-        jgen.writeObject(event.getOperationSignature());
-        jgen.writeObject(event.getParameters());
-        jgen.writeObject(event.getValues());
+        jgen.writeStringField("operationSignature", event.getOperationSignature());
+        jgen.writeObjectField("parameters", event.getParameters());
+        jgen.writeObjectField("values", event.getValues());
         jgen.writeEndObject();
 
     }

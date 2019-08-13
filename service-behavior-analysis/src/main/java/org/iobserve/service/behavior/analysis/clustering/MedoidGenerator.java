@@ -30,12 +30,12 @@ import mtree.DistanceFunction;
  * @author Lars Jürgensen
  *
  */
-public class MediodGenerator extends AbstractTransformation<Clustering<BehaviorModelGED>, BehaviorModelGED> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MediodGenerator.class);
+public class MedoidGenerator extends AbstractTransformation<Clustering<BehaviorModelGED>, BehaviorModelGED> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MedoidGenerator.class);
 
     private final DistanceFunction<BehaviorModelGED> dm;
 
-    public MediodGenerator(final DistanceFunction<BehaviorModelGED> dm) {
+    public MedoidGenerator(final DistanceFunction<BehaviorModelGED> dm) {
         this.dm = dm;
     }
 
@@ -46,7 +46,7 @@ public class MediodGenerator extends AbstractTransformation<Clustering<BehaviorM
 
             final BehaviorModelGED[] cluster = clusterSet.toArray(new BehaviorModelGED[clusterSet.size()]);
             if (cluster.length == 0) {
-                MediodGenerator.LOGGER.warn("Empty cluster received");
+                MedoidGenerator.LOGGER.warn("Empty cluster received");
                 return;
             }
 
@@ -54,7 +54,7 @@ public class MediodGenerator extends AbstractTransformation<Clustering<BehaviorM
 
             this.outputPort.send(trimed.calculate());
         }
-        MediodGenerator.LOGGER.info("gernerated all mediods of a clustering");
+        MedoidGenerator.LOGGER.info("gernerated all mediods of a clustering");
 
     }
 

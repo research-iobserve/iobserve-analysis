@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.evaluation;
+package org.iobserve.compare.behavior.models;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +33,7 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @author Lars Jürgensen
  *
  */
-public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResult> {
+public class ComparisonOutputStage extends AbstractConsumerStage<BehaviorModelDifference> {
 
     private final File outputFile;
 
@@ -52,17 +50,15 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
     }
 
     @Override
-    protected void execute(final ComparisonResult result) throws IOException {
-        final FileWriter fw = new FileWriter(this.outputFile);
-        final BufferedWriter bw = new BufferedWriter(fw);
+    protected void execute(final BehaviorModelDifference result) throws IOException {
+
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         // this custom serializer just prints the values array of an event
         final SimpleModule module = new SimpleModule();
         module.addSerializer(PayloadAwareEntryCallEvent.class, new EventSerializer());
         this.objectMapper.registerModule(module);
+        this.objectMapper.writeValue(this.outputFile, result);
 
-        this.objectMapper.writeValue(bw, result);
-        fw.close();
     }
 }

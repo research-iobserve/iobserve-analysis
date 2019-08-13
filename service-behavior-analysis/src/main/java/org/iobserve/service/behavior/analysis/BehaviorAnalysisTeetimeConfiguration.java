@@ -21,6 +21,8 @@ import teetime.framework.Configuration;
 
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.service.behavior.analysis.clustering.ClusteringCompositeStage;
+import org.iobserve.service.behavior.analysis.clustering.GraphEditDistance;
+import org.iobserve.service.behavior.analysis.clustering.MedoidGenerator;
 import org.iobserve.service.behavior.analysis.model.generation.ModelGenerationCompositeStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,23 +43,34 @@ public class BehaviorAnalysisTeetimeConfiguration extends Configuration {
         final ClusteringCompositeStage clustering = new ClusteringCompositeStage(configuration);
 
         final String outputUrl = configuration.getStringProperty(ConfigurationKeys.RESULT_URL, "");
-        if ("".equals(outputUrl)) {
-            BehaviorAnalysisTeetimeConfiguration.LOGGER
-                    .error("Initialization incomplete: No result dictionary specified.");
-            throw new ConfigurationException("Initialization incomplete: No result dictionary specified");
-        }
 
         if ("".equals(outputUrl)) {
             BehaviorAnalysisTeetimeConfiguration.LOGGER
                     .error("Initialization incomplete: No result dictionary specified.");
             throw new ConfigurationException("Initialization incomplete: No result dictionary specified");
         }
-
-        final ClusteringSink sink = new ClusteringSink(outputUrl);
 
         this.connectPorts(modelGeneration.getModelOutputPort(), clustering.getModelInputPort());
         this.connectPorts(modelGeneration.getTimerOutputPort(), clustering.getTimerInputPort());
-        this.connectPorts(clustering.getOutputPort(), sink.getInputPort());
+
+        // configure sink
+
+        final Boolean returnClustering = configuration.getBooleanProperty(ConfigurationKeys.RETURN_CLUSTERING, false);
+
+        if (returnClustering) {
+            final ClusteringSink sink = new ClusteringSink(outputUrl);
+            this.connectPorts(clustering.getOutputPort(), sink.getInputPort());
+        }
+
+        final Boolean returnMedoids = configuration.getBooleanProperty(ConfigurationKeys.RETURN_MEDOIDS, true);
+
+        if (returnMedoids) {
+            final MedoidGenerator medoid = new MedoidGenerator(new GraphEditDistance());
+            final ClusterMedoidSink sink = new ClusterMedoidSink(outputUrl);
+            this.connectPorts(clustering.getOutputPort(), medoid.getInputPort());
+            this.connectPorts(medoid.getOutputPort(), sink.getInputPort());
+        }
+
     }
 
     public static void main(final String[] args) {

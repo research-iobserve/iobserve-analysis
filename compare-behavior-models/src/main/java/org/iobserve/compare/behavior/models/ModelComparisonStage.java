@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.evaluation;
+package org.iobserve.compare.behavior.models;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +28,8 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelNode;
 import org.iobserve.service.behavior.analysis.model.EventGroup;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Compare two behavior models and compute their differences.
@@ -37,9 +39,11 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  */
 public class ModelComparisonStage extends AbstractStage {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelComparisonStage.class);
+
     private final InputPort<BehaviorModelGED> referenceModelInputPort = this.createInputPort();
     private final InputPort<BehaviorModelGED> testModelInputPort = this.createInputPort();
-    private final OutputPort<ComparisonResult> resultPort = this.createOutputPort();
+    private final OutputPort<BehaviorModelDifference> resultPort = this.createOutputPort();
 
     private BehaviorModelGED referenceModel;
 
@@ -68,7 +72,8 @@ public class ModelComparisonStage extends AbstractStage {
 
         if ((this.referenceModel != null) && (this.testModel != null)) {
 
-            final ComparisonResult result = new ComparisonResult();
+            ModelComparisonStage.LOGGER.debug("received a reference and a test model");
+            final BehaviorModelDifference result = new BehaviorModelDifference();
             result.setGraphEditDistance(new GraphEditDistance().calculate(this.testModel, this.referenceModel));
 
             this.findAdditionalNodes(this.referenceModel, this.testModel, result.getReferenceNodes());
@@ -82,6 +87,13 @@ public class ModelComparisonStage extends AbstractStage {
 
             this.findAdditionalEvents(this.referenceModel, this.testModel, result.getReferenceEvents());
             this.findAdditionalEvents(this.testModel, this.referenceModel, result.getTestModelEvents());
+
+            this.getOutputPort().send(result);
+
+            // NOPMD necessary to forget data
+            this.referenceModel = null;
+            this.testModel = null;
+            ModelComparisonStage.LOGGER.debug("generated the differences between models");
 
         }
 
@@ -164,12 +176,16 @@ public class ModelComparisonStage extends AbstractStage {
                     additionalEvents.addAll(eventGroup.getEvents());
                 } else {
                     for (final PayloadAwareEntryCallEvent event1 : eventGroup.getEvents()) {
+                        boolean matchFound = false;
                         for (final PayloadAwareEntryCallEvent event2 : matchingGroup.getEvents()) {
                             ModelComparisonStage.haveSameValues(event1, event2);
+                            matchFound = true;
                             break;
                         }
                         // no matching event
-                        additionalEvents.add(event1);
+                        if (!matchFound) {
+                            additionalEvents.add(event1);
+                        }
                     }
                 }
             }
@@ -225,7 +241,7 @@ public class ModelComparisonStage extends AbstractStage {
         return this.testModelInputPort;
     }
 
-    public OutputPort<ComparisonResult> getOutputPort() {
+    public OutputPort<BehaviorModelDifference> getOutputPort() {
         return this.resultPort;
     }
 

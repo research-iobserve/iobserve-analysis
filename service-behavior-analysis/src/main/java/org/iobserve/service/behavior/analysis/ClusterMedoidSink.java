@@ -43,7 +43,7 @@ public class ClusterMedoidSink extends AbstractConsumerStage<BehaviorModelGED> {
 
     private final String filename;
 
-    private final int clusterNumber = 0;
+    private int clusterNumber = 0;
 
     /**
      * Create behavior model writer.
@@ -58,9 +58,11 @@ public class ClusterMedoidSink extends AbstractConsumerStage<BehaviorModelGED> {
 
     @Override
     protected void execute(final BehaviorModelGED model) throws Exception {
-        final String numberedFilename = "_cluster_" + this.clusterNumber;
+        final String numberedFilename = this.filename + "_cluster_" + this.clusterNumber;
+        this.clusterNumber++;
+
         ClusterMedoidSink.LOGGER.info("Write cluster medoid to " + numberedFilename);
-        final FileWriter fw = new FileWriter(this.filename);
+        final FileWriter fw = new FileWriter(numberedFilename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 

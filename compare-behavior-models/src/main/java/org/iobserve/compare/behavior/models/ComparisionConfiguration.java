@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.evaluation;
+package org.iobserve.compare.behavior.models;
 
 import java.io.File;
 import java.io.IOException;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.evaluation.filter.ComparisonOutputStage;
-import org.iobserve.evaluation.filter.ModelComparisonStage;
+//import org.iobserve.evaluation.filter.ComparisonOutputStage;
+//import org.iobserve.evaluation.filter.ModelComparisonStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
  * @author Lars Jürgensen
  *
  */
-public class EvaluationConfiguration extends Configuration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationConfiguration.class);
+public class ComparisionConfiguration extends Configuration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComparisionConfiguration.class);
 
     /**
      * Configure evaluation analysis to compare a observed model with a reference model.
@@ -47,15 +47,15 @@ public class EvaluationConfiguration extends Configuration {
      * @throws IOException
      *             on any IO error, e.g., when files do not exist, cannot be accessed or created
      */
-    public EvaluationConfiguration(final File referenceModelFile, final File testModelFile, final File resultFile)
+    public ComparisionConfiguration(final File referenceModelFile, final File testModelFile, final File resultFile)
             throws IOException {
 
-        EvaluationConfiguration.LOGGER.debug("Baseline {}", referenceModelFile.getAbsolutePath());
-        EvaluationConfiguration.LOGGER.debug("Test model {}", testModelFile.getAbsolutePath());
-        EvaluationConfiguration.LOGGER.debug("Results in {}", resultFile.getAbsolutePath());
+        ComparisionConfiguration.LOGGER.debug("Baseline {}", referenceModelFile.getAbsolutePath());
+        ComparisionConfiguration.LOGGER.debug("Test model {}", testModelFile.getAbsolutePath());
+        ComparisionConfiguration.LOGGER.debug("Results in {}", resultFile.getAbsolutePath());
 
-        final BehaviorModelGEDJSONReader referenceModelReader = new BehaviorModelGEDJSONReader(referenceModelFile);
-        final BehaviorModelGEDJSONReader testModelReader = new BehaviorModelGEDJSONReader(testModelFile);
+        final ModelReaderStage referenceModelReader = new ModelReaderStage(referenceModelFile);
+        final ModelReaderStage testModelReader = new ModelReaderStage(testModelFile);
 
         final ModelComparisonStage modelComparisonStage = new ModelComparisonStage();
         modelComparisonStage.declareActive();

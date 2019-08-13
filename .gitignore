@@ -1,3 +1,4 @@
+model/testdb/**
 **/bin/**
 **/build/**
 *.checkstyle

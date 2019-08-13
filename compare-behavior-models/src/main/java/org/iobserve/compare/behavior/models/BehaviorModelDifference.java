@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.evaluation;
+package org.iobserve.compare.behavior.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @author Lars Jürgensen
  *
  */
-public class ComparisonResult {
+public class BehaviorModelDifference {
 
     private final List<BehaviorModelNode> referenceNodes = new ArrayList<>();
     private final List<BehaviorModelNode> testModelNodes = new ArrayList<>();
@@ -47,7 +47,7 @@ public class ComparisonResult {
     /**
      * Default constructor.
      */
-    public ComparisonResult() {
+    public BehaviorModelDifference() {
         // empty
     }
 

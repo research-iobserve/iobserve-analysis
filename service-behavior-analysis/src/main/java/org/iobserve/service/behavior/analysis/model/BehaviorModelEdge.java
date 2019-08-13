@@ -37,6 +37,20 @@ public class BehaviorModelEdge {
     /**
      * Create a new edge between two nodes.
      *
+     * @param source
+     *            the source node of the edge
+     * @param target
+     *            the target node of the edge
+     */
+    public BehaviorModelEdge(final BehaviorModelNode source, final BehaviorModelNode target) {
+        this.eventGroups = new ArrayList<>();
+        this.source = source;
+        this.target = target;
+    }
+
+    /**
+     * Create a new edge between two nodes.
+     *
      * @param event
      *            the event which is represented by the edge
      * @param source

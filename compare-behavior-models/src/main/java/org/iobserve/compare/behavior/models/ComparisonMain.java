@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.evaluation;
+package org.iobserve.compare.behavior.models;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * User behavior evaluation main class.
+ * User behavior comparison main class.
  *
- * @author Reiner Jung
+ * @author Lars Jürgensen
  */
-public final class EvaluationMain extends AbstractService<EvaluationConfiguration, EvaluationMain> {
+public final class ComparisonMain extends AbstractService<ComparisionConfiguration, ComparisonMain> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComparisonMain.class);
 
     @Parameter(names = { "-b",
             "--baseline-model" }, required = true, description = "Baseline model file.", converter = FileConverter.class)
@@ -57,7 +57,7 @@ public final class EvaluationMain extends AbstractService<EvaluationConfiguratio
     /**
      * This is a simple main class which does not need to be instantiated.
      */
-    private EvaluationMain() {
+    private ComparisonMain() {
 
     }
 
@@ -69,20 +69,20 @@ public final class EvaluationMain extends AbstractService<EvaluationConfiguratio
      */
     public static void main(final String[] args) {
         try {
-            final EvaluationMain main = new EvaluationMain();
+            final ComparisonMain main = new ComparisonMain();
             System.exit(main.run("Evaluation of behavior models.", "evaluation", args, main));
         } catch (final ExecutionException ex) {
             final Map<Thread, List<Exception>> exceptions = ex.getThrownExceptions();
             for (final Thread th : exceptions.keySet()) {
-                EvaluationMain.LOGGER.error("Exception in thread {}: {}", th.getName(), exceptions.get(th).toString());
+                ComparisonMain.LOGGER.error("Exception in thread {}: {}", th.getName(), exceptions.get(th).toString());
             }
         }
     }
 
     @Override
-    protected EvaluationConfiguration createTeetimeConfiguration() throws ConfigurationException {
+    protected ComparisionConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
+            return new ComparisionConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -92,13 +92,13 @@ public final class EvaluationMain extends AbstractService<EvaluationConfiguratio
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
             if (!this.baselineModelLocation.canRead()) {
-                EvaluationMain.LOGGER.error("reading baseline failed: {}",
+                ComparisonMain.LOGGER.error("reading baseline failed: {}",
                         this.baselineModelLocation.getCanonicalPath());
                 commander.usage();
                 return false;
             }
             if (!this.testModelLocation.canRead()) {
-                EvaluationMain.LOGGER.error("reading test model failed: {}", this.testModelLocation.getCanonicalPath());
+                ComparisonMain.LOGGER.error("reading test model failed: {}", this.testModelLocation.getCanonicalPath());
                 commander.usage();
                 return false;
             }
