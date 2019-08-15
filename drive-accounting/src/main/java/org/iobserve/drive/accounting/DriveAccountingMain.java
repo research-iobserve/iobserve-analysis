@@ -28,7 +28,7 @@ import kieker.tools.common.AbstractService;
  * @author Reiner Jung
  *
  */
-public class DriveAccountingMain extends AbstractService<DrivePipelineConfiguration, AccountDriverSettings> {
+public class DriveAccountingMain extends AbstractService<PipelineConfiguration, Settings> {
 
     /**
      * Create the log file repairer.
@@ -43,13 +43,13 @@ public class DriveAccountingMain extends AbstractService<DrivePipelineConfigurat
      */
     public static void main(final String[] args) {
         final DriveAccountingMain main = new DriveAccountingMain();
-        System.exit(main.run("Drive Accounting", "drive-accounting", args, new AccountDriverSettings()));
+        System.exit(main.run("Drive Accounting", "drive-accounting", args, new Settings()));
     }
 
     @Override
-    protected DrivePipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new DrivePipelineConfiguration(this.parameterConfiguration);
+            return new PipelineConfiguration(this.parameterConfiguration);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

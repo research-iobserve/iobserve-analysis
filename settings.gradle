@@ -1,16 +1,16 @@
-include "common", "monitoring", "model", "stages",
-	"analysis",
-	"planning", "planning.systemadaptation", "planning.cloudprofile",
-	"adaptationdata", "adaptation",
-	"execution",
-	"collector", "splitter", "rac.creator", "replayer",
+include "common", "monitoring", "model", "stages", "analysis"
+include	"planning", "planning.systemadaptation", "planning.cloudprofile"
+include "adaptationdata", "adaptation"
+include	"execution"
+include "collector", "splitter", "rac.creator", "replayer",
 	"evaluate-user-behaviors",
 	"reconstructor",
-	"service.privacy.violation",
-	"evaluate-jss-performance",
+	"service-privacy-violation",
+	"evaluate-service-performance",
 	"simulate-petstore",
-	"runtime-reconfigure-monitoring-controller",
+	"reconfigure-access-control",
 	"calculate-response-time",
+	"calculate-resources",
 	"repair-log-files",
 	"drive-accounting"
 

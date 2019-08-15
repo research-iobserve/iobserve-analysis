@@ -16,7 +16,6 @@ project.ext {
 
 apply plugin: 'aspectj.gradle'
 
-version = '1.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -66,7 +65,7 @@ install {
     repositories.mavenInstaller {
         pom.version = version
         pom.groupId = 'org.iobserve'
-        pom.artifactId = 'repair-logs'
+        pom.artifactId = 'drive-accounting'
     }
 }
 

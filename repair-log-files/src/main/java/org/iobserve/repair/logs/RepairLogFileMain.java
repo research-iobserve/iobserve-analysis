@@ -29,7 +29,7 @@ import kieker.tools.common.ParameterEvaluationUtils;
  * @author Reiner Jung
  *
  */
-public class RepairLogFileMain extends AbstractService<RepairPipelineConfiguration, RepairSettings> {
+public class RepairLogFileMain extends AbstractService<PipelineConfiguration, Settings> {
 
     /**
      * Create the log file repairer.
@@ -44,13 +44,13 @@ public class RepairLogFileMain extends AbstractService<RepairPipelineConfigurati
      */
     public static void main(final String[] args) {
         final RepairLogFileMain main = new RepairLogFileMain();
-        System.exit(main.run("Repair Logs", "repair-logs", args, new RepairSettings()));
+        System.exit(main.run("Repair Logs", "repair-logs", args, new Settings()));
     }
 
     @Override
-    protected RepairPipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new RepairPipelineConfiguration(this.parameterConfiguration.getInput());
+            return new PipelineConfiguration(this.parameterConfiguration.getInput());
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

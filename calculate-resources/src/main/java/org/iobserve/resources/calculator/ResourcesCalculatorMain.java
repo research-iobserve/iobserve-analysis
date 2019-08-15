@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.response.time.calculator;
+package org.iobserve.resources.calculator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,17 +31,19 @@ import org.iobserve.stages.sink.CSVFileWriter;
  * @author Reiner Jung
  *
  */
-public class ResponseTimeCalculatorMain
-        extends AbstractService<TeetimePipline, Settings> {
+public class ResourcesCalculatorMain extends AbstractService<TeetimePipline, Settings> {
 
-    private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
+    private static final String CPU_UTILIZATION_OUTPUT_FILE = CSVFileWriter.class.getCanonicalName()
+            + ".outputCpuUtilizationFile";
+    private static final String MEM_UTILIZATION_OUTPUT_FILE = CSVFileWriter.class.getCanonicalName()
+            + ".outputMemUtilizationFile";
 
     /**
      * @param args
      */
     public static void main(final String[] args) {
-        java.lang.System.exit(new ResponseTimeCalculatorMain().run("Calculate response time", "response-time", args,
-                new Settings()));
+        java.lang.System.exit(
+                new ResourcesCalculatorMain().run("Calculate response time", "response-time", args, new Settings()));
     }
 
     @Override
@@ -60,10 +62,17 @@ public class ResponseTimeCalculatorMain
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        this.parameterConfiguration.setOutputFile(
-                new File(configuration.getStringProperty(ResponseTimeCalculatorMain.OUTPUT_FILE, "result.csv")));
-        return ParameterEvaluationUtils.checkDirectory(this.parameterConfiguration.getOutputFile().getParentFile(),
-                "output file", commander);
+        this.parameterConfiguration.setCpuUtilizationOutputFile(new File(configuration
+                .getStringProperty(ResourcesCalculatorMain.CPU_UTILIZATION_OUTPUT_FILE, "cpu-result.csv")));
+        this.parameterConfiguration.setMemUtilizationOutputFile(new File(configuration
+                .getStringProperty(ResourcesCalculatorMain.MEM_UTILIZATION_OUTPUT_FILE, "mem-result.csv")));
+
+        return ParameterEvaluationUtils.checkDirectory(
+                this.parameterConfiguration.getCpuUtilizationOutputFile().getParentFile(),
+                "cpu utilization output file", commander)
+                && ParameterEvaluationUtils.checkDirectory(
+                        this.parameterConfiguration.getMemUtilizationOutputFile().getParentFile(),
+                        "mem utilization output file", commander);
     }
 
     @Override

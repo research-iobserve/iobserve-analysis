@@ -13,63 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.response.time.calculator;
+package org.iobserve.runtime.reconfigurator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import com.beust.jcommander.JCommander;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
 import kieker.tools.common.AbstractService;
-import kieker.tools.common.ParameterEvaluationUtils;
-
-import org.iobserve.stages.sink.CSVFileWriter;
 
 /**
  * @author Reiner Jung
  *
  */
-public class ResponseTimeCalculatorMain
-        extends AbstractService<TeetimePipline, Settings> {
-
-    private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
+public class ReconfiguratorMain extends AbstractService<PipelineConfiguration, Settings> {
 
     /**
      * @param args
      */
     public static void main(final String[] args) {
-        java.lang.System.exit(new ResponseTimeCalculatorMain().run("Calculate response time", "response-time", args,
+        java.lang.System.exit(new ReconfiguratorMain().run("Reconfigure Kieker at runtime", "reconfigurator", args,
                 new Settings()));
     }
 
     @Override
-    protected TeetimePipline createTeetimeConfiguration() throws ConfigurationException {
-        try {
-            return new TeetimePipline(this.kiekerConfiguration, this.parameterConfiguration);
-        } catch (final FileNotFoundException e) {
-            throw new ConfigurationException(e);
-        }
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        return new PipelineConfiguration(this.parameterConfiguration);
     }
 
     @Override
     protected File getConfigurationFile() {
-        return this.parameterConfiguration.getConfigurationFile();
+        return null;
     }
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        this.parameterConfiguration.setOutputFile(
-                new File(configuration.getStringProperty(ResponseTimeCalculatorMain.OUTPUT_FILE, "result.csv")));
-        return ParameterEvaluationUtils.checkDirectory(this.parameterConfiguration.getOutputFile().getParentFile(),
-                "output file", commander);
+        return true;
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        return ParameterEvaluationUtils.isFileReadable(this.parameterConfiguration.getConfigurationFile(),
-                "configuration file", commander);
+        return true;
     }
 
     @Override
