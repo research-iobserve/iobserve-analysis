@@ -58,8 +58,7 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  *
  * @author Reiner Jung
  */
-public final class PrivacyViolationDetectionServiceMain
-        extends AbstractService<PipelineConfiguration, Settings> {
+public final class PrivacyViolationDetectionServiceMain extends AbstractService<PipelineConfiguration, Settings> {
 
     private static final IMonitoringController CTRL = MonitoringController.getInstance();
 
@@ -116,11 +115,10 @@ public final class PrivacyViolationDetectionServiceMain
             final IModelResource<DataProtectionModel> privacyModelResource = this
                     .loadResourceAndInitDB(PrivacyPackage.eINSTANCE, modelHandler.getPrivacyModel());
 
-            return new PipelineConfiguration(this.kiekerConfiguration,
-                    correspondenceModelResource, repositoryModelResource, resourceEnvironmentModelResource,
-                    systemModelResource, allocationModelResource, privacyModelResource,
-                    this.parameterConfiguration.getWarningFile(), this.parameterConfiguration.getAlarmsFile(),
-                    this.parameterConfiguration.getModelDumpDirectory());
+            return new PipelineConfiguration(this.kiekerConfiguration, correspondenceModelResource,
+                    repositoryModelResource, resourceEnvironmentModelResource, systemModelResource,
+                    allocationModelResource, privacyModelResource, this.parameterConfiguration.getWarningFile(),
+                    this.parameterConfiguration.getAlarmsFile(), this.parameterConfiguration.getModelDumpDirectory());
         } catch (final DBException | IOException e) {
             throw new ConfigurationException(e);
         }
@@ -193,13 +191,14 @@ public final class PrivacyViolationDetectionServiceMain
                 this.parameterConfiguration.getWarningFile().getParentFile(),
                 String.format("warnings location (%s)", PrivacyConfigurationsKeys.WARNING_FILE_PATH), commander);
 
-        this.parameterConfiguration.setModelDumpDirectory(
-                new File(configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH)));
-        configurationGood &= ParameterEvaluationUtils.checkDirectory(
-                this.parameterConfiguration.getModelDumpDirectory().getParentFile(),
-                String.format("model dump location (%s)", PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH),
-                commander);
-
+        if (configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH) != null) {
+            this.parameterConfiguration.setModelDumpDirectory(
+                    new File(configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH)));
+            configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                    this.parameterConfiguration.getModelDumpDirectory().getParentFile(),
+                    String.format("model dump location (%s)", PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH),
+                    commander);
+        }
         return configurationGood;
     }
 

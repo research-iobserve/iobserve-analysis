@@ -21,7 +21,7 @@ import org.iobserve.analysis.ConfigurationKeys;
  * @author Reiner Jung
  *
  */
-public final class PrivacyConfigurationsKeys {
+public final class PrivacyConfigurationsKeys { // NOPMD helper class
 
     public static final String PREFIX = ConfigurationKeys.PREFIX + "privacy.";
 

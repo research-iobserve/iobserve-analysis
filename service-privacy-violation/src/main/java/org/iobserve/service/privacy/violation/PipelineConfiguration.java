@@ -21,10 +21,11 @@ import java.io.IOException;
 import kieker.analysis.source.ISourceCompositeStage;
 import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.common.util.classpath.InstantiationFactory;
+import kieker.tools.common.CommonConfigurationKeys;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeallocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
@@ -39,6 +40,7 @@ import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
 import org.iobserve.service.privacy.violation.filter.DataProtectionWarner;
+import org.iobserve.service.privacy.violation.filter.ModelSnapshotWriter;
 import org.iobserve.service.privacy.violation.filter.NonAdaptiveModelProbeController;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
@@ -98,9 +100,9 @@ public class PipelineConfiguration extends Configuration {
             final File alarmFile, final File modelDumpDirectory) throws IOException, ConfigurationException {
 
         /** instantiating filters. */
-        final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
+        final String sourceClassName = configuration.getStringProperty(CommonConfigurationKeys.SOURCE_STAGE);
         if (!sourceClassName.isEmpty()) {
-            final ISourceCompositeStage sourceCompositeStage = kieker.common.util.classpath.InstantiationFactory
+            final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
                     .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
             final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
@@ -150,13 +152,12 @@ public class PipelineConfiguration extends Configuration {
             final ProbeControlFilter probeController = new ProbeControlFilter(new DummyProbeController());
 
             // Model dumper
-            // final ModelSnapshotWriter modelDumper = new ModelSnapshotWriter(modelDumpDirectory,
-            // correspondenceResource,
-            // repositoryResource, resourceEnvironmentResource, systemModelResource,
-            // allocationResource,
-            // privacyModelResource);
-
-            // TODO remove for performance measurements
+            ModelSnapshotWriter modelDumper = null;
+            if (modelDumpDirectory != null) {
+                modelDumper = new ModelSnapshotWriter(modelDumpDirectory, correspondenceResource, repositoryResource,
+                        resourceEnvironmentResource, systemModelResource, allocationResource, privacyModelResource);
+            }
+            // Remove for performance measurements
             // final EventDelayer<IMonitoringRecord> eventDelayer = new EventDelayer<>(100);
 
             try {
@@ -180,9 +181,12 @@ public class PipelineConfiguration extends Configuration {
                     /** deployment. */
                     this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
 
-                    this.connectPorts(geoLocationStage.getOutputPort(), // modelDumper.getInputPort());
-                            // this.connectPorts(modelDumper.getOutputPort(),
-                            privacyWarner.getDeployedInputPort());
+                    if (modelDumper != null) {
+                        this.connectPorts(geoLocationStage.getOutputPort(), modelDumper.getInputPort());
+                        this.connectPorts(modelDumper.getOutputPort(), privacyWarner.getDeployedInputPort());
+                    } else {
+                        this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
+                    }
 
                     /** undeployment. */
                     this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
@@ -196,10 +200,6 @@ public class PipelineConfiguration extends Configuration {
                     this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
                     this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());
                     this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
-
-                    /** Alarm event processing. */
-                    // TODO Trace analysis has become obsolete and will be replaced by an alarm
-                    // event receiving part
                 } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
                                                        // control
                     throw new IOException("Cannot create warning file.", eWarning);
