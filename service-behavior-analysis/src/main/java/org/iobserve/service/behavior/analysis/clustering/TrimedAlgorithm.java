@@ -18,8 +18,8 @@ package org.iobserve.service.behavior.analysis.clustering;
 import mtree.DistanceFunction;
 
 /**
- * An implementation of the trimed algorithm. The algorithm is defined in the paper "A Sub-Quadratic
- * Exact Medoid Algorithm"
+ * An implementation of the trimed algorithm. The algorithm is proposed in the paper "A
+ * Sub-Quadratic Exact Medoid Algorithm"
  *
  * @author Lars Jürgensen
  *
@@ -43,6 +43,10 @@ public class TrimedAlgorithm<T> {
     }
 
     public T calculate() {
+        if (this.models.length == 0) {
+            throw new IllegalArgumentException("Amount of models has to be larger than 0.");
+        }
+        this.bestCandidate = this.models[0];
         for (int i = 0; i < this.models.length; i++) {
             if (this.lowerBounds[i] < this.lowestEnergy) {
 

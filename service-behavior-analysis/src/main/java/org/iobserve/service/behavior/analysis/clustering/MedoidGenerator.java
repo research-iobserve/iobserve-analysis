@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import mtree.DistanceFunction;
 
 /**
+ * This stage calculates the medoid of the clusters using the trimed algorithm.
  *
  * @author Lars Jürgensen
  *
@@ -45,6 +46,7 @@ public class MedoidGenerator extends AbstractTransformation<Clustering<BehaviorM
         for (final Set<BehaviorModelGED> clusterSet : clustering.getClusters()) {
 
             final BehaviorModelGED[] cluster = clusterSet.toArray(new BehaviorModelGED[clusterSet.size()]);
+            // The trimed algorithm needs at least one element.
             if (cluster.length == 0) {
                 MedoidGenerator.LOGGER.warn("Empty cluster received");
                 return;

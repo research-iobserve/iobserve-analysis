@@ -28,7 +28,7 @@ import java.util.Set;
  *
  */
 public class BehaviorModelGED {
-    private Map<String, BehaviorModelNode> nodes = new HashMap<>();;
+    private Map<String, BehaviorModelNode> nodes = new HashMap<>();
 
     private Set<BehaviorModelEdge> edges = new HashSet<>();
 

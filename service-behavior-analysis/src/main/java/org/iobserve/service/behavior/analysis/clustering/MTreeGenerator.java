@@ -45,6 +45,8 @@ public class MTreeGenerator<T> extends AbstractStage {
 
     private final DistanceFunction<T> distanceFunction;
 
+    // The minimal and the maximal amount of objects a node can contain. The root may contain fewer
+    // objects
     private int minNodeCapacity = 25;
     private int maxNodeCapacity = 49;
 

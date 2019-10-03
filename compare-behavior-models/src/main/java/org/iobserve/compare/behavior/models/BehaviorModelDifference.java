@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.iobserve.service.behavior.analysis.model.EventGroup;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 /**
+ * A BehaviorModelDifference object stores all differences between two models
  *
  * @author Lars Jürgensen
  *
@@ -41,6 +42,16 @@ public class BehaviorModelDifference {
 
     private final List<PayloadAwareEntryCallEvent> referenceEvents = new ArrayList<>();
     private final List<PayloadAwareEntryCallEvent> testModelEvents = new ArrayList<>();
+
+    private int nodeUnionAmount;
+
+    private int edgeUnionAmount;
+
+    private int nodeIntersectionAmount;
+
+    private int edgeIntersectionAmount;
+
+    // private int node
 
     private double graphEditDistance = -1;
 
@@ -89,6 +100,38 @@ public class BehaviorModelDifference {
 
     public void setGraphEditDistance(final double graphEditDistance) {
         this.graphEditDistance = graphEditDistance;
+    }
+
+    public int getNodeUnionAmount() {
+        return this.nodeUnionAmount;
+    }
+
+    public void setNodeUnionAmount(final int nodeUnionAmount) {
+        this.nodeUnionAmount = nodeUnionAmount;
+    }
+
+    public int getEdgeUnionAmount() {
+        return this.edgeUnionAmount;
+    }
+
+    public void setEdgeUnionAmount(final int edgeUnionAmount) {
+        this.edgeUnionAmount = edgeUnionAmount;
+    }
+
+    public int getNodeIntersectionAmount() {
+        return this.nodeIntersectionAmount;
+    }
+
+    public void setNodeIntersectionAmount(final int nodeIntersectionAmount) {
+        this.nodeIntersectionAmount = nodeIntersectionAmount;
+    }
+
+    public int getEdgeIntersectionAmount() {
+        return this.edgeIntersectionAmount;
+    }
+
+    public void setEdgeIntersectionAmount(final int edgeIntersectionAmount) {
+        this.edgeIntersectionAmount = edgeIntersectionAmount;
     }
 
 }

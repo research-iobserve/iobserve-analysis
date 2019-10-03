@@ -24,10 +24,10 @@ import java.util.PriorityQueue;
 import mtree.MTree;
 
 /**
- *
- * @author Lars Jürgensen An implementation of the OPTICS algorithm. A detailed explanation of the
- *         algorithm can be found in the paper "OPTICS: ordering points to identify the clustering
- *         structure"
+ * An implementation of the OPTICS algorithm. A detailed explanation of the algorithm can be found
+ * in the paper "OPTICS: ordering points to identify the clustering structure"
+ * 
+ * @author Lars Jürgensen
  */
 public class OPTICS {
     // This comparator, checks from which model the reachability distance is bigger.

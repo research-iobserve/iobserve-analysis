@@ -26,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * The algorithm extracts clusters, which are equivalent to DBScan clusters from the OPTICS plot.
+ * The algorithm was proposed in the optics paper.
+ * 
  * @author Lars Jürgensen
  *
  */

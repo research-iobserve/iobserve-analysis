@@ -119,7 +119,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
+                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }

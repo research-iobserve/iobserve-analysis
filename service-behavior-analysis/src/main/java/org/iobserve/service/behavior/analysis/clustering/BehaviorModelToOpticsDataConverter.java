@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Converts Behavior Models to Optics Data objects. This is necessary for the optics algorithm.
+ * 
  * @author Lars Jürgensen
  *
  */

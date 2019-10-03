@@ -47,11 +47,11 @@ public class ComparisionConfiguration extends Configuration {
      * @throws IOException
      *             on any IO error, e.g., when files do not exist, cannot be accessed or created
      */
-    public ComparisionConfiguration(final File referenceModelFile, final File testModelFile, final File resultFile)
-            throws IOException {
+    public ComparisionConfiguration(final File referenceModelFile, final File testModelFile, final File resultFile,
+            final String sinkStage) throws IOException {
 
         ComparisionConfiguration.LOGGER.debug("Baseline {}", referenceModelFile.getAbsolutePath());
-        ComparisionConfiguration.LOGGER.debug("Test model {}", testModelFile.getAbsolutePath());
+        ComparisionConfiguration.LOGGER.debug("DeserializationTest model {}", testModelFile.getAbsolutePath());
         ComparisionConfiguration.LOGGER.debug("Results in {}", resultFile.getAbsolutePath());
 
         final ModelReaderStage referenceModelReader = new ModelReaderStage(referenceModelFile);
@@ -60,11 +60,20 @@ public class ComparisionConfiguration extends Configuration {
         final ModelComparisonStage modelComparisonStage = new ModelComparisonStage();
         modelComparisonStage.declareActive();
 
-        final ComparisonOutputStage resultWriter = new ComparisonOutputStage(resultFile);
-
         this.connectPorts(referenceModelReader.getOutputPort(), modelComparisonStage.getReferenceModelInputPort());
         this.connectPorts(testModelReader.getOutputPort(), modelComparisonStage.getTestModelInputPort());
-        this.connectPorts(modelComparisonStage.getOutputPort(), resultWriter.getInputPort());
+
+        if ("CSVSummaryOutputStage".contentEquals(sinkStage)) {
+            final CSVSummaryOutputStage resultWriter = new CSVSummaryOutputStage(resultFile);
+            this.connectPorts(modelComparisonStage.getOutputPort(), resultWriter.getInputPort());
+        } else if ("ComparisonOutputStage".equals(sinkStage)) {
+            final ComparisonOutputStage resultWriter = new ComparisonOutputStage(resultFile);
+            this.connectPorts(modelComparisonStage.getOutputPort(), resultWriter.getInputPort());
+        } else {
+            ComparisionConfiguration.LOGGER.error(
+                    "No valid output stage specified (has to be ComparisonOutputStage or CSVSummaryOutputStage)");
+        }
+
     }
 
 }

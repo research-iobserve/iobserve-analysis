@@ -76,17 +76,40 @@ public class ModelComparisonStage extends AbstractStage {
             final BehaviorModelDifference result = new BehaviorModelDifference();
             result.setGraphEditDistance(new GraphEditDistance().calculate(this.testModel, this.referenceModel));
 
+            // finding nodes, which are in only one model
             this.findAdditionalNodes(this.referenceModel, this.testModel, result.getReferenceNodes());
             this.findAdditionalNodes(this.testModel, this.referenceModel, result.getTestModelNodes());
 
+            // finding edges, which are in only one model
             this.findAdditionalEdges(this.referenceModel, this.testModel, result.getReferenceEdges());
             this.findAdditionalEdges(this.testModel, this.referenceModel, result.getTestModelEdges());
 
+            // finding eventGroups, which are in only one model
             this.findAdditionalEventGroups(this.referenceModel, this.testModel, result.getReferenceEventGroup());
             this.findAdditionalEventGroups(this.testModel, this.referenceModel, result.getTestModelEventGroup());
 
+            // finding events, which are in only one model
             this.findAdditionalEvents(this.referenceModel, this.testModel, result.getReferenceEvents());
             this.findAdditionalEvents(this.testModel, this.referenceModel, result.getTestModelEvents());
+
+            // calculate the amount of total nodes (union)
+            final int referenceNodeAmount = this.referenceModel.getNodes().size();
+            final int testNodeAmount = this.testModel.getNodes().size();
+
+            final int nodeUnionAmount = referenceNodeAmount + result.getTestModelNodes().size();
+
+            result.setNodeUnionAmount(nodeUnionAmount);
+
+            // calculate intersection amount
+            result.setNodeIntersectionAmount((referenceNodeAmount + testNodeAmount) - nodeUnionAmount);
+
+            final int referenceEdgeAmount = this.referenceModel.getEdges().size();
+            final int testEdgeAmount = this.testModel.getEdges().size();
+
+            final int edgeUnionAmount = referenceEdgeAmount + result.getTestModelEdges().size();
+
+            result.setEdgeUnionAmount(edgeUnionAmount);
+            result.setEdgeIntersectionAmount((referenceEdgeAmount + testEdgeAmount) - edgeUnionAmount);
 
             this.getOutputPort().send(result);
 
@@ -169,21 +192,29 @@ public class ModelComparisonStage extends AbstractStage {
      */
     private void findAdditionalEvents(final BehaviorModelGED modelA, final BehaviorModelGED modelB,
             final List<PayloadAwareEntryCallEvent> additionalEvents) {
+        // for loops just to visit every eventGroup
         for (final BehaviorModelEdge edge : modelA.getEdges()) {
             for (final EventGroup eventGroup : edge.getEventGroups()) {
+
                 final EventGroup matchingGroup = this.findMatchingEventGroup(eventGroup, edge, modelB);
+                // If there is no matching eventGroup, all contained events must be added.
                 if (matchingGroup == null) {
                     additionalEvents.addAll(eventGroup.getEvents());
                 } else {
+                    // pairwise comparison of the events. If no matching event is found -> add to
+                    // list
                     for (final PayloadAwareEntryCallEvent event1 : eventGroup.getEvents()) {
                         boolean matchFound = false;
                         for (final PayloadAwareEntryCallEvent event2 : matchingGroup.getEvents()) {
-                            ModelComparisonStage.haveSameValues(event1, event2);
-                            matchFound = true;
+                            if (ModelComparisonStage.haveSameValues(event1, event2)) {
+                                matchFound = true;
+                            }
+
                             break;
                         }
                         // no matching event
                         if (!matchFound) {
+
                             additionalEvents.add(event1);
                         }
                     }
@@ -198,15 +229,17 @@ public class ModelComparisonStage extends AbstractStage {
      *
      * @param edge
      * @param model
-     * @return null, if no edge found and the edge otherwise
+     * @return null, if no edge was found and the edge otherwise
      */
     private BehaviorModelEdge findMatchingEdge(final BehaviorModelEdge edge, final BehaviorModelGED model) {
         final String sourceName = edge.getSource().getName();
         final String targetName = edge.getTarget().getName();
 
+        // finding corresponding nodes in other model
         final BehaviorModelNode sourceNode = model.getNodes().get(sourceName);
         final BehaviorModelNode targetNode = model.getNodes().get(targetName);
 
+        // if there are no corresponding nodes, there can't be the edge
         if ((sourceNode == null) || (targetNode == null)) {
             return null;
         }
@@ -214,6 +247,19 @@ public class ModelComparisonStage extends AbstractStage {
         return sourceNode.getOutgoingEdges().get(targetNode);
     }
 
+    /**
+     * searches an eventGroup in the model, which belongs to an equal edge and has the same
+     * parameters.
+     *
+     * @param eventGroup
+     *            The eventGroup, for which a matching eventGroup is searched
+     * @param parentEdge
+     *            The edge, which the event group belongs to. This is used to determine the source
+     *            and the target
+     * @param model
+     *            The model, in which the eventGroup is searched
+     * @return null, if no eventGroup was found and the eventGroup otherwise
+     */
     private EventGroup findMatchingEventGroup(final EventGroup eventGroup, final BehaviorModelEdge parentEdge,
             final BehaviorModelGED model) {
         final BehaviorModelEdge matchingEdge = this.findMatchingEdge(parentEdge, model);
@@ -222,6 +268,7 @@ public class ModelComparisonStage extends AbstractStage {
         }
         for (final EventGroup matchingEventGroup : matchingEdge.getEventGroups()) {
             if (eventGroup.hasSameParameters(matchingEventGroup)) {
+
                 return matchingEventGroup;
             }
         }

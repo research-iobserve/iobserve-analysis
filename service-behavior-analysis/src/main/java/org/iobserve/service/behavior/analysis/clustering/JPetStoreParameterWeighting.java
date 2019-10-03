@@ -49,6 +49,7 @@ public final class JPetStoreParameterWeighting implements IParameterWeighting {
         this.insertionCost.put("productId", 1.0);
 
         // the costs to duplicate an equal event
+        this.duplicationCost.put("order.cardType", 0.0);
         this.duplicationCost.put("username", 0.0);
         this.duplicationCost.put("password", 0.0);
         this.duplicationCost.put("categoryId", 0.1);

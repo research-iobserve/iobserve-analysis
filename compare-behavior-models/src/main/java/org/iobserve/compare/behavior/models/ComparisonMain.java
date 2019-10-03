@@ -47,12 +47,15 @@ public final class ComparisonMain extends AbstractService<ComparisionConfigurati
     private File baselineModelLocation;
 
     @Parameter(names = { "-t",
-            "--test-model" }, required = true, description = "Test model file.", converter = FileConverter.class)
+            "--test-model" }, required = true, description = "DeserializationTest model file.", converter = FileConverter.class)
     private File testModelLocation;
 
     @Parameter(names = { "-o",
             "--output" }, required = true, description = "Result file.", converter = FileConverter.class)
     private File targetLocation;
+
+    @Parameter(names = { "-s", "--sinkstage" }, required = true, description = "TeeTime sink stage.")
+    private String sinkStage;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -82,7 +85,8 @@ public final class ComparisonMain extends AbstractService<ComparisionConfigurati
     @Override
     protected ComparisionConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new ComparisionConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
+            return new ComparisionConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation,
+                    this.sinkStage);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

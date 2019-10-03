@@ -20,7 +20,9 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import mtree.DistanceFunction;
 
 /**
- *
+ * A wrapper class for behavior models, which assigns the models additional information: If the
+ * Model was visited before, how big the core distance is and how big the reachability distance is
+ * 
  * @author Lars Jürgensen
  *
  */

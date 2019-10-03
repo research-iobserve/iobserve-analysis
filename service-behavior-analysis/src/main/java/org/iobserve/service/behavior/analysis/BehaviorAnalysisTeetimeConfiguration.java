@@ -22,7 +22,7 @@ import teetime.framework.Configuration;
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.service.behavior.analysis.clustering.ClusteringCompositeStage;
 import org.iobserve.service.behavior.analysis.clustering.GraphEditDistance;
-import org.iobserve.service.behavior.analysis.clustering.MedoidGenerator;
+import org.iobserve.service.behavior.analysis.clustering.NaiveMediodGenerator;
 import org.iobserve.service.behavior.analysis.model.generation.ModelGenerationCompositeStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,9 @@ public class BehaviorAnalysisTeetimeConfiguration extends Configuration {
         this.connectPorts(modelGeneration.getModelOutputPort(), clustering.getModelInputPort());
         this.connectPorts(modelGeneration.getTimerOutputPort(), clustering.getTimerInputPort());
 
-        // configure sink
+        // configure sink. The only one of the clustering sinks should be enabled. This can be
+        // improved
+        // with a sink factory
 
         final Boolean returnClustering = configuration.getBooleanProperty(ConfigurationKeys.RETURN_CLUSTERING, false);
 
@@ -65,7 +67,7 @@ public class BehaviorAnalysisTeetimeConfiguration extends Configuration {
         final Boolean returnMedoids = configuration.getBooleanProperty(ConfigurationKeys.RETURN_MEDOIDS, true);
 
         if (returnMedoids) {
-            final MedoidGenerator medoid = new MedoidGenerator(new GraphEditDistance());
+            final NaiveMediodGenerator medoid = new NaiveMediodGenerator(new GraphEditDistance());
             final ClusterMedoidSink sink = new ClusterMedoidSink(outputUrl);
             this.connectPorts(clustering.getOutputPort(), medoid.getInputPort());
             this.connectPorts(medoid.getOutputPort(), sink.getInputPort());

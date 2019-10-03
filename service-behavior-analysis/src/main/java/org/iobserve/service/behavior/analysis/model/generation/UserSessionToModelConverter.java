@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Converts User Sessions into BehaviorModelGEDs
  *
  * @author Lars Jürgensen
  *
@@ -43,6 +44,7 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
         UserSessionToModelConverter.LOGGER.info("Received user session");
 
+        // sort events by the time they occurred
         session.sortEventsBy(UserSession.SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME);
         final List<EntryCallEvent> entryCalls = session.getEvents();
 
@@ -51,26 +53,38 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
     }
 
+    /**
+     * Converts a list of events into a behavior model
+     *
+     * @param events
+     *            The list of events
+     * @return The behavior model
+     */
     public static BehaviorModelGED eventsToModel(final List<EntryCallEvent> events) {
         final BehaviorModelGED model = new BehaviorModelGED();
 
         final Iterator<EntryCallEvent> iterator = events.iterator();
 
+        // start with the node "init"
         BehaviorModelNode currentNode = new BehaviorModelNode("Init");
         model.getNodes().put("Init", currentNode);
 
         BehaviorModelNode lastNode = currentNode;
 
+        // for all events
         while (iterator.hasNext()) {
             final PayloadAwareEntryCallEvent event = (PayloadAwareEntryCallEvent) iterator.next();
 
+            // current node is an existing node with the same name or if non-existing a new node
             currentNode = model.getNodes().get(event.getOperationSignature());
             if (currentNode == null) {
                 currentNode = new BehaviorModelNode(event.getOperationSignature());
             }
 
+            // add node to model
             model.getNodes().put(event.getOperationSignature(), currentNode);
 
+            // add edge to model
             UserSessionToModelConverter.addEdge(event, model, lastNode, currentNode);
             lastNode = currentNode;
         }
@@ -78,16 +92,26 @@ public class UserSessionToModelConverter extends AbstractTransformation<UserSess
 
     }
 
+    /**
+     * Adds an edge to a model, if the edge does not exist already
+     *
+     * @param event
+     * @param model
+     * @param source
+     * @param target
+     */
     public static void addEdge(final PayloadAwareEntryCallEvent event, final BehaviorModelGED model,
             final BehaviorModelNode source, final BehaviorModelNode target) {
         final BehaviorModelEdge matchingEdge = source.getOutgoingEdges().get(target);
 
+        // if edge does not exist yet
         if (matchingEdge == null) {
             final BehaviorModelEdge newEdge = new BehaviorModelEdge(event, source, target);
+            // add references to the model and the nodes
             source.getOutgoingEdges().put(target, newEdge);
             target.getIngoingEdges().put(source, newEdge);
             model.getEdges().add(newEdge);
-        } else {
+        } else { // if edge already exists
             matchingEdge.addEvent(event);
         }
     }

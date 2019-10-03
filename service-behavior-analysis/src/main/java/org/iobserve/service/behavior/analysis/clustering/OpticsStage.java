@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import mtree.MTree;
 
 /**
+ * The stage which execute the optics algorithm.
  *
  * @author Lars Jürgensen
  *
@@ -43,12 +44,12 @@ public class OpticsStage extends AbstractStage {
     private final Queue<MTree<OpticsData>> mTreeInputQueue = new LinkedList<>();
     private final Queue<List<OpticsData>> modelsInputQueue = new LinkedList<>();
 
-    private final double maxDistance;
+    private final double epsilon;
     private final int minPTs;
 
-    public OpticsStage(final double maxDistance, final int minPTs) {
+    public OpticsStage(final double epsilon, final int minPTs) {
         this.minPTs = minPTs;
-        this.maxDistance = maxDistance;
+        this.epsilon = epsilon;
     }
 
     @Override
@@ -63,12 +64,13 @@ public class OpticsStage extends AbstractStage {
             this.modelsInputQueue.add(newModels);
         }
 
+        // We need the list of all objects and the MTree with all objects for the algorithm
         if (!this.mTreeInputQueue.isEmpty() && !this.modelsInputQueue.isEmpty()) {
             OpticsStage.LOGGER.info("received models and mtrees, begins to calculate optics result");
             final MTree<OpticsData> mtree = this.mTreeInputQueue.poll();
             final List<OpticsData> models = this.modelsInputQueue.poll();
 
-            final OPTICS optics = new OPTICS(mtree, this.maxDistance, this.minPTs, models);
+            final OPTICS optics = new OPTICS(mtree, this.epsilon, this.minPTs, models);
 
             final List<OpticsData> result = optics.calculate();
 

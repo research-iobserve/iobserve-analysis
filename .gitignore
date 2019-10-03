@@ -45,6 +45,8 @@ test.setup/kieker*tgz
 /gradle.properties
 !peropteryx.rcp/build.properties
 
+!service-behavior-analysis/libs/**
+!compare-behavior-models/libs/**
 
 # Created by https://www.gitignore.io/api/eclipse,linux,windows
 

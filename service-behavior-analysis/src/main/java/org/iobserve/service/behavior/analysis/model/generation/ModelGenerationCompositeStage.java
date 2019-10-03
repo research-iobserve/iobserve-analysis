@@ -28,8 +28,6 @@ import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,8 +35,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ModelGenerationCompositeStage extends CompositeStage {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationCompositeStage.class);
 
     private final OutputPort<BehaviorModelGED> modelOutputPort;
 

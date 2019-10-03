@@ -22,13 +22,15 @@ import java.util.List;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 /**
- * The edge between two nodes of a BehaviorModel.
+ * An EventGroup contains all events of an edge, which have the same parameters.
  *
  * @author Lars Jürgensen
  *
  */
 public class EventGroup {
 
+    // the parameters of the events of the EventGroup can be an attribute, as all events have the
+    // same parameters
     private final String[] parameters;
     private final List<PayloadAwareEntryCallEvent> events;
 

@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A sink stage, which returns all clusters and all noise objects. All elements of the clusters are
+ * part of the JSON result
  *
  * @author Lars Jürgensen
  *

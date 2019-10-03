@@ -63,7 +63,6 @@ public class BehaviorModelDeserialization {
         while (nodeIterator.hasNext()) {
             final String operationSignature = nodeIterator.next();
             model.getNodes().put(operationSignature, new BehaviorModelNode(operationSignature));
-            System.out.println(operationSignature);
         }
 
         // Read edges
@@ -99,7 +98,7 @@ public class BehaviorModelDeserialization {
 
                     final String operationSignature = jsonEvent.get("operationSignature").asText();
                     final String[] parameters = mapper.treeToValue(jsonEvent.get("parameters"), String[].class);
-                    final String[] values = mapper.treeToValue(jsonEvent.get("parameters"), String[].class);
+                    final String[] values = mapper.treeToValue(jsonEvent.get("values"), String[].class);
                     final PayloadAwareEntryCallEvent event = new PayloadAwareEntryCallEvent(0, 0, operationSignature,
                             operationSignature, "", "", parameters, values, 0);
                     events.add(event);

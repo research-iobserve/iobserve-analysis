@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * A type for the result of a clustering algorithm. One objects contains a set of clusters and a set
+ * of noise objects
  *
  * @author Lars Jürgensen
  *

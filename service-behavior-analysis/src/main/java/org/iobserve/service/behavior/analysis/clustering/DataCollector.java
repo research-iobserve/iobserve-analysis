@@ -67,10 +67,12 @@ public class DataCollector<T> extends AbstractStage {
     protected void execute() throws Exception {
         final T newData = this.dataInputPort.receive();
 
+        // if new object received
         if (newData != null) {
             DataCollector.LOGGER.info("Received a behavior model!");
             this.dataList.add(newData);
 
+            // if maximum amount of objects is reached
             if (this.stopAfterAmount) {
                 if (this.dataList.size() >= this.maxAmount) {
                     DataCollector.LOGGER.info("Reached model amount maximum, sending models..");
@@ -81,6 +83,7 @@ public class DataCollector<T> extends AbstractStage {
             }
         }
 
+        // if time triger event occured
         final Long triggerTime = this.timeTriggerInputPort.receive();
         if (triggerTime != null) {
 

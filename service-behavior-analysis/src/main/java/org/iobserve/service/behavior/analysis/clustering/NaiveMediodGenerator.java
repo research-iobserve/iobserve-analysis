@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 import mtree.DistanceFunction;
 
 /**
- *
+ * The naive medoid algorithm, where all pairwise distances are calculated
+ * 
  * @author Lars Jürgensen
  *
  */
@@ -56,14 +57,14 @@ public class NaiveMediodGenerator extends AbstractTransformation<Clustering<Beha
             for (int i = 0; i < cluster.length; i++) {
                 double distanceSum = 0;
 
+                // calculate the distance to the other objects
                 for (int j = 0; j < cluster.length; j++) {
-
                     if (i != j) {
                         distanceSum += this.dm.calculate(cluster[i], cluster[j]);
                     }
 
                 }
-
+                // remember this object, if best medoid so far
                 if (distanceSum < minDistanceSum) {
                     minDistanceSum = distanceSum;
                     medoid = cluster[i];

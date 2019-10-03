@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.behavior.analysis.test;
+package org.iobserve.service.behavior.analysis.test.clustering;
 
 import java.util.ArrayList;
 import java.util.Iterator;

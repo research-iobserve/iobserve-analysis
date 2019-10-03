@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * This is a sink stage, that returns a JSON object, for each cluster medoid.
+ * 
  * @author Lars Jürgensen
  *
  */
@@ -58,6 +59,7 @@ public class ClusterMedoidSink extends AbstractConsumerStage<BehaviorModelGED> {
 
     @Override
     protected void execute(final BehaviorModelGED model) throws Exception {
+        // the name of the JSON objects contains the number of the cluster
         final String numberedFilename = this.filename + "_cluster_" + this.clusterNumber;
         this.clusterNumber++;
 

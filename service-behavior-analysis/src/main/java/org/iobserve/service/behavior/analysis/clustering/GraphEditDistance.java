@@ -50,10 +50,10 @@ import mtree.DistanceFunction;
 public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
 
     // The operation costs. They can be changed by the "setConfiguration" function
-    private static double nodeInsertCost = 10;
+    private static double nodeInsertCost = 30;
 
-    private static double edgeInsertCost = 5;
-    private static double eventGroupInsertCost = 4;
+    private static double edgeInsertCost = 15;
+    private static double eventGroupInsertCost = 10;
 
     /**
      * the WEIGTHING assigns events a insertion and duplication costs
@@ -226,7 +226,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
             } else { // event occurs in both groups, so it has to be duplicated, till amount is the
                      // same
                 final int amountDifference = Math.abs(matches1.size() - matches2.size());
-                distance += GraphEditDistance.WEIGTHING.getInsertCost(event.getParameters()) * amountDifference;
+                distance += GraphEditDistance.WEIGTHING.getDuplicateCost(event.getParameters()) * amountDifference;
             }
 
         }
@@ -245,6 +245,7 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
                 }
             }
             unvisitedEvents2.removeAll(equalEvents);
+
             distance += equalEvents.size() * GraphEditDistance.WEIGTHING.getDuplicateCost(event1.getParameters());
             distance += GraphEditDistance.WEIGTHING.getInsertCost(event1.getParameters());
 
@@ -298,7 +299,6 @@ public class GraphEditDistance implements DistanceFunction<BehaviorModelGED> {
             queue.removeAll(equalEvents);
             distance += equalEvents.size() * GraphEditDistance.WEIGTHING.getDuplicateCost(event1.getParameters());
             distance += GraphEditDistance.WEIGTHING.getInsertCost(event1.getParameters());
-
         }
 
         return distance;

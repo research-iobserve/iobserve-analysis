@@ -285,6 +285,12 @@ public final class ConfigurationKeys { // NOPMD is not a conventional utility cl
     public static final String EVENT_GROUP_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "eventGroupInsertionCost";
 
     /**
+     * Compare Behavior Models
+     */
+
+    public static final String COMPARISION_OUTPUT_TYPE = "org.iobserve.compare.behavior.models.outputType";
+
+    /**
      * Factory, do not instantiate.
      */
     private ConfigurationKeys() {

@@ -27,7 +27,6 @@ import com.beust.jcommander.Parameter;
 public class BehaviorAnalysisSettings {
 
     @Parameter(names = { "-c", "--configuration" }, required = true, description = "Configuration file")
-
     private File configurationFile;
 
     public final File getConfigurationFile() {

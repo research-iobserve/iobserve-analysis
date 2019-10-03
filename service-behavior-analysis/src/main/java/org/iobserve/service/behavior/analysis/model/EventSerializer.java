@@ -25,7 +25,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 /**
- * A serializer, which serializes an PayloadAwareEntryCallEvent simply by printing the values array
+ * A serializer, which serializes an PayloadAwareEntryCallEvent by printing the operation signature,
+ * the parameters and the values
  *
  * @author Lars Jürgensen
  *
