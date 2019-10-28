@@ -76,7 +76,7 @@ public class ClusteringEvaluation {
      * @throws IOException
      *             on error
      */
-    public void evaluateTheClustering() throws IOException {
+    public void evaluateTheClustering() {
     	String partitioningString = "" + this.groupSplit.get(0) + this.groupSplit.get(1) + this.groupSplit.get(2);
     	String varianceString = " Variance " + this.varianceValue + " ";
     	String iterationString = this.evaluationIterations + " Iterations";
@@ -185,73 +185,88 @@ public class ClusteringEvaluation {
     }
 
     private void writeResults(List<List<ClusterAssignmentsCounter>> clusteringResults, 
-    		List<Double> sseValues, List<Double> mcValues) throws IOException {
+    		List<Double> sseValues, List<Double> mcValues) {
     	
     	String partitioningString = "" + this.groupSplit.get(0) + this.groupSplit.get(1) + this.groupSplit.get(2) + ".csv";
+        
+		try {
+			FileWriter metricResultWriter;
+			metricResultWriter = new FileWriter(this.outputPath + "ClusteringMetrics" + partitioningString);
+	        metricResultWriter.append("SSE;MC");
+	        metricResultWriter.append('\n');
+	        
+	        double sseValuesAverage = 0;
+	        double mcValuesAverage = 0;
 
-        final FileWriter metricResultWriter = new FileWriter(this.outputPath + "ClusteringMetrics" + partitioningString);
-        metricResultWriter.append("SSE;MC");
-        metricResultWriter.append('\n');
-        
-        double sseValuesAverage = 0;
-        double mcValuesAverage = 0;
+	        for (int j = 0; j < this.evaluationIterations; j++) {
+	        	metricResultWriter.append(String.valueOf(sseValues.get(j)));
+	        	sseValuesAverage += sseValues.get(j);
+	        	metricResultWriter.append(';');
+	        	metricResultWriter.append(String.valueOf(mcValues.get(j)));
+	        	mcValuesAverage += mcValues.get(j);
+	        	metricResultWriter.append('\n');
+	        }
+	        
+	        sseValuesAverage = sseValuesAverage / this.evaluationIterations;
+	        mcValuesAverage = mcValuesAverage / this.evaluationIterations;
+	        
+	        metricResultWriter.append("average");
+	        metricResultWriter.append('\n');
+	        metricResultWriter.append(Double.toString(sseValuesAverage));
+	        metricResultWriter.append(';');
+	        metricResultWriter.append(Double.toString(mcValuesAverage));
+	        metricResultWriter.append('\n');
 
-        for (int j = 0; j < this.evaluationIterations; j++) {
-        	metricResultWriter.append(String.valueOf(sseValues.get(j)));
-        	sseValuesAverage += sseValues.get(j);
-        	metricResultWriter.append(';');
-        	metricResultWriter.append(String.valueOf(mcValues.get(j)));
-        	mcValuesAverage += mcValues.get(j);
-        	metricResultWriter.append('\n');
-        }
-        
-        sseValuesAverage = sseValuesAverage / this.evaluationIterations;
-        mcValuesAverage = mcValuesAverage / this.evaluationIterations;
-        
-        metricResultWriter.append("average");
-        metricResultWriter.append('\n');
-        metricResultWriter.append(Double.toString(sseValuesAverage));
-        metricResultWriter.append(';');
-        metricResultWriter.append(Double.toString(mcValuesAverage));
-        metricResultWriter.append('\n');
+	        metricResultWriter.flush();
+	        metricResultWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Error writing clustering metrics results!");
+		}
 
-        metricResultWriter.flush();
-        metricResultWriter.close();
         
-        final FileWriter clusteringResultWriter = new FileWriter(this.outputPath + "ClusteringResults" + partitioningString);
+        
+		try {
+			FileWriter clusteringResultWriter;
+			clusteringResultWriter = new FileWriter(this.outputPath + "ClusteringResults" + partitioningString);
+			 //Not beautiful, but only way to force output
+	    	for (List<ClusterAssignmentsCounter> clustering : clusteringResults) {
+	    		clusteringResultWriter.append("UG;UGM");
+	    		for(int i = 1; i <= clustering.size(); i++){
+	            	clusteringResultWriter.append(";C" + i);
+	            }
+	            clusteringResultWriter.append('\n');
+	    		for(int k = 0; k < 3; k++) {
+	    			if(k == 0) {
+	            		clusteringResultWriter.append("CR;" + this.groupSplit.get(k) + "%;");
+	            	} else if (k == 1) {
+	            		clusteringResultWriter.append("SKM;" + this.groupSplit.get(k) + "%;");
+	            	} else if (k == 2) {
+	            		clusteringResultWriter.append("SEM;" + this.groupSplit.get(k) + "%;");
+	            	}
+	    			for(ClusterAssignmentsCounter assignmentCounts : clustering) {
+	    				if(k == 0) {
+	                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupCustomer()));
+	                	} else if (k == 1) {
+	                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStockManager()));
+	                	} else if (k == 2) {
+	                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStoreManager()));
+	                	}
+	    				clusteringResultWriter.append(';');
+	    			}
+	    			clusteringResultWriter.append('\n');
+	    		}
+	    		clusteringResultWriter.append('\n');
+	    	}
+	        
+	        clusteringResultWriter.flush();
+	        clusteringResultWriter.close();
+		} catch (IOException e) {
+			System.out.println("Error printing clustering evaluation results!");
+		}
   
-        //Not beautiful, but only way to force output
-    	for (List<ClusterAssignmentsCounter> clustering : clusteringResults) {
-    		clusteringResultWriter.append("UG;UGM");
-    		for(int i = 1; i <= clustering.size(); i++){
-            	clusteringResultWriter.append(";C" + i);
-            }
-            clusteringResultWriter.append('\n');
-    		for(int k = 0; k < 3; k++) {
-    			if(k == 0) {
-            		clusteringResultWriter.append("CR;" + this.groupSplit.get(k) + "%;");
-            	} else if (k == 1) {
-            		clusteringResultWriter.append("SKM;" + this.groupSplit.get(k) + "%;");
-            	} else if (k == 2) {
-            		clusteringResultWriter.append("SEM;" + this.groupSplit.get(k) + "%;");
-            	}
-    			for(ClusterAssignmentsCounter assignmentCounts : clustering) {
-    				if(k == 0) {
-                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupCustomer()));
-                	} else if (k == 1) {
-                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStockManager()));
-                	} else if (k == 2) {
-                		clusteringResultWriter.append(Integer.toString(assignmentCounts.getNumberOfUserGroupStoreManager()));
-                	}
-    				clusteringResultWriter.append(';');
-    			}
-    			clusteringResultWriter.append('\n');
-    		}
-    		clusteringResultWriter.append('\n');
-    	}
-        
-        clusteringResultWriter.flush();
-        clusteringResultWriter.close();
+       
     }
 
     /**
@@ -260,7 +275,7 @@ public class ClusteringEvaluation {
      *
      * @throws IOException
      */
-    private void createCallSequenceModelWithVaryingUserGroups() throws IOException {
+    private void createCallSequenceModelWithVaryingUserGroups() {
 
         final List<UserSession> userSessionsOfGroupCustomer = this.getUserSessions(
         		this.numberOfSessionsOfGroupCustomer, CUSTOMER_TAG);
@@ -292,7 +307,7 @@ public class ClusteringEvaluation {
      * @return the sum of squared error of the executed clustering
      * @throws IOException
      */
-    private double performClustering(List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter) throws IOException {
+    private double performClustering(List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter) {
 
         final UserGroupExtraction userGroupExtraction = new UserGroupExtraction(this.entryCallSequenceModel, 3,
         		varianceValue, true);

@@ -148,11 +148,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
         // try to get the correspondent from the cache
         Correspondent correspondent = this.cachedCorrespondents.get(requestKey);
 
-        // in case the correspondent is not available it has to be mapped
-        // !!!!!
-        // this case should never occur, since the correspondents are created and cached in
-        // TEntryCall through containsCorrespondent(...)
-        // !!!!!
+        // in case the correspondent is not available it has to be mapped.
+        // This case should never occur in normal analysis, since the correspondents are created and cached in 
+        // TEntryCallSequence by calling this method.
         if (correspondent == null) {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {

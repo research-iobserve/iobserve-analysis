@@ -42,6 +42,12 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
+    
+    /** Frequency of when to send to output port. */
+	private final int generationFrequency;
+	
+	/** count of events processed by filter. */
+	private int eventCount;
 
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
@@ -58,16 +64,19 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
      * @param correspondenceModel
      *            reference to the correspondence model
      */
-    public TEntryCallSequence(final ICorrespondence correspondenceModel) {
+    public TEntryCallSequence(final ICorrespondence correspondenceModel, final int generationFrequency) {
         this.correspondenceModel = correspondenceModel;
+        this.generationFrequency = generationFrequency;
+        this.eventCount = 0;
     }
 
     @Override
     protected void execute(final EntryCallEvent event) {
-        ExecutionTimeLogger.getInstance().startLogging(event);
         /** check if operationEvent is from an known object */
         if (this.correspondenceModel.containsCorrespondent(event.getClassSignature(), event.getOperationSignature())) {
-
+        	ExecutionTimeLogger.getInstance().startLogging(event);
+        	eventCount++;
+        	
             // add the event to the corresponding user session
             // in case the user session is not yet available, create one
             final String userSessionId = UserSession.parseUserSessionId(event);
@@ -86,12 +95,13 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
                 
                 // only if a session has changed and has more elements than the threshold
                 // the list of approved the usagemodel needs to be newly build
-                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
-
+                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values()); 
+                // approvedSessions.values() -> O(n) + new ArrayList<>(Collection c) -> AbstractCollection.toArray() -> O(n)
 
                 ExecutionTimeLogger.getInstance().stopLogging(event);
 
-                if (!listToSend.isEmpty()) {
+                
+                if (!listToSend.isEmpty() && (eventCount % generationFrequency) == 0) {
                     this.outputPort.send(new EntryCallSequenceModel(listToSend));
                 }
             }

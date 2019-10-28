@@ -28,6 +28,8 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.userbehavior.test.ClusteringEvaluation;
+import org.iobserve.analysis.userbehavior.test.TEntryEventSequenceTest;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import com.beust.jcommander.JCommander;
@@ -70,7 +72,11 @@ public final class AnalysisMain {
     @Parameter(names = { "-p",
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
-
+    
+    @Parameter(names = { "-g",
+    		"--generation-frequency" }, required = true, description = "Frequency of generating output models.", converter = IntegerConverter.class)
+    private int generationFrequency;
+    
     /**
      * Default constructor.
      */
@@ -97,6 +103,26 @@ public final class AnalysisMain {
             System.err.println(e.getLocalizedMessage());
             commander.usage();
         }
+
+// Code for running accuracy tests for TEntryEventSequence
+//    	TEntryEventSequenceTest usagebehaviorTest = new TEntryEventSequenceTest();
+//    	usagebehaviorTest.startTests();
+//    	usagebehaviorTest.startRMETest();
+//    	
+//    	ClusteringEvaluation clusteringEval = new ClusteringEvaluation(4000, 2000, 2000, 0, 100);
+//    	clusteringEval.evaluateTheClustering();
+//    	clusteringEval = new ClusteringEvaluation(2000, 4000, 2000, 0, 100);
+//    	clusteringEval.evaluateTheClustering();
+//    	clusteringEval = new ClusteringEvaluation(2000, 2000, 4000, 0, 100);
+//    	clusteringEval.evaluateTheClustering();
+//    	
+//    	clusteringEval = new ClusteringEvaluation(4000, 2000, 2000, 10, 100);
+//    	clusteringEval.evaluateTheClustering();
+//    	clusteringEval = new ClusteringEvaluation(2000, 4000, 2000, 10, 100);
+//    	clusteringEval.evaluateTheClustering();
+//    	clusteringEval = new ClusteringEvaluation(2000, 2000, 4000, 10, 100);
+//    	clusteringEval.evaluateTheClustering();
+    	
     }
 
     private void execute(final JCommander commander) throws IOException {
@@ -113,13 +139,13 @@ public final class AnalysisMain {
             this.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander);
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
             this.executeWithConfig("Analysis", this.monitoringDataDirectory, this.pcmModelsDirectory, this.varianceOfUserGroups, this.thinkTime, 
-                    this.closedWorkload);
+                    this.closedWorkload, this.generationFrequency);
             ExecutionTimeLogger.getInstance().exportAsCsv();
         }
     }
     
     private void executeWithConfig(final String executionTag, final File monitoringDataDirectory, final File pcmModelDirectory, final int varianceOfUserGroups, 
-            final int thinkTime, final boolean closedWorkload) {
+            final int thinkTime, final boolean closedWorkload, final int generationFrequency) {
         /** create and run application */
         final Collection<File> monitoringDataDirectories = new ArrayList<>();
         AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
@@ -137,7 +163,7 @@ public final class AnalysisMain {
 
         final Configuration warmupConfiguration = new FileObservationConfiguration(monitoringDataDirectories,
                 correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload, generationFrequency);
 
         System.out.println(executionTag + " configuration");
         final Execution<Configuration> warmup = new Execution<>(warmupConfiguration);

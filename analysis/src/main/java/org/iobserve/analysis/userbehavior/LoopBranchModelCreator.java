@@ -52,6 +52,8 @@ public class LoopBranchModelCreator {
      */
     public void detectLoopsInCallBranchModel(final BranchModel branchModel) {
         // Detects Loops within the branches, starting at the root branch
+    	// O(S(b)^3 * L(b) * b^2)
+    	// L(b) = size of loop in branch
         this.detectLoopsWithinBranch(branchModel.getRootBranch());
     }
 
@@ -60,9 +62,14 @@ public class LoopBranchModelCreator {
      *
      * @param branch
      *            that is examined for loops
+     * 
      */
     private void detectLoopsWithinBranch(final Branch branch) {
+    	// O(S(b)^3 * L(b) * b)
+    	// L(b) = size of loop in branch
         this.detectLoopsWithinBranchSequence(branch.getBranchSequence());
+        
+        // O(b)
         for (int i = 0; i < branch.getChildBranches().size(); i++) {
             this.detectLoopsWithinBranch(branch.getChildBranches().get(i));
         }
@@ -89,12 +96,15 @@ public class LoopBranchModelCreator {
         }
 
         if ((branchSequence != null) && (branchSequenceSizeWithoutExitElement > 0)) {
+        	// O(S(b)^3 * L(b) * b)
+        	// L(b) = size of loop in branch
             for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
 
                 // If the sequence element is a branch element, it is checked for loops within
                 // the sequences of the branches
                 if (branchSequence.get(indexOfElementInElementList).getClass().equals(BranchElement.class)) {
                     final BranchElement loopi = (BranchElement) branchSequence.get(indexOfElementInElementList);
+                    // O(b)
                     for (int i = 0; i < loopi.getBranchTransitions().size(); i++) {
                         this.detectLoopsWithinBranchSequence(
                                 loopi.getBranchTransitions().get(i).getBranchSequence());
@@ -104,6 +114,7 @@ public class LoopBranchModelCreator {
                 // Checks subSequences of the sequence for equality
                 // Starting with the max longest sub sequence
                 // If a loop is detected it is memorized
+                // O(S(b)^2 * L(b))
                 for (int i = 0; i < ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList)
                         / 2); i++) {
 
@@ -111,6 +122,8 @@ public class LoopBranchModelCreator {
                             - indexOfElementInElementList) / 2) - i;
                     boolean isALoop = true;
                     final LoopElement loopElement = new LoopElement();
+                    
+                    // O(S(b))
                     for (int k = 0; k < elementsToCheck; k++) {
                         final ISequenceElement element1 = branchSequence.get(indexOfElementInElementList + k);
                         final ISequenceElement element2 = branchSequence
@@ -135,6 +148,7 @@ public class LoopBranchModelCreator {
                                 (indexOfElementInElementList + elementsToCheck + elementsToCheck) - 1);
 
                         // Determines the number of loops for each loop
+                        // O(S(b) * L(b))
                         this.determineLoopCount(loopElement, branchSequence);
 
                         loopElements.add(loopElement);
@@ -289,10 +303,12 @@ public class LoopBranchModelCreator {
      */
     private void determineLoopCount(final LoopElement loopElement, final List<ISequenceElement> branchSequence) {
         int loopCount = 2;
-        for (int i = loopElement.getEndIndexInBranchSequence(); (i
-                + loopElement.getLoopSequence().size()) < branchSequence
-                        .size(); i = i + loopElement.getLoopSequence().size()) {
+        // O(S(b) * L(b))
+        for (int i = loopElement.getEndIndexInBranchSequence(); 
+        		(i + loopElement.getLoopSequence().size()) < branchSequence.size(); 
+        		i = i + loopElement.getLoopSequence().size()) {
             boolean isAdditionalLoop = true;
+            // O(L(b))
             for (int j = 0; j < loopElement.getLoopSequence().size(); j++) {
                 final ISequenceElement element1 = branchSequence.get(loopElement.getStartIndexInBranchSequence() + j);
                 final ISequenceElement element2 = branchSequence.get(i + 1 + j);

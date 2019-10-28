@@ -59,16 +59,24 @@ public class BranchExtraction {
         for (final EntryCallSequenceModel entryCallSequenceModel : this.entryCallSequenceModels) {
             /**
              * 1. Aggregates the single EntryCall sequences to a BranchModel
+             * 
+             * O(n * log(n) + n * E(n) * (b * log(b) + b))
+             * n = UserSessions, E(n) = EntryCallEvents of Session, b = number of branches, S(b) = sequence elements of branch
              */
             final BranchModel branchModel = modelCreator.createCallBranchModel(entryCallSequenceModel);
 
             /**
              * 2. Calculates the likelihoods of the branches of the obtained BranchModel
+             * 
+             * O(b)
              */
             modelCreator.calculateLikelihoodsOfBranches(branchModel);
 
             /**
              * 3. Tries to fuse branches to obtain a more compact model
+             * 
+             * O((S(b) * b)^2 * b * b) 
+             * b = number branches, S(b) = sequence elements of branch
              */
             modelCompactor.compactBranchModel(branchModel);
 

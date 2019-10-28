@@ -40,12 +40,17 @@ public class BranchModelCompactor {
      *
      * @param branch
      *            that is examined whether its child branches can be merged
+     *            
+     * O((S(b) * b)^2 * b * b) 
+     * b = number branches, S(b) = sequence elements of branch
      */
     private void compactBranch(final Branch branch) {
     	if (branch.getChildBranches().size() > 0) {
     		for (Branch childBranch : branch.getChildBranches()) {
         		compactBranch(childBranch);
         	}
+    		//O((S(b) * b)^2 * b)
+        	// 
     		mergeChildBranches(branch);
     	}
     }
@@ -93,10 +98,12 @@ public class BranchModelCompactor {
     	// Potential todo: do not require all child branch sequences to be equal to be merged, 
     	// but cluster child branch sequences and merge the clusters, for a more compacted and correct
     	// result, if necessary.
-    	
+    	// O((S(b) * b)^2)
+    	// b = number branches, S(b) = sequence elements of branch
     	final List<ISequenceElement> mergeableBranchSequence = getAndRemoveMergableBranchSequence(branch);
                 
         // Create a new BranchElement that replaces the remainders of the child branches that are merged
+    	// O(b)
         final BranchElement branchElement = new BranchElement();
         for (final Branch childBranch : branch.getChildBranches()) {
             final BranchTransitionElement branchTransition = new BranchTransitionElement();
@@ -118,6 +125,8 @@ public class BranchModelCompactor {
      * @return The removed sequence elements
      */
     private List<ISequenceElement> getAndRemoveMergableBranchSequence(Branch branch) {
+    	// O(S(b) * b)
+    	// S(b) = sequence elements of branch
     	int indexOfMergableElements = getIndexOfEqualLastElements(branch.getChildBranches());
         
         // Have equal elements been found?
@@ -125,6 +134,7 @@ public class BranchModelCompactor {
         	Branch initialChildBranch = branch.getChildBranches().get(0);
         	
     		// Remove equal elements from child branches and save in list
+        	// O(S(b) * b)
     		final List<ISequenceElement> mergeableBranchSequence = new ArrayList<>();
             for (int i = 0; i < indexOfMergableElements; i++) {
                 mergeableBranchSequence.add(0, initialChildBranch.getBranchSequence()

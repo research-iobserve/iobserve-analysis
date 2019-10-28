@@ -74,7 +74,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload, final int generationFrequency) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
@@ -84,7 +84,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
-        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel, generationFrequency);
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,

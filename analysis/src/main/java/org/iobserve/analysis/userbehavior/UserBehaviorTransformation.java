@@ -117,6 +117,9 @@ public class UserBehaviorTransformation {
          * sequence model for each detected user group. Each entry call sequence model contains: -
          * the user sessions that are assigned to the user group - the likelihood of its user group
          * - the parameters for the workload intensity of its user group
+         * 
+         * O(E(n) * (n^2 + n) + n + (n+2) * m + 2 * n * k + 5 * k * n * m)
+         * n = UserSessions, E(n) = EntryCallEvents of Session, m = numberOfDistinctOperationSignatures, k = number of clusters
          */
         timeBefore = System.currentTimeMillis();
         final UserGroupExtraction extractionOfUserGroups = new UserGroupExtraction(this.inputEntryCallSequenceModel,
@@ -135,6 +138,9 @@ public class UserBehaviorTransformation {
          * structure: The single sequences are aggregated to one coherent model that contains
          * alternative sequences in form of branches. It detects branches and the branch
          * likelihoods. The result is one BranchModel for each user group.
+         * 
+         * O(n * log(n) + n * E(n) * (b * log(b) + b) + b + (S(b) * b)^2 * b^2)
+         * n = UserSessions, E(n) = EntryCallEvents of Session, b = number of branches, S(b) = sequence elements of branch
          */
         timeBefore = System.currentTimeMillis();
         final BranchExtraction branchExtraction = new BranchExtraction(entryCallSequenceModels);
@@ -149,6 +155,9 @@ public class UserBehaviorTransformation {
          * iterated in a row are detected and summarized to loops containing the number of loops as
          * the count of each loop. The result is one LoopBranchModel for each user group that
          * additionally contains loops for iterated entryCalls.
+         * 
+         * O(B * S(b)^3 * L(b) * b^2)
+         * L(b) = size of loop in branch, b = number of branches, S(b) = sequence elements of branch, B = number of branch models (should be 1)
          */
         timeBefore = System.currentTimeMillis();
         final LoopExtraction loopDetection = new LoopExtraction(branchModels);

@@ -34,6 +34,7 @@ import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 import org.iobserve.analysis.userbehavior.data.LoopElement;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -42,7 +43,6 @@ import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
-import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
@@ -170,112 +170,41 @@ public class PcmUsageModelBuilder {
             final List<ISequenceElement> sequence, final Branch branch) {
 
         final ScenarioBehaviour scenarioBehaviour = UsageModelBuilder.createScenarioBehaviour();
-
         final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
         final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
-
-        EntryLevelSystemCall lastESysCall = UsageModelBuilder.createEmptyEntryLevelSystemCall();
-        boolean isLastElementACall = false;
-        Loop lastLoop = UsageModelBuilder.createEmptyLoop();
-        boolean isLastElementALoop = false;
-        org.palladiosimulator.pcm.usagemodel.Branch lastLoopBranch = UsagemodelFactory.eINSTANCE.createBranch();
-        boolean isLastElementALoopBranch = false;
-        org.palladiosimulator.pcm.usagemodel.Branch lastBranch = UsagemodelFactory.eINSTANCE.createBranch();
-        boolean isLastElementABranch = false;
+        
+        AbstractUserAction lastElement = start;
 
         // Loops over all elements of the sequence and creates a corresponding scenario behavior by
         // connecting the elements via successor and predecessor connections
         for (final ISequenceElement branchElement : sequence) {
-
-            // Element is a entryLevelSystemCall
-            if (branchElement.getClass().equals(CallElement.class)) {
+            if (branchElement.getClass().equals(CallElement.class)) { // Element is a entryLevelSystemCall
             	CallElement callElement = (CallElement) branchElement;
                 EntryLevelSystemCall eSysCall = null;
                 final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
                         .getCorrespondent(callElement.getClassSignature(), callElement.getOperationSignature());
+                
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                   
                     eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,
                             correspondent);
                 }
+                
                 if (eSysCall != null) {
-                    if (isLastElementACall) {
-                        UsageModelBuilder.connect(lastESysCall, eSysCall);
-                    } else if (isLastElementALoop) {
-                        UsageModelBuilder.connect(lastLoop, eSysCall);
-                    } else if (isLastElementALoopBranch) {
-                        UsageModelBuilder.connect(lastLoopBranch, eSysCall);
-                    } else if (isLastElementABranch) {
-                        UsageModelBuilder.connect(lastBranch, eSysCall);
-                    } else {
-                        UsageModelBuilder.connect(start, eSysCall);
-                    }
+                	UsageModelBuilder.connect(lastElement, eSysCall);
                     UsageModelBuilder.addUserAction(scenarioBehaviour, eSysCall);
-                    lastESysCall = eSysCall;
-                    isLastElementACall = true;
-                    isLastElementALoop = false;
-                    isLastElementALoopBranch = false;
-                    isLastElementABranch = false;
+                    lastElement = eSysCall;
                 }
             } else if (branchElement.getClass().equals(LoopElement.class)) { // Element is a loop
                 final Loop loop = this.createLoop(scenarioBehaviour, (LoopElement) branchElement);
-                if (isLastElementACall) {
-                    UsageModelBuilder.connect(lastESysCall, loop);
-                } else if (isLastElementALoop) {
-                    UsageModelBuilder.connect(lastLoop, loop);
-                } else if (isLastElementALoopBranch) {
-                    UsageModelBuilder.connect(lastLoopBranch, loop);
-                } else if (isLastElementABranch) {
-                    UsageModelBuilder.connect(lastBranch, loop);
-                } else {
-                    UsageModelBuilder.connect(start, loop);
-                }
-                lastLoop = loop;
-                isLastElementALoop = true;
-                isLastElementACall = false;
-                isLastElementALoopBranch = false;
-                isLastElementABranch = false;
-//            } else if (branchElement.getClass().equals(LoopBranchElement.class)) { // Element is a
-//                                                                                   // looped Branch
-//                final org.palladiosimulator.pcm.usagemodel.Branch loopBranch = this.createLoopBranch(scenarioBehaviour,
-//                        (LoopBranchElement) branchElement);
-//                if (isLastElementACall) {
-//                    UsageModelBuilder.connect(lastESysCall, loopBranch);
-//                } else if (isLastElementALoop) {
-//                    UsageModelBuilder.connect(lastLoop, loopBranch);
-//                } else if (isLastElementALoopBranch) {
-//                    UsageModelBuilder.connect(lastLoopBranch, loopBranch);
-//                } else if (isLastElementABranch) {
-//                    UsageModelBuilder.connect(lastBranch, loopBranch);
-//                } else {
-//                    UsageModelBuilder.connect(start, loopBranch);
-//                }
-//                lastLoopBranch = loopBranch;
-//                isLastElementALoopBranch = true;
-//                isLastElementACall = false;
-//                isLastElementALoop = false;
-//                isLastElementABranch = false;
-            } else if (branchElement.getClass().equals(BranchElement.class)) { // Element is a
-                                                                               // Branch
+                UsageModelBuilder.connect(lastElement, loop);
+                lastElement = loop;
+
+            } else if (branchElement.getClass().equals(BranchElement.class)) { // Element is a Branch
                 final org.palladiosimulator.pcm.usagemodel.Branch branchInter = this.createBranch(scenarioBehaviour,
                         (BranchElement) branchElement);
-                if (isLastElementACall) {
-                    UsageModelBuilder.connect(lastESysCall, branchInter);
-                } else if (isLastElementALoop) {
-                    UsageModelBuilder.connect(lastLoop, branchInter);
-                } else if (isLastElementALoopBranch) {
-                    UsageModelBuilder.connect(lastLoopBranch, branchInter);
-                } else if (isLastElementABranch) {
-                    UsageModelBuilder.connect(lastBranch, branchInter);
-                } else {
-                    UsageModelBuilder.connect(start, branchInter);
-                }
-                lastBranch = branchInter;
-                isLastElementABranch = true;
-                isLastElementALoopBranch = false;
-                isLastElementACall = false;
-                isLastElementALoop = false;
+                UsageModelBuilder.connect(lastElement, branchInter);
+                lastElement = branchInter;
             } else {
                 break;
             }
@@ -283,49 +212,16 @@ public class PcmUsageModelBuilder {
 
         // checks if the branch got child branches
         if (branch == null) {
-            if (isLastElementACall) {
-                UsageModelBuilder.connect(lastESysCall, stop);
-            } else if (isLastElementALoop) {
-                UsageModelBuilder.connect(lastLoop, stop);
-            } else if (isLastElementALoopBranch) {
-                UsageModelBuilder.connect(lastLoopBranch, stop);
-            } else if (isLastElementABranch) {
-                UsageModelBuilder.connect(lastBranch, stop);
-            } else {
-                UsageModelBuilder.connect(start, stop);
-            }
+        	UsageModelBuilder.connect(lastElement, stop);
         } else {
             final org.palladiosimulator.pcm.usagemodel.Branch branchUM = this.createChildBranch(scenarioBehaviour,
                     indexOfScenario, branch);
+            
             if (branchUM != null) {
-                if (isLastElementACall) {
-                    UsageModelBuilder.connect(lastESysCall, branchUM);
-                    UsageModelBuilder.connect(branchUM, stop);
-                } else if (isLastElementALoop) {
-                    UsageModelBuilder.connect(lastLoop, branchUM);
-                    UsageModelBuilder.connect(branchUM, stop);
-                } else if (isLastElementALoopBranch) {
-                    UsageModelBuilder.connect(lastLoopBranch, branchUM);
-                    UsageModelBuilder.connect(branchUM, stop);
-                } else if (isLastElementABranch) {
-                    UsageModelBuilder.connect(lastBranch, branchUM);
-                    UsageModelBuilder.connect(branchUM, stop);
-                } else {
-                    UsageModelBuilder.connect(start, branchUM);
-                    UsageModelBuilder.connect(branchUM, stop);
-                }
+            	UsageModelBuilder.connect(lastElement, branchUM);
+            	UsageModelBuilder.connect(branchUM, stop);
             } else {
-                if (isLastElementACall) {
-                    UsageModelBuilder.connect(lastESysCall, stop);
-                } else if (isLastElementALoop) {
-                    UsageModelBuilder.connect(lastLoop, stop);
-                } else if (isLastElementALoopBranch) {
-                    UsageModelBuilder.connect(lastLoopBranch, stop);
-                } else if (isLastElementABranch) {
-                    UsageModelBuilder.connect(lastBranch, stop);
-                } else {
-                    UsageModelBuilder.connect(start, stop);
-                }
+            	UsageModelBuilder.connect(lastElement, stop);
             }
         }
 
@@ -408,31 +304,4 @@ public class PcmUsageModelBuilder {
 
         return null;
     }
-
-//    /**
-//     * Creates a PCM branch for a LoopBranchElement.
-//     *
-//     * @param scenarioBehaviour
-//     *            to that the PCM branch is added
-//     * @param loopBranch
-//     *            that is transformed to a PCM branch
-//     * @return a PCM branch
-//     */
-//    private org.palladiosimulator.pcm.usagemodel.Branch createLoopBranch(final ScenarioBehaviour scenarioBehaviour,
-//            final LoopBranchElement loopBranch) {
-//
-//        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
-//                scenarioBehaviour);
-//        for (final Branch branch : loopBranch.getLoopBranches()) {
-//            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
-//            final ScenarioBehaviour branchScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
-//                    branch.getBranchSequence(), null);
-//            branchTransition.setBranchedBehaviour_BranchTransition(branchScenarioBehaviour);
-//            branchTransition.setBranch_BranchTransition(branchUM);
-//            branchTransition.setBranchProbability(branch.getBranchLikelihood());
-//        }
-//
-//        return branchUM;
-//    }
-
 }

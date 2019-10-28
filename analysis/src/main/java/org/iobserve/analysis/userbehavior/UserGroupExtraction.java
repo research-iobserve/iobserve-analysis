@@ -16,6 +16,7 @@
 
 package org.iobserve.analysis.userbehavior;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -83,6 +84,8 @@ public class UserGroupExtraction {
          * signatures occurring within the entryCallSequenceModel. It is required to transform each
          * user session to counts of its called operations. The counts are used to determine the
          * similarity between the user sessions
+         * 
+         * O(n*E(n) + n) n = UserSessions, E(n) = EntryCallEvents von Session
          */
         final List<String> listOfDistinctOperationSignatures = clusteringProcessing
                 .getListOfDistinctOperationSignatures(this.entryCallSequenceModel.getUserSessions());
@@ -91,6 +94,8 @@ public class UserGroupExtraction {
          * 2. Transformation to the call count model. Transforms the call sequences of the user
          * sessions to a list of counts of calls that state the number of calls of each distinct
          * operation signature for each user session
+         * 
+         * O((n^2)*E(n)) n = UserSessions, E(n) = EntryCallEvents von Session
          */
         final List<UserSessionAsCountsOfCalls> callCountModel = clusteringProcessing
                 .getCallCountModel(this.entryCallSequenceModel.getUserSessions(), listOfDistinctOperationSignatures);
@@ -99,12 +104,14 @@ public class UserGroupExtraction {
          * 3. Clustering of user sessions. Clustering of the user sessions whose behavior is
          * represented as counts of their called operation signatures to obtain user groups
          */
-        final Instances instances = xMeansClustering.createInstances(callCountModel, listOfDistinctOperationSignatures);
+        // O((n+2) * m) m = numberOfDistinctOperationSignatures 
+        final Instances instances = xMeansClustering.createInstances(callCountModel, listOfDistinctOperationSignatures.size());
         /*
          * The clustering is performed 5 times and the best result is taken. The quality of a
          * clustering result is determined by the value of the sum of squared error (SSE) of the
          * clustering. The lower the SSE is the better the clustering result.
          */
+        // O(5 * (n + maxClusteringIterations * (1000 * kMeans + numberClusters * 1000 * kMeansChildren))) --> 
         for (int i = 0; i < 5; i++) {
             xMeansClusteringResults = xMeansClustering.clusterSessionsWithXMeans(instances,
                     this.numberOfUserGroupsFromInputUsageModel, this.varianceOfUserGroups, i);
@@ -120,6 +127,7 @@ public class UserGroupExtraction {
          * 4. Obtaining the user groups' call sequence models. Creates for each cluster resp. user
          * group its own entry call sequence model that exclusively contains its assigned user
          * sessions
+         * O(n * numberClusters) n = UserSessions
          */
         final List<EntryCallSequenceModel> entryCallSequenceModelsOfXMeansClustering = clusteringProcessing
                 .getForEachUserGroupAnEntryCallSequenceModel(this.clusteringResults, this.entryCallSequenceModel);
@@ -127,6 +135,7 @@ public class UserGroupExtraction {
         /**
          * 5. Obtaining the user groups' workload intensity. Calculates and sets for each user group
          * its specific workload intensity parameters
+         * O(numberClusters * n)
          */
         clusteringProcessing.setTheWorkloadIntensityForTheEntryCallSequenceModels(
                 entryCallSequenceModelsOfXMeansClustering, this.isClosedWorkload);

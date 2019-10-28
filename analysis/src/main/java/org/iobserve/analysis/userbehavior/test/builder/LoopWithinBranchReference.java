@@ -85,7 +85,7 @@ public final class LoopWithinBranchReference {
         // dependently from the random number of branch transitions, because it must be ensured that
         // each branch transition is represented within the user sessions.
         final int numberOfBranchTransitions = TestHelper.getRandomInteger(3, 2);
-        final int numberOfConcurrentUsers = TestHelper.getRandomInteger(30, 10 * numberOfBranchTransitions);
+        final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 10 * numberOfBranchTransitions); //30
         final int lengthOfBranchSequence = TestHelper.getRandomInteger(2, 1);
         final int countOfLoop = TestHelper.getRandomInteger(3, 2);
 

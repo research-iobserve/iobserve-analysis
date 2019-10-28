@@ -100,12 +100,12 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	    long timestamp = this.usageModelProvider.getTimestamp();
 	    if(this.timestamp != timestamp) {
 	    	// Resets the current usage model
-	        this.usageModelProvider.loadModel();
+	        this.usageModelProvider.loadModel(); // --> O(?) direct reading from disc
 	    }
 	    long loadOrTimestampTimeAfter = System.currentTimeMillis();
         this.modelLoadTime = loadOrTimestampTimeAfter - loadOrTimestampTimeBefore;
 		
-		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size(); // --> O(1)
 		
 		long userBehaviorTransformationTimeBefore = System.currentTimeMillis();
 		// Executes the user behavior modeling procedure
@@ -131,7 +131,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		
 		long saveTimeBefore = System.currentTimeMillis();
 		// Sets the new usage model within iObserve
-		this.usageModelProvider.save();
+		this.usageModelProvider.save(); // --> O(?) direct writing on disc
 		long saveTimeAfter = System.currentTimeMillis();
 		this.modelSaveTime = saveTimeAfter - saveTimeBefore;
 		

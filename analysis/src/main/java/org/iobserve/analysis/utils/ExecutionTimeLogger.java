@@ -79,7 +79,7 @@ public final class ExecutionTimeLogger {
     }
 
     public void startLogging(final IMonitoringRecord record) {
-        this.tmpTimes.put(record.hashCode(), System.currentTimeMillis());
+        this.tmpTimes.put(record.hashCode(), System.nanoTime());
     }
     
     public void startLogging(final EntryCallSequenceModel session) {
@@ -125,7 +125,7 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final IDeploymentRecord record) {
-        final Long endTime = System.currentTimeMillis();
+        final Long endTime = System.nanoTime();
         final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
             final LoggingEntry entry = new LoggingEntry();
@@ -142,7 +142,7 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final IUndeploymentRecord record) {
-        final Long endTime = System.currentTimeMillis();
+        final Long endTime = System.nanoTime();
         final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
             final LoggingEntry entry = new LoggingEntry();
@@ -176,7 +176,7 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final AfterOperationEvent record) {
-        final Long endTime = System.currentTimeMillis();
+        final Long endTime = System.nanoTime();
         final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
             final LoggingEntry entry = new LoggingEntry();
@@ -187,7 +187,7 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final EntryCallEvent record) {
-        final Long endTime = System.currentTimeMillis();
+        final Long endTime = System.nanoTime();
         final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
             final LoggingEntry entry = new LoggingEntry();

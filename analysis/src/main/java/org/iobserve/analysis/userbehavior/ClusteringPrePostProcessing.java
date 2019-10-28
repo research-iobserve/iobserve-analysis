@@ -17,10 +17,13 @@
 package org.iobserve.analysis.userbehavior;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -107,17 +110,17 @@ public class ClusteringPrePostProcessing {
      * @return a list of distinct operation signatures occurring within the userSessions
      */
     public List<String> getListOfDistinctOperationSignatures(final List<UserSession> userSessions) {
-        final List<String> listOfDistinctOperationSignatures = new ArrayList<>();
+        final HashSet<String> setOfDistinctOperationSignatures = new HashSet<>();
         for (final UserSession userSession : userSessions) {
             final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
             while (iteratorEvents.hasNext()) {
                 final EntryCallEvent event = iteratorEvents.next();
-                if (!listOfDistinctOperationSignatures.contains(event.getOperationSignature())) {
-                    listOfDistinctOperationSignatures.add(event.getOperationSignature());
+                if(!setOfDistinctOperationSignatures.contains(event.getOperationSignature())) { // O(1)
+                	setOfDistinctOperationSignatures.add(event.getOperationSignature());
                 }
             }
         }
-        return listOfDistinctOperationSignatures;
+        return new ArrayList<>(setOfDistinctOperationSignatures); // O(n)
     }
 
     /**
@@ -146,13 +149,14 @@ public class ClusteringPrePostProcessing {
             final UserSessionAsCountsOfCalls absoluteCountOfCalls = new UserSessionAsCountsOfCalls(
                     userSession.getSessionId(), listOfDistinctOperationSignatures.size());
             final List<EntryCallEvent> callSequence = userSession.getEvents();
+            
             for (int i = 0; i < callSequence.size(); i++) {
-                final String currentCall = callSequence.get(i).getOperationSignature();
-                final int indexOfCurrentCall = listOfDistinctOperationSignatures.indexOf(currentCall);
+                final String currentCall = callSequence.get(i).getOperationSignature(); // O(1) da callSequence ArrayList
+                final int indexOfCurrentCall = listOfDistinctOperationSignatures.indexOf(currentCall); // O(n)
                 absoluteCountOfCalls.getAbsoluteCountOfCalls()[indexOfCurrentCall] = absoluteCountOfCalls
                         .getAbsoluteCountOfCalls()[indexOfCurrentCall] + 1;
             }
-            callCountModel.add(absoluteCountOfCalls);
+            callCountModel.add(absoluteCountOfCalls); // O(1)
         }
         return callCountModel;
     }

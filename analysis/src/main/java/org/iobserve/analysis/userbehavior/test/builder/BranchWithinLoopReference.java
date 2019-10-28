@@ -84,9 +84,14 @@ public final class BranchWithinLoopReference {
         // ensured that at each iteration of an branch the branch transition probabilities are
         // equal. This can be achieved by the same number of user sessions representing the branch
         // transition at each iteration
-        final int numberOfLoops = TestHelper.getRandomInteger(3, 3);
-//        final int numberOfConcurrentUsers = TestHelper.getRandomInteger(500, 250);
-        final int numberOfConcurrentUsers = (int) Math.pow(2, numberOfLoops) * 5;
+        final int numberOfLoops = TestHelper.getRandomInteger(3, 2);
+        // maxFactor ensures that numberOfConcurrentUsers will not exceed 200
+        final int maxFactor = (numberOfLoops == 3) ? 25 : 50;
+        final int userFactor = TestHelper.getRandomInteger(maxFactor, 1);
+        
+        // numberOfConcurrentUsers must be a multiple of 2^numberOfLoops, 
+        // to ensure fitting distribution of users and enough users to create each loop branch
+        final int numberOfConcurrentUsers = (int) Math.pow(2, numberOfLoops) * userFactor;
 
         final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));

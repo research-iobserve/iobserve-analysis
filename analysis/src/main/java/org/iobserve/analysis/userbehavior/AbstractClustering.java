@@ -44,9 +44,8 @@ public abstract class AbstractClustering {
      * @return the Weka instances that hold the data that is used for the clustering
      */
     protected Instances createInstances(final List<UserSessionAsCountsOfCalls> countModel,
-            final List<String> listOfDistinctOperationSignatures) {
+            final int numberOfDistinctOperationSignatures) {
 
-        final int numberOfDistinctOperationSignatures = listOfDistinctOperationSignatures.size();
         final FastVector fvWekaAttributes = new FastVector(numberOfDistinctOperationSignatures);
 
         for (int i = 0; i < numberOfDistinctOperationSignatures; i++) {
@@ -59,14 +58,28 @@ public abstract class AbstractClustering {
 
         for (final UserSessionAsCountsOfCalls userSession : countModel) {
 
-            int indexOfAttribute = 0;
-            final Instance instance = new Instance(numberOfDistinctOperationSignatures);
-
-            for (int row = 0; row < listOfDistinctOperationSignatures.size(); row++) {
-                instance.setValue((Attribute) fvWekaAttributes.elementAt(indexOfAttribute),
-                        userSession.getAbsoluteCountOfCalls()[row]);
-                indexOfAttribute++;
-            }
+        	double[] values = new double[numberOfDistinctOperationSignatures];
+        	
+        	for (int index = 0; index < numberOfDistinctOperationSignatures; index++) {
+        		values[index] = userSession.getAbsoluteCountOfCalls()[index];
+        	}
+        	
+        	final Instance instance = new Instance(1, values);
+        	
+        	// indesOfAttribute and row are always the same value...
+        	// Performance: Calling setValue on an instance creates a copy of the value array on each call!
+        	// Definite performance issue with a high number of possible distinct call signatures
+        	// Implementation above should be faster
+        	
+//            int indexOfAttribute = 0;
+//            
+//            final Instance instance = new Instance(numberOfDistinctOperationSignatures);
+//
+//            for (int row = 0; row < numberOfDistinctOperationSignatures; row++) {
+//                instance.setValue((Attribute) fvWekaAttributes.elementAt(indexOfAttribute),
+//                        userSession.getAbsoluteCountOfCalls()[row]);
+//                indexOfAttribute++;
+//            }
 
             clusterSet.add(instance);
         }

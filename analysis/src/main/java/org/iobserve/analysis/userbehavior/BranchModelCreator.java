@@ -146,7 +146,7 @@ public class BranchModelCreator {
         rootBranch.setBranchId(1);
         rootBranch.setTreeLevel(0);
 
-        // Descending sort by call sequence length
+        // Descending sort by call sequence length. O(n*log(n))
         Collections.sort(userSessions, BranchModelCreator.SORT_USER_SESSION_BY_CALL_SEQUENCE_SIZE);
 
         // Initializes the root sequence with the longest call sequence
@@ -154,7 +154,9 @@ public class BranchModelCreator {
 
         int numberOfBranches = 1;
 
-        // loops over all userSession without the first user session that initialized the rootBranch
+        // loops over all userSession without the first user session that initialized the rootBranch 
+        // O(n * S(n) * (b log b * b))
+        // b = number of branches, 
         for (int j = 1; j < userSessions.size(); j++) {
 
             final UserSession userSession = userSessions.get(j);
