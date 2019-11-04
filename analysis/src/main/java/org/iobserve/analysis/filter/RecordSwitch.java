@@ -70,7 +70,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         this.recordCount++;
         if(recordCount > 0 && recordCount % 30 == 0) {
         	System.out.println(recordCount/3);
-        	ExecutionTimeLogger.getInstance().exportAsCsv();
+        	//ExecutionTimeLogger.getInstance().exportAsCsv();
         }
 
         if (element instanceof IDeploymentRecord) {
