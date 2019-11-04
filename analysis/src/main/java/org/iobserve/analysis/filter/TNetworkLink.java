@@ -86,6 +86,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     protected void execute(final TraceMetadata event) {
         this.resourceEnvironmentModelProvider.loadModel();
 
+        /** Implementation takes a lot of time (> 95% of a normal run) and should be looked at for performance improvements! **/
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
         final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
         final Allocation allocation = this.allocationModelProvider.getModel(true);

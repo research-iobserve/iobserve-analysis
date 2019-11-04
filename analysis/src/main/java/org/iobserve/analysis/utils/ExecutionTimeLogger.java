@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
@@ -34,6 +35,7 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 
 import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 
 /**
@@ -54,6 +56,10 @@ public final class ExecutionTimeLogger {
     private final List<LoggingEntry> entryCallSequenceTimes;
     private final List<LoggingEntry> entryEventSequenceTimes;
     private final List<LoggingEntry> userBehaviorTransformationTimes;
+    
+    private final List<LoggingEntry> recordSwitchEntryCallPipelineTimes;
+    private final List<LoggingEntry> entryCallEntryCallSequencePipelineTimes;
+    private final List<LoggingEntry> entryCallSequenceEntryEventPipelineTimes;
 
     public static ExecutionTimeLogger getInstance() {
         if (ExecutionTimeLogger.instance == null) {
@@ -76,6 +82,9 @@ public final class ExecutionTimeLogger {
         this.entryCallSequenceTimes = new ArrayList<>();
         this.entryEventSequenceTimes = new ArrayList<>();
         this.userBehaviorTransformationTimes = new ArrayList<>();
+        this.recordSwitchEntryCallPipelineTimes = new ArrayList<>();
+        this.entryCallEntryCallSequencePipelineTimes = new ArrayList<>();
+        this.entryCallSequenceEntryEventPipelineTimes = new ArrayList<>();
     }
 
     public void startLogging(final IMonitoringRecord record) {
@@ -88,6 +97,36 @@ public final class ExecutionTimeLogger {
     
     public void startLogging(final UserBehaviorTransformation transformation) {
         this.tmpTimes.put(transformation.hashCode(), System.currentTimeMillis());
+    }
+    
+    public void stopLogging(IFlowRecord record) {
+    	final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
+        if (startTime != null) {
+        	final LoggingEntry entry = new LoggingEntry();
+            entry.setLoggingInfo(endTime - startTime, -1, -1, -1, -1);
+            this.recordSwitchEntryCallPipelineTimes.add(entry);
+        }
+    }
+    
+    public void stopLogging(EntryCallEvent event) {
+    	final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(event.hashCode());
+        if (startTime != null) {
+        	final LoggingEntry entry = new LoggingEntry();
+            entry.setLoggingInfo(endTime - startTime, -1, -1, -1, -1);
+            this.entryCallEntryCallSequencePipelineTimes.add(entry);
+        }
+    }
+    
+    public void stopLogging(final EntryCallSequenceModel session) {
+        final Long endTime = System.currentTimeMillis();
+        final Long startTime = this.tmpTimes.remove(session.hashCode());
+        if (startTime != null) {
+            final LoggingEntry entry = new LoggingEntry();
+            entry.setLoggingInfo(endTime - startTime, -1,-1,-1,-1);
+            this.entryCallSequenceEntryEventPipelineTimes.add(entry);
+        }
     }
     
     public void stopLogging(final UserBehaviorTransformation transformation) {
@@ -121,6 +160,21 @@ public final class ExecutionTimeLogger {
             sequence.setUserBehaviorTransformationTime(0);
             sequence.setUpdateModelTime(0);
             sequence.setModelSaveTime(0);
+        }
+    }
+    
+    public void stopLogging(final EntryCallEvent record, TEntryCallSequence filter) {
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
+        if (startTime != null) {
+            final LoggingEntry entry = new LoggingEntry();
+            entry.setLoggingInfo(record.getOperationSignature(), Long.toString(filter.getSessionCreationTime()),
+                    filter.getApprovedSessionsListCreationTime(), filter.getEntryCallSequenceModelCreationTime(), endTime - startTime);
+
+            this.entryCallSequenceTimes.add(entry);
+            
+            filter.setSessionCreationTime(0);
+            filter.setApprovedSessionsListCreationTime(0);
         }
     }
 
@@ -186,18 +240,6 @@ public final class ExecutionTimeLogger {
         }
     }
 
-    public void stopLogging(final EntryCallEvent record) {
-        final Long endTime = System.nanoTime();
-        final Long startTime = this.tmpTimes.remove(record.hashCode());
-        if (startTime != null) {
-            final LoggingEntry entry = new LoggingEntry();
-            entry.setLoggingInfo(record.getSessionId(), record.getOperationSignature(), endTime - startTime, startTime,
-                    endTime);
-
-            this.entryCallSequenceTimes.add(entry);
-        }
-    }
-
     public void exportAsCsv() {
         this.export(Arrays.asList("Service", "Context", "elapsed", "start", "end"), this.allocationTimes,
                 "TAllocation");
@@ -207,12 +249,19 @@ public final class ExecutionTimeLogger {
                 "TUndeployment");
         this.export(Arrays.asList("", "OperationSignature", "elapsed", "start", "end"), this.entryCallTimes,
                 "TEntryCall");
-        this.export(Arrays.asList("SessionId", "OperationSignature", "elapsed", "start", "end"),
+        this.export(Arrays.asList("OperationSignature", "sessionCreation", "approvedListCreation", "entryCallSequenceModelCreation", "elapsed"),
                 this.entryCallSequenceTimes, "TEntryCallSequence");
         this.export(Arrays.asList("overall elapsed", "model load", "behavior transf", "model update","model save"),
                 this.entryEventSequenceTimes, "TEntryEventSequence");
         this.export(Arrays.asList("UserGroupExtraction", "BranchDetection", "LoopDetection", "PcmModelBuild", "Elapsed"),
                 this.userBehaviorTransformationTimes, "UserBehaviorTransformation");
+        
+        this.export(Arrays.asList("Send to Execute Time", "", "", "", ""),
+                this.recordSwitchEntryCallPipelineTimes, "RecordSwitchEntryCallPipeline");
+        this.export(Arrays.asList("Send to Execute Time", "", "", "", ""),
+                this.entryCallEntryCallSequencePipelineTimes, "EntryCallEntryCallSequencePipeline");
+        this.export(Arrays.asList("Send to Execute Time", "", "", "", ""),
+                this.entryCallSequenceEntryEventPipelineTimes, "EntryCallSequenceEntryEventPipeline");
     }
 
     private void export(final List<String> headlines, final List<LoggingEntry> list, final String mapName) {

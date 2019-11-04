@@ -55,10 +55,18 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** list of sessions with size bigger than TEntryCallSequence.USER_SESSION_THRESHOLD. */
     private final Map<String, UserSession> approvedSessions = new HashMap<>();
+    
+    private final List<UserSession> approvedSessionsList = new ArrayList<>();
     /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    
+    private long sessionCreationTime = 0;
 
-    /**
+	private long approvedSessionsListCreationTime = 0;
+	
+	private long entryCallSequenceModelCreationTime = 0;
+
+	/**
      * Create this filter.
      *
      * @param correspondenceModel
@@ -81,37 +89,81 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
             // in case the user session is not yet available, create one
             final String userSessionId = UserSession.parseUserSessionId(event);
             UserSession userSession = this.sessions.get(userSessionId);
+            this.sessionCreationTime = System.nanoTime();
             if (userSession == null) {
                 userSession = new UserSession(event.getHostname(), event.getSessionId());
                 this.sessions.put(userSessionId, userSession);
             }
+            this.sessionCreationTime = System.nanoTime() - this.sessionCreationTime;
             // do not sort since TEntryEventSequence will sort any ways
             userSession.add(event, false);
             
             // collect all user sessions which have more elements as a defined threshold
             if(userSession.size() > TEntryCallSequence.USER_SESSION_THRESHOLD) {
                 //TODO maybe remove and put in new, could not be updated
-                approvedSessions.putIfAbsent(userSessionId, userSession);
+            	if(!approvedSessions.containsKey(userSessionId)) {
+            		approvedSessions.putIfAbsent(userSessionId, userSession);
+                    approvedSessionsList.add(userSession);
+            	}
+
+                this.approvedSessionsListCreationTime = System.nanoTime();
                 
                 // only if a session has changed and has more elements than the threshold
                 // the list of approved the usagemodel needs to be newly build
-                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values()); 
-                // approvedSessions.values() -> O(n) + new ArrayList<>(Collection c) -> AbstractCollection.toArray() -> O(n)
+                
+//                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
+                final List<UserSession> listToSend = this.approvedSessionsList;
+                // approvedSessions.values() -> O(n) + new ArrayList<>(Collection c) -> AbstractCollection.toArray() -> O(n) + Arrays.copyOf() -> ~ O(n)
+                // c.toArray is basically done in every copy constructor for lists.
+                // Copying of the sessions list may not even be necessary, as the created entryCallSequenceModel is only accessed reading not manipulating the list
 
-                ExecutionTimeLogger.getInstance().stopLogging(event);
+                this.approvedSessionsListCreationTime = System.nanoTime() - this.approvedSessionsListCreationTime;
+
+                entryCallSequenceModelCreationTime = System.nanoTime();
+                EntryCallSequenceModel outputModel = null;
+                if(!listToSend.isEmpty()) {
+                	outputModel = new EntryCallSequenceModel(listToSend);
+                }
+                entryCallSequenceModelCreationTime = System.nanoTime() - entryCallSequenceModelCreationTime;
+                
+                ExecutionTimeLogger.getInstance().stopLogging(event, this);
 
                 
-                if (!listToSend.isEmpty() && (eventCount % generationFrequency) == 0) {
-                    this.outputPort.send(new EntryCallSequenceModel(listToSend));
+                if (outputModel != null && (eventCount % generationFrequency) == 0) {
+                    this.outputPort.send(outputModel);
                 }
             }
         }
     }
 
-    /**
+	/**
      * @return output port
      */
     public OutputPort<EntryCallSequenceModel> getOutputPort() {
         return this.outputPort;
     }
+    
+    public long getSessionCreationTime() {
+		return sessionCreationTime;
+	}
+
+	public void setSessionCreationTime(long sessionCreationTime) {
+		this.sessionCreationTime = sessionCreationTime;
+	}
+    
+    public long getApprovedSessionsListCreationTime() {
+		return approvedSessionsListCreationTime;
+	}
+
+	public void setApprovedSessionsListCreationTime(long approvedSessionsListCreationTime) {
+		this.approvedSessionsListCreationTime = approvedSessionsListCreationTime;
+	}
+	
+    public long getEntryCallSequenceModelCreationTime() {
+		return entryCallSequenceModelCreationTime;
+	}
+
+	public void setEntryCallSequenceModelCreationTime(long entryCallSequenceModelCreationTime) {
+		this.entryCallSequenceModelCreationTime = entryCallSequenceModelCreationTime;
+	}
 }

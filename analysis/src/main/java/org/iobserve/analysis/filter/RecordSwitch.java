@@ -81,9 +81,10 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
-            if (element instanceof TraceMetadata) {
-                this.traceMetaPort.send((TraceMetadata) element);
-            }
+            /** Only commented out for scalability testing of usage model creation, as TNetworkLink takes a lot of time. **/
+//            if (element instanceof TraceMetadata) {
+//                this.traceMetaPort.send((TraceMetadata) element);
+//            }
         } else if (element instanceof KiekerMetadataRecord) {
             final KiekerMetadataRecord metadata = (KiekerMetadataRecord) element;
             RecordSwitch.LOGGER.info("Kieker Metadata\n" + "\ncontroller name   " + metadata.getControllerName()

@@ -101,13 +101,13 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                          * traceId does not send a call two times
                          */
                         this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
-
-                        ExecutionTimeLogger.getInstance().stopLogging(afterOperationEvent);
-
-                        this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
+                        EntryCallEvent sendEvent = new EntryCallEvent(beforeOperationEvent.getTimestamp(),
                                 afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
                                 beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
-                                metaData.getHostname()));
+                                metaData.getHostname());
+                        ExecutionTimeLogger.getInstance().stopLogging(afterOperationEvent);
+                        
+                        this.outputPort.send(sendEvent);
                     }
                 }
             }
