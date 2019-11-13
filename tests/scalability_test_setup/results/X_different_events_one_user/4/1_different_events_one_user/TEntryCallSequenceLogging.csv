@@ -1,0 +1,3 @@
+TEntryCallSequence;
+;OperationSignature;sessionCreation;approvedListCreation;entryCallSequenceModelCreation;elapsed;
+;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);23953;277;250077;1439444;

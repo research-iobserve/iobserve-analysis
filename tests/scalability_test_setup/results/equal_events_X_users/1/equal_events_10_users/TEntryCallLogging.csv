@@ -1,0 +1,12 @@
+TEntryCall;
+;;OperationSignature;elapsed;start;end;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);731270;9417557646783606;9417557647514876;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);13205;9417557650997626;9417557651010831;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12419;9417557651413245;9417557651425664;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12121;9417557651779966;9417557651792087;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12679;9417557652188997;9417557652201676;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);18920;9417557659717249;9417557659736169;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12768;9417557660174236;9417557660187004;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12163;9417557660560470;9417557660572633;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);12037;9417557660928931;9417557660940968;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);13090;9417557661572537;9417557661585627;

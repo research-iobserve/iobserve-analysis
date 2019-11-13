@@ -1,0 +1,12 @@
+TEntryCallSequence;
+;OperationSignature;sessionCreation;approvedListCreation;entryCallSequenceModelCreation;elapsed;
+;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);30716;375;310539;1589389;
+;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);246;204;1152;9858;
+;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);233;208;1061;9752;
+;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);336;179;1791;13705;
+;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);203;178;1316;11541;
+;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();143;168;896;8019;
+;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);179;158;1046;7985;
+;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);181;209;960;8309;
+;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);208;178;958;7873;
+;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);186;189;838;8027;
