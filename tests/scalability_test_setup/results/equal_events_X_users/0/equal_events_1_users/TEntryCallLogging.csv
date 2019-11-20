@@ -1,3 +1,3 @@
 TEntryCall;
 ;;OperationSignature;elapsed;start;end;
-;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);853558;9416884998740867;9416884999594425;
+;;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);794878;3749853103865;3749853898743;

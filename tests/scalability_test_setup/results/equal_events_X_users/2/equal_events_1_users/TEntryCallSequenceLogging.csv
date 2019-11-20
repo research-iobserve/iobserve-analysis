@@ -1,3 +1,3 @@
 TEntryCallSequence;
 ;OperationSignature;sessionCreation;approvedListCreation;entryCallSequenceModelCreation;elapsed;
-;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);25397;301;261359;1374303;
+;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String, long);29987;555;425697;6945215;

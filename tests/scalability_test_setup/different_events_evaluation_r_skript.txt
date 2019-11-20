@@ -1,0 +1,56 @@
+options("scipen"=10)    # set high penalty for scientific display
+
+TPreprocess <- matrix(nrow = 10, ncol = 6)
+TRuntimeUpdate <- matrix(nrow = 10, ncol = 6)
+
+experimentSizes <- c(1,10,100,1000,10000,100000)
+
+for(k in 0:9) {
+	for(i in 1:length(experimentSizes)) {
+		path <- 'D:\\Dokumente\\Uni\\HiWi\\Ergebnisse Skalierbarkeit\\X_different_events_one_user\\'
+		experimentNr <- k
+		experimentNrFolder <- paste(paste(path, experimentNr, sep=""), "\\", sep="")
+		
+		experimentSize <- experimentSizes[i]
+		experimentDescription <- paste(experimentSize, '_different_events_one_user', sep="")
+		
+		experimentFolder <- paste(paste(experimentNrFolder, experimentDescription, sep=""), '\\', sep="")
+		
+		# calculating values for TRuntimeUpdate
+		entryEventSequenceLoggingPath <- paste(experimentFolder, "TEntryEventSequenceLogging.csv", sep="")
+		
+		entryEventSequence <- read.csv(file = entryEventSequenceLoggingPath, header = F, sep = ";")
+		behTransf <- as.numeric(as.character(entryEventSequence$V4[3]))
+		modelUpdate <- as.numeric(as.character(entryEventSequence$V5[3]))
+		experimentNr <- k + 1 
+		TRuntimeUpdate[experimentNr,i] <- behTransf + modelUpdate
+		
+		# calculating values for TPreprocess
+		entryCallLoggingPath <- paste(experimentFolder, "TEntryCallLogging.csv", sep="")
+		entryCallSequenceLoggingPath <- paste(experimentFolder, "TEntryCallSequenceLogging.csv", sep="")
+
+		entryCall <- read.csv(file = entryCallLoggingPath, header = F, sep = ";")
+		entryCallSequence <- read.csv(file = entryCallSequenceLoggingPath, header = F, sep = ";")
+		
+		endIndex <- experimentSize + 2
+		
+		entryCallSum <- sum(as.numeric(as.character(entryCall$V4[c(3:endIndex)])))
+		entryCallSequenceSum <- sum(as.numeric(as.character(entryCallSequence$V6[c(3:endIndex)])))
+		
+		TPreprocess[experimentNr,i] <- entryCallSum + entryCallSequenceSum
+	}
+}
+
+TPreprocessMeans <- rep(0,length(experimentSizes))
+TRuntimeUpdateMeans <- rep(0,length(experimentSizes))
+
+for(k in 1:length(experimentSizes)) {
+	TPreprocessMeans[k] <- mean(TPreprocess[,k], trim = 0.1)
+	TRuntimeUpdateMeans[k] <- mean(TRuntimeUpdate[,k], trim = 0.1)
+}
+
+# plots for TPreprocess and TRuntimeUpdate means
+#plot(experimentSizes,TPreprocessMeans, log="xy", xaxt="n", type = "o", main = "TPreprocess", ylim = c(1000000, 1000000000), xlab="Amount of User Sessions", ylab="Mean Time [ns]")
+plot(experimentSizes,TRuntimeUpdateMeans, log="xy", xaxt="n", type = "o", main = "TRuntimeUpdate", ylim = c(10,1000000), xlab="Amount of User Sessions", ylab="Mean Time [ms]")
+grid(nx = 0, ny = NULL)
+axis(1, at = experimentSizes, las = 2)
