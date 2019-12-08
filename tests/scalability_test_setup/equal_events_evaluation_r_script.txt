@@ -42,15 +42,59 @@ for(k in 0:9) {
 }
 
 TPreprocessMeans <- rep(0,length(experimentSizes))
+TPreprocessMeansMs <- rep(0,length(experimentSizes))
 TRuntimeUpdateMeans <- rep(0,length(experimentSizes))
 
 for(k in 1:length(experimentSizes)) {
 	TPreprocessMeans[k] <- mean(TPreprocess[,k], trim = 0.1)
+	TPreprocessMeansMs[k] <- TPreprocessMeans[k]/1000000
 	TRuntimeUpdateMeans[k] <- mean(TRuntimeUpdate[,k], trim = 0.1)
 }
 
-# plots for TPreprocess and TRuntimeUpdate means
-plot(experimentSizes,TPreprocessMeans, log="xy", xaxt="n", type = "o", main = "TPreprocess", ylim = c(1000000, 1000000000), xlab="Amount of User Sessions", ylab="Mean Time [ns]")
-#plot(experimentSizes,TRuntimeUpdateMeans, log="xy", xaxt="n", type = "o", main = "TRuntimeUpdate", ylim = c(10,10000), xlab="Amount of User Sessions", ylab="Mean Time [ms]")
-grid(nx = 0, ny = NULL)
-axis(1, at = experimentSizes, las = 2)
+options("scipen"=0)
+labelsX=parse(text=paste(seq(10, 10, length.out = 6), "^", seq(0,5), sep=""))
+
+#Plots and saves pdf for TPreprocess in ns
+pdf("D:\\Dokumente\\Uni\\HiWi\\Ergebnisse Skalierbarkeit\\TPreprocess_equal_events_ns.pdf") 
+
+plot(experimentSizes,TPreprocessMeans, log="xy", axes=FALSE, type = "o", main = "TPreprocess", ylim = c(1000000, 1000000000), xlab="Number of Services Called", ylab="Mean Time [ns]")
+
+experimentYAxis <- 10^(6:9)
+abline(h=experimentYAxis, col="gray", lty=3)
+labelsY=parse(text=paste(seq(10, 10, length.out = 4), "^", seq(6,9), sep=""))
+
+axis(1, at = experimentSizes, las = 1, labels = labelsX)
+axis(2, at = experimentYAxis, las = 1, labels = labelsY)
+box()
+
+dev.off()
+
+#Plots and saves pdf for TPreprocess in ms
+pdf("D:\\Dokumente\\Uni\\HiWi\\Ergebnisse Skalierbarkeit\\TPreprocess_equal_events_ms.pdf") 
+
+plot(experimentSizes,TPreprocessMeansMs, log="xy", axes=FALSE, type = "o", main = "TPreprocess", ylim = c(1, 100000), xlab="Number of Services Called", ylab="Mean Time [ms]")
+
+experimentYAxis <- 10^(0:5)
+abline(h=experimentYAxis, col="gray", lty=3)
+labelsY=parse(text=paste(seq(10, 10, length.out = 6), "^", seq(0,5), sep=""))
+
+axis(1, at = experimentSizes, las = 1, labels = labelsX)
+axis(2, at = experimentYAxis, las = 1, labels = labelsY)
+box()
+
+dev.off()
+
+#Plots and saves pdf for TRuntimeUpdate
+pdf("D:\\Dokumente\\Uni\\HiWi\\Ergebnisse Skalierbarkeit\\TRuntimeUpdate_equal_events.pdf") 
+
+plot(experimentSizes,TRuntimeUpdateMeans, log="xy", axes=FALSE, type = "o", main = "TRuntimeUpdate", ylim = c(10,1000000), xlab="Number of User Sessions", ylab="Mean Time [ms]")
+
+experimentYAxis <- 10^(1:6)
+abline(h=experimentYAxis, col="gray", lty=3)
+labelsY=parse(text=paste(seq(10, 10, length.out = 6), "^", seq(1,6), sep=""))
+
+axis(1, at = experimentSizes, las = 1, labels = labelsX)
+axis(2, at = experimentYAxis, las = 1, labels = labelsY)
+box()
+
+dev.off()
