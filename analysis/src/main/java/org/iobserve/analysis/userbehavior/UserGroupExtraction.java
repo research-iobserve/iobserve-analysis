@@ -22,6 +22,7 @@ import java.util.List;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import org.iobserve.analysis.userbehavior.data.UserSessionAsCountsOfCalls;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import weka.core.Instances;
 
@@ -46,6 +47,12 @@ public class UserGroupExtraction {
     private List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = null;
     private ClusteringResults clusteringResults = null;
     private final boolean isClosedWorkload;
+    
+    private long timeDistinctSignatures;
+    private long timeCallCountModel;
+    private long timeXMeans;
+    private long timeUserGroupEntryCallSequenceModel;
+    private long timeWorkload;
 
     /**
      *
@@ -74,11 +81,15 @@ public class UserGroupExtraction {
      * Function to extract user groups.
      */
     public void extractUserGroups() {
+    	ExecutionTimeLogger.getInstance().startLogging(this);
+    	long timeBefore = 0;
+    	long timeAfter = 0;
 
         final ClusteringPrePostProcessing clusteringProcessing = new ClusteringPrePostProcessing();
         final XMeansClustering xMeansClustering = new XMeansClustering();
         ClusteringResults xMeansClusteringResults;
 
+        timeBefore = System.currentTimeMillis();
         /**
          * 1. Extraction of distinct system operations. Creates a list of the distinct operation
          * signatures occurring within the entryCallSequenceModel. It is required to transform each
@@ -89,7 +100,10 @@ public class UserGroupExtraction {
          */
         final List<String> listOfDistinctOperationSignatures = clusteringProcessing
                 .getListOfDistinctOperationSignatures(this.entryCallSequenceModel.getUserSessions());
+        timeAfter = System.currentTimeMillis();
+        this.timeDistinctSignatures = timeAfter - timeBefore;
 
+        timeBefore = System.currentTimeMillis();
         /**
          * 2. Transformation to the call count model. Transforms the call sequences of the user
          * sessions to a list of counts of calls that state the number of calls of each distinct
@@ -99,19 +113,24 @@ public class UserGroupExtraction {
          */
         final List<UserSessionAsCountsOfCalls> callCountModel = clusteringProcessing
                 .getCallCountModel(this.entryCallSequenceModel.getUserSessions(), listOfDistinctOperationSignatures);
+        timeAfter = System.currentTimeMillis();
+        this.timeCallCountModel = timeAfter - timeBefore;
 
+        
+        timeBefore = System.currentTimeMillis();
         /**
          * 3. Clustering of user sessions. Clustering of the user sessions whose behavior is
          * represented as counts of their called operation signatures to obtain user groups
          */
-        // O((n+2) * m) m = numberOfDistinctOperationSignatures 
+        // O((n+1) * m) m = numberOfDistinctOperationSignatures 
         final Instances instances = xMeansClustering.createInstances(callCountModel, listOfDistinctOperationSignatures.size());
         /*
          * The clustering is performed 5 times and the best result is taken. The quality of a
          * clustering result is determined by the value of the sum of squared error (SSE) of the
          * clustering. The lower the SSE is the better the clustering result.
          */
-        // O(5 * (n + maxClusteringIterations * (1000 * kMeans + numberClusters * 1000 * kMeansChildren))) --> 
+        // O(5*n*k*m) (5 iterations, n sessions, k clusters, m dimensions for distance calculations)
+        // Definition from Wikipedia
         for (int i = 0; i < 5; i++) {
             xMeansClusteringResults = xMeansClustering.clusterSessionsWithXMeans(instances,
                     this.numberOfUserGroupsFromInputUsageModel, this.varianceOfUserGroups, i);
@@ -122,28 +141,37 @@ public class UserGroupExtraction {
                 this.clusteringResults = xMeansClusteringResults;
             }
         }
+        timeAfter = System.currentTimeMillis();
+        this.timeXMeans = timeAfter - timeBefore;
 
+        timeBefore = System.currentTimeMillis();
         /**
          * 4. Obtaining the user groups' call sequence models. Creates for each cluster resp. user
          * group its own entry call sequence model that exclusively contains its assigned user
          * sessions
-         * O(n * numberClusters) n = UserSessions
+         * O(n * k) n = UserSessions, k = amount of clusters
          */
         final List<EntryCallSequenceModel> entryCallSequenceModelsOfXMeansClustering = clusteringProcessing
                 .getForEachUserGroupAnEntryCallSequenceModel(this.clusteringResults, this.entryCallSequenceModel);
+        timeAfter = System.currentTimeMillis();
+        this.timeUserGroupEntryCallSequenceModel = timeAfter - timeBefore;
 
+        timeBefore = System.currentTimeMillis();
         /**
          * 5. Obtaining the user groups' workload intensity. Calculates and sets for each user group
          * its specific workload intensity parameters
-         * O(numberClusters * n)
+         * O(k * n)
          */
         clusteringProcessing.setTheWorkloadIntensityForTheEntryCallSequenceModels(
                 entryCallSequenceModelsOfXMeansClustering, this.isClosedWorkload);
+        timeAfter = System.currentTimeMillis();
+        this.timeWorkload = timeAfter - timeBefore;
 
         /**
          * Sets the resulting entryCallSequenceModels that can be retrieved via the getter method
          */
         this.entryCallSequenceModelsOfUserGroups = entryCallSequenceModelsOfXMeansClustering;
+        ExecutionTimeLogger.getInstance().stopLogging(this);
     }
 
     /**
@@ -158,6 +186,22 @@ public class UserGroupExtraction {
 
     public ClusteringResults getClusteringResults() {
         return this.clusteringResults;
+    }
+    
+    public long getTimeDistinctSignatures() {
+    	return this.timeDistinctSignatures;
+    }
+    public long getTimeCallCountModel() {
+    	return this.timeCallCountModel;
+    }
+    public long getTimeXMeans() {
+    	return this.timeXMeans;
+    }
+    public long getTimeUserGroupEntryCallSequenceModel() {
+    	return this.timeUserGroupEntryCallSequenceModel;
+    }
+    public long getTimeWorkload() {
+    	return this.timeWorkload;
     }
 
 }

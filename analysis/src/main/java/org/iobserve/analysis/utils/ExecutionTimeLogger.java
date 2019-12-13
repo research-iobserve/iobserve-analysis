@@ -26,6 +26,7 @@ import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+import org.iobserve.analysis.userbehavior.UserGroupExtraction;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -56,6 +57,7 @@ public final class ExecutionTimeLogger {
     private final List<LoggingEntry> entryCallSequenceTimes;
     private final List<LoggingEntry> entryEventSequenceTimes;
     private final List<LoggingEntry> userBehaviorTransformationTimes;
+    private final List<LoggingEntry> userGroupExtractionTimes;
     
     private final List<LoggingEntry> recordSwitchEntryCallPipelineTimes;
     private final List<LoggingEntry> entryCallEntryCallSequencePipelineTimes;
@@ -85,6 +87,7 @@ public final class ExecutionTimeLogger {
         this.recordSwitchEntryCallPipelineTimes = new ArrayList<>();
         this.entryCallEntryCallSequencePipelineTimes = new ArrayList<>();
         this.entryCallSequenceEntryEventPipelineTimes = new ArrayList<>();
+        this.userGroupExtractionTimes = new ArrayList<>();
     }
 
     public void startLogging(final IMonitoringRecord record) {
@@ -97,6 +100,22 @@ public final class ExecutionTimeLogger {
     
     public void startLogging(final UserBehaviorTransformation transformation) {
         this.tmpTimes.put(transformation.hashCode(), System.currentTimeMillis());
+    }
+    
+    public void startLogging(final UserGroupExtraction extraction) {
+    	this.tmpTimes.put(extraction.hashCode(), System.currentTimeMillis());
+    }
+    
+    public void stopLogging(final UserGroupExtraction extraction) {
+        final Long endTime = System.currentTimeMillis();
+        final Long startTime = this.tmpTimes.remove(extraction.hashCode());
+        if (startTime != null) {
+            final LoggingEntry entry = new LoggingEntry();
+            entry.setLoggingInfo(Long.toString(extraction.getTimeDistinctSignatures()), Long.toString(extraction.getTimeCallCountModel()),
+                    extraction.getTimeXMeans(), extraction.getTimeUserGroupEntryCallSequenceModel(), extraction.getTimeWorkload());
+
+            this.userGroupExtractionTimes.add(entry);
+        }
     }
     
     public void stopLogging(IFlowRecord record) {
@@ -255,6 +274,8 @@ public final class ExecutionTimeLogger {
                 this.entryEventSequenceTimes, "TEntryEventSequence");
         this.export(Arrays.asList("UserGroupExtraction", "BranchDetection", "LoopDetection", "PcmModelBuild", "Elapsed"),
                 this.userBehaviorTransformationTimes, "UserBehaviorTransformation");
+        this.export(Arrays.asList("DistinctSignatures", "CallCountModel", "XMeans", "EntryCallSequenceModel", "Workload"),
+                this.userGroupExtractionTimes, "UserGroupExtractionTimes");
         
         this.export(Arrays.asList("Send to Execute Time", "", "", "", ""),
                 this.recordSwitchEntryCallPipelineTimes, "RecordSwitchEntryCallPipeline");

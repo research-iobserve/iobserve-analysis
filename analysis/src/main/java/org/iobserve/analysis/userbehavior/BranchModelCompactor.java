@@ -41,7 +41,7 @@ public class BranchModelCompactor {
      * @param branch
      *            that is examined whether its child branches can be merged
      *            
-     * O((S(b) * b)^2 * b * b) 
+     * O((2*(S(b) * b) + b) * b) 
      * b = number branches, S(b) = sequence elements of branch
      */
     private void compactBranch(final Branch branch) {
@@ -49,7 +49,7 @@ public class BranchModelCompactor {
     		for (Branch childBranch : branch.getChildBranches()) {
         		compactBranch(childBranch);
         	}
-    		//O((S(b) * b)^2 * b)
+    		//O((S(b) * b)*2 + b)
         	// 
     		mergeChildBranches(branch);
     	}
@@ -98,7 +98,7 @@ public class BranchModelCompactor {
     	// Potential todo: do not require all child branch sequences to be equal to be merged, 
     	// but cluster child branch sequences and merge the clusters, for a more compacted and correct
     	// result, if necessary.
-    	// O((S(b) * b)^2)
+    	// O((S(b) * b)*2)
     	// b = number branches, S(b) = sequence elements of branch
     	final List<ISequenceElement> mergeableBranchSequence = getAndRemoveMergableBranchSequence(branch);
                 

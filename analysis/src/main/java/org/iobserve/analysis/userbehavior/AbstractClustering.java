@@ -48,6 +48,7 @@ public abstract class AbstractClustering {
 
         final FastVector fvWekaAttributes = new FastVector(numberOfDistinctOperationSignatures);
 
+        //O(m)
         for (int i = 0; i < numberOfDistinctOperationSignatures; i++) {
             final String attributeName = "Attribute" + i;
             final Attribute attribute = new Attribute(attributeName);

@@ -75,7 +75,7 @@ public class BranchExtraction {
             /**
              * 3. Tries to fuse branches to obtain a more compact model
              * 
-             * O((S(b) * b)^2 * b * b) 
+             * O((2*(S(b) * b) + b) * b) 
              * b = number branches, S(b) = sequence elements of branch
              */
             modelCompactor.compactBranchModel(branchModel);

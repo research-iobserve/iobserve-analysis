@@ -155,7 +155,7 @@ public class BranchModelCreator {
         int numberOfBranches = 1;
 
         // loops over all userSession without the first user session that initialized the rootBranch 
-        // O(n * S(n) * (b log b * b))
+        // O(n * E(n) * (b log b + b))
         // b = number of branches, 
         for (int j = 1; j < userSessions.size(); j++) {
 
@@ -186,6 +186,7 @@ public class BranchModelCreator {
                     // Checks whether there is a match between the call event and a first element of
                     // a child branch
                     if (this.isPositionLastElementInBranchSequence(examinedBranch, positionInBranch)) {
+                    	//O(b)
                         final int indexOfMatchingChildBranch = this.getIndexOfMatchingChildBranch(callEvent,
                                 examinedBranch);
                         if (indexOfMatchingChildBranch > -1) {
@@ -198,6 +199,7 @@ public class BranchModelCreator {
                     }
 
                     // No match could be found --> Split branch into child branches
+                    //O(b*log(b)
                     numberOfBranches = this.splitBranch(examinedBranch, positionInBranch, numberOfBranches, false,
                             userSession, i);
                     break;
@@ -220,6 +222,7 @@ public class BranchModelCreator {
                     }
 
                     // No matching exit element found --> Split branch into child branches
+                    //O(b*log(b)
                     numberOfBranches = this.splitBranch(examinedBranch, positionInBranch, numberOfBranches, true, null,
                             0);
                     break;

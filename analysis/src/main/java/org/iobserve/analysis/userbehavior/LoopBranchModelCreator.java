@@ -52,7 +52,7 @@ public class LoopBranchModelCreator {
      */
     public void detectLoopsInCallBranchModel(final BranchModel branchModel) {
         // Detects Loops within the branches, starting at the root branch
-    	// O(S(b)^3 * L(b) * b^2)
+    	// O(S(b)^3 * L(b) * b + S(b) * b^2)
     	// L(b) = size of loop in branch
         this.detectLoopsWithinBranch(branchModel.getRootBranch());
     }
@@ -65,11 +65,11 @@ public class LoopBranchModelCreator {
      * 
      */
     private void detectLoopsWithinBranch(final Branch branch) {
-    	// O(S(b)^3 * L(b) * b)
+    	// O(S(b)^3 * L(b) + S(b) * b)
     	// L(b) = size of loop in branch
         this.detectLoopsWithinBranchSequence(branch.getBranchSequence());
         
-        // O(b)
+        // O(b), still has to be multiplied with the complexity above
         for (int i = 0; i < branch.getChildBranches().size(); i++) {
             this.detectLoopsWithinBranch(branch.getChildBranches().get(i));
         }
@@ -96,15 +96,15 @@ public class LoopBranchModelCreator {
         }
 
         if ((branchSequence != null) && (branchSequenceSizeWithoutExitElement > 0)) {
-        	// O(S(b)^3 * L(b) * b)
-        	// L(b) = size of loop in branch
+        	// O(S(b)^3 * L(b) + S(b) * b)
+        	// L(b) = size of loop in branch-
             for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
 
                 // If the sequence element is a branch element, it is checked for loops within
                 // the sequences of the branches
                 if (branchSequence.get(indexOfElementInElementList).getClass().equals(BranchElement.class)) {
                     final BranchElement loopi = (BranchElement) branchSequence.get(indexOfElementInElementList);
-                    // O(b)
+                    // O(b) if only one giant loop, with all branchtransitions
                     for (int i = 0; i < loopi.getBranchTransitions().size(); i++) {
                         this.detectLoopsWithinBranchSequence(
                                 loopi.getBranchTransitions().get(i).getBranchSequence());

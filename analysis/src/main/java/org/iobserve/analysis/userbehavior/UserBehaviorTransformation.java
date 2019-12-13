@@ -118,7 +118,7 @@ public class UserBehaviorTransformation {
          * the user sessions that are assigned to the user group - the likelihood of its user group
          * - the parameters for the workload intensity of its user group
          * 
-         * O(E(n) * (n^2 + n) + n + (n+2) * m + 2 * n * k + 5 * k * n * m)
+         * O(n*E(n) + n + n^2*E(n) + m*n + m + n*k + n*k + 5*n*m*k)
          * n = UserSessions, E(n) = EntryCallEvents of Session, m = numberOfDistinctOperationSignatures, k = number of clusters
          */
         timeBefore = System.currentTimeMillis();
@@ -156,7 +156,7 @@ public class UserBehaviorTransformation {
          * the count of each loop. The result is one LoopBranchModel for each user group that
          * additionally contains loops for iterated entryCalls.
          * 
-         * O(B * S(b)^3 * L(b) * b^2)
+         * O(B * (S(b)^3 * L(b) * b + S(b) * b^2))
          * L(b) = size of loop in branch, b = number of branches, S(b) = sequence elements of branch, B = number of branch models (should be 1)
          */
         timeBefore = System.currentTimeMillis();
