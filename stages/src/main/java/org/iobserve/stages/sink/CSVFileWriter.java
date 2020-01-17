@@ -26,7 +26,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class CSVFileWriter extends AbstractConsumerStage<Map<String, Object>> {
+public class CSVFileWriter extends AbstractConsumerStage<Map<String, ?>> {
 
     private final PrintWriter writer;
     private boolean first;
@@ -45,7 +45,7 @@ public class CSVFileWriter extends AbstractConsumerStage<Map<String, Object>> {
     }
 
     @Override
-    protected void execute(final Map<String, Object> element) throws Exception {
+    protected void execute(final Map<String, ?> element) throws Exception {
         if (this.first) {
             boolean firstEntry = true;
             for (final String key : element.keySet()) {

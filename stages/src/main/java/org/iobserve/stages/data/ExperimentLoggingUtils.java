@@ -15,9 +15,15 @@
  ***************************************************************************/
 package org.iobserve.stages.data;
 
+import java.util.concurrent.TimeUnit;
+
 import kieker.common.record.flow.IEventRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
+import kieker.monitoring.core.sampler.ISampler;
+import kieker.monitoring.sampler.mxbean.MemorySampler;
+import kieker.monitoring.sampler.oshi.IOshiSamplerFactory;
+import kieker.monitoring.sampler.oshi.OshiSamplerFactory;
 import kieker.monitoring.timer.ITimeSource;
 
 import org.iobserve.common.record.EventTypes;
@@ -32,12 +38,12 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
  * @author Reiner Jung
  *
  */
-public final class ExperimentLogging {
+public final class ExperimentLoggingUtils {
 
     private static final IMonitoringController CTRL = MonitoringController.getInstance();
-    private static final ITimeSource TIME_SOURCE = ExperimentLogging.CTRL.getTimeSource();
+    private static final ITimeSource TIME_SOURCE = ExperimentLoggingUtils.CTRL.getTimeSource();
 
-    private ExperimentLogging() {
+    private ExperimentLoggingUtils() {
     }
 
     /**
@@ -51,8 +57,8 @@ public final class ExperimentLogging {
      *            location
      */
     public static void logEvent(final long id, final EventTypes type, final ObservationPoint point) {
-        ExperimentLogging.CTRL.newMonitoringRecord(
-                new MeasureEventOccurance(ExperimentLogging.TIME_SOURCE.getTime(), id, type, point));
+        ExperimentLoggingUtils.CTRL.newMonitoringRecord(
+                new MeasureEventOccurance(ExperimentLoggingUtils.TIME_SOURCE.getTime(), id, type, point));
     }
 
     /**
@@ -66,9 +72,9 @@ public final class ExperimentLogging {
     public static void measureDeploymentEvent(final IEventRecord event, final ObservationPoint point) {
         if (event instanceof IDeploymentChange) {
             if (event instanceof IDeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
+                ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT, point);
             } else if (event instanceof IUndeployedEvent) {
-                ExperimentLogging.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
+                ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, point);
             }
         }
     }
@@ -82,7 +88,15 @@ public final class ExperimentLogging {
      *            location
      */
     public static void measureControlEvent(final AbstractTcpControlEvent event, final ObservationPoint point) {
-        ExperimentLogging.logEvent(event.getTriggerTimestamp(), EventTypes.NONE, point);
+        ExperimentLoggingUtils.logEvent(event.getTriggerTimestamp(), EventTypes.NONE, point);
     }
 
+    public static void createSamplers() {
+        final IOshiSamplerFactory sigarFactory = OshiSamplerFactory.INSTANCE;
+        final ISampler[] samplers = { sigarFactory.createSensorCPUsDetailedPerc(),
+                sigarFactory.createSensorMemSwapUsage(), new MemorySampler() };
+        for (final ISampler sampler : samplers) {
+            ExperimentLoggingUtils.CTRL.schedulePeriodicSampler(sampler, 0, 100, TimeUnit.MILLISECONDS);
+        }
+    }
 }

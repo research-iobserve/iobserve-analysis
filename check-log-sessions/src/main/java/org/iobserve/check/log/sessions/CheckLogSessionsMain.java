@@ -33,7 +33,7 @@ import org.iobserve.stages.sink.CSVFileWriter;
  */
 public class CheckLogSessionsMain extends AbstractService<PiplineConfiguration, Settings> {
 
-    private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
+    static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
 
     /**
      * @param args

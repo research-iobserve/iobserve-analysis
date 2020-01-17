@@ -17,18 +17,11 @@ package org.iobserve.service.privacy.violation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.JCommander;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.exception.ConfigurationException;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
-import kieker.monitoring.core.sampler.ISampler;
-import kieker.monitoring.sampler.mxbean.MemorySampler;
-import kieker.monitoring.sampler.sigar.ISigarSamplerFactory;
-import kieker.monitoring.sampler.sigar.SigarSamplerFactory;
 import kieker.tools.common.AbstractService;
 import kieker.tools.common.ParameterEvaluationUtils;
 
@@ -44,6 +37,7 @@ import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.memory.MemoryModelResource;
 import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
+import org.iobserve.stages.data.ExperimentLoggingUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -60,8 +54,6 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  */
 public final class PrivacyViolationDetectionServiceMain extends AbstractService<PipelineConfiguration, Settings> {
 
-    private static final IMonitoringController CTRL = MonitoringController.getInstance();
-
     /**
      * This is a simple main class which does not need to be instantiated.
      */
@@ -76,18 +68,9 @@ public final class PrivacyViolationDetectionServiceMain extends AbstractService<
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        PrivacyViolationDetectionServiceMain.createSamplers();
+        ExperimentLoggingUtils.createSamplers();
         java.lang.System.exit(new PrivacyViolationDetectionServiceMain().run("Privacy Violation Detection Service",
                 "privacy", args, new Settings()));
-    }
-
-    private static void createSamplers() {
-        final ISigarSamplerFactory sigarFactory = SigarSamplerFactory.INSTANCE;
-        final ISampler[] samplers = { sigarFactory.createSensorCPUsDetailedPerc(),
-                sigarFactory.createSensorMemSwapUsage(), new MemorySampler() };
-        for (final ISampler sampler : samplers) {
-            PrivacyViolationDetectionServiceMain.CTRL.schedulePeriodicSampler(sampler, 0, 100, TimeUnit.MILLISECONDS);
-        }
     }
 
     @Override
@@ -191,7 +174,8 @@ public final class PrivacyViolationDetectionServiceMain extends AbstractService<
                 this.parameterConfiguration.getWarningFile().getParentFile(),
                 String.format("warnings location (%s)", PrivacyConfigurationsKeys.WARNING_FILE_PATH), commander);
 
-        if (configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH) != null) {
+        final String modelDumpPath = configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH);
+        if (modelDumpPath != null && !modelDumpPath.isEmpty()) {
             this.parameterConfiguration.setModelDumpDirectory(
                     new File(configuration.getPathProperty(PrivacyConfigurationsKeys.MODEL_DUMP_DIRECTORY_PATH)));
             configurationGood &= ParameterEvaluationUtils.checkDirectory(

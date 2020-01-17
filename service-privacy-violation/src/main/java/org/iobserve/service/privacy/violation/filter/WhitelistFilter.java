@@ -71,11 +71,13 @@ public class WhitelistFilter extends AbstractConsumerStage<ProbeManagementData> 
      */
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
+        // ExperimentLoggingUtils.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_ENTRY);
         DeploymentLock.lock();
         final List<String> whitelist = this.computeBlackAndWhitelist(element.getProtectedOperations());
         element.setWhitelist(whitelist);
         DeploymentLock.unlock();
         this.outputPort.send(element);
+        // ExperimentLoggingUtils.logEvent(element.getTriggerTime(), EventTypes.NONE, ObservationPoint.WHITE_LIST_FILTER_EXIT);
     }
 
     private List<String> computeBlackAndWhitelist(final Map<AllocationContext, Set<OperationSignature>> warnedMethods)

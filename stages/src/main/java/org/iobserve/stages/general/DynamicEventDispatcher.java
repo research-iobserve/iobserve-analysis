@@ -99,6 +99,12 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
         final OutputPort<Object> selectedOutputPort = (OutputPort<Object>) this.selectOutputPort(this.rootEventMatcher,
                 event);
         if (selectedOutputPort != null) {
+            // collecting event observation time (if possible); only for performance tests.
+            // if (event instanceof IEventRecord) {
+            //     final IEventRecord specialEvent = (IEventRecord) event;
+            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
+            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
+            // }
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {

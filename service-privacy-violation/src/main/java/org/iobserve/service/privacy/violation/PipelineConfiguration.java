@@ -162,52 +162,50 @@ public class PipelineConfiguration extends Configuration {
 
             try {
                 final AlarmSink alarmSink = new AlarmSink(alarmFile);
-
-                try {
-                    final WarnSink warnSink = new WarnSink(warningFile);
-
-                    /** connect ports. */
-                    this.connectPorts(sourceCompositeStage.getOutputPort(), // eventDelayer.getInputPort());
-                            // this.connectPorts(eventDelayer.getOutputPort(),
-                            eventDispatcher.getInputPort());
-
-                    /** event dispatcher. */
-                    this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
-                    this.connectPorts(undeployedEventMatcher.getOutputPort(),
-                            undeploymentStage.getUndeployedInputPort());
-                    this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
-                    this.connectPorts(deallocationEventMatcher.getOutputPort(), deallocationStage.getInputPort());
-
-                    /** deployment. */
-                    this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
-
-                    if (modelDumper != null) {
-                        this.connectPorts(geoLocationStage.getOutputPort(), modelDumper.getInputPort());
-                        this.connectPorts(modelDumper.getOutputPort(), privacyWarner.getDeployedInputPort());
-                    } else {
-                        this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
-                    }
-
-                    /** undeployment. */
-                    this.connectPorts(undeploymentStage.getUndeployedOutputPort(),
-                            privacyWarner.getUndeployedInputPort());
-
-                    /** privacy. */
-                    this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
-
-                    /** execution. */
-                    this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
-                    this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
-                    this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());
-                    this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
-                } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
-                                                       // control
-                    throw new IOException("Cannot create warning file.", eWarning);
-                }
             } catch (final IOException eAlarm) { // NOPMD cannot be avoided to be used as flow
-                                                 // control
+                // control
                 throw new IOException("Cannot create alarm file.", eAlarm);
             }
+            try {
+                final WarnSink warnSink = new WarnSink(warningFile);
+
+                /** connect ports. */
+                this.connectPorts(sourceCompositeStage.getOutputPort(), // eventDelayer.getInputPort());
+                        // this.connectPorts(eventDelayer.getOutputPort(),
+                        eventDispatcher.getInputPort());
+
+                /** event dispatcher. */
+                this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
+                this.connectPorts(undeployedEventMatcher.getOutputPort(), undeploymentStage.getUndeployedInputPort());
+                this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
+                this.connectPorts(deallocationEventMatcher.getOutputPort(), deallocationStage.getInputPort());
+
+                /** deployment. */
+                this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocationStage.getInputPort());
+
+                if (modelDumper != null) {
+                    this.connectPorts(geoLocationStage.getOutputPort(), modelDumper.getInputPort());
+                    this.connectPorts(modelDumper.getOutputPort(), privacyWarner.getDeployedInputPort());
+                } else {
+                    this.connectPorts(geoLocationStage.getOutputPort(), privacyWarner.getDeployedInputPort());
+                }
+
+                /** undeployment. */
+                this.connectPorts(undeploymentStage.getUndeployedOutputPort(), privacyWarner.getUndeployedInputPort());
+
+                /** privacy. */
+                this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
+
+                /** execution. */
+                this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
+                this.connectPorts(modelProbeController.getOutputPort(), whitelistFilter.getInputPort());
+                this.connectPorts(whitelistFilter.getOutputPort(), probeMapper.getInputPort());
+                this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
+            } catch (final IOException eWarning) { // NOPMD cannot be avoided to be used as flow
+                                                   // control
+                throw new IOException("Cannot create warning file.", eWarning);
+            }
+
         }
     }
 

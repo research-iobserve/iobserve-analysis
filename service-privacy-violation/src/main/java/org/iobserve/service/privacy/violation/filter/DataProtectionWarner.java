@@ -147,6 +147,8 @@ public class DataProtectionWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
+            // ExperimentLoggingUtils.measureDeploymentEvent(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
             this.logger.debug("Service: " + deployedEvent.getService());
@@ -154,14 +156,18 @@ public class DataProtectionWarner extends AbstractStage {
             this.performPrivacyEvaluation(deployedEvent);
 
             this.logger.debug("Deployment processed");
+            // ExperimentLoggingUtils.measureDeploymentEvent(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
 
         if (undeployedEvent != null) {
+            // ExperimentLoggingUtils.measureDeploymentEvent(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
+            // ExperimentLoggingUtils.measureDeploymentEvent(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 

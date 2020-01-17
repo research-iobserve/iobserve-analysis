@@ -79,6 +79,9 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
 
     @Override
     protected void execute(final WarningModel warningModel) throws Exception {
+        // ExperimentLoggingUtils.measureDeploymentEvent(warningModel.getEvent(),
+        // ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
+
         DeploymentLock.lock();
 
         final ProbeManagementData probeManagementData = new ProbeManagementData();
@@ -88,6 +91,9 @@ public class NonAdaptiveModelProbeController extends AbstractConsumerStage<Warni
         probeManagementData.setOperationsToUpdate(this.computeAvailableProbes());
 
         DeploymentLock.unlock();
+
+        // ExperimentLoggingUtils.measureDeploymentEvent(warningModel.getEvent(),
+        // ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
 
         this.outputPort.send(probeManagementData);
     }

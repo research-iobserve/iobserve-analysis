@@ -127,14 +127,14 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     @Override
     public void clearResource() {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
 
         try (Transaction tx = this.getGraphDatabaseService().beginTx()) {
             this.getGraphDatabaseService().execute("MATCH (n) DETACH DELETE (n)");
             tx.success();
         }
 
-        ModelProviderSynchronizer.releaseLock(this);
+        ModelProviderSynchronizerUtils.releaseLock(this);
     }
 
     /**
@@ -147,14 +147,14 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     @Override
     public void storeModelPartition(final R rootElement) throws DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             this.storeModelFacility.storeAllNodesAndReferences(rootElement);
             tx.success();
         }
 
-        ModelProviderSynchronizer.releaseLock(this);
+        ModelProviderSynchronizerUtils.releaseLock(this);
     }
 
     /**
@@ -171,14 +171,14 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     @Override
     public <T extends EObject> void updatePartition(final T object) throws NodeLookupException, DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             this.updateModelFacility.updatePartition(object);
             tx.success();
         }
 
-        ModelProviderSynchronizer.releaseLock(this);
+        ModelProviderSynchronizerUtils.releaseLock(this);
     }
 
     /**
@@ -193,14 +193,14 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     @Override
     public <T> void deleteObject(final EObject object) throws DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             this.deleteModelFacility.deleteObjectRecursively(object);
             tx.success();
         }
 
-        ModelProviderSynchronizer.releaseLock(this);
+        ModelProviderSynchronizerUtils.releaseLock(this);
     }
 
     /**
@@ -216,7 +216,7 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      *            type definition
      */
     private <T> void deleteObjectByIdAndDatatype(final Class<T> clazz, final EClass eClass, final String id) {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
 
         try (Transaction tx = this.graphDatabaseService.beginTx()) {
             final Label label = Label.label(ModelGraphFactory.fqnClassName(eClass));
@@ -227,7 +227,7 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
             tx.success();
         }
 
-        ModelProviderSynchronizer.releaseLock(this);
+        ModelProviderSynchronizerUtils.releaseLock(this);
     }
 
     /**
@@ -249,7 +249,7 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
     @Override
     public <T extends EObject> T findAndLockObjectById(final Class<T> clazz, final EClass eClass, final String id)
             throws DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
         return this.findObjectByTypeAndId(clazz, eClass, id);
     }
 
@@ -310,7 +310,7 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     private <T extends EObject> List<T> collectAllObjectsByTypeAndName(final Class<T> clazz, final EClass eClass,
             final String name, final String value) throws DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
         return this.findObjectsByTypeAndProperty(clazz, eClass, name, value);
     }
 
@@ -453,7 +453,7 @@ public class Neo4JModelResource<R extends EObject> implements IModelResource<R> 
      */
     @Override
     public R getAndLockModelRootNode(final Class<R> clazz, final EClass eClass) throws DBException {
-        ModelProviderSynchronizer.getLock(this);
+        ModelProviderSynchronizerUtils.getLock(this);
         return this.getModelRootNode(clazz, eClass);
     }
 

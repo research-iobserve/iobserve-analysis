@@ -74,6 +74,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     @Override
     protected void execute(final IDeployedEvent event) throws InvocationException, DBException {
+        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
         this.logger.debug("Received deployment event {}", event);
         final ISOCountryCode countryCode;
         if (event instanceof Privacy) {
@@ -94,6 +95,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
         } else {
             throw new InternalError("Deployment event type " + event.getClass().getCanonicalName() + " not supported.");
         }
+        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_EXIT);
     }
 
     private void performMapping(final EServiceTechnology technology, final String service, final String context,

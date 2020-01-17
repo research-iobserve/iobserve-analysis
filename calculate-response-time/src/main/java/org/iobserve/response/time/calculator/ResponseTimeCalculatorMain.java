@@ -32,7 +32,7 @@ import org.iobserve.stages.sink.CSVFileWriter;
  *
  */
 public class ResponseTimeCalculatorMain
-        extends AbstractService<TeetimePipline, Settings> {
+        extends AbstractService<PiplineConfiguration, Settings> {
 
     private static final String OUTPUT_FILE = CSVFileWriter.class.getCanonicalName() + ".outputFile";
 
@@ -45,9 +45,9 @@ public class ResponseTimeCalculatorMain
     }
 
     @Override
-    protected TeetimePipline createTeetimeConfiguration() throws ConfigurationException {
+    protected PiplineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new TeetimePipline(this.kiekerConfiguration, this.parameterConfiguration);
+            return new PiplineConfiguration(this.kiekerConfiguration, this.parameterConfiguration);
         } catch (final FileNotFoundException e) {
             throw new ConfigurationException(e);
         }

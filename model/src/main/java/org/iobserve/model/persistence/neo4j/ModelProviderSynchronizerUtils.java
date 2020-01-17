@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lars Bluemke
  */
-public final class ModelProviderSynchronizer {
+public final class ModelProviderSynchronizerUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizerUtils.class);
 
     private static ConcurrentHashMap<Neo4JModelResource<?>, Object> locks = new ConcurrentHashMap<>();
 
-    private ModelProviderSynchronizer() {
+    private ModelProviderSynchronizerUtils() {
         // private constructor, utility class
     }
 
@@ -45,18 +45,18 @@ public final class ModelProviderSynchronizer {
      */
     public static void getLock(final Neo4JModelResource<?> resource) {
         synchronized (resource) {
-            while (ModelProviderSynchronizer.locks.get(resource) != null) {
+            while (ModelProviderSynchronizerUtils.locks.get(resource) != null) {
                 try {
                     resource.wait();
                 } catch (final InterruptedException e) {
-                    if (ModelProviderSynchronizer.LOGGER.isErrorEnabled()) {
-                        ModelProviderSynchronizer.LOGGER
+                    if (ModelProviderSynchronizerUtils.LOGGER.isErrorEnabled()) {
+                        ModelProviderSynchronizerUtils.LOGGER
                                 .error("Thread was interrupted before or while waiting for a notification to "
                                         + "get the database lock.");
                     }
                 }
             }
-            ModelProviderSynchronizer.locks.put(resource, resource);
+            ModelProviderSynchronizerUtils.locks.put(resource, resource);
         }
     }
 
@@ -68,11 +68,11 @@ public final class ModelProviderSynchronizer {
      */
     public static void releaseLock(final Neo4JModelResource<?> resource) {
         synchronized (resource) {
-            if (ModelProviderSynchronizer.locks.get(resource) == resource) {
-                ModelProviderSynchronizer.locks.remove(resource);
+            if (ModelProviderSynchronizerUtils.locks.get(resource) == resource) {
+                ModelProviderSynchronizerUtils.locks.remove(resource);
                 resource.notifyAll();
             } else {
-                ModelProviderSynchronizer.LOGGER.warn("Cannot release the lock - you are not holding it.");
+                ModelProviderSynchronizerUtils.LOGGER.warn("Cannot release the lock - you are not holding it.");
             }
         }
     }

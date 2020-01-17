@@ -15,11 +15,12 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -49,7 +50,8 @@ public abstract class AbstractFileSink<T> extends AbstractConsumerStage<T> {
      *             on file access issues
      */
     public AbstractFileSink(final File file) throws IOException {
-        this.output = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+        this.output = new PrintWriter(
+                Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8, StandardOpenOption.CREATE));
     }
 
 }

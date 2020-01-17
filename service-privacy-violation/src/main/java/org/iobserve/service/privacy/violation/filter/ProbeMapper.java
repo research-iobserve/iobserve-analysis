@@ -105,11 +105,13 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeManagementData> {
 
     @Override
     protected void execute(final ProbeManagementData element) throws Exception {
+        // ExperimentLoggerUtils.logEvent(element, EventTypes.NONE, ObservationPoint.PROBE_MODEL_TO_CODE_ENTRY);
         DeploymentLock.lock();
         this.createMethodsToActivate(element);
         this.createMethodsToDeactivate(element);
         this.createMethodsToUpdate(element);
         DeploymentLock.unlock();
+        // ExperimentLoggerUtils.logEvent(element, EventTypes.NONE, ObservationPoint.PROBE_MODEL_TO_CODE_EXIT);
     }
 
     private void createMethodsToActivate(final ProbeManagementData element)

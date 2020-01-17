@@ -66,6 +66,8 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
     @Override
     protected void execute(final PCMUndeployedEvent event) throws DBException {
         DeploymentLock.lock();
+        // ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT,
+        // ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
@@ -78,13 +80,16 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         if (allocationContexts.size() == 1) {
             final AllocationContext allocationContext = allocationContexts.get(0);
             this.allocationModelResource.deleteObject(allocationContext);
+            // ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, ObservationPoint.MODEL_UPDATE_EXIT);
             DeploymentLock.unlock();
             this.outputPort.send(event);
         } else if (allocationContexts.size() > 1) {
+            // ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
                     allocationContextName);
             DeploymentLock.unlock();
         } else {
+            // ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, ObservationPoint.MODEL_UPDATE_EXIT);
             this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
             DeploymentLock.unlock();
         }

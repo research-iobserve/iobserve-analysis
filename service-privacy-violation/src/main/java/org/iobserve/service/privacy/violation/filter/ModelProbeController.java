@@ -60,6 +60,8 @@ public class ModelProbeController extends AbstractConsumerStage<WarningModel> {
             this.logger.error("Received warning with empty edge list");
             return;
         } else {
+            // ExperimentLoggingUtils.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
+            // ObservationPoint.COMPUTE_PROBE_CONFIGURATION_ENTRY);
             final Map<AllocationContext, Set<OperationSignature>> receivedWarnings = this
                     .computeReceivedWarnings(element.getWarningEdges());
             final Map<AllocationContext, Set<OperationSignature>> currentWarnings = new HashMap<>(
@@ -74,6 +76,8 @@ public class ModelProbeController extends AbstractConsumerStage<WarningModel> {
             probeMethodInformation.setProtectedOperations(receivedWarnings);
             probeMethodInformation.setOperationsToUpdate(this.currentActiveWarnings);
 
+            // ExperimentLoggingUtils.logEvent(element.getEvent().getTimestamp(), EventTypes.NONE,
+            // ObservationPoint.COMPUTE_PROBE_CONFIGURATION_EXIT);
             this.outputPort.send(probeMethodInformation);
         }
     }

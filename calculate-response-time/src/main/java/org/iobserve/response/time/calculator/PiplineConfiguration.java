@@ -33,9 +33,9 @@ import org.iobserve.stages.sink.CSVFileWriter;
  * @author Reiner Jung
  *
  */
-public class TeetimePipline extends Configuration {
+public class PiplineConfiguration extends Configuration {
 
-    public TeetimePipline(final kieker.common.configuration.Configuration kiekerConfiguration,
+    public PiplineConfiguration(final kieker.common.configuration.Configuration kiekerConfiguration,
             final Settings configuration) throws ConfigurationException, FileNotFoundException {
         final ISourceCompositeStage sourceCompositeStage = SourceStageFactory
                 .createSourceCompositeStage(kiekerConfiguration);

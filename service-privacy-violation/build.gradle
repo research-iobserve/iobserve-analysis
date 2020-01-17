@@ -16,13 +16,15 @@ dependencies {
 	compile project(":model")
 
 	compile 'com.beust:jcommander:1.72'
-		
+
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'commons-io:commons-io:2.5'
 	compile 'org.glassfish:javax.json:1.1.2'
 	compile 'org.json:json:20180130'
+
+	compile group: 'com.github.oshi', name: 'oshi-core', version: '3.12.2'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

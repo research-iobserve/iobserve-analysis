@@ -16,6 +16,7 @@
 package org.iobserve.evaluation.filter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,7 +58,7 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
         /** Have to read the model by hand */
         final JsonNode tree = mapper.readTree(this.inputFile);
         if (!(tree instanceof ObjectNode)) {
-            throw new Exception("Wrong format");
+            throw new IOException("Wrong format while reading model.");
         }
         final ObjectNode modelNode = (ObjectNode) tree;
 

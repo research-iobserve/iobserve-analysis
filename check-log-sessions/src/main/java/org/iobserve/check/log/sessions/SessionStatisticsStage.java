@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.check.log.sessions;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import teetime.framework.AbstractConsumerStage;
@@ -33,7 +34,12 @@ public class SessionStatisticsStage extends AbstractConsumerStage<UserSession> {
 
     @Override
     protected void execute(final UserSession session) throws Exception {
-
+        final Map<String, Object> map = new HashMap<>();
+        map.put("host", session.getHost());
+        map.put("entry", session.getEntryTime());
+        map.put("exit", session.getExitTime());
+        map.put("session", session.getSessionId());
+        map.put("size", session.getEvents().size());
     }
 
     public OutputPort<Map<String, Object>> getOutputPort() {

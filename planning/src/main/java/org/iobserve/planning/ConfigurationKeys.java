@@ -21,7 +21,8 @@ package org.iobserve.planning;
  * @author Lars Bluemke
  *
  */
-public final class ConfigurationKeys {
+public final class ConfigurationKeys { // NOPMD ClassNamingConvetions expects Utils or Helper, but
+                                       // we like Keys)
 
     /**
      * Input port where runtime models are received via TCP.

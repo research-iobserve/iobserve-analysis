@@ -17,8 +17,10 @@ package org.iobserve.evaluation.filter;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,8 +57,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
 
     @Override
     protected void execute(final ComparisonResult result) throws IOException {
-        final FileWriter fw = new FileWriter(this.outputFile);
-        final BufferedWriter writer = new BufferedWriter(fw);
+        final BufferedWriter writer = Files.newBufferedWriter(this.outputFile.toPath(), StandardCharsets.UTF_8,
+                StandardOpenOption.WRITE);
 
         final int baselineNodeCount = result.getBaselineNodes().size();
         final int testModelNodeCount = result.getTestModelNodes().size();
@@ -122,7 +124,6 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         }
 
         writer.close();
-        fw.close();
     }
 
     private List<EntryCallEdge> createAllEdgesList(final List<EntryCallEdge> baselineEdges,

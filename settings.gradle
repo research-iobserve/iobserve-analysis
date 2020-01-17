@@ -12,7 +12,8 @@ include "collector", "splitter", "rac.creator", "replayer",
 	"calculate-response-time",
 	"calculate-resources",
 	"repair-log-files",
-	"drive-accounting"
+	"drive-accounting",
+	"check-log-sessions"
 
 // Peropteryx integration with goomph
 //include "peropteryx.rcp", "target.p2", "target.maven", "deploy"
