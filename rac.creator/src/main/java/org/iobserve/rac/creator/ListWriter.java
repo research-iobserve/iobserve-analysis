@@ -52,7 +52,7 @@ public class ListWriter extends AbstractConsumerStage<String> {
     }
 
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
         super.onTerminating();
         this.writer.close();
     }

@@ -52,7 +52,7 @@ public class RACWriter extends AbstractConsumerStage<Map<String, PcmEntity>> {
     }
 
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
         super.onTerminating();
         JAXB.marshal(this.mapping, this.file);
     }
