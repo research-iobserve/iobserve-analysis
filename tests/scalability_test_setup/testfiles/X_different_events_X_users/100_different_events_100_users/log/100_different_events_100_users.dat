@@ -1,0 +1,300 @@
+$1;0;1;00;1;store-1;-1;-1 
+$4;1;1;1;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;2;2;1;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;3;2;00;2;store-1;-1;-1 
+$4;4;4;2;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;5;5;2;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;6;3;00;3;store-1;-1;-1 
+$4;7;7;3;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;8;8;3;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;9;4;00;4;store-1;-1;-1 
+$4;10;10;4;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;11;11;4;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;12;5;00;5;store-1;-1;-1 
+$4;13;13;5;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;14;14;5;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;15;6;00;6;store-1;-1;-1 
+$4;16;16;6;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;17;17;6;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;18;7;00;7;store-1;-1;-1 
+$4;19;19;7;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000;[] 
+$6;20;20;7;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000 
+$1;21;8;00;8;store-1;-1;-1 
+$4;22;22;8;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;23;23;8;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;24;9;00;9;store-1;-1;-1 
+$4;25;25;9;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;26;26;9;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;27;10;00;10;store-1;-1;-1 
+$4;28;28;10;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;29;29;10;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;30;11;00;11;store-1;-1;-1 
+$4;31;31;11;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;32;32;11;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;33;12;00;12;store-1;-1;-1 
+$4;34;34;12;0;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;35;35;12;1;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;36;13;00;13;store-1;-1;-1 
+$4;37;37;13;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;38;38;13;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;39;14;00;14;store-1;-1;-1 
+$4;40;40;14;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;41;41;14;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;42;15;00;15;store-1;-1;-1 
+$4;43;43;15;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;44;44;15;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;45;16;00;16;store-1;-1;-1 
+$4;46;46;16;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;47;47;16;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;48;17;00;17;store-1;-1;-1 
+$4;49;49;17;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;50;50;17;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;51;18;00;18;store-1;-1;-1 
+$4;52;52;18;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;53;53;18;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;54;19;00;19;store-1;-1;-1 
+$4;55;55;19;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;56;56;19;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;57;20;00;20;store-1;-1;-1 
+$4;58;58;20;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;59;59;20;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;60;21;00;21;store-1;-1;-1 
+$4;61;61;21;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;62;62;21;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;63;22;00;22;store-1;-1;-1 
+$4;64;64;22;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;65;65;22;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;66;23;00;23;store-1;-1;-1 
+$4;67;67;23;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;68;68;23;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;69;24;00;24;store-1;-1;-1 
+$4;70;70;24;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;71;71;24;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;72;25;00;25;store-1;-1;-1 
+$4;73;73;25;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;74;74;25;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;75;26;00;26;store-1;-1;-1 
+$4;76;76;26;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;77;77;26;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;78;27;00;27;store-1;-1;-1 
+$4;79;79;27;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;80;80;27;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;81;28;00;28;store-1;-1;-1 
+$4;82;82;28;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000;[] 
+$6;83;83;28;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000 
+$1;84;29;00;29;store-1;-1;-1 
+$4;85;85;29;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;86;86;29;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;87;30;00;30;store-1;-1;-1 
+$4;88;88;30;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;89;89;30;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;90;31;00;31;store-1;-1;-1 
+$4;91;91;31;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;92;92;31;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;93;32;00;32;store-1;-1;-1 
+$4;94;94;32;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;95;95;32;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;96;33;00;33;store-1;-1;-1 
+$4;97;97;33;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;98;98;33;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;99;34;00;34;store-1;-1;-1 
+$4;100;100;34;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000;[] 
+$6;101;101;34;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000 
+$1;102;35;00;35;store-1;-1;-1 
+$4;103;103;35;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;104;104;35;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;105;36;00;36;store-1;-1;-1 
+$4;106;106;36;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;107;107;36;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;108;37;00;37;store-1;-1;-1 
+$4;109;109;37;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;110;110;37;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;111;38;00;38;store-1;-1;-1 
+$4;112;112;38;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000;[] 
+$6;113;113;38;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000 
+$1;114;39;00;39;store-1;-1;-1 
+$4;115;115;39;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;116;116;39;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;117;40;00;40;store-1;-1;-1 
+$4;118;118;40;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;119;119;40;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;120;41;00;41;store-1;-1;-1 
+$4;121;121;41;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;122;122;41;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;123;42;00;42;store-1;-1;-1 
+$4;124;124;42;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;125;125;42;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;126;43;00;43;store-1;-1;-1 
+$4;127;127;43;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;128;128;43;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;129;44;00;44;store-1;-1;-1 
+$4;130;130;44;0;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;131;131;44;1;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;132;45;00;45;store-1;-1;-1 
+$4;133;133;45;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;134;134;45;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;135;46;00;46;store-1;-1;-1 
+$4;136;136;46;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;137;137;46;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;138;47;00;47;store-1;-1;-1 
+$4;139;139;47;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;140;140;47;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;141;48;00;48;store-1;-1;-1 
+$4;142;142;48;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000;[] 
+$6;143;143;48;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner.sendProductBarcode(java.lang.String,long,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.barcodescanner.BarcodeScanner;000000000 
+$1;144;49;00;49;store-1;-1;-1 
+$4;145;145;49;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;146;146;49;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;147;50;00;50;store-1;-1;-1 
+$4;148;148;50;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;149;149;50;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;150;51;00;51;store-1;-1;-1 
+$4;151;151;51;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;152;152;51;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;153;52;00;52;store-1;-1;-1 
+$4;154;154;52;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;155;155;52;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;156;53;00;53;store-1;-1;-1 
+$4;157;157;53;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;158;158;53;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;159;54;00;54;store-1;-1;-1 
+$4;160;160;54;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;161;161;54;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;162;55;00;55;store-1;-1;-1 
+$4;163;163;55;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;164;164;55;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;165;56;00;56;store-1;-1;-1 
+$4;166;166;56;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;167;167;56;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;168;57;00;57;store-1;-1;-1 
+$4;169;169;57;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;170;170;57;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;171;58;00;58;store-1;-1;-1 
+$4;172;172;58;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;173;173;58;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;174;59;00;59;store-1;-1;-1 
+$4;175;175;59;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;176;176;59;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;177;60;00;60;store-1;-1;-1 
+$4;178;178;60;0;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;179;179;60;1;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;180;61;00;61;store-1;-1;-1 
+$4;181;181;61;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;182;182;61;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;183;62;00;62;store-1;-1;-1 
+$4;184;184;62;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;185;185;62;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;186;63;00;63;store-1;-1;-1 
+$4;187;187;63;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;188;188;63;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;189;64;00;64;store-1;-1;-1 
+$4;190;190;64;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;191;191;64;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;192;65;00;65;store-1;-1;-1 
+$4;193;193;65;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;194;194;65;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;195;66;00;66;store-1;-1;-1 
+$4;196;196;66;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;197;197;66;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;198;67;00;67;store-1;-1;-1 
+$4;199;199;67;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;200;200;67;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;201;68;00;68;store-1;-1;-1 
+$4;202;202;68;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;203;203;68;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;204;69;00;69;store-1;-1;-1 
+$4;205;205;69;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;206;206;69;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;207;70;00;70;store-1;-1;-1 
+$4;208;208;70;0;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;209;209;70;1;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;210;71;00;71;store-1;-1;-1 
+$4;211;211;71;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;212;212;71;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;213;72;00;72;store-1;-1;-1 
+$4;214;214;72;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;215;215;72;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;216;73;00;73;store-1;-1;-1 
+$4;217;217;73;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;218;218;73;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;219;74;00;74;store-1;-1;-1 
+$4;220;220;74;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;221;221;74;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;222;75;00;75;store-1;-1;-1 
+$4;223;223;75;0;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000;[] 
+$6;224;224;75;1;public void org.cocome.cloud.logic.webservice.store.StoreManager.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.cloud.logic.webservice.store.StoreManager;000000000 
+$1;225;76;00;76;store-1;-1;-1 
+$4;226;226;76;0;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000;[] 
+$6;227;227;76;1;public org.cocome.tradingsystem.inventory.data.enterprise.ITradingEnterprise org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryEnterpriseByName(java.lang.String);org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider;000000000 
+$1;228;77;00;77;store-1;-1;-1 
+$4;229;229;77;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;230;230;77;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;231;78;00;78;store-1;-1;-1 
+$4;232;232;78;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;233;233;78;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;234;79;00;79;store-1;-1;-1 
+$4;235;235;79;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;236;236;79;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;237;80;00;80;store-1;-1;-1 
+$4;238;238;80;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;239;239;80;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;240;81;00;81;store-1;-1;-1 
+$4;241;241;81;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;242;242;81;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;243;82;00;82;store-1;-1;-1 
+$4;244;244;82;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;245;245;82;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;246;83;00;83;store-1;-1;-1 
+$4;247;247;83;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;248;248;83;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;249;84;00;84;store-1;-1;-1 
+$4;250;250;84;0;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000;[] 
+$6;251;251;84;1;public void org.cocome.tradingsystem.inventory.data.store.Store.initStore();org.cocome.tradingsystem.inventory.data.store.Store;000000000 
+$1;252;85;00;85;store-1;-1;-1 
+$4;253;253;85;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;254;254;85;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;255;86;00;86;store-1;-1;-1 
+$4;256;256;86;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;257;257;86;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;258;87;00;87;store-1;-1;-1 
+$4;259;259;87;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;260;260;87;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;261;88;00;88;store-1;-1;-1 
+$4;262;262;88;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;263;263;88;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.startSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;264;89;00;89;store-1;-1;-1 
+$4;265;265;89;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;266;266;89;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;267;90;00;90;store-1;-1;-1 
+$4;268;268;90;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000;[] 
+$6;269;269;90;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory.fillStoreWithEnterpriseTO(org.cocome.tradingsystem.inventory.data.store.IStore);org.cocome.tradingsystem.inventory.data.store.StoreDatatypesFactory;000000000 
+$1;270;91;00;91;store-1;-1;-1 
+$4;271;271;91;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;272;272;91;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.finishSale(java.lang.String,long);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;273;92;00;92;store-1;-1;-1 
+$4;274;274;92;0;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;275;275;92;1;public void org.cocome.tradingsystem.inventory.application.store.StoreServer.createStockItem(long,org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;276;93;00;93;store-1;-1;-1 
+$4;277;277;93;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;278;278;93;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;279;94;00;94;store-1;-1;-1 
+$4;280;280;94;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;281;281;94;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;282;95;00;95;store-1;-1;-1 
+$4;283;283;95;0;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000;[] 
+$6;284;284;95;1;public java.util.Set org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk.selectPaymentMode(java.lang.String,long,java.lang.String);org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.CashDesk;000000000 
+$1;285;96;00;96;store-1;-1;-1 
+$4;286;286;96;0;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;287;287;96;1;public org.cocome.tradingsystem.inventory.data.store.IStockItem org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStockItem(long,long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
+$1;288;97;00;97;store-1;-1;-1 
+$4;289;289;97;0;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;290;290;97;1;public org.cocome.tradingsystem.inventory.application.store.ProductWithStockItemTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getProductWithStockItem(long,long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;291;98;00;98;store-1;-1;-1 
+$4;292;292;98;0;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000;[] 
+$6;293;293;98;1;public org.cocome.tradingsystem.inventory.application.store.StoreWithEnterpriseTO org.cocome.tradingsystem.inventory.application.store.StoreServer.getStore(long);org.cocome.tradingsystem.inventory.application.store.StoreServer;000000000 
+$1;294;99;00;99;store-1;-1;-1 
+$4;295;295;99;0;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000;[] 
+$6;296;296;99;1;public void org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise.initTradingEnterprise();org.cocome.tradingsystem.inventory.data.enterprise.TradingEnterprise;000000000 
+$1;297;100;00;100;store-1;-1;-1 
+$4;298;298;100;0;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000;[] 
+$6;299;299;100;1;public org.cocome.tradingsystem.inventory.data.store.IStore org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider.queryStoreById(long);org.cocome.tradingsystem.inventory.data.store.EnterpriseStoreQueryProvider;000000000 
