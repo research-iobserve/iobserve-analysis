@@ -32,11 +32,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
  * modeling process that creates a PCM usage model from an EntryCallSequenceModel.
  *
  * @author Robert Heinrich
- * @author Alessandro Guisa
  * @author Nicolas Boltz
- * @author David Peter
- *
- * @version 1.0
  */
 public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 

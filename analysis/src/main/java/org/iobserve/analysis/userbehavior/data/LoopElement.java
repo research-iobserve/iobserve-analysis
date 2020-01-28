@@ -24,7 +24,9 @@ import java.util.Objects;
  * count. The start and end index states at which index the iterated segment that is represented by
  * the loop element starts and ends within the sequence
  *
- * @author David Peter, Robert Heinrich, Nicolas Boltz
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class LoopElement extends ISequenceElement {
 

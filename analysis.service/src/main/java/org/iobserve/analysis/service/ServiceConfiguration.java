@@ -82,7 +82,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
         final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
         this.connectPorts(this.deployment.getOutputPort(), visualizationUpdateStage.getDeploymentInputPort());
-        this.connectPorts(this.undeployment.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
+        this.connectPorts(this.deallocation.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
     }
 
 }

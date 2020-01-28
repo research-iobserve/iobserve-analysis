@@ -35,7 +35,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * the user group detection. It also measures the response times of the individual process steps and
  * an overall response time
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class UserBehaviorTransformation {
 

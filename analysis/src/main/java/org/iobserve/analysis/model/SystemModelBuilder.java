@@ -94,5 +94,12 @@ public final class SystemModelBuilder {
         }
         return Optional.empty();
     }
+    
+    public static void removeAssemblyContext(final System system, final String id) {
+    	AssemblyContext assemblyContext = getAssemblyContext(system, id);
+    	if(assemblyContext != null) {
+    		system.getAssemblyContexts__ComposedStructure().remove(assemblyContext);
+    	}
+    }
 
 }

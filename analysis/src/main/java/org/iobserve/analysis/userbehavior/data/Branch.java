@@ -21,7 +21,9 @@ import java.util.Objects;
 
 /**
  * Represents branched behavior and the probability of reaching the behavior.
- * @author David Peter, Robert Heinrich, Nicolas Boltz
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class Branch {
 

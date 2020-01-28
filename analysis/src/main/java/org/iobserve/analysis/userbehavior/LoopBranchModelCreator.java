@@ -23,6 +23,7 @@ import java.util.List;
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
+import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
 import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 import org.iobserve.analysis.userbehavior.data.LoopElement;
@@ -46,30 +47,30 @@ public class LoopBranchModelCreator {
 
     /**
      * Triggers the loop extraction process.
+     * 
+     * O(b* (e_b^3 + e_b^3/e_l + 3*l*e_l + 2*l))
      *
      * @param branchModel
      *            whose branch sequences are examined for iterated behavior
      */
     public void detectLoopsInCallBranchModel(final BranchModel branchModel) {
         // Detects Loops within the branches, starting at the root branch
-    	// O(S(b)^3 * L(b) * b + S(b) * b^2)
-    	// L(b) = size of loop in branch
+
         this.detectLoopsWithinBranch(branchModel.getRootBranch());
     }
 
     /**
      * Iterates over the branches and starts the detection process for each branch.
-     *
+     * O(b* (e_b^3 + e_b^3/e_l + 3*l*e_l + 2*l))
+     * 
      * @param branch
      *            that is examined for loops
-     * 
      */
     private void detectLoopsWithinBranch(final Branch branch) {
-    	// O(S(b)^3 * L(b) + S(b) * b)
-    	// L(b) = size of loop in branch
+    	//O(e_b^3 + e_b^3/e_l + 3*l*e_l + 2*l)
         this.detectLoopsWithinBranchSequence(branch.getBranchSequence());
-        
-        // O(b), still has to be multiplied with the complexity above
+
+        //O(b* rest of method)
         for (int i = 0; i < branch.getChildBranches().size(); i++) {
             this.detectLoopsWithinBranch(branch.getChildBranches().get(i));
         }
@@ -80,7 +81,9 @@ public class LoopBranchModelCreator {
      * sequence 2. For each obtained segment the loop count is determined 3. The loops are examined
      * if they overlap If there is an overlap between two loops, the loop that replaces less
      * sequence elements is filtered out 4. The loop elements are inserted into the sequence
-     * Iterates until no new loops are found
+     * Iterates until no new loops are found.
+     * 
+     * O(e_b^3 + e_b^3/e_l + 3*l*e_l + 2*l)
      *
      * @param branchSequence
      *            that is examined for iterated behavior
@@ -96,25 +99,24 @@ public class LoopBranchModelCreator {
         }
 
         if ((branchSequence != null) && (branchSequenceSizeWithoutExitElement > 0)) {
-        	// O(S(b)^3 * L(b) + S(b) * b)
-        	// L(b) = size of loop in branch-
+        	// O(e_b^3 + e_b^3/e_l)
             for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
 
                 // If the sequence element is a branch element, it is checked for loops within
                 // the sequences of the branches
                 if (branchSequence.get(indexOfElementInElementList).getClass().equals(BranchElement.class)) {
-                    final BranchElement loopi = (BranchElement) branchSequence.get(indexOfElementInElementList);
-                    // O(b) if only one giant loop, with all branchtransitions
-                    for (int i = 0; i < loopi.getBranchTransitions().size(); i++) {
-                        this.detectLoopsWithinBranchSequence(
-                                loopi.getBranchTransitions().get(i).getBranchSequence());
+                    final BranchElement subBranchElement = (BranchElement) branchSequence.get(indexOfElementInElementList);
+                    
+                    // big-O time complexity of contained branchElements is already regarded for
+                    for (BranchTransitionElement transition : subBranchElement.getBranchTransitions()) {
+                        this.detectLoopsWithinBranchSequence(transition.getBranchSequence());
                     }
                 }
 
                 // Checks subSequences of the sequence for equality
                 // Starting with the max longest sub sequence
                 // If a loop is detected it is memorized
-                // O(S(b)^2 * L(b))
+                // O(e_b^2 + e_b^2/e_l)
                 for (int i = 0; i < ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList)
                         / 2); i++) {
 
@@ -123,7 +125,7 @@ public class LoopBranchModelCreator {
                     boolean isALoop = true;
                     final LoopElement loopElement = new LoopElement();
                     
-                    // O(S(b))
+                    // O(e_b)
                     for (int k = 0; k < elementsToCheck; k++) {
                         final ISequenceElement element1 = branchSequence.get(indexOfElementInElementList + k);
                         final ISequenceElement element2 = branchSequence
@@ -148,7 +150,7 @@ public class LoopBranchModelCreator {
                                 (indexOfElementInElementList + elementsToCheck + elementsToCheck) - 1);
 
                         // Determines the number of loops for each loop
-                        // O(S(b) * L(b))
+                        // O(e_b/e_l)
                         this.determineLoopCount(loopElement, branchSequence);
 
                         loopElements.add(loopElement);
@@ -156,15 +158,19 @@ public class LoopBranchModelCreator {
                 }
             }
 
+            // O(3*l*e_l + 2*l)
             if (loopElements.size() > 0) {
                 // Filters the loops from overlapping loops
+            	// O(l*e_l)
                 this.filterLoops(loopElements);
                 // Find Loops within the loops
+                // O(l*e_l) -> further contained branchElements are already regarded for
                 for (final LoopElement loopElement : loopElements) {
                     this.detectLoopsWithinBranchSequence(loopElement.getLoopSequence());
                 }
                 
                 // Inserts the loops into the branch
+                // O(2*l+l*e_l)
                 this.insertLoopsIntoBranch(loopElements, branchSequence);
             }
         }
@@ -172,7 +178,9 @@ public class LoopBranchModelCreator {
 
     /**
      * Inserts the passed loops into the branch sequence and removes the call elements that are.
-     * replaced by the loops
+     * replaced by the loops.
+     * 
+     * O(2*l+l*e_l)
      *
      * @param loopElements
      *            are the loops that are inserted into the branch sequence
@@ -182,6 +190,7 @@ public class LoopBranchModelCreator {
     private void insertLoopsIntoBranch(final List<LoopElement> loopElements,
             final List<ISequenceElement> branchSequence) {
 
+    	// O(l)
         Collections.sort(loopElements, new Comparator<LoopElement>() {
             @Override
             public int compare(final LoopElement e1, final LoopElement e2) {
@@ -196,6 +205,7 @@ public class LoopBranchModelCreator {
             }
         });
 
+        // O(l)
         for (int i = 0; i < loopElements.size(); i++) {
             final LoopElement loopElement = loopElements.get(i);
             loopElement.setStartIndexInBranchSequence(loopElement.getStartIndexInBranchSequence() + i);
@@ -203,6 +213,7 @@ public class LoopBranchModelCreator {
             branchSequence.add(loopElement.getStartIndexInBranchSequence(), loopElement);
         }
 
+        // O(l*e_l)
         int countOfRemovedElementsFromLoopsBefore = 0;
         for (final LoopElement loopElement : loopElements) {
             for (int i = 0; i < loopElement.getNumberOfReplacedElements(); i++) {
@@ -217,7 +228,9 @@ public class LoopBranchModelCreator {
     /**
      * Checks if there are overlaps between the passed loops, i.e. if more than one loop uses the
      * same call element. If it detects an overlap it filters the loop out that replaces less call
-     * elements
+     * elements.
+     * 
+     * O(l*e_l)
      *
      * @param loopElements
      */
@@ -295,6 +308,8 @@ public class LoopBranchModelCreator {
 
     /**
      * Determines the loop count by checking how often the loop is iterated in a row.
+     * 
+     * O(e_b/e_l)
      *
      * @param loopElement
      *            whose loopCount is determined
@@ -303,12 +318,12 @@ public class LoopBranchModelCreator {
      */
     private void determineLoopCount(final LoopElement loopElement, final List<ISequenceElement> branchSequence) {
         int loopCount = 2;
-        // O(S(b) * L(b))
+        // O(e_b/e_l)
         for (int i = loopElement.getEndIndexInBranchSequence(); 
         		(i + loopElement.getLoopSequence().size()) < branchSequence.size(); 
         		i = i + loopElement.getLoopSequence().size()) {
             boolean isAdditionalLoop = true;
-            // O(L(b))
+            // O(e_l)
             for (int j = 0; j < loopElement.getLoopSequence().size(); j++) {
                 final ISequenceElement element1 = branchSequence.get(loopElement.getStartIndexInBranchSequence() + j);
                 final ISequenceElement element2 = branchSequence.get(i + 1 + j);

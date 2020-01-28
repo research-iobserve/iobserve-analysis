@@ -17,7 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.data.AddAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -55,8 +54,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
-
-    private final OutputPort<AddAllocationContextEvent> outputPort = this.createOutputPort();
+    /** output port. */
+    private final OutputPort<ResourceContainer> outputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -100,11 +99,11 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         
         ExecutionTimeLogger.getInstance().stopLogging(event);
     }
-
+    
     /**
-     * @return output port
+     * @return the OutputPort
      */
-    public OutputPort<AddAllocationContextEvent> getOutputPort() {
+    public OutputPort<ResourceContainer> getOutputPort() {
         return this.outputPort;
     }
 
@@ -146,7 +145,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *            correspondent
      */
     private void updateModel(final String serverName, final Correspondent correspondent) {
-        // get the model entity name
         final String entityName = correspondent.getPcmEntityName();
 
         // build the assembly context name
@@ -155,55 +153,27 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         // get the model parts by name
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
                 .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
+        
+        if(optResourceContainer.isPresent()) {
+        	// get assembly context by name or create it if necessary.
+            final AssemblyContext assemblyContext;
+            final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
+                    .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
+            if (optAssCtx.isPresent()) {
+                assemblyContext = optAssCtx.get();
+            } else {
+            	this.systemModelProvider.loadModel();
+            	assemblyContext = SystemModelBuilder.createAssemblyContextsIfAbsent(this.systemModelProvider.getModel(), asmContextName);
+                this.systemModelProvider.save();
+            }
 
-        // this can not happen since TAllocation should have created the resource container already.
-        Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n", asmContextName));
-    }
-
-    /**
-     * Add allocation context to allocation model with the given {@link ResourceContainer} and
-     * {@link AssemblyContext} identified by the given entity name.
-     *
-     * @param resourceContainer
-     *            instance of resource container
-     * @param asmContextName
-     *            entity name of assembly context
-     */
-    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
-        // get assembly context by name or create it if necessary.
-        final AssemblyContext assemblyContext;
-        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
-        if (optAssCtx.isPresent()) {
-            assemblyContext = optAssCtx.get();
+            // add context as allocation context to the allocation model
+            this.allocationModelProvider.loadModel();
+            AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), optResourceContainer.get(),
+                    assemblyContext);
+            this.allocationModelProvider.save();
         } else {
-            assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
+        	System.out.printf("AssemblyContext %s was not available?!\n", asmContextName);
         }
-
-        // update the allocation model
-        this.allocationModelProvider.loadModel();
-        AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
-                assemblyContext);
-        this.allocationModelProvider.save();
-        this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
     }
-
-    /**
-     * Create {@link AssemblyContext} with the given name.
-     *
-     * @param provider
-     *            provider
-     * @param name
-     *            name
-     * @return created assembly context
-     */
-    private static AssemblyContext createAssemblyContextByName(final SystemModelProvider provider, final String name) {
-        provider.loadModel();
-        final AssemblyContext ctx = SystemModelBuilder.createAssemblyContextsIfAbsent(provider.getModel(), name);
-        provider.save();
-        return ctx;
-    }
-
 }

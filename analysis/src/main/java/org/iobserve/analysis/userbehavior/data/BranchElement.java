@@ -23,7 +23,9 @@ import java.util.Objects;
  * Represents a branch by branch transitions that is contained within a sequence. Used for branches
  * that are merged. It can be added to a sequence
  *
- * @author David Peter, Robert Heinrich, Nicolas Boltz
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class BranchElement extends ISequenceElement {
 

@@ -18,6 +18,8 @@ package org.iobserve.analysis.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import java.util.Optional;
+
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
@@ -25,13 +27,14 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  *  TAllocation creates a new resource container if and only if there is no corresponding container already available.
  *
  * @author Robert Heinrich
- * @author Alessandro Giusa
+ * @author Nicolas Boltz
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
@@ -89,12 +92,12 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      *            server name
      */
     private void updateModel(final String serverName) {
-        Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
-                serverName)).ifNotPresent().apply(() -> {
-                    TAllocation.this.resourceEnvModelProvider.loadModel();
-                    final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
-                    ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
-                    TAllocation.this.resourceEnvModelProvider.save();
-                });
+    	Optional<ResourceContainer> optContainer = ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
+    	if(!optContainer.isPresent()) {
+    		this.resourceEnvModelProvider.loadModel();
+    		final ResourceEnvironment model = this.resourceEnvModelProvider.getModel();
+    		ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
+    		this.resourceEnvModelProvider.save();
+    	}
     }
 }

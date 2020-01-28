@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
@@ -25,6 +27,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 /**
  * Model builder for resource environment models.
  *
+ * @author Nicolas Boltz
  * @author Robert Heinrich
  *
  */
@@ -92,6 +95,38 @@ public final class ResourceEnvironmentModelBuilder {
             final String name) {
         return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream()
                 .filter(container -> container.getEntityName().equals(name)).findFirst();
+    }
+    
+    /**
+     * Removes the {@link ResourceContainer} and every affiliated {@link LinkingResource} from the model.
+     * 
+     * @param model
+     * 			resource environment model
+     * @param container
+     * 			targeted ResourceContainer
+     * @return true: ResourceContainer removed; false: ResourceContainer not present in model
+     */
+    public static boolean removeResourceContainer(final ResourceEnvironment model, final ResourceContainer container) {
+		removeAllLinkingResourcesToResourceContainer(model, container);
+		return model.getResourceContainer_ResourceEnvironment().remove(container);
+    }
+    
+    /**
+     * Removes all {@link LinkingResource} affiliated with the {@link ResourceContainer}.
+     * @param model
+     * 			resource environment model
+     * @param container
+     * 			targeted ResourceContainer
+     */
+    public static void removeAllLinkingResourcesToResourceContainer(final ResourceEnvironment model, final ResourceContainer container) {
+    	List<LinkingResource> linksToRemove = new ArrayList<>();
+		for(LinkingResource link : model.getLinkingResources__ResourceEnvironment()) {
+			if(link.getConnectedResourceContainers_LinkingResource().contains(container)) {
+				linksToRemove.add(link);
+			}
+		}
+		
+		model.getLinkingResources__ResourceEnvironment().removeAll(linksToRemove);
     }
 
 }

@@ -25,8 +25,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
-import org.iobserve.analysis.data.AddAllocationContextEvent;
-import org.iobserve.analysis.data.RemoveAllocationContextEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -45,9 +44,9 @@ public class VisualizationUpdateStage extends AbstractStage {
 
     private final URL outputURL;
 
-    private final InputPort<AddAllocationContextEvent> deploymentInputPort = super.createInputPort();
+    private final InputPort<ResourceContainer> deploymentInputPort = super.createInputPort();
 
-    private final InputPort<RemoveAllocationContextEvent> undeploymentInputPort = super.createInputPort();
+    private final InputPort<ResourceContainer> undeploymentInputPort = super.createInputPort();
 
     /**
      * Output visualization configuration.
@@ -62,8 +61,8 @@ public class VisualizationUpdateStage extends AbstractStage {
     @Override
     protected void execute() {
         try {
-            final AddAllocationContextEvent allocate = this.deploymentInputPort.receive();
-            final RemoveAllocationContextEvent deallocate = this.undeploymentInputPort.receive();
+            final ResourceContainer allocate = this.deploymentInputPort.receive();
+            final ResourceContainer deallocate = this.undeploymentInputPort.receive();
             if (allocate != null) {
                 this.sendPostRequest(this.deployment(allocate));
             }
@@ -76,13 +75,13 @@ public class VisualizationUpdateStage extends AbstractStage {
         }
     }
 
-    private JsonObject deployment(final AddAllocationContextEvent allocate) {
+    private JsonObject deployment(final ResourceContainer allocate) {
         final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE").build();
 
         return data;
     }
 
-    private JsonObject undeployment(final RemoveAllocationContextEvent unallocate) {
+    private JsonObject undeployment(final ResourceContainer deallocate) {
         final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "DELETE").build();
 
         return data;
@@ -132,11 +131,11 @@ public class VisualizationUpdateStage extends AbstractStage {
 
     }
 
-    public InputPort<AddAllocationContextEvent> getDeploymentInputPort() {
+    public InputPort<ResourceContainer> getDeploymentInputPort() {
         return this.deploymentInputPort;
     }
 
-    public InputPort<RemoveAllocationContextEvent> getUndeploymentInputPort() {
+    public InputPort<ResourceContainer> getUndeploymentInputPort() {
         return this.undeploymentInputPort;
     }
 }

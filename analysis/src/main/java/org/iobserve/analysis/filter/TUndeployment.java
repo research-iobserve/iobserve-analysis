@@ -17,7 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -44,7 +43,7 @@ import teetime.framework.OutputPort;
  *
  * @author Robert Heinrich
  * @author Reiner Jung
- *
+ * @author Nicolas Boltz
  */
 public final class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
@@ -57,11 +56,10 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
-    private final OutputPort<RemoveAllocationContextEvent> outputPort = this.createOutputPort();
+    private final OutputPort<ResourceContainer> outputPort = this.createOutputPort();
 
     /**
-     * Most likely the constructor needs an additional field for the PCM access. But this has to be
-     * discussed with Robert.
+     * 
      *
      * @param correspondence
      *            correspondence model
@@ -168,17 +166,24 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
                 .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
 
         if (optAssemblyContext.isPresent()) {
+        	AssemblyContext assemblyContext = optAssemblyContext.get();
             this.allocationModelProvider.loadModel();
-            this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
             AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer,
-                    optAssemblyContext.get());
+            		assemblyContext);
             this.allocationModelProvider.save();
+            
+            // remove assembly context from system model
+            this.systemModelProvider.loadModel();
+            SystemModelBuilder.removeAssemblyContext(this.systemModelProvider.getModel(), assemblyContext.getId());
+            this.systemModelProvider.save();
+            
+            this.outputPort.send(resourceContainer);
         } else {
-            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
         }
     }
 
-    public OutputPort<RemoveAllocationContextEvent> getOutputPort() {
+    public OutputPort<ResourceContainer> getOutputPort() {
         return this.outputPort;
     }
 

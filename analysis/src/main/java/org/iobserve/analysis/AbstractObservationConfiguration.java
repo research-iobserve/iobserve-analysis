@@ -17,6 +17,7 @@ package org.iobserve.analysis;
 
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
+import org.iobserve.analysis.filter.TDeallocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
@@ -34,7 +35,7 @@ import teetime.framework.Configuration;
 
 /**
  * @author Reiner Jung
- *
+ * @author Nicolas Boltz
  */
 public abstract class AbstractObservationConfiguration extends Configuration {
 
@@ -44,9 +45,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
+    protected final TDeallocation deallocation;
+    
     protected final TDeployment deployment;
 
-    protected final TUndeployment undeployment;
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -81,7 +83,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+        this.deallocation = new TDeallocation(allocationModelProvider, resourceEnvironmentModelProvider);
+        final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel, generationFrequency);
@@ -92,11 +95,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
         this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deployment.getInputPort());
+        this.connectPorts(tUndeployment.getOutputPort(), this.deallocation.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
     }

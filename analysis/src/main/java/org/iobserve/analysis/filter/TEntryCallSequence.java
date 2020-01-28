@@ -34,9 +34,7 @@ import teetime.framework.OutputPort;
  * Dynamic Adaptation and Evolution of Cloud Applications</i>.
  *
  * @author Robert Heinrich
- * @author Alessandro Guisa
- *
- * @version 1.0
+ * @author Nicolas Boltz
  */
 public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 

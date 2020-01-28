@@ -27,7 +27,6 @@ import teetime.framework.OutputPort;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;

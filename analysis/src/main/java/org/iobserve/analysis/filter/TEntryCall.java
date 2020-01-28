@@ -34,10 +34,10 @@ import teetime.framework.OutputPort;
  * It could be interesting to combine DeploymentEventTransformation and
  * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
  * the API for multiple input ports.
- *
+ * 
+ * @author Robert Heinrich
  * @author Reiner Jung
  * @author Nicolas Boltz
- * @version 1.0
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /** logger. */

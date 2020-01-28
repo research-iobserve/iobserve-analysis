@@ -28,7 +28,9 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
  * loop is used that replaces the most callElements. The result is one LoopBranchModel for each user
  * group that additionally contains loops for iterated entryCalls.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 
 public class LoopExtraction {
@@ -48,12 +50,15 @@ public class LoopExtraction {
 
     /**
      * Executes the extraction of iterated behavior process.
+     * 
+     * O(B*(b * (e_b^3 + e_b^3/e_l + 3*l*e_l + 2*l)))
      */
     public void createCallLoopBranchModels() {
 
         final LoopBranchModelCreator modelCreator = new LoopBranchModelCreator();
         this.loopBranchModels = new ArrayList<>();
 
+        // O(B * ...)
         for (final BranchModel branchModel : this.branchModels) {
             // Each BranchModel is checked for iterated behavior
             modelCreator.detectLoopsInCallBranchModel(branchModel);
