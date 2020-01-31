@@ -18,7 +18,7 @@
 		<exclude name="AvoidFinalLocalVariable" />
 		<exclude name="AvoidInstantiatingObjectsInLoops" />
 		<exclude name="AvoidLiteralsInIfCondition" />
-		<exclude name="AvoidPrefixingMethodParameters" />
+		<!-- exclude name="AvoidPrefixingMethodParameters" /-->
 		<exclude name="AvoidThrowingNullPointerException" />
 		<exclude name="AvoidUsingVolatile" />
 		<exclude name="AssignmentInOperand"/>
@@ -37,7 +37,7 @@
 		<exclude name="LawOfDemeter" />
 		<exclude name="LongVariable" />
 		<exclude name="LoosePackageCoupling" />
-		<exclude name="NcssMethodCount" />
+		<!-- exclude name="NcssMethodCount" /-->
 		<exclude name="NPathComplexity" />
 		<exclude name="OnlyOneReturn" />
 		<exclude name="PackageCase" />
@@ -50,7 +50,7 @@
 		<exclude name="UseStringBufferForStringAppends" />
 		<exclude name="TooManyMethods" />
 		<exclude name="UnnecessaryConstructor" />
-		<exclude name="UnnecessaryFinalModifier" />
+		<exclude name="UnnecessaryModifier" />
 		<exclude name="UseObjectForClearerAPI" />
 		<exclude name="UseProperClassLoader" />
 		<exclude name="UselessParentheses" />
