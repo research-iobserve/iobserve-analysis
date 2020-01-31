@@ -11,12 +11,12 @@ buildscript {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
-	compile project(":analysis") // behavior model data
-	compile project(":monitoring")
+	implementation project(":analysis") // behavior model data
+	implementation project(":monitoring")
 	
-	compile 'com.beust:jcommander:1.72'
+	implementation 'com.beust:jcommander:1.72'
 }
 
 // SHADOW
@@ -32,12 +32,13 @@ test {
   exclude '**/evaluation/test/filter/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'runtime.reconfigurator'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'runtime.reconfigurator'
+//    }
+//}
 
 

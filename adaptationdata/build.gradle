@@ -1,13 +1,13 @@
 sourceCompatibility = 1.8
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
-	compile project(":common")
-	compile project(":model")
-	compile project(":planning.systemadaptation")
+	implementation project(":common")
+	implementation project(":model")
+	implementation project(":planning.systemadaptation")
 		
-	compile 'com.neovisionaries:nv-i18n:1.20'
+	implementation 'com.neovisionaries:nv-i18n:1.20'
 }
 
 clover {
@@ -47,12 +47,13 @@ artifacts {
     //archives javadocJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'adaptationdata'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'adaptationdata'
+//    }
+//}
 
 

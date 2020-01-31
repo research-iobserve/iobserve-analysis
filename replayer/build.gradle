@@ -3,11 +3,11 @@ apply plugin: 'application'
 mainClassName='org.iobserve.replayer.ReplayerMain'
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
-	compile project(":stages")
+	implementation project(":stages")
 	
-	compile 'com.beust:jcommander:1.72'
+	implementation 'com.beust:jcommander:' + jcommanderVersion
 }
 
 clover {
@@ -17,12 +17,13 @@ clover {
 	
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'replayer'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'replayer'
+//    }
+//}
 
 

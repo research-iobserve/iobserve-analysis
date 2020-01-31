@@ -18,7 +18,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-clover-plugin:2.2.1'
+        classpath 'com.bmuschko:gradle-clover-plugin:' + cloverPluginVersion
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
          
         ////////// Goomph //////////      
@@ -42,7 +42,7 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
 
 apply plugin: 'eclipse'
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
 
@@ -71,22 +71,22 @@ clover {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
     apply plugin: 'com.bmuschko.clover'
-
+    
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     
-    version = '0.0.3-SNAPSHOT'
+    version = '0.0.4-SNAPSHOT'
     group = 'org.iobserve'
     
     repositories {
+        maven {url project.properties['api.baseline']}
 	maven {url "https://mvnrepository.com/artifact/org.hyperic/sigar"}
 
         mavenCentral()
         jcenter()
-        maven {url project.properties['api.baseline']}
         maven {url "https://repo.eclipse.org/content/groups/releases/" }
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -112,11 +112,11 @@ subprojects {
 
     dependencies {
         // logging
-        compile 'org.slf4j:slf4j-api:1.7.25'
-        compile 'org.slf4j:slf4j-log4j12:1.7.25'
+        implementation 'org.slf4j:slf4j-api:1.7.25'
+        implementation 'org.slf4j:slf4j-log4j12:1.7.25'
                 
         // central
-        testCompile "junit:junit:4.12"
+        testImplementation "junit:junit:4.12"
     }
 
     clover {
@@ -156,7 +156,7 @@ subprojects {
         ignoreFailures = true
         showViolations = false
         configFile = new File(confDir, "checkstyle-rules.xml")
-        configDir = new File(confDir)
+        //configDirectory = new File(confDir)
     }
 
     // apply plugin: 'findbugs'
@@ -182,17 +182,17 @@ subprojects {
         }
     }
 
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = true
-            html.enabled = false
-        }
-    }
+//    tasks.withType(FindBugs) {
+//        reports {
+//            xml.enabled = true
+//            html.enabled = false
+//        }
+//    }
 
     ext {
         appName = "org.iobserve"
     }
-    
+
     eclipse {
         classpath {
             downloadSources=true
@@ -520,8 +520,8 @@ configure(subprojects.findAll(IS_PLUGIN)) {
     // (We removed the dependencies resolved from p2 repository with goomph because they inconsistently caused 
     // build failures. However, they will be needed to export an peropteryx product with goomph)
     // dependencies {
-    //        compile "eclipse-deps:org.eclipse.swt:+"
-    //        compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
+    //        implementation "eclipse-deps:org.eclipse.swt:+"
+    //        implementation "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
     // }
 
     //////////

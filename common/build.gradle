@@ -3,10 +3,10 @@ project.ext {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
-	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	implementation 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 }
 
 sourceSets {
@@ -39,10 +39,11 @@ artifacts {
     //archives javadocJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'common'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'common'
+//    }
+//}

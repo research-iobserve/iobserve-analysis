@@ -11,20 +11,20 @@ if (group.isEmpty()) {
 }
 
 dependencies {
-    compile project(":adaptationdata")
-    compile project(":stages")
+    implementation project(":adaptationdata")
+    implementation project(":stages")
 
-    clover 'org.openclover:clover:4.2.0'
+    clover 'org.openclover:clover:' + cloverVersion
 
-	compile 'com.beust:jcommander:1.72'
-    compile 'commons-daemon:commons-daemon:1.0.15'
-    compile 'javax.json:javax.json-api:1.0'
-    compile 'org.glassfish:javax.json:1.0.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile group: 'org.json', name: 'json', version: '20170516'
+	implementation 'com.beust:jcommander:1.72'
+    implementation 'commons-daemon:commons-daemon:1.0.15'
+    implementation 'javax.json:javax.json-api:1.0'
+    implementation 'org.glassfish:javax.json:1.0.4'
+    implementation 'commons-io:commons-io:2.5'
+    implementation 'org.json:json:20170516'
 
-    compile 'org.drools:drools-compiler:7.6.0.Final'
-    compile 'org.drools:drools-core:7.6.0.Final'
+    implementation 'org.drools:drools-compiler:7.6.0.Final'
+    implementation 'org.drools:drools-core:7.6.0.Final'
 }
 
 sourceSets {
@@ -68,10 +68,11 @@ test {
   //exclude '**/*ActionComputationTestConfig*' // otherwise clover fails with initialization error
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.adaptation'
-    }
-}
+// installing to maven is broken
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.adaptation'
+///    }
+//}

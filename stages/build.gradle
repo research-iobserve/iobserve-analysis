@@ -1,24 +1,24 @@
 sourceCompatibility = 1.8
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
-	compile project(":common")
-	compile project(":model")
+	implementation project(":common")
+	implementation project(":model")
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 
-	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	implementation 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	implementation 'net.sourceforge.teetime:teetime:3.0'
 		
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 	
-	compile 'org.tukaani:xz:1.6'
+	implementation 'org.tukaani:xz:1.6'
 	
-	testCompile 'org.powermock:powermock-core:1.6.1'
-	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
-	testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+	testImplementation 'org.powermock:powermock-core:1.6.1'
+	testImplementation 'org.powermock:powermock-module-junit4:1.6.1'
+	testImplementation 'org.powermock:powermock-api-mockito:1.6.1'
 
 }
 
@@ -59,12 +59,13 @@ artifacts {
     //archives javadocJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'stages'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'stages'
+//    }
+//}
 
 

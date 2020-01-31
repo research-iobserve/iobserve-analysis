@@ -15,24 +15,24 @@ configurations {
 def aspectjVersion = '1.8.2'
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
-	compile project(":common")
+	implementation project(":common")
 
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 
-	compile 'javax.interceptor:javax.interceptor-api:1.2'
-	compile 'javax.servlet:javax.servlet-api:3.1.0'
+	implementation 'javax.interceptor:javax.interceptor-api:1.2'
+	implementation 'javax.servlet:javax.servlet-api:3.1.0'
 	
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
-	compile 'com.neovisionaries:nv-i18n:1.20'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+	implementation 'com.neovisionaries:nv-i18n:1.20'
 		
 	ajc "org.aspectj:aspectjtools:$aspectjVersion"
-	compile "org.aspectj:aspectjrt:$aspectjVersion"
-	compile "org.aspectj:aspectjweaver:$aspectjVersion"	// for our custom AspectJ weaver (class: AspectJLoader)
+	implementation "org.aspectj:aspectjrt:$aspectjVersion"
+	implementation "org.aspectj:aspectjweaver:$aspectjVersion"	// for our custom AspectJ weaver (class: AspectJLoader)
 
-    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
 }
 
 clover {
@@ -84,11 +84,12 @@ task iajc(dependsOn: classes) {
     }   
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'monitoring'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'monitoring'
+//    }
+//}
 

@@ -4,17 +4,17 @@ apply plugin: 'java'
 mainClassName = 'org.iobserve.planning.PlanningMain'
 
 dependencies {
-	compile project(":adaptationdata")
-    compile project(":stages")
+	implementation project(":adaptationdata")
+    implementation project(":stages")
 
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
-    compile 'commons-daemon:commons-daemon:1.0.15'
-    compile "com.beust:jcommander:1.60"
-    compile 'javax.json:javax.json-api:1.0'
-    compile 'org.glassfish:javax.json:1.0.4'
-    compile 'commons-io:commons-io:2.5'
-    compile 'org.json:json:20170516'
+    implementation 'commons-daemon:commons-daemon:1.0.15'
+    implementation "com.beust:jcommander:1.60"
+    implementation 'javax.json:javax.json-api:1.0'
+    implementation 'org.glassfish:javax.json:1.0.4'
+    implementation 'commons-io:commons-io:2.5'
+    implementation 'org.json:json:20170516'
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
     // testCompile 'com.sun.net.httpserver:http:20070405'
@@ -35,10 +35,11 @@ test {
   exclude '**/service/updater/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.planning'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.planning'
+//    }
+//}

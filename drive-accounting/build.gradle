@@ -6,7 +6,8 @@ buildscript {
         maven {url "https://plugins.gradle.org/m2/"}
     }
     dependencies {
-    	classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
+//    	classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
+        classpath "io.freefair.gradle:aspectj-plugin:4.1.6"
     }
 }
 
@@ -14,7 +15,8 @@ project.ext {
     aspectjVersion = "1.8.2"
 }
 
-apply plugin: 'aspectj.gradle'
+apply plugin: "io.freefair.aspectj.base"
+// apply plugin: 'aspectj.gradle'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -29,30 +31,23 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
-configurations {
-    ajc
-    aspects
-    aspectCompile
-    compile{
-        extendsFrom aspects
-    }
+dependencies {
+	clover 'org.openclover:clover:' + cloverVersion
+	
+	implementation project(":stages")
+	
+	implementation 'com.beust:jcommander:' + jcommanderVersion
+	
+	// monitoring
+	//ajc "org.aspectj:aspectjtools:1.8.2" 
+	//implementation "org.aspectj:aspectjrt:1.8.2"
+	//implementation "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
+	
+	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
+	
 }
 
-dependencies {
-	clover 'org.openclover:clover:4.2.0'
-	
-	compile project(":stages")
-	
-	compile 'com.beust:jcommander:1.72'
-	
-		// monitoring
-	ajc "org.aspectj:aspectjtools:1.8.2" 
-	compile "org.aspectj:aspectjrt:1.8.2"
-	compile "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
-	
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
-	
-}
+
 
 clover {
 	report {
@@ -61,12 +56,13 @@ clover {
 	
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'drive-accounting'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'drive-accounting'
+//    }
+//}
 
 

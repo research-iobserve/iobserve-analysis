@@ -11,25 +11,25 @@ if (group.isEmpty()) {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
-	compile project(":adaptationdata")
-    compile project(":stages")
+	implementation project(":adaptationdata")
+    implementation project(":stages")
 
-	compile 'com.beust:jcommander:1.72'
-    compile 'commons-daemon:commons-daemon:1.0.15'
-    compile 'javax.json:javax.json-api:1.0'
-    compile 'org.glassfish:javax.json:1.0.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile group: 'org.json', name: 'json', version: '20170516'
+	implementation 'com.beust:jcommander:1.72'
+    implementation 'commons-daemon:commons-daemon:1.0.15'
+    implementation 'javax.json:javax.json-api:1.0'
+    implementation 'org.glassfish:javax.json:1.0.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    implementation group: 'org.json', name: 'json', version: '20170516'
 
 	// Choose one
-    compile 'io.kubernetes:client-java:1.0.0-beta3'
-    compile 'io.fabric8:kubernetes-client:3.1.10'
+    implementation 'io.kubernetes:client-java:1.0.0-beta3'
+    implementation 'io.fabric8:kubernetes-client:3.1.10'
     
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    // testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+    // testImplementation group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
 }
 
 clover {
@@ -47,10 +47,11 @@ test {
   exclude '**/service/updater/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.execution'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.execution'
+//    }
+//}

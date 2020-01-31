@@ -11,11 +11,11 @@ buildscript {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
-	compile project(":analysis") // behavior model data
+	implementation project(":analysis") // behavior model data
 
-	compile 'com.beust:jcommander:1.72'
+	implementation 'com.beust:jcommander:' + jcommanderVersion
 }
 
 // SHADOW
@@ -29,12 +29,13 @@ test {
   scanForTestClasses = false
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'response.time.calculator'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'response.time.calculator'
+//    }
+//}
 
 
