@@ -13,10 +13,10 @@ buildscript {
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 
-	implementation project(":analysis") // behavior model data
-	implementation project(":monitoring")
+	compile project(":analysis") // behavior model data
+	compile project(":monitoring")
 	
-	implementation 'com.beust:jcommander:1.72'
+	compile 'com.beust:jcommander:1.72'
 }
 
 // SHADOW

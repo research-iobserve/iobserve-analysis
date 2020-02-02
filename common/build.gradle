@@ -5,8 +5,8 @@ project.ext {
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 
-	implementation 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 }
 
 sourceSets {

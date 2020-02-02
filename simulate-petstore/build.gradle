@@ -5,10 +5,10 @@ mainClassName='org.iobserve.simulate.petstore.SimulatePetStoreMain'
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	implementation project(":common")
-	implementation project(":stages")
+	compile project(":common")
+	compile project(":stages")
 	
-	implementation 'com.beust:jcommander:1.72'
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

@@ -5,9 +5,9 @@ mainClassName='org.iobserve.repair.logs.RepairLogFileMain'
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	implementation project(":stages")
+	compile project(":stages")
 	
-	implementation 'com.beust:jcommander:1.72'
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

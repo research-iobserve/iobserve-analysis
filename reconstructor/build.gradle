@@ -5,8 +5,8 @@ mainClassName='org.iobserve.reconstructor.ReconstructorMain'
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	implementation project(":stages")
-	implementation 'com.beust:jcommander:1.72'
+	compile project(":stages")
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

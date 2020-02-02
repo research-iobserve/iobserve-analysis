@@ -212,8 +212,8 @@ def runtimeDeps = [
       'org.eclipse.help.base',
       'org.eclipse.help.ui',
       'org.eclipse.jdt',
-      'org.eclipse.jdt.implementationr.apt',
-      'org.eclipse.jdt.implementationr.tool',
+      'org.eclipse.jdt.compiler.apt',
+      'org.eclipse.jdt.compiler.tool',
       'org.eclipse.jdt.core',
       'org.eclipse.jdt.core.manipulation',
       'org.eclipse.jdt.debug',
@@ -411,50 +411,50 @@ def runtimeDeps = [
 ]
 
 dependencies {
-	implementation 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
+	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
 	
-	implementation 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
-	implementation 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
 
 // Actually, the following 9 dependencies should be resolved by goomph from a p2 repository 
 // but this sometimes caused the first clean build to fail (further builds succeed)
-//	implementation 'eclipse-deps:org.eclipse.osgi:+'
-//	implementation 'eclipse-deps:org.eclipse.core.jobs:+'
-//	implementation 'eclipse-deps:org.eclipse.core.runtime:+'
-//	implementation 'eclipse-deps:org.eclipse.core.resources:+'
-//	implementation 'eclipse-deps:org.eclipse.debug.core:+'
-//	implementation 'eclipse-deps:org.eclipse.emf.common:+'
-//	implementation 'eclipse-deps:org.eclipse.emf.ecore:+'
-//	implementation 'eclipse-deps:org.eclipse.equinox.app:+'
-//	implementation 'eclipse-deps:org.eclipse.equinox.common:+'
+//	compile 'eclipse-deps:org.eclipse.osgi:+'
+//	compile 'eclipse-deps:org.eclipse.core.jobs:+'
+//	compile 'eclipse-deps:org.eclipse.core.runtime:+'
+//	compile 'eclipse-deps:org.eclipse.core.resources:+'
+//	compile 'eclipse-deps:org.eclipse.debug.core:+'
+//	compile 'eclipse-deps:org.eclipse.emf.common:+'
+//	compile 'eclipse-deps:org.eclipse.emf.ecore:+'
+//	compile 'eclipse-deps:org.eclipse.equinox.app:+'
+//	compile 'eclipse-deps:org.eclipse.equinox.common:+'
 	
 	// Therefore, we resolve them from iobserve-repository instead
-	implementation 'extra:org.eclipse.osgi:3.12.50.v20170928-1321'
-	implementation 'extra:org.eclipse.core.jobs:3.9.1.v20170714-0547'
-	implementation 'extra:org.eclipse.core.runtime:3.13.0.v20170207-1030'
-	implementation 'extra:org.eclipse.core.resources:3.12.0.v20170417-1558'
-	implementation 'extra:org.eclipse.debug.core:3.11.0.v20170605-1534'
-	implementation 'extra:org.eclipse.emf.common:2.13.0.v20170609-0707'
-	implementation 'extra:org.eclipse.emf.ecore:2.13.0.v20170609-0707'
-	implementation 'extra:org.eclipse.equinox.app:1.3.400.v20150715-1528'
-	implementation 'extra:org.eclipse.equinox.common:3.9.0.v20170207-1454'
+	compile 'extra:org.eclipse.osgi:3.12.50.v20170928-1321'
+	compile 'extra:org.eclipse.core.jobs:3.9.1.v20170714-0547'
+	compile 'extra:org.eclipse.core.runtime:3.13.0.v20170207-1030'
+	compile 'extra:org.eclipse.core.resources:3.12.0.v20170417-1558'
+	compile 'extra:org.eclipse.debug.core:3.11.0.v20170605-1534'
+	compile 'extra:org.eclipse.emf.common:2.13.0.v20170609-0707'
+	compile 'extra:org.eclipse.emf.ecore:2.13.0.v20170609-0707'
+	compile 'extra:org.eclipse.equinox.app:1.3.400.v20150715-1528'
+	compile 'extra:org.eclipse.equinox.common:3.9.0.v20170207-1454'
 
-	implementation 'extra:de.uka.ipd.sdq.dsexplore:1.3.0.201709290946'
-	implementation 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
-	implementation 'extra:de.uka.ipd.sdq.simucomframework:4.1.0.201709290901'
-	implementation 'extra:de.uka.ipd.sdq.simulation:4.1.0.201709290901'
-	implementation 'extra:de.uka.ipd.sdq.workflow:2.1.1+'
-	implementation 'extra:de.uka.ipd.sdq.workflow.launchconfig:2.1.0+'
-	implementation 'extra:de.uka.ipd.sdq.workflow.mdsd:2.1.1+'
-	implementation 'extra:de.uka.ipd.sdq.workflow.ui:2.2.3.201709282207'
+	compile 'extra:de.uka.ipd.sdq.dsexplore:1.3.0.201709290946'
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	compile 'extra:de.uka.ipd.sdq.simucomframework:4.1.0.201709290901'
+	compile 'extra:de.uka.ipd.sdq.simulation:4.1.0.201709290901'
+	compile 'extra:de.uka.ipd.sdq.workflow:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.workflow.launchconfig:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.workflow.mdsd:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.workflow.ui:2.2.3.201709282207'
 	
-	implementation 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
-	implementation 'extra:org.palladiosimulator.edp2:2.0.0.201608091414'
-	implementation 'extra:org.palladiosimulator.edp2.dao:1.0.0.201608091414'
-	implementation 'extra:org.palladiosimulator.recorderframework:2.0.1.201603031355'
-	implementation 'extra:org.palladiosimulator.recorderframework.edp2:2.0.2.201603031355'
-	implementation 'extra:org.palladiosimulator.reliability:3.1.0.201511051309'
-	implementation 'extra:org.palladiosimulator.solver:3.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
+	compile 'extra:org.palladiosimulator.edp2:2.0.0.201608091414'
+	compile 'extra:org.palladiosimulator.edp2.dao:1.0.0.201608091414'
+	compile 'extra:org.palladiosimulator.recorderframework:2.0.1.201603031355'
+	compile 'extra:org.palladiosimulator.recorderframework.edp2:2.0.2.201603031355'
+	compile 'extra:org.palladiosimulator.reliability:3.1.0.201511051309'
+	compile 'extra:org.palladiosimulator.solver:3.0.0+'
 	
 	
 	// Note: Removed runtime deps to speed up building
@@ -473,7 +473,7 @@ dependencies {
 	//	runtime "extra:${it}:+"
 	//}
 		
-	testimplementation "junit:junit:${VER_JUNIT}"
+	testcompile "junit:junit:${VER_JUNIT}"
 }
 
 

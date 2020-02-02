@@ -34,16 +34,16 @@ repositories {
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	implementation project(":stages")
+	compile project(":stages")
 	
-	implementation 'com.beust:jcommander:' + jcommanderVersion
+	compile 'com.beust:jcommander:' + jcommanderVersion
 	
 	// monitoring
 	//ajc "org.aspectj:aspectjtools:1.8.2" 
-	//implementation "org.aspectj:aspectjrt:1.8.2"
-	//implementation "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
+	//compile "org.aspectj:aspectjrt:1.8.2"
+	//compile "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
 	
-	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
 	
 }
 

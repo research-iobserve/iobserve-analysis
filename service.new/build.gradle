@@ -4,12 +4,12 @@ targetCompatibility = 1.8
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 
-	implementation project(":common")
-	implementation project(":stages")
+	compile project(":common")
+	compile project(":stages")
 
-	implementation 'net.sourceforge.teetime:teetime:3.0'
+	compile 'net.sourceforge.teetime:teetime:3.0'
     	
-	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
 }
 
 sourceSets {

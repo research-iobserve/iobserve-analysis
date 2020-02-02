@@ -5,11 +5,11 @@ mainClassName='org.iobserve.rac.creator.RacCreatorMain'
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 
-	implementation project(":stages")
-	implementation project(":model")
+	compile project(":stages")
+	compile project(":model")
 	
-	implementation 'xml-apis:xml-apis:1.4.01'
-	implementation 'com.beust:jcommander:1.72'
+	compile 'xml-apis:xml-apis:1.4.01'
+	compile 'com.beust:jcommander:1.72'
 }
 
 clover {

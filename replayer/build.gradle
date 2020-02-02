@@ -5,9 +5,9 @@ mainClassName='org.iobserve.replayer.ReplayerMain'
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	implementation project(":stages")
+	compile project(":stages")
 	
-	implementation 'com.beust:jcommander:' + jcommanderVersion
+	compile 'com.beust:jcommander:' + jcommanderVersion
 }
 
 clover {
