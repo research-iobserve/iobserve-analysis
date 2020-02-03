@@ -3,12 +3,12 @@ apply plugin: 'application'
 mainClassName='org.iobserve.simulate.petstore.SimulatePetStoreMain'
 
 dependencies {
-	clover 'org.openclover:clover:' + cloverVersion
+	clover 'org.openclover:clover:$cloverVersion'
 	
 	compile project(":common")
 	compile project(":stages")
 	
-	compile 'com.beust:jcommander:1.72'
+	compile 'com.beust:jcommander:$jcommanderVersion'
 }
 
 clover {

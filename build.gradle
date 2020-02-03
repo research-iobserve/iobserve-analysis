@@ -169,6 +169,7 @@ subprojects {
         ignoreFailures = true
         showViolations = false
         configFile = new File(confDir, "checkstyle-rules.xml")
+        configDir = file(confDir)
         //configDirectory = new File(confDir)
     }
 

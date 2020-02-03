@@ -40,8 +40,8 @@ dependencies {
 	
 	// monitoring
 	//ajc "org.aspectj:aspectjtools:1.8.2" 
-	//compile "org.aspectj:aspectjrt:1.8.2"
-	//compile "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
+	compile "org.aspectj:aspectjrt:1.8.2"
+	compile "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
 	
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
 	
