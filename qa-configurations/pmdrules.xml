@@ -95,10 +95,7 @@
     </properties>
   </rule>
 
-  <!-- We want everything from braces.xml except WhileLoopsMustUseBraces -->
-  <rule ref="category/java/codestyle.xml/ForLoopsMustUseBraces"/>
-  <rule ref="category/java/codestyle.xml/IfElseStmtsMustUseBraces"/>
-  <rule ref="category/java/codestyle.xml/IfStmtsMustUseBraces"/>
-  <rule ref="category/java/codestyle.xml/WhileLoopsMustUseBraces"/>
+  <!-- We want everything from braces.xml -->
+  <rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
   
 </ruleset>

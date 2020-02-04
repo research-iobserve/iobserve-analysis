@@ -122,6 +122,11 @@ artifacts {
     //archives javadocJar
 }
 
+test {
+    maxHeapSize = "4096m"
+    jvmArgs "-XX:MaxPermSize=2560m"
+}
+
 // FIXME
 //install {
 //    repositories.mavenInstaller {
