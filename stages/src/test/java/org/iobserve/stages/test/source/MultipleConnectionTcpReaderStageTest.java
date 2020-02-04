@@ -52,6 +52,7 @@ public class MultipleConnectionTcpReaderStageTest {
      * @throws Exception
      *             on various error
      */
+    @Ignore
     @Test
     public void receiveConnections() throws Exception {
         final ITraceMetadataRewriter rewriter = new NoneTraceMetadataRewriter();
