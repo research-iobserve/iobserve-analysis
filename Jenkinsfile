@@ -23,11 +23,27 @@ pipeline {
           steps {
             sh './gradlew check'
           }
-	  post {
+          post {
             always {
-                recordIssues enabledForFailure: true, tool: checkStyle()
+              // Report results of static analysis tools
+              recordIssues(
+                enabledForFailure: true,
+                tools: [
+                  java(),
+                  javaDoc(),
+                  checkStyle(
+                    pattern: '**/build/reports/checkstyle/*.xml'
+                  ),
+                  pmdParser(
+                    pattern: '**/build/reports/pmd/*.xml'
+                  ),
+                  //spotBugs(
+                  //  pattern: '**/build/reports/spotbugs/*.xml'
+                  //)
+                ]
+              )
             }
-          }
+
         }
     }
 }

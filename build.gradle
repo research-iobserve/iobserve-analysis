@@ -163,14 +163,12 @@ subprojects {
         ruleSetFiles = files(resolveRelativeToParent(confDir, 'pmdrules.xml'))
     }
 
-    // check.dependsOn(':cpdCheck')
     checkstyle {
         toolVersion = checkstyleVersion
         ignoreFailures = true
         showViolations = false
         configFile = new File(confDir, "checkstyle-rules.xml")
-        //configDir = file(confDir)
-        configDirectory = file(confDir) //new File(confDir)
+        configDirectory = file(confDir)
     }
 
     tasks.withType(Pmd) {
@@ -182,7 +180,7 @@ subprojects {
 
     tasks.withType(Checkstyle) {
         reports {
-            xml.enabled true
+            xml.enabled = true
         }
     }
 
