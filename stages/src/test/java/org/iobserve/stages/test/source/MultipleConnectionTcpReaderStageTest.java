@@ -19,6 +19,7 @@ import org.iobserve.stages.source.ITraceMetadataRewriter;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;

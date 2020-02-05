@@ -127,7 +127,7 @@ artifacts {
 
 test {
     maxHeapSize = "4096m"
-    jvmArgs "-XX:MaxPermSize=2560m"
+    jvmArgs = ['-Xms4048m', '-Xmx8g']
 }
 
 // FIXME

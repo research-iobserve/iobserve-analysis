@@ -42,16 +42,18 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
     println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
-apply plugin: 'eclipse'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'com.bmuschko.clover'
+plugins {
+    id 'eclipse'
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.bmuschko.clover'
+}
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
         memoryMaximumSize = '4g'
-        jvmArgs = ['-XX:MaxPermSize=4048m', '-Xms4048m', '-Xmx8g']
+        jvmArgs = ['-Xms4048m', '-Xmx8g']
     }
 }
 
@@ -78,10 +80,14 @@ clover {
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'eclipse'
-    apply plugin: 'com.bmuschko.clover'
+    plugins {
+       id 'java'
+       id 'maven-publish'
+       id 'eclipse'
+       id 'com.bmuschko.clover'
+       id 'pmd'
+       id 'checkstyle'
+    }
     
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -96,10 +102,11 @@ subprojects {
                artifact()
             }
         }
-	maven {url "https://mvnrepository.com/artifact/org.hyperic/sigar"}
-
+        
         mavenCentral()
         jcenter()
+        
+	maven {url "https://mvnrepository.com/artifact/org.hyperic/sigar"}
         maven {url "https://repo.eclipse.org/content/groups/releases/" }
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -148,8 +155,6 @@ subprojects {
     }
 
     // --- quality assurance plugins ---
-
-    apply plugin: 'pmd'
     pmd {
         // the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
         toolVersion = pmdAndCpdVersion
@@ -162,8 +167,6 @@ subprojects {
     }
 
     // check.dependsOn(':cpdCheck')
-
-    apply plugin: 'checkstyle'
     checkstyle {
         toolVersion = checkstyleVersion
         ignoreFailures = true
@@ -172,16 +175,6 @@ subprojects {
         //configDir = file(confDir)
         configDirectory = file(confDir) //new File(confDir)
     }
-
-    // apply plugin: 'findbugs'
-    // findbugs {        
-    //    toolVersion = fbVersion
-    //    ignoreFailures = true
-    //    effort = "max"
-    //    reportLevel = "low"
-
-    //    excludeFilter = resolveRelativeToParent(dirConfig, 'fb-filter.xml')
-    //}
 
     tasks.withType(Pmd) {
         reports {
@@ -195,13 +188,6 @@ subprojects {
             xml.enabled true
         }
     }
-
-//    tasks.withType(FindBugs) {
-//        reports {
-//            xml.enabled = true
-//            html.enabled = false
-//        }
-//    }
 
     ext {
         appName = "org.iobserve"
