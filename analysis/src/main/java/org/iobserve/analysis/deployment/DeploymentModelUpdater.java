@@ -86,7 +86,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
     @Override
     protected void execute(final PCMDeployedEvent event) throws NodeLookupException, InvocationException, DBException {
         DeploymentLock.lock();
-        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_ENTRY);
+        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_ENTRY);
+
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
                 event.getAssemblyContext(), event.getResourceContainer(), event.getService());
@@ -135,7 +136,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         }
 
         // signal deployment update
-        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_EXIT);
+        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_EXIT);
+
         DeploymentLock.unlock();
         this.deployedNotifyOutputPort.send(event);
     }
