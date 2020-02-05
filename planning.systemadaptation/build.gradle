@@ -14,7 +14,7 @@ repositories {
 // In this section you declare the dependencies for your production and test code
 dependencies {
 
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
     compile 'org.eclipse.emf:org.eclipse.emf.common:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.12.0+'
@@ -59,10 +59,11 @@ artifacts {
     archives sourcesJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve.planning'
-        pom.artifactId = 'systemadaptation'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve.planning'
+//        pom.artifactId = 'systemadaptation'
+//    }
+//}

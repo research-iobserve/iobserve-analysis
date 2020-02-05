@@ -32,7 +32,7 @@ import kieker.tools.common.ParameterEvaluationUtils;
  *
  * @author Reiner Jung
  */
-public final class SplitterMain extends AbstractService<SimpleSplitterConfiguration, SplitterMain> {
+public final class SplitterMain extends AbstractService<PipelineConfiguration, SplitterMain> {
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
@@ -64,9 +64,9 @@ public final class SplitterMain extends AbstractService<SimpleSplitterConfigurat
     }
 
     @Override
-    protected SimpleSplitterConfiguration createTeetimeConfiguration() throws ConfigurationException {
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
+            return new PipelineConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

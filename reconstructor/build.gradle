@@ -3,7 +3,7 @@ apply plugin: 'application'
 mainClassName='org.iobserve.reconstructor.ReconstructorMain'
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
 	compile project(":stages")
 	compile 'com.beust:jcommander:1.72'
@@ -16,12 +16,13 @@ clover {
 	
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'reconstructor'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'reconstructor'
+//    }
+//}
 
 

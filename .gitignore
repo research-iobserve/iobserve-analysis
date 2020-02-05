@@ -148,3 +148,8 @@ model/build.properties
 model/plugin.properties
 model/META-INF/
 model/plugin.xml
+
+analysis/testdb/
+common/src-gen/
+model/testdb/
+

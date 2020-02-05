@@ -60,14 +60,20 @@ public class CalculateResponseTimeStage extends AbstractConsumerStage<IFlowRecor
             this.outputPort.send(this.output);
         } else if (element instanceof AfterOperationEvent) {
             final AfterOperationEvent event = (AfterOperationEvent) element;
-            final long responseTime = event.getTimestamp() - this.map.remove(event.getTraceId());
-            this.output.clear();
-            this.output.put("time", event.getTimestamp());
-            this.output.put("event-type", "AfterOperationEvent");
-            this.output.put("operation", event.getOperationSignature());
-            this.output.put("task", event.getClassSignature());
-            this.output.put("response-time", responseTime);
-            this.outputPort.send(this.output);
+            final Long beforeTime = this.map.remove(event.getTraceId());
+            if (beforeTime != null) {
+                final long responseTime = event.getTimestamp() - beforeTime;
+                this.output.clear();
+                this.output.put("time", event.getTimestamp());
+                this.output.put("event-type", "AfterOperationEvent");
+                this.output.put("operation", event.getOperationSignature());
+                this.output.put("task", event.getClassSignature());
+                this.output.put("response-time", responseTime);
+                this.outputPort.send(this.output);
+            } else {
+                this.logger.error("Event missing for AfterOperationEvent {} {} {}", event.getTimestamp(),
+                        event.getTraceId(), event.getOperationSignature());
+            }
         }
     }
 

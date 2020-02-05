@@ -473,7 +473,7 @@ dependencies {
 	//	runtime "extra:${it}:+"
 	//}
 		
-	testCompile "junit:junit:${VER_JUNIT}"
+	testcompile "junit:junit:${VER_JUNIT}"
 }
 
 

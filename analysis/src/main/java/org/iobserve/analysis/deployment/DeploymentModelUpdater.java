@@ -20,9 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;

@@ -42,7 +42,7 @@ public final class SimulatePetStoreMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimulatePetStoreMain.class);
 
     private static IMonitoringController controller = MonitoringController.getInstance();
-    private static Execution<ReconfigurationReceiverTeetimeConfiguration> execution;
+    private static Execution<PipelineConfiguration> execution;
 
     private SimulatePetStoreMain() {
     }
@@ -54,7 +54,7 @@ public final class SimulatePetStoreMain {
      *             on thread interruption
      */
     public static void main(final String[] args) throws InterruptedException {
-        final SimulatePetStoreConfiguration configuration = new SimulatePetStoreConfiguration();
+        final Settings configuration = new Settings();
         final JCommander commander = new JCommander(configuration);
 
         commander.parse(args);
@@ -73,13 +73,13 @@ public final class SimulatePetStoreMain {
         }
     }
 
-    private static void startReconfigurationListener(final SimulatePetStoreConfiguration configuration) {
+    private static void startReconfigurationListener(final Settings configuration) {
         SimulatePetStoreMain.execution = new Execution<>(
-                new ReconfigurationReceiverTeetimeConfiguration(configuration));
+                new PipelineConfiguration(configuration));
         SimulatePetStoreMain.execution.executeNonBlocking();
     }
 
-    private static void executeModel(final SimulationModel model, final SimulatePetStoreConfiguration configuration)
+    private static void executeModel(final SimulationModel model, final Settings configuration)
             throws InterruptedException {
         // initial deploy all.
         SimulatePetStoreMain.LOGGER.info("Initial deployment");
@@ -125,7 +125,7 @@ public final class SimulatePetStoreMain {
         SimulatePetStoreMain.controller.newMonitoringRecord(deployEvent);
     }
 
-    private static SimulationModel createModel(final SimulatePetStoreConfiguration configuration) {
+    private static SimulationModel createModel(final Settings configuration) {
         final SimulationModel model = new SimulationModel(configuration.getDelay(), configuration.getLocations(),
                 configuration.getIterations());
 

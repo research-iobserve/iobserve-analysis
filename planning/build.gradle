@@ -1,23 +1,70 @@
-apply plugin: 'application'
-apply plugin: 'java'
+plugins {
+	id 'java'
+	id 'application'
+}
 
 mainClassName = 'org.iobserve.planning.PlanningMain'
 
 dependencies {
 	compile project(":adaptationdata")
-    compile project(":stages")
+   	compile project(":stages")
+   	compile project(":model")
+   	compile project(":model")
 
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
+
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	compile 'net.sourceforge.teetime:teetime:3.0'
 
     compile 'commons-daemon:commons-daemon:1.0.15'
-    compile "com.beust:jcommander:1.60"
+    compile "com.beust:jcommander:" + jcommanderVersion
     compile 'javax.json:javax.json-api:1.0'
     compile 'org.glassfish:javax.json:1.0.4'
     compile 'commons-io:commons-io:2.5'
     compile 'org.json:json:20170516'
+    
+    compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
+	compile 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
+	compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
+	
+		
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 
-    // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    // testCompile 'com.sun.net.httpserver:http:20070405'
+	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
+	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
+	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
+	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.completions:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.resultdecorator:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.quality:1.0.0+'
+	compile 'extra:org.palladiosimulator.solver:3.0.0+'
+	compile 'extra:org.palladiosimulator.solver.context:2.0.0+'
+
+	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
+	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.probfunction.math:2.0.2+'
+	compile 'extra:de.uka.ipd.sdq.pcm.cost:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.pcm.designdecision:1.3.0+'
+	compile 'extra:de.uka.ipd.sdq.featuremodel:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.tcfmoop:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.dsexplore.qml:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.workflow.launchconfig:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.workflow:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.workflow.mdsd:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.errorhandling:1.0.0+'
+
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
+	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
+	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
 }
 
 clover {
@@ -35,10 +82,11 @@ test {
   exclude '**/service/updater/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.planning'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.planning'
+//    }
+//}

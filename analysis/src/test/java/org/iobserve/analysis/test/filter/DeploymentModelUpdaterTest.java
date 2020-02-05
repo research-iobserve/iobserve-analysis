@@ -66,15 +66,17 @@ public class DeploymentModelUpdaterTest {
     /**
      * Test method for
      * {@link org.iobserve.analysis.deployment.DeploymentModelUpdater#execute(org.iobserve.analysis.deployment.data.PCMDeployedEvent)}.
-     * 
+     *
      * @throws DBException
      */
     @Test
     public void testExecutePCMDeployedEvent() throws DBException {
+        java.lang.System.err.println("AAAAAAAAAAAAAAAAAAAAAAa");
         this.initializationDatabase();
+        java.lang.System.err.println("q alloc");
         final Allocation initDbAllocation = this.allocationResource.getModelRootNode(Allocation.class,
                 AllocationPackage.Literals.ALLOCATION);
-
+        java.lang.System.err.println("deployer filter");
         final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(this.correspondenceResource,
                 this.allocationResource);
 
@@ -104,19 +106,25 @@ public class DeploymentModelUpdaterTest {
     }
 
     private void initializationDatabase() throws DBException {
+        java.lang.System.err.println("init rep");
         this.prepareGraph(RepositoryPackage.eINSTANCE, "testExecutePCMDeployedEvent-repository")
                 .storeModelPartition(this.repository);
+        java.lang.System.err.println("init sys");
         this.prepareGraph(SystemPackage.eINSTANCE, "testExecutePCMDeployedEvent-system")
                 .storeModelPartition(this.system);
+        java.lang.System.err.println("init env");
         this.prepareGraph(ResourceenvironmentPackage.eINSTANCE, "testExecutePCMDeployedEvent-resource")
                 .storeModelPartition(this.resourceEnvironment);
-
+        java.lang.System.err.println("prep correspondence");
         this.correspondenceResource = this.prepareGraph(CorrespondencePackage.eINSTANCE,
                 "testExecutePCMDeployedEvent-correspondence");
+        java.lang.System.err.println("store corr");
         this.correspondenceResource.storeModelPartition(this.correspondenceModel);
-
+        java.lang.System.err.println("prep alloc");
         this.allocationResource = this.prepareGraph(AllocationPackage.eINSTANCE, "testExecutePCMDeployedEvent-package");
+        java.lang.System.err.println("store alloc");
         this.allocationResource.storeModelPartition(this.allocation);
+        java.lang.System.err.println("init complete.");
     }
 
     /**

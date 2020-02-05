@@ -21,7 +21,7 @@ package org.iobserve.monitoring.sampler.geolocation;
  * @author unknown
  *
  */
-public final class GeoLocationSamplerFactory {
+public final class GeoLocationSamplerFactory { // NOPMD its a factory
 
     private GeoLocationSamplerFactory() {
         // factory constructor

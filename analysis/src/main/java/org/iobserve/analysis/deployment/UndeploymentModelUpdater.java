@@ -20,9 +20,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.AnalysisExperimentLoggingUtils;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -69,6 +67,8 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
     protected void execute(final PCMUndeployedEvent event) throws DBException {
         DeploymentLock.lock();
         ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.UNDEPLOYMENT, ObservationPoint.MODEL_UPDATE_ENTRY);
+
+
         this.logger.debug("Undeployment assemblyContext={} resourceContainer={}", event.getAssemblyContext(),
                 event.getResourceContainer());
         final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
