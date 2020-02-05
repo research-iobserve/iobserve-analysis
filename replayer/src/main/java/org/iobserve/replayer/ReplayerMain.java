@@ -30,12 +30,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  */
-public final class ReplayerMain extends AbstractService<ReplayerTeetimeConfiguration, ReplayerParameter> {
+public final class ReplayerMain extends AbstractService<PiplineConfiguration, Settings> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplayerMain.class);
 
-    private ReplayerTeetimeConfiguration configuration;
-    private final ReplayerParameter parameter = new ReplayerParameter();
+    private PiplineConfiguration configuration;
+    private final Settings parameter = new Settings();
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -75,8 +75,8 @@ public final class ReplayerMain extends AbstractService<ReplayerTeetimeConfigura
     }
 
     @Override
-    protected ReplayerTeetimeConfiguration createTeetimeConfiguration() {
-        this.configuration = new ReplayerTeetimeConfiguration(this.parameter);
+    protected PiplineConfiguration createTeetimeConfiguration() {
+        this.configuration = new PiplineConfiguration(this.parameter);
         return this.configuration;
     }
 

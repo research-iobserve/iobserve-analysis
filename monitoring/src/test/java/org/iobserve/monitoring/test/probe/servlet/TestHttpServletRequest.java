@@ -273,8 +273,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
-
-        return null;
+        return new Cookie[0];
     }
 
     @Override

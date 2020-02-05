@@ -32,7 +32,7 @@ import kieker.tools.common.ParameterEvaluationUtils;
  *
  * @author Reiner Jung
  */
-public final class ReconstructorMain extends AbstractService<ReconstructorConfiguration, ReconstructorMain> {
+public final class ReconstructorMain extends AbstractService<PipelineConfiguration, ReconstructorMain> {
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
@@ -57,8 +57,8 @@ public final class ReconstructorMain extends AbstractService<ReconstructorConfig
     }
 
     @Override
-    protected ReconstructorConfiguration createTeetimeConfiguration() throws ConfigurationException {
-        return new ReconstructorConfiguration(this.kiekerConfiguration);
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        return new PipelineConfiguration(this.kiekerConfiguration);
     }
 
     @Override

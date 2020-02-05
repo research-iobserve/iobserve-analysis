@@ -3,11 +3,11 @@ apply plugin: 'application'
 mainClassName='org.iobserve.splitter.SplitterMain'
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover "org.openclover:clover:$cloverVersion"
 
 	compile project(":stages")
 	
-	compile 'com.beust:jcommander:1.72'
+	compile "com.beust:jcommander:${jcommanderVersion}"
 }
 
 clover {
@@ -17,12 +17,13 @@ clover {
 	
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'splitter'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'splitter'
+//    }
+//}
 
 

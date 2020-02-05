@@ -17,8 +17,9 @@ package org.iobserve.rac.creator;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,8 +53,8 @@ public class ModelMappingReader {
         try {
             final Map<String, String> systemMapping = new HashMap<>();
 
-            final FileReader reader = new FileReader(this.mappingFile);
-            final BufferedReader in = new BufferedReader(reader);
+            final BufferedReader in = Files.newBufferedReader(this.mappingFile.toPath(), StandardCharsets.UTF_8);
+
             String line = in.readLine();
             while (line != null) {
                 final String[] mapping = line.split(" - ");

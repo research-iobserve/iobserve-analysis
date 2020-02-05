@@ -1,28 +1,27 @@
-project.ext {
-	aspectjVersion = '1.8.12'
-}
-
-
 buildscript {
     repositories {
-    	// SHADOW
-    	jcenter()
-    	maven {url "https://plugins.gradle.org/m2/"}
+        // SHADOW
+        jcenter()
+        maven {url "https://plugins.gradle.org/m2/"}
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
         maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
     }
  
     dependencies {
-        //classpath "nl.eveoh:gradle-aspectj:1.6"
         classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
     }
 }
 
-// SHADOW
-//apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+	id 'java'
+	id 'application'
+	// id 'com.github.johnrengelman.shadow'
+}
+
+project.ext {
+	aspectjVersion = '1.8.12'
+}
 
 
 mainClassName = 'org.iobserve.analysis.AnalysisMain'
@@ -37,19 +36,20 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 	
 	// project dependencies
 	compile project(":common")
 	compile project(":stages")
 	compile project(":model")
 
+	// need as model provides test data for models
 	testCompile project(':model').sourceSets.test.output
 		
 	compile project(":planning.systemadaptation")
 	compile project(":adaptationdata")
 
-	compile 'com.beust:jcommander:1.72'
+	compile "com.beust:jcommander:$jcommanderVersion"
 
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'commons-io:commons-io:2.5'
@@ -61,7 +61,7 @@ dependencies {
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	compile 'net.sourceforge.teetime:teetime:3.0'
 
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
@@ -118,7 +118,7 @@ dependencies {
 	compile 'org.neo4j:neo4j:3.2.0'
 	
 	compile 'org.nanohttpd:nanohttpd:2.3.0'
-	
+
 	testCompile 'junit:junit:4.12'
   
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
@@ -171,16 +171,20 @@ artifacts {
 }
 
 test {
+    maxHeapSize = "4096m"
+    jvmArgs "-XX:MaxPermSize=2560m"
+
     scanForTestClasses=true
 
 	exclude '**/org/iobserve/analysis/service/updater/*AllocationVisualizationStageTest.class'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'analysis'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'analysis'
+//    }
+//}
 
