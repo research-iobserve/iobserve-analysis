@@ -121,4 +121,3 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
     }
 
 }
-
