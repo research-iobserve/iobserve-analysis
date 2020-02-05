@@ -18,7 +18,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-clover-plugin:' + cloverPluginVersion
+        classpath "com.bmuschko:gradle-clover-plugin:$cloverPluginVersion"
         classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
          
         ////////// Goomph //////////      
@@ -34,7 +34,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'com.bmuschko.clover'
+    id 'com.bmuschko.clover' version "$cloverPluginVersion"
 }
 
 // checking the presence of an Eclipse API baseline repositorsy
@@ -78,14 +78,13 @@ clover {
 }
 
 subprojects {
-    plugins {
-       id 'java'
-       id 'maven-publish'
-       id 'eclipse'
-       id 'com.bmuschko.clover'
-       id 'pmd'
-       id 'checkstyle'
-    }
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'eclipse'
+    apply plugin: 'com.bmuschko.clover'
+    apply plugin: 'pmd'
+    apply plugin: 'checkstyle'
+    
     
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
