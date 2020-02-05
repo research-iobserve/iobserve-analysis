@@ -1,7 +1,5 @@
 buildscript {
     repositories {
-        maven {url project.properties['api.baseline']}
-
         mavenCentral()
         jcenter()
         
@@ -31,6 +29,14 @@ buildscript {
     }
 }
 
+plugins {
+    id 'eclipse'
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.bmuschko.clover'
+}
+
 // checking the presence of an Eclipse API baseline repositorsy
 if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {
     System.err.println("Cannot find an Eclipse API baseline repository")
@@ -40,14 +46,6 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
     System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
 } else {        
     println "iObserve API baseline repository is at: " + project.properties['api.baseline']
-}
-
-plugins {
-    id 'eclipse'
-    id 'java'
-    id 'maven-publish'
-    id 'signing'
-    id 'com.bmuschko.clover'
 }
 
 tasks.withType(GroovyCompile) {
