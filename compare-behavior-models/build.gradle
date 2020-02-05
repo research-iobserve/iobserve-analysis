@@ -1,5 +1,7 @@
-apply plugin: 'application'
-apply plugin: 'java'
+plugins {
+   id 'java'
+   id 'application'
+}
 
 mainClassName='org.iobserve.compare.behavior.models.ComparisonMain'
 
@@ -21,11 +23,11 @@ dependencies {
 }
 
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'collector'
-    }
-}
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'collector'
+//    }
+//}
 

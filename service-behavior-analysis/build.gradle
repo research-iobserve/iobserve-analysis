@@ -1,5 +1,7 @@
-apply plugin: 'application'
-apply plugin: 'java'
+plugins {
+  id 'java'
+  id 'application'
+}
 
 mainClassName='org.iobserve.service.behavior.analysis.BehaviorAnalysisServiceMain'
 
@@ -11,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover "org.openclover:clover:$cloverVersion"
 	
 	compile project(":stages")
 	compile project(":analysis")
@@ -37,11 +39,11 @@ clover {
 }
 
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'collector'
-    }
-}
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'collector'
+//    }
+//}
 
