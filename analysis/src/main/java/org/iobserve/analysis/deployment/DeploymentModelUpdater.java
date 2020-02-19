@@ -21,6 +21,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.correspondence.AllocationEntry;
 import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
@@ -30,6 +32,7 @@ import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
+import org.iobserve.stages.data.ExperimentLoggingUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -86,7 +89,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
     @Override
     protected void execute(final PCMDeployedEvent event) throws NodeLookupException, InvocationException, DBException {
         DeploymentLock.lock();
-        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_ENTRY);
+        ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT,
+                ObservationPoint.MODEL_UPDATE_ENTRY);
 
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
@@ -136,7 +140,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         }
 
         // signal deployment update
-        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_EXIT);
+        ExperimentLoggingUtils.logEvent(event.getTimestamp(), EventTypes.DEPLOYMENT,
+                ObservationPoint.MODEL_UPDATE_EXIT);
 
         DeploymentLock.unlock();
         this.deployedNotifyOutputPort.send(event);
