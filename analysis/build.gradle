@@ -39,45 +39,48 @@ dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
 	// project dependencies
-	compile project(":common")
-	compile project(":stages")
-	compile project(":model")
-
-	// need as model provides test data for models
-	testCompile project(':model').sourceSets.test.output
+	api project(":common")
+	api project(":stages")
+	api project(":model")
 		
-	compile project(":planning.systemadaptation")
-	compile project(":adaptationdata")
+	implementation project(":planning.systemadaptation")
+	implementation project(":adaptationdata")
 
-	compile "com.beust:jcommander:$jcommanderVersion"
+	implementation "com.beust:jcommander:$jcommanderVersion"
 
-	compile 'javax.json:javax.json-api:1.0'
-	compile 'commons-io:commons-io:2.5'
+	implementation 'javax.json:javax.json-api:1.0'
+	api 'commons-io:commons-io:2.5'
 
-	compile 'org.glassfish:javax.json:1.1.2'
-	compile 'org.json:json:20180130'
+	implementation 'org.glassfish:javax.json:1.1.2'
+	implementation 'org.json:json:20180130'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 
-	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.sourceforge.teetime:teetime:3.0'
+	implementation 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	implementation 'net.sourceforge.teetime:teetime:3.0'
 
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	implementation 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
-	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
-	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
-	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
-	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
-	compile 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
-	compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	implementation 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
+	implementation 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
+	implementation 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
 
 	compile 'org.apache.jclouds:jclouds-all:2.0.1+'
 		
 	compile 'org.antlr:antlr-runtime:3.5.2' 
 
 	compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
-		
+
+	compile 'org.neo4j:neo4j:3.2.0'
+	
+	compile 'org.nanohttpd:nanohttpd:2.3.0'
+
+	compile 'com.neovisionaries:nv-i18n:1.20'
+			
 	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 
 	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
@@ -115,20 +118,16 @@ dependencies {
 
 	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
 
-	compile 'org.neo4j:neo4j:3.2.0'
-	
-	compile 'org.nanohttpd:nanohttpd:2.3.0'
+	// need as model provides test data for models
+	testImplementation project(':model').sourceSets.test.output
 
-	testCompile 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.12'
   
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
-	testCompile 'javax.json:javax.json-api:1.0'
-	testCompile 'org.powermock:powermock-core:1.6.1'
-	testCompile 'org.powermock:powermock-module-junit4:1.6.1'
-	testCompile 'org.powermock:powermock-api-mockito:1.6.1'
-	
-	
-	compile 'com.neovisionaries:nv-i18n:1.20'
+	testImplementation 'org.hamcrest:hamcrest-all:1.3'
+	testImplementation 'javax.json:javax.json-api:1.0'
+	testImplementation 'org.powermock:powermock-core:1.6.1'
+	testImplementation 'org.powermock:powermock-module-junit4:1.6.1'
+	testImplementation 'org.powermock:powermock-api-mockito:1.6.1'
 }
 
 sourceSets {

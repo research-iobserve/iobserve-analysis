@@ -352,7 +352,6 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(sessionMatcher.getOutputPort(), behavior.getSessionEventInputPort());
 
             if (configuration.getBooleanProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING_SINK)) {
-                // TODO needs visualization trigger
                 AnalysisConfiguration.LOGGER.warn("Configuration for behavior sink missing.");
             }
         }

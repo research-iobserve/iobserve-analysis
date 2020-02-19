@@ -42,6 +42,8 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class for starting the iObserve application.
@@ -53,6 +55,8 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  * @since 0.0.1
  */
 public final class AnalysisMain extends AbstractService<AnalysisConfiguration, AnalysisSettings> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /**
      * Default constructor.
@@ -104,7 +108,6 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
     @Override
     protected AnalysisConfiguration createTeetimeConfiguration() throws ConfigurationException {
 
-        // TODO fix ModelResource types add Types for generics
         /** Configure model handling. */
         if (this.parameterConfiguration.isPcmFeature()) {
             try {
@@ -157,20 +160,10 @@ public final class AnalysisMain extends AbstractService<AnalysisConfiguration, A
                         resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
                         usageModelResource, correspondenceModelResource);
             } catch (final IOException e) {
-                // TODO should be replaced by logger
-                java.lang.System.err.println("Cannot load all models " + e.getLocalizedMessage()); // NOPMD
-                                                                                                   // pmd
-                                                                                                   // bug,
-                                                                                                   // FQN
-                                                                                                   // required
+                AnalysisMain.LOGGER.error("Cannot load all models {}", e.getLocalizedMessage());
                 return null;
             } catch (final DBException e) {
-                // TODO should be replaced by logger
-                java.lang.System.err.println("Cannot store all models in DB " + e.getLocalizedMessage()); // NOPMD
-                                                                                                          // pmd
-                                                                                                          // bug,
-                                                                                                          // FQN
-                                                                                                          // required
+                AnalysisMain.LOGGER.error("Cannot store all models in DB {}", e.getLocalizedMessage());
                 return null;
             }
         } else {

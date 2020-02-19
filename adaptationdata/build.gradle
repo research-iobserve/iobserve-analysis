@@ -3,33 +3,33 @@ sourceCompatibility = 1.8
 dependencies {
 	clover 'org.openclover:clover:' + cloverVersion
 	
-	compile project(":common")
-	compile project(":model")
-	compile project(":planning.systemadaptation")
+	implementation project(":common")
+	implementation project(":model")
+	api project(":planning.systemadaptation")
 
-	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
-	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
-	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
-	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
-	compile 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
-	compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	implementation 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+	implementation 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
+	implementation 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
+	implementation 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
 
-	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
-	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
-	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
-	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
-	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
-	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
-	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
+	implementation 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	implementation 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	implementation 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
+	implementation 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	implementation 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
+	implementation 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
+	implementation 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
 
-	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	implementation 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 		
-	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
-	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
-	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
-	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
+	implementation 'extra:org.palladiosimulator.pcm:4.0.2+'
+	implementation 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
+	implementation 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
+	implementation 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
 
-	compile 'com.neovisionaries:nv-i18n:1.20'
+	implementation 'com.neovisionaries:nv-i18n:1.20'
 }
 
 clover {

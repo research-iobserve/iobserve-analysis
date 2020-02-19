@@ -51,6 +51,7 @@ public class PiplineConfiguration extends Configuration {
         final EventPropertyCounter<TraceMetadata, String, Data> counter = new EventPropertyCounter<>(
                 new IPropertySelector<TraceMetadata, Data>() {
 
+                    @SuppressWarnings("unchecked")
                     @Override
                     public String match(final TraceMetadata input) {
                         return input.getSessionId();

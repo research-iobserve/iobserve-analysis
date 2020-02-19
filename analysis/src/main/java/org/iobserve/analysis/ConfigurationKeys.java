@@ -254,7 +254,7 @@ public final class ConfigurationKeys { // NOPMD is not a conventional utility cl
     public static final String LMETHOD_EVAL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.lmethodEvalStrategy";
 
     /**
-     * Service Behavior Analysis
+     * Service Behavior Analysis.
      */
     public static final String GED_PREFIX = "org.iobserve.service.behavior.analysis.";
 
@@ -285,7 +285,7 @@ public final class ConfigurationKeys { // NOPMD is not a conventional utility cl
     public static final String EVENT_GROUP_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "eventGroupInsertionCost";
 
     /**
-     * Compare Behavior Models
+     * Compare Behavior Models.
      */
 
     public static final String COMPARISION_OUTPUT_TYPE = "org.iobserve.compare.behavior.models.outputType";
