@@ -42,7 +42,6 @@ public class Alarms implements IErrorMessages {
         return this.messages;
     }
 
-    @Override
     public void setMessages(final List<String> messages) {
         this.messages = messages;
     }

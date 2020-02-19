@@ -1,5 +1,7 @@
-apply plugin: 'application'
-apply plugin: 'java'
+plugins {
+   id 'java'
+   id 'application'
+}
 
 mainClassName = 'org.iobserve.adaptation.AdaptationMain'
 
@@ -11,20 +13,32 @@ if (group.isEmpty()) {
 }
 
 dependencies {
+    clover "org.openclover:clover:$cloverVersion"
+    
     compile project(":adaptationdata")
-    compile project(":service")
     compile project(":stages")
+    compile project(":model")
+    compile project(":planning")
 
-    clover 'org.openclover:clover:4.2.0'
-
+    compile "com.beust:jcommander:$jcommanderVersion"
+    
     compile 'commons-daemon:commons-daemon:1.0.15'
     compile 'javax.json:javax.json-api:1.0'
     compile 'org.glassfish:javax.json:1.0.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile group: 'org.json', name: 'json', version: '20170516'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.json:json:20170516'
 
     compile 'org.drools:drools-compiler:7.6.0.Final'
     compile 'org.drools:drools-core:7.6.0.Final'
+
+    compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+    compile 'net.sourceforge.teetime:teetime:3.0'
+	
+    compile 'org.apache.jclouds:jclouds-all:2.0.1+' // this might be obsolete in model
+		
+    compile 'org.antlr:antlr-runtime:3.5.2' 
+
+    compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
 }
 
 sourceSets {
@@ -68,10 +82,11 @@ test {
   //exclude '**/*ActionComputationTestConfig*' // otherwise clover fails with initialization error
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.adaptation'
-    }
-}
+// installing to maven is broken
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.adaptation'
+///    }
+//}

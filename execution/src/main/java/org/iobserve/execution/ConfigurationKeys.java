@@ -21,7 +21,7 @@ package org.iobserve.execution;
  * @author Lars Bluemke
  *
  */
-public final class ConfigurationKeys {
+public final class ConfigurationKeys { // NOPMD keys is the correct term here
 
     /**
      * Input port for receiving the execution plan via TCP.

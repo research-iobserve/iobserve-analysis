@@ -17,13 +17,13 @@ package org.iobserve.analysis.sink;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.iobserve.analysis.behavior.filter.BehaviorModelVisualizationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BehaviorModelSink extends AbstractBehaviorModelOutputSink {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelVisualizationStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelSink.class);
 
     private final ObjectMapper objectMapper;
 
@@ -60,11 +60,10 @@ public class BehaviorModelSink extends AbstractBehaviorModelOutputSink {
     protected void execute(final BehaviorModel model) throws IOException {
         final String filename = this.baseUrl + File.separator + model.getName();
         BehaviorModelSink.LOGGER.info("Write models to {}", filename);
-        final FileWriter fw = new FileWriter(filename);
-        final BufferedWriter bw = new BufferedWriter(fw);
+        final BufferedWriter bw = Files.newBufferedWriter(new File(filename).toPath(), StandardOpenOption.CREATE);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         this.objectMapper.writeValue(bw, model);
-        fw.close();
+        bw.close();
     }
 
 }

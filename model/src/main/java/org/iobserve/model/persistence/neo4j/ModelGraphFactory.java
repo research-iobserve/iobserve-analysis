@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.model.persistence.neo4j;
 
+import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -25,11 +25,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
+import org.iobserve.model.persistence.DBException;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +42,11 @@ import org.slf4j.LoggerFactory;
  */
 public final class ModelGraphFactory {
 
-    public static final String INTERNAL_ID = ":internalId";
     public static final String PROXY_OBJECT = ":proxyObject";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGraphFactory.class);
+    public static final String EMF_INTERNAL_ID = ":dbId";
 
-    private static final String EMF_URI = ":emfUri";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGraphFactory.class);
 
     /** Utility class, prevent instantiation. */
     private ModelGraphFactory() {
@@ -59,19 +61,15 @@ public final class ModelGraphFactory {
      * @param storeableObject
      *            the object to be placed as proxy
      * @param id
-     *            db id
+     *            db id string
      * @return returns the created node
      */
     public static Node createNode(final GraphDatabaseService graphDatabaseService, final EObject storeableObject,
-            final long id) {
+            final String id) {
         final Label typeName = Label.label(ModelGraphFactory.fqnClassName(storeableObject.eClass()));
 
         final Node node = graphDatabaseService.createNode(typeName);
-        node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
-
-        /** set object uri. */
-        ModelGraphFactory.setNodeObjectUri(node, storeableObject);
-
+        node.setProperty(ModelGraphFactory.EMF_INTERNAL_ID, id);
         node.setProperty(ModelGraphFactory.PROXY_OBJECT, false);
 
         /** attributes. */
@@ -92,19 +90,24 @@ public final class ModelGraphFactory {
      * @return returns the corresponding node
      */
     public static Node createProxyNode(final GraphDatabaseService graphDatabaseService, final EObject storeableObject,
-            final long id) {
+            final String id) {
         final Label typeName = Label.label(ModelGraphFactory.fqnClassName(storeableObject.eClass()));
 
         final Node node = graphDatabaseService.createNode(typeName);
-        node.setProperty(ModelGraphFactory.INTERNAL_ID, id);
-
-        ModelGraphFactory.setNodeObjectUri(node, storeableObject);
+        node.setProperty(ModelGraphFactory.EMF_INTERNAL_ID, id);
 
         node.setProperty(ModelGraphFactory.PROXY_OBJECT, true);
 
         return node;
     }
 
+    /**
+     * Create the full qualified name of a class.
+     *
+     * @param eClass
+     *            eclass
+     * @return retuns the fqn string
+     */
     public static String fqnClassName(final EClass eClass) {
         return ModelGraphFactory.fqnPackageName(eClass.getEPackage()) + "." + eClass.getName();
     }
@@ -114,23 +117,6 @@ public final class ModelGraphFactory {
             return ModelGraphFactory.fqnPackageName(ePackage.getESuperPackage()) + "." + ePackage.getName();
         } else {
             return ePackage.getName();
-        }
-    }
-
-    /**
-     * Create an object URI for a given object and set the corresponding node property.
-     *
-     * @param node
-     *            the node
-     * @param storeableObject
-     *            the object
-     */
-    private static void setNodeObjectUri(final Node node, final EObject storeableObject) {
-        final URI uri = ((BasicEObjectImpl) storeableObject).eProxyURI();
-        if (uri == null) {
-            node.setProperty(ModelGraphFactory.EMF_URI, ModelGraphFactory.createUri(storeableObject));
-        } else {
-            node.setProperty(ModelGraphFactory.EMF_URI, uri.toString());
         }
     }
 
@@ -154,23 +140,56 @@ public final class ModelGraphFactory {
     /**
      * Create a single reference.
      *
-     * @param sourceNode
-     *            source node
-     * @param targetNode
-     *            target node
-     * @param targetObject
+     * @param graphDatabaseService
+     *            database service
+     * @param source
+     *            source object
+     * @param target
      *            target object
      * @param reference
      *            corresponding reference
      * @param i
      *            position info for lists
+     * @throws DBException
+     *             on db errors
      */
-    public static void createRelationship(final Node sourceNode, final Node targetNode, final EObject targetObject,
-            final EReference reference, final int i) {
-        final Relationship relationship = sourceNode.createRelationshipTo(targetNode,
-                ModelProviderUtil.getRelationshipType(reference, targetObject));
+    public static void createRelationship(final GraphDatabaseService graphDatabaseService, final EObject source,
+            final EObject target, final EReference reference, final long i) throws DBException {
+        final Node sourceNode = ModelGraphFactory.findNode(graphDatabaseService, source);
+        final Node targetNode = ModelGraphFactory.findNode(graphDatabaseService, target);
+        ModelGraphFactory.createRelationship(graphDatabaseService, sourceNode, targetNode, reference, i);
+    }
+
+    /**
+     * Create a single reference.
+     *
+     * @param graphDatabaseService
+     *            database service
+     * @param source
+     *            source node
+     * @param target
+     *            target node
+     * @param reference
+     *            corresponding reference
+     * @param i
+     *            position info for lists
+     * @throws DBException
+     *             on db errors
+     */
+    public static void createRelationship(final GraphDatabaseService graphDatabaseService, final Node source,
+            final Node target, final EReference reference, final long i) throws DBException {
+        final Relationship relationship = source.createRelationshipTo(target,
+                ModelGraphFactory.getRelationshipType(reference));
         relationship.setProperty(ModelProviderUtil.REF_NAME, reference.getName());
         relationship.setProperty(ModelProviderUtil.REF_POS, i);
+    }
+
+    private static RelationshipType getRelationshipType(final EReference reference) {
+        if (reference.isContainment()) {
+            return EMFRelationshipType.CONTAINS;
+        } else {
+            return EMFRelationshipType.REFERENCES;
+        }
     }
 
     /**
@@ -222,7 +241,7 @@ public final class ModelGraphFactory {
             for (final Relationship relationship : relationships) {
                 final Node node = relationship.getEndNode();
                 try {
-                    final String nodeUri = node.getProperty(ModelGraphFactory.EMF_URI).toString();
+                    final String nodeUri = node.getProperty(ModelGraphFactory.EMF_INTERNAL_ID).toString();
 
                     if (uri.equals(nodeUri)) {
                         relationships.remove(relationship);
@@ -247,44 +266,7 @@ public final class ModelGraphFactory {
      * @return returns the URI
      */
     public static URI getUri(final Node node) {
-        return URI.createURI(node.getProperty(ModelGraphFactory.EMF_URI).toString());
-    }
-
-    /**
-     * Returns a URI based on the objects containing the passed object.
-     *
-     * @param object
-     *            The component to compute a URI to
-     * @return The URI
-     */
-    public static String createUri(final EObject object) {
-        if (object.eContainer() != null) {
-            return ModelGraphFactory.createUri(object.eContainer()) + "/" + ModelGraphFactory.createUriFragment(object);
-        } else {
-            return "neo4j://" + ModelGraphFactory.fqnClassName(object.eClass());
-        }
-    }
-
-    private static String createUriFragment(final EObject object) {
-        final EObject container = object.eContainer();
-        for (final EReference reference : container.eClass().getEAllContainments()) {
-            if (reference.isMany()) {
-                final EList<?> manyReference = (EList<?>) container.eGet(reference);
-                int i = 0;
-                for (final Object element : manyReference) {
-                    if (element.equals(object)) {
-                        return reference.getName() + "[" + i + "]";
-                    }
-                    i++;
-                }
-            } else {
-                if (container.eGet(reference).equals(object)) {
-                    return reference.getName();
-                }
-            }
-        }
-
-        throw new InternalError("Object is contained but cannot be found in containing class.");
+        return URI.createURI(node.getProperty(ModelGraphFactory.EMF_INTERNAL_ID).toString());
     }
 
     /**
@@ -297,4 +279,160 @@ public final class ModelGraphFactory {
     public static boolean isProxyNode(final Node node) {
         return (Boolean) node.getProperty(ModelGraphFactory.PROXY_OBJECT);
     }
+
+    /**
+     * Tests whether a given object is represented by a proxy node.
+     *
+     * @param graphDatabaseService
+     *            database service
+     * @param object
+     *            the object to check
+     *
+     * @return returns true if the node is a proxy node
+     *
+     * @throws DBException
+     *             on missing node in database
+     */
+    public static boolean isProxyNode(final GraphDatabaseService graphDatabaseService, final EObject object)
+            throws DBException {
+        final Node node = ModelGraphFactory.findNode(graphDatabaseService, object);
+        if (node != null) {
+            return ModelGraphFactory.isProxyNode(node);
+        } else {
+            throw new DBException(String.format(
+                    "Object of type '%s' with internal id %d has no database representation.",
+                    ModelGraphFactory.fqnClassName(object.eClass()), ModelGraphFactory.getIdentification(object)));
+        }
+
+    }
+
+    /**
+     * Find the node representing the object.
+     *
+     * @param graphDatabaseService
+     *            database service
+     * @param object
+     *            the object to look for
+     * @return returns the corresponding node
+     * @throws DBException
+     *             if the object is not persistent in the database.
+     */
+    public static Node findNode(final GraphDatabaseService graphDatabaseService, final EObject object)
+            throws DBException {
+        final String typeName = ModelGraphFactory.fqnClassName(object.eClass());
+        final String internalId = ModelGraphFactory.getIdentification(object);
+
+        if (internalId != null) {
+            return graphDatabaseService.findNode(Label.label(typeName), ModelGraphFactory.EMF_INTERNAL_ID, internalId);
+        } else {
+            throw new DBException(String
+                    .format("Object of type '%s' has no internal id which is required for a node test.", typeName));
+        }
+    }
+
+    public static String getIdentification(final EObject object) {
+        if (object.eIsProxy()) {
+            final String result = ((BasicEObjectImpl) object).eProxyURI().toString();
+            System.err.println("PROXY " + result);
+            return result;
+        } else {
+            return Integer.toHexString(object.hashCode());
+        }
+    }
+
+    /**
+     * Delete nodes from a partition which do no longer represent an object.
+     *
+     * @param root
+     *            root node.
+     * @param objects
+     *            objects belonging to the same partition
+     * @throws DBException
+     *             on various database exceptions
+     */
+    public static void deleteNodePartitionRecursively(final Node root, final List<EObject> objects) throws DBException {
+        for (final Relationship relationship : root.getRelationships(EMFRelationshipType.CONTAINS,
+                Direction.OUTGOING)) {
+            final Node targetNode = relationship.getEndNode();
+            ModelGraphFactory.deleteNodePartitionRecursively(targetNode, objects);
+
+            if (!ModelGraphFactory.isProxyNode(targetNode)) {
+                final EObject targetObject = ModelGraphFactory.findObject(objects,
+                        (String) targetNode.getProperty(ModelGraphFactory.EMF_INTERNAL_ID));
+                if (targetObject == null) {
+                    ModelGraphFactory.deleteLinkedProxyNodes(targetNode);
+                    targetNode.delete();
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete proxy nodes connected to the sourceNode, iff they have only the relationship to the
+     * sourceNode. Else delete the relationship.
+     *
+     * @param sourceNode
+     *            source node
+     * @throws DBException
+     *             on db errors
+     */
+    private static void deleteLinkedProxyNodes(final Node sourceNode) throws DBException {
+        for (final Relationship relationship : sourceNode.getRelationships(Direction.OUTGOING)) {
+            final Node targetNode = relationship.getEndNode();
+            if (ModelGraphFactory.isProxyNode(targetNode)) {
+                final Iterator<Relationship> proxyRelationships = targetNode.getRelationships(Direction.INCOMING)
+                        .iterator();
+                /** check for more than one incoming. */
+                if (proxyRelationships.hasNext()) {
+                    proxyRelationships.next();
+                    if (proxyRelationships.hasNext()) {
+                        /** two incoming, remove just the relationship. */
+                        relationship.delete();
+                    } else {
+                        /** one relationship; delete relationship and node. */
+                        relationship.delete();
+                        targetNode.delete();
+                    }
+                } else {
+                    throw new DBException(
+                            "There is an relationship form a -> b, but b has no incoming relationship. Consistency error.");
+                }
+            }
+        }
+    }
+
+    private static EObject findObject(final List<EObject> objects, final String id) {
+        for (final EObject object : objects) {
+            final String objectId = ModelGraphFactory.getIdentification(object);
+            if (objectId.equals(id)) {
+                return object;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the corresponding reference in EMF to a relationship (instance) in the neo4j graph.
+     *
+     * @param sourceObject
+     *            source object having the reference
+     * @param relationship
+     *            the relationship
+     * @return returns the correct EReference
+     * @throws DBException
+     *             when the relationship is not matched by a reference, which must not happen
+     */
+    public static EReference findReference(final EObject sourceObject, final Relationship relationship)
+            throws DBException {
+        final String relationshipName = (String) relationship.getProperty(ModelProviderUtil.REF_NAME);
+        for (final EReference reference : sourceObject.eClass().getEAllReferences()) {
+            if (reference.getName().equals(relationshipName)) {
+                return reference;
+            }
+        }
+
+        throw new DBException(String.format("Relationship '%s' does not correspond to a reference in class '%s'",
+                relationshipName, sourceObject.eClass().getName()));
+    }
+
 }

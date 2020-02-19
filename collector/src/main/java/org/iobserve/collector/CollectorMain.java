@@ -16,18 +16,16 @@
 package org.iobserve.collector;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
-
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.service.CommonConfigurationKeys;
-import org.iobserve.stages.general.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
+import kieker.tools.common.CommonConfigurationKeys;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 /**
  * The collector allows to collect input from different input sources, including TCP and Kieker
@@ -35,7 +33,7 @@ import org.iobserve.stages.general.ConfigurationException;
  *
  * @author Reiner Jung
  */
-public final class CollectorMain extends AbstractServiceMain<CollectorConfiguration> {
+public final class CollectorMain extends AbstractService<CollectorConfiguration, CollectorMain> {
 
     @Parameter(names = { "-c",
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
@@ -55,22 +53,18 @@ public final class CollectorMain extends AbstractServiceMain<CollectorConfigurat
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new CollectorMain().run("Collector", "collector", args);
+        final CollectorMain collector = new CollectorMain();
+        System.exit(collector.run("Collector", "collector", args, collector));
     }
 
     @Override
-    protected CollectorConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
-        return new CollectorConfiguration(configuration);
+    protected CollectorConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        return new CollectorConfiguration(this.kiekerConfiguration);
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

@@ -15,7 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import kieker.analysis.source.ISourceCompositeStage;
+import kieker.common.exception.ConfigurationException;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.common.util.classpath.InstantiationFactory;
 
 import teetime.framework.Configuration;
 import teetime.framework.OutputPort;
@@ -38,11 +41,8 @@ import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.CorrespondenceModel;
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.service.InstantiationFactory;
-import org.iobserve.service.source.ISourceCompositeStage;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
 import org.iobserve.stages.general.ImplementsEventMatcher;
@@ -100,11 +100,12 @@ public class AnalysisConfiguration extends Configuration {
      *             on error
      */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelResource<Repository> repositoryModelResource,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
-            final ModelResource<UsageModel> usageModelResource,
-            final ModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
+            final Neo4JModelResource<Repository> repositoryModelResource,
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final Neo4JModelResource<System> systemModelResource,
+            final Neo4JModelResource<Allocation> allocationModelResource,
+            final Neo4JModelResource<UsageModel> usageModelResource,
+            final Neo4JModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
         this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
@@ -115,10 +116,11 @@ public class AnalysisConfiguration extends Configuration {
 
             this.connectPorts(sourceCompositeStage.getOutputPort(), this.eventDispatcher.getInputPort());
 
-            this.containerManagement(configuration, resourceEnvironmentModelResource, systemModelResource,
-                    allocationModelResource, correspondenceModelResource);
             this.traceProcessing(configuration);
             this.geoLocation(configuration);
+
+            this.containerManagement(configuration, resourceEnvironmentModelResource, systemModelResource,
+                    allocationModelResource, correspondenceModelResource);
         } else {
             AnalysisConfiguration.LOGGER.error("Initialization incomplete: No source stage specified.");
             throw new ConfigurationException("Initialization incomplete: No source stage specified.");
@@ -152,9 +154,10 @@ public class AnalysisConfiguration extends Configuration {
      *             when configuration fails
      */
     private void containerManagement(final kieker.common.configuration.Configuration configuration,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource,
-            final ModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final Neo4JModelResource<System> systemModelResource,
+            final Neo4JModelResource<Allocation> allocationModelResource,
+            final Neo4JModelResource<CorrespondenceModel> correspondenceModelResource) throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             /** allocation. */
@@ -211,9 +214,9 @@ public class AnalysisConfiguration extends Configuration {
      *             when configuration fails
      */
     private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
-            final ModelResource<System> systemModelResource, final ModelResource<Allocation> allocationModelResource)
-            throws ConfigurationException {
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final Neo4JModelResource<System> systemModelResource,
+            final Neo4JModelResource<Allocation> allocationModelResource) throws ConfigurationException {
         final String[] containerManagementSinks = configuration
                 .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {
@@ -250,10 +253,10 @@ public class AnalysisConfiguration extends Configuration {
 
             /** Create and connect sinks. */
             for (final String containerManagementSink : containerManagementSinks) {
-                final IContainerManagementSinkStage containerManagementSinksStage = InstantiationFactory.create(
-                        IContainerManagementSinkStage.class, containerManagementSink,
-                        IContainerManagementSinkStage.SIGNATURE, configuration, resourceEnvironmentModelResource,
-                        allocationModelResource, systemModelResource);
+                final IContainerManagementSinkStage containerManagementSinksStage = InstantiationFactory
+                        .getInstance(configuration).create(IContainerManagementSinkStage.class, containerManagementSink,
+                                IContainerManagementSinkStage.SIGNATURE, configuration,
+                                resourceEnvironmentModelResource, allocationModelResource, systemModelResource);
                 /** connect ports. */
                 this.connectPorts(allocationDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getAllocationInputPort());

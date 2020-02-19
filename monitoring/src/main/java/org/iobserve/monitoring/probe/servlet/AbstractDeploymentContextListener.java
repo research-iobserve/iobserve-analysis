@@ -31,7 +31,7 @@ import kieker.monitoring.timer.ITimeSource;
 public abstract class AbstractDeploymentContextListener implements ServletContextListener {
 
     /** deployment id constant. */
-    protected static final String DEPLOYMENT_ID = "deploymentId";
+    public static final String DEPLOYMENT_ID = "deploymentId";
 
     /** Kieker monitoring controller. */
     protected final IMonitoringController monitoringCtrl = MonitoringController.getInstance();

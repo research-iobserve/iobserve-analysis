@@ -16,18 +16,17 @@
 package org.iobserve.execution;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.execution.configurations.KubernetesExecutionConfiguration;
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Main class for iObserve's execution service.
@@ -35,7 +34,8 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecutionConfiguration> {
+public class KubernetesExecutionMain
+        extends AbstractService<KubernetesExecutionConfiguration, KubernetesExecutionMain> {
     private static final String RUNTIMEMODEL_DIRECTORY_NAME = "runtimemodel";
     private static final String REDEPLOYMENTMODEL_DIRECTORY_NAME = "redeploymentmodel";
 
@@ -53,55 +53,52 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new KubernetesExecutionMain().run("Execution Service", "execution", args);
+        final KubernetesExecutionMain main = new KubernetesExecutionMain();
+        System.exit(main.run("Execution Service", "execution", args, main));
     }
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         boolean configurationGood = true;
 
-        try {
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT)
-                    .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
 
-            final File workingDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(workingDirectory,
-                    "Executionplan Directory", commander);
-            final File correspondenceModelFile = new File(workingDirectory,
-                    configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
-            configurationGood &= CommandLineParameterEvaluation.isFileReadable(correspondenceModelFile,
-                    "Correspondence Model File");
+        final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(workingDirectory, "Executionplan Directory",
+                commander);
+        final File correspondenceModelFile = new File(workingDirectory,
+                configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
+        configurationGood &= ParameterEvaluationUtils.isFileReadable(correspondenceModelFile,
+                "Correspondence Model File", commander);
 
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN).isEmpty();
 
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
-        }
+        return configurationGood;
     }
 
     @Override
-    protected KubernetesExecutionConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
-        final int executionPlanInputPort = configuration.getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
-        final int runtimeModelInputPort = configuration.getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
-        final int redeploymentModelInputPort = configuration
+    protected KubernetesExecutionConfiguration createTeetimeConfiguration() throws ConfigurationException {
+        final int executionPlanInputPort = this.kiekerConfiguration
+                .getIntProperty(ConfigurationKeys.EXECUTIONPLAN_INPUTPORT);
+        final int runtimeModelInputPort = this.kiekerConfiguration
+                .getIntProperty(ConfigurationKeys.RUNTIMEMODEL_INPUTPORT);
+        final int redeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.REDEPLOYMENTMODEL_INPUTPORT);
-        final File workingDirectory = new File(configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
+        final File workingDirectory = new File(
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY));
         final File runtimeModelDirectory = new File(workingDirectory,
                 KubernetesExecutionMain.RUNTIMEMODEL_DIRECTORY_NAME);
         final File redeploymentModelDirectory = new File(workingDirectory,
                 KubernetesExecutionMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
         final File correspondenceModelFile = new File(workingDirectory,
-                configuration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
-        final String imageLocator = configuration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR);
-        final String subdomain = configuration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN);
-        final String namespace = configuration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE);
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.CORRESPONDENCEMODEL_NAME));
+        final String imageLocator = this.kiekerConfiguration.getStringProperty(ConfigurationKeys.APP_IMAGE_LOCATOR);
+        final String subdomain = this.kiekerConfiguration.getStringProperty(ConfigurationKeys.APP_SUBDOMAIN);
+        final String namespace = this.kiekerConfiguration.getStringProperty(ConfigurationKeys.KUBERNETES_NAMESPACE);
 
         runtimeModelDirectory.mkdir();
         redeploymentModelDirectory.mkdir();
@@ -113,11 +110,7 @@ public class KubernetesExecutionMain extends AbstractServiceMain<KubernetesExecu
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

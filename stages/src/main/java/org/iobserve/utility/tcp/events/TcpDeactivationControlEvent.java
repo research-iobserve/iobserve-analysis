@@ -34,9 +34,12 @@ public class TcpDeactivationControlEvent extends AbstractTcpControlEvent {
      *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public TcpDeactivationControlEvent(final String ip, final int port, final String hostname, final String pattern) {
-        super(ip, port, hostname, pattern);
+    public TcpDeactivationControlEvent(final String ip, final int port, final String hostname, final String pattern,
+            final long triggerTimestamp) {
+        super(ip, port, hostname, pattern, triggerTimestamp);
     }
 
     /**
@@ -44,9 +47,11 @@ public class TcpDeactivationControlEvent extends AbstractTcpControlEvent {
      *
      * @param pattern
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public TcpDeactivationControlEvent(final String pattern) {
-        super(pattern);
+    public TcpDeactivationControlEvent(final String pattern, final long triggerTimestamp) {
+        super(pattern, triggerTimestamp);
     }
 
 }

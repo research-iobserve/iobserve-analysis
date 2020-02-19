@@ -18,16 +18,11 @@ package org.iobserve.stages.general;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kieker.common.record.IMonitoringRecord;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
+import kieker.common.exception.ConfigurationException;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.common.record.IEvent;
-import org.iobserve.common.record.JSSObservationEvent;
-import org.iobserve.common.record.JSSObservationPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +35,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.3
  */
 public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
-
-    // remove probes later
-    private static final IMonitoringController CONTROLLER = MonitoringController.getInstance();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicEventDispatcher.class);
 
@@ -108,15 +100,11 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 event);
         if (selectedOutputPort != null) {
             // collecting event observation time (if possible); only for performance tests.
-            final long observedTime;
-            if (event instanceof IEvent) {
-                observedTime = ((IEvent) event).getTimestamp();
-            } else {
-                observedTime = ((IMonitoringRecord) event).getLoggingTimestamp();
-            }
-            DynamicEventDispatcher.CONTROLLER.newMonitoringRecord(
-                    new JSSObservationEvent(DynamicEventDispatcher.CONTROLLER.getTimeSource().getTime(),
-                            JSSObservationPoint.DISPATCHER_ENTRY, event.getClass().getCanonicalName(), observedTime));
+            // if (event instanceof IEventRecord) {
+            //     final IEventRecord specialEvent = (IEventRecord) event;
+            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
+            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
+            // }
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {
@@ -128,7 +116,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
+                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }

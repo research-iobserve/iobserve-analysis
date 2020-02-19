@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2020 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.iobserve.common.record.IPayloadCharacterization;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
@@ -57,7 +57,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	private static final long serialVersionUID = 5364265571284290753L;
 	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"entryTime",
 		"exitTime",
 		"operationSignature",
@@ -103,42 +103,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 		this.requestType = requestType;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public PayloadAwareEntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
-		this.parameters = (String[]) values[6];
-		this.values = (String[]) values[7];
-		this.requestType = (Integer) values[8];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected PayloadAwareEntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
-		this.parameters = (String[]) values[6];
-		this.values = (String[]) values[7];
-		this.requestType = (Integer) values[8];
-	}
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -148,13 +113,13 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	public PayloadAwareEntryCallEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		// load array sizes
-		int _parameters_size0 = deserializer.getInt();
+		final int _parameters_size0 = deserializer.getInt();
 		this.parameters = new String[_parameters_size0];
 		for (int i0=0;i0<_parameters_size0;i0++)
 			this.parameters[i0] = deserializer.getString();
 		
 		// load array sizes
-		int _values_size0 = deserializer.getInt();
+		final int _values_size0 = deserializer.getInt();
 		this.values = new String[_values_size0];
 		for (int i0=0;i0<_values_size0;i0++)
 			this.values[i0] = deserializer.getString();
@@ -164,30 +129,9 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getEntryTime(),
-			this.getExitTime(),
-			this.getOperationSignature(),
-			this.getClassSignature(),
-			this.getSessionId(),
-			this.getHostname(),
-			this.getParameters(),
-			this.getValues(),
-			this.getRequestType(),
-		};
-	}
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getEntryTime());
 		serializer.putLong(this.getExitTime());
 		serializer.putString(this.getOperationSignature());
@@ -222,7 +166,7 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**
@@ -233,16 +177,6 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -306,6 +240,36 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getEntryTime());
+		code += ((int)this.getExitTime());
+		code += this.getOperationSignature().hashCode();
+		code += this.getClassSignature().hashCode();
+		code += this.getSessionId().hashCode();
+		code += this.getHostname().hashCode();
+		// get array length
+		for (int i0=0;i0 < this.parameters.length;i0++) {
+			for (int i1=0;i1 < this.parameters.length;i1++) {
+				code += this.getParameters()[i0].hashCode();
+			}
+		}
+		
+		// get array length
+		for (int i0=0;i0 < this.values.length;i0++) {
+			for (int i1=0;i1 < this.values.length;i1++) {
+				code += this.getValues()[i0].hashCode();
+			}
+		}
+		
+		code += ((int)this.getRequestType());
+		
+		return code;
 	}
 	
 	public final String[] getParameters() {

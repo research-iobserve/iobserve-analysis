@@ -32,7 +32,7 @@ import org.iobserve.stages.general.IEntryCallTraceMatcher;
  * @since 0.0.2
  *
  */
-public final class ConfigurationKeys {
+public final class ConfigurationKeys { // NOPMD is not a conventional utility class
     public static final String PREFIX = "iobserve.analysis.";
 
     /**
@@ -221,6 +221,17 @@ public final class ConfigurationKeys {
     public static final String XM_EXP_CLUS = ConfigurationKeys.PREFIX + "behavior.xmeans.expectedClusters";
 
     /**
+     * Hierarchcal Clustering.
+     */
+
+    public static final String HIER_DIST = ConfigurationKeys.PREFIX + "behavior.clustering.hierarchical.distance";
+
+    public static final String HIER_SEL_METHOD = ConfigurationKeys.PREFIX
+            + "behavior.clustering.hierarchical.clusterSelectionMethod";
+
+    public static final String HIER_LINKAGE = ConfigurationKeys.PREFIX + "behavior.clustering.hierarchical.linkage";
+
+    /**
      * Birch Classification.
      */
 
@@ -241,6 +252,43 @@ public final class ConfigurationKeys {
             + "behavior.birch.clusterMetricStrategy";
 
     public static final String LMETHOD_EVAL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.lmethodEvalStrategy";
+
+    /**
+     * Service Behavior Analysis
+     */
+    public static final String GED_PREFIX = "org.iobserve.service.behavior.analysis.";
+
+    public static final String MAX_MODEL_AMOUNT = ConfigurationKeys.GED_PREFIX + "maxModelAmount";
+
+    public static final String RESULT_URL = ConfigurationKeys.GED_PREFIX + "outputUrl";
+
+    public static final String RETURN_CLUSTERING = ConfigurationKeys.GED_PREFIX + "returnClustering";
+
+    public static final String RETURN_MEDOIDS = ConfigurationKeys.GED_PREFIX + "returnMedoids";
+
+    /**
+     * Optics Clustering.
+     */
+
+    public static final String EPSILON = ConfigurationKeys.GED_PREFIX + "epsilon";
+
+    public static final String MIN_PTS = ConfigurationKeys.GED_PREFIX + "minPts";
+
+    /**
+     * Graph Edit Distance.
+     */
+
+    public static final String NODE_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "nodeInsertionCost";
+
+    public static final String EDGE_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "edgeInsertionCost";
+
+    public static final String EVENT_GROUP_INSERTION_COST = ConfigurationKeys.GED_PREFIX + "eventGroupInsertionCost";
+
+    /**
+     * Compare Behavior Models
+     */
+
+    public static final String COMPARISION_OUTPUT_TYPE = "org.iobserve.compare.behavior.models.outputType";
 
     /**
      * Factory, do not instantiate.

@@ -23,6 +23,14 @@ import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
  */
 public interface IProbeController {
 
+    /**
+     * Control probe with given event.
+     *
+     * @param event
+     *            control information
+     * @throws RemoteControlFailedException
+     *             on errors to control the probe
+     */
     void controlProbe(AbstractTcpControlEvent event) throws RemoteControlFailedException;
 
 }

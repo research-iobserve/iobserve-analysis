@@ -25,12 +25,21 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public final class NameFactory {
+public final class NameFactory { // NOPMD is not a usual utility class, but a factory
 
     private NameFactory() {
 
     }
 
+    /**
+     * Create an allocation name.
+     *
+     * @param assemblyContext
+     *            assembly context
+     * @param resourceContainer
+     *            resource container
+     * @return return allocation name
+     */
     public static String createAllocationContextName(final AssemblyContext assemblyContext,
             final ResourceContainer resourceContainer) {
         return assemblyContext.getEntityName() + " : " + resourceContainer.getEntityName();

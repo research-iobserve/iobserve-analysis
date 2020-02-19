@@ -50,4 +50,16 @@ public class RemoteControlFailedException extends Exception {
         super(e);
     }
 
+    /**
+     * Create a labeled and chained exception.
+     *
+     * @param message
+     *            message
+     * @param e
+     *            previous exception
+     */
+    public RemoteControlFailedException(final String message, final Exception e) {
+        super(message, e);
+    }
+
 }

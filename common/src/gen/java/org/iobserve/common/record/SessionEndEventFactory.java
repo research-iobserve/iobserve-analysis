@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class SessionEndEventFactory implements IRecordFactory<SessionEndEvent> {
 	
-	
 	@Override
 	public SessionEndEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new SessionEndEvent(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public SessionEndEvent create(final Object[] values) {
-		return new SessionEndEvent(values);
-	}
-	
+			public String[] getValueNames() {
+				return SessionEndEvent.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return SessionEndEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return SessionEndEvent.SIZE;
 	}

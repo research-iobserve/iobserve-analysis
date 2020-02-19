@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
-import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReference;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.analysis.test.userbehavior.builder.SimpleSequenceReferenceHelper;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.provider.deprecated.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
@@ -66,11 +67,12 @@ public final class UserBehaviorTransformationTest {
      *
      * @throws IOException
      *             when reading and writing files.
+     * @throws DBException
      */
     // @Test
-    public void testBranchWithinLoop() throws IOException {
+    public void testBranchWithinLoop() throws IOException, DBException {
 
-        final ModelResource<Repository> repositoryModelProvider = new ModelResource<>(RepositoryPackage.eINSTANCE,
+        final Neo4JModelResource<Repository> repositoryModelProvider = new Neo4JModelResource<>(RepositoryPackage.eINSTANCE,
                 new File("x"));
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.getAndLockModelRootNode(Repository.class,
@@ -86,7 +88,7 @@ public final class UserBehaviorTransformationTest {
             final int thinkTime = UserBehaviorTransformationTest.THINK_TIME;
             final boolean isClosedWorkload = UserBehaviorTransformationTest.CLOSED_WORKLOAD;
 
-            final ReferenceElements referenceElements = SimpleSequenceReference.getModel(
+            final ReferenceElements referenceElements = SimpleSequenceReferenceHelper.getModel(
                     UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryLookupModel, null, thinkTime,
                     isClosedWorkload);
 
@@ -100,7 +102,7 @@ public final class UserBehaviorTransformationTest {
                     .matchUsageModels(behaviorModeling.getPcmUsageModel(), referenceElements.getUsageModel());
             results.add(accuracyResults);
 
-            final double relativeMeasurementError = WorkloadEvaluation.calculateRME(behaviorModeling.getPcmUsageModel(),
+            final double relativeMeasurementError = WorkloadEvaluationHelper.calculateRME(behaviorModeling.getPcmUsageModel(),
                     referenceElements);
 
             if (UserBehaviorTransformationTest.LOGGER.isDebugEnabled()) {

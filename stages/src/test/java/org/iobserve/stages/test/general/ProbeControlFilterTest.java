@@ -20,7 +20,7 @@ import java.util.List;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
-import kieker.common.record.tcp.SingleSocketRecordReader;
+import kieker.monitoring.core.controller.tcp.SingleSocketRecordReader;
 
 import teetime.framework.test.StageTester;
 
@@ -49,6 +49,8 @@ public class ProbeControlFilterTest {
     private static final int BUFFER_SIZE = 65535;
 
     private static final String PATTERN = "test.pattern";
+
+    private static final long TRIGGER_TIMESTAMP = 0;
 
     private static int port = 9753;
 
@@ -95,7 +97,7 @@ public class ProbeControlFilterTest {
         final String ip = "127.0.0.1"; // NOPMD localhost is required here
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
-                hostname, ProbeControlFilterTest.PATTERN);
+                hostname, ProbeControlFilterTest.PATTERN, ProbeControlFilterTest.TRIGGER_TIMESTAMP);
         final List<AbstractTcpControlEvent> input = new ArrayList<>();
         input.add(controlEvent);
 
@@ -115,7 +117,7 @@ public class ProbeControlFilterTest {
         final String ip = "1.2.3.4"; // NOPMD fake ip as string is necessary
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
-                hostname, ProbeControlFilterTest.PATTERN);
+                hostname, ProbeControlFilterTest.PATTERN, ProbeControlFilterTest.TRIGGER_TIMESTAMP);
         final List<AbstractTcpControlEvent> input = new ArrayList<>();
         input.add(controlEvent);
 

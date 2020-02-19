@@ -1,0 +1,33 @@
+plugins {
+   id 'java'
+   id 'application'
+}
+
+mainClassName='org.iobserve.compare.behavior.models.ComparisonMain'
+
+repositories {
+   flatDir {
+       dirs 'libs'
+   }
+}
+
+dependencies {
+	clover 'org.openclover:clover:4.2.0'
+	
+	compile name: 'mtree'
+	
+
+	compile project(":service-behavior-analysis")
+
+		
+}
+
+
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'collector'
+//    }
+//}
+

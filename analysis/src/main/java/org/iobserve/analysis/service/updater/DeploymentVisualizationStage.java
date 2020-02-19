@@ -25,11 +25,12 @@ import javax.json.JsonObject;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.analysis.service.util.ChangelogHelper;
+import org.iobserve.analysis.service.util.SendHttpRequestUtils;
 import org.iobserve.analysis.sink.landscape.ServiceInstanceService;
 import org.iobserve.analysis.sink.landscape.ServiceService;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
@@ -51,8 +52,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     private final URL outputURL;
     private final String systemId;
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
-    private final ModelResource<Allocation> allocationModelProvider;
+    private final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource;
+    private final Neo4JModelResource<Allocation> allocationModelProvider;
 
     /**
      * Output visualization configuration.
@@ -68,8 +69,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      *            model provider for the allocation model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
-            final ModelResource<Allocation> allocationModelProvider) {
+            final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource,
+            final Neo4JModelResource<Allocation> allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceEnvironmentModelResource = resourceEnvironmentModelResource;
@@ -78,7 +79,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     @Override
     protected void execute(final PCMDeployedEvent deployment) throws Exception {
-        SendHttpRequest.post(this.createData(deployment), this.outputURL);
+        SendHttpRequestUtils.post(this.createData(deployment), this.outputURL);
     }
 
     /**
@@ -89,23 +90,24 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      * @param deployment
      *            servlet deployed event
      * @return array that contains changelogs for creating a service and a service instance
+     * @throws DBException
      */
-    private JsonArray createData(final PCMDeployedEvent deployment) {
+    private JsonArray createData(final PCMDeployedEvent deployment) throws DBException {
         final String serverName = deployment.getService();
         final String nodeId = this.resourceEnvironmentModelResource
-                .findObjectsByTypeAndName(ResourceContainer.class,
+                .findObjectsByTypeAndProperty(ResourceContainer.class,
                         ResourceenvironmentPackage.Literals.RESOURCE_CONTAINER, "entityName", serverName)
                 .get(0).getId();
 
         final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
-        final List<AssemblyContext> contexts = this.allocationModelProvider.findObjectsByTypeAndName(
+        final List<AssemblyContext> contexts = this.allocationModelProvider.findObjectsByTypeAndProperty(
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, "entityName", asmContextName);
         final AssemblyContext assemblyContext = contexts.get(0);
 
-        final JsonObject serviceObject = Changelog
+        final JsonObject serviceObject = ChangelogHelper
                 .create(this.serviceService.createService(assemblyContext, this.systemId));
-        final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
+        final JsonObject serviceinstanceObject = ChangelogHelper.create(this.serviceinstanceService
                 .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
 
         return Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();

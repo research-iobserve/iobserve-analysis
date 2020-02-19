@@ -1,0 +1,49 @@
+plugins {
+  id 'java'
+  id 'application'
+}
+
+mainClassName='org.iobserve.service.behavior.analysis.BehaviorAnalysisServiceMain'
+
+
+repositories {
+   flatDir {
+       dirs 'libs'
+   }
+}
+
+dependencies {
+	clover "org.openclover:clover:$cloverVersion"
+	
+	compile project(":stages")
+	compile project(":analysis")
+	   
+	compile name: 'mtree'
+	
+	compile group: 'com.edwardraff', name: 'JSAT', version: '0.0.9'
+	
+	testCompile 'org.mockito:mockito-core:2.21.0'	
+}
+
+clover {
+	includes = [ '**' ]
+	excludes = [ '**/ModelGenerationCompositeStage.java',
+		'**/UserSessionGeneratorCompositeStageWithTimeTrigger.java',
+		'**/BehaviorModelToOpticsDataConverter.java',
+		'**/ClusteringCompositeStage.java'
+	]
+
+	report {
+		html=true
+	}
+}
+
+
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'collector'
+//    }
+//}
+

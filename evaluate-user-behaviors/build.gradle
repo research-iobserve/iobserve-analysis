@@ -11,10 +11,11 @@ buildscript {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
 	compile project(":analysis") // behavior model data
-	compile project(":service")
+
+	compile 'com.beust:jcommander:' + jcommanderVersion
 }
 
 // SHADOW
@@ -30,12 +31,13 @@ test {
   exclude '**/evaluation/test/filter/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'evaluation'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'evaluation'
+//    }
+//}
 
 

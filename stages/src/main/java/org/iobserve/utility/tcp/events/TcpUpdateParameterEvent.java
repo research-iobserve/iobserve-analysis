@@ -32,14 +32,17 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
     /**
      * Creates a parameter update control event without content except the pattern and parameters.
      *
-     * @param pattern
-     *            The pattern of the method that is monitored.
+     * @param operationSignature
+     *            The operation signature of the method that is monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
      */
-    public TcpUpdateParameterEvent(final String pattern, final Map<String, List<String>> parameters) {
-        super(pattern);
+    public TcpUpdateParameterEvent(final String operationSignature, final long triggerTimestamp,
+            final Map<String, List<String>> parameters) {
+        super(operationSignature, triggerTimestamp);
         this.parameters = parameters;
     }
 
@@ -54,13 +57,15 @@ public class TcpUpdateParameterEvent extends AbstractTcpControlEvent implements 
      *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that is monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      * @param parameters
      *            a map of parameters and a list of each entry per parameter
      *
      */
     public TcpUpdateParameterEvent(final String ip, final int port, final String hostname, final String pattern,
-            final Map<String, List<String>> parameters) {
-        super(ip, port, hostname, pattern);
+            final long triggerTimestamp, final Map<String, List<String>> parameters) {
+        super(ip, port, hostname, pattern, triggerTimestamp);
         this.parameters = parameters;
     }
 

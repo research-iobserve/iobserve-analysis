@@ -11,12 +11,12 @@ if (group.isEmpty()) {
 }
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
 	compile project(":adaptationdata")
     compile project(":stages")
-	compile project(":service")
 
+	compile 'com.beust:jcommander:1.72'
     compile 'commons-daemon:commons-daemon:1.0.15'
     compile 'javax.json:javax.json-api:1.0'
     compile 'org.glassfish:javax.json:1.0.4'
@@ -47,10 +47,11 @@ test {
   exclude '**/service/updater/*'
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.execution'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service.execution'
+//    }
+//}

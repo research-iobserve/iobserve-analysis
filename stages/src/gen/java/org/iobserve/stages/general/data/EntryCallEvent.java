@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2020 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,17 @@ import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.14.0
+ * API compatibility: Kieker 1.15.0
  * 
  * @since 0.0.2
  */
-public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
+public class EntryCallEvent extends AbstractMonitoringRecord  {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
 			 + TYPE_SIZE_LONG // EntryCallEvent.exitTime
@@ -56,7 +55,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	private static final long serialVersionUID = -9019303768669463280L;
 	
 	/** property name array. */
-	private static final String[] PROPERTY_NAMES = {
+	public static final String[] VALUE_NAMES = {
 		"entryTime",
 		"exitTime",
 		"operationSignature",
@@ -98,48 +97,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		this.hostname = hostname == null?"":hostname;
 	}
 
-	/**
-	 * This constructor converts the given array into a record.
-	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	public EntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.entryTime = (Long) values[0];
-		this.exitTime = (Long) values[1];
-		this.operationSignature = (String) values[2];
-		this.classSignature = (String) values[3];
-		this.sessionId = (String) values[4];
-		this.hostname = (String) values[5];
-	}
 
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
-	 * @param values
-	 *            The values for the record.
-	 * @param valueTypes
-	 *            The types of the elements in the first array.
-	 *
-	 * @deprecated to be removed 1.15
-	 */
-	@Deprecated
-	protected EntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.entryTime = (Long) values[0];
-		this.exitTime = (Long) values[1];
-		this.operationSignature = (String) values[2];
-		this.classSignature = (String) values[3];
-		this.sessionId = (String) values[4];
-		this.hostname = (String) values[5];
-	}
-
-	
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
@@ -157,27 +115,9 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @deprecated to be removed in 1.15
-	 */
-	@Override
-	@Deprecated
-	public Object[] toArray() {
-		return new Object[] {
-			this.getEntryTime(),
-			this.getExitTime(),
-			this.getOperationSignature(),
-			this.getClassSignature(),
-			this.getSessionId(),
-			this.getHostname(),
-		};
-	}
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
-		//super.serialize(serializer);
 		serializer.putLong(this.getEntryTime());
 		serializer.putLong(this.getExitTime());
 		serializer.putString(this.getOperationSignature());
@@ -199,7 +139,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 */
 	@Override
 	public String[] getValueNames() {
-		return PROPERTY_NAMES; // NOPMD
+		return VALUE_NAMES; // NOPMD
 	}
 	
 	/**
@@ -210,16 +150,6 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		return SIZE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated to be rmeoved in 1.15
-	 */
-	@Override
-	@Deprecated
-	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -260,6 +190,21 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		}
 		
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		code += ((int)this.getEntryTime());
+		code += ((int)this.getExitTime());
+		code += this.getOperationSignature().hashCode();
+		code += this.getClassSignature().hashCode();
+		code += this.getSessionId().hashCode();
+		code += this.getHostname().hashCode();
+		
+		return code;
 	}
 	
 	public final long getEntryTime() {

@@ -1,0 +1,41 @@
+//apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'application'
+apply plugin: 'java'
+
+mainClassName='org.iobserve.resources.calculator.ResourcesCalculatorMain'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
+
+dependencies {
+	clover 'org.openclover:clover:' + cloverVersion
+
+	compile project(":analysis") // behavior model data
+
+	compile 'com.beust:jcommander:' + jcommanderVersion
+}
+
+// SHADOW
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
+//}
+
+test {
+  println 'Starting unit tests.'
+  scanForTestClasses = false
+}
+
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'response.time.calculator'
+//    }
+//}
+
+

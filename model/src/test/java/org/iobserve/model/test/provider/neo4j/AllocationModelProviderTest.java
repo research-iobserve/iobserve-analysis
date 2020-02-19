@@ -18,7 +18,9 @@ package org.iobserve.model.test.provider.neo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
@@ -63,8 +65,8 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenReadByType() {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+    public void createThenReadByType() throws DBException {
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_TYPE, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
@@ -76,34 +78,23 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenReadContaining() {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
-                .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_CONTAINING, this.prefix, this.ePackage);
+    public void createThenReadContaining() throws DBException {
 
-        final AllocationContext writtenContext = this.testModel.getAllocationContexts_Allocation().get(0);
-
-        resource.storeModelPartition(this.testModel);
-
-        final Allocation readModel = (Allocation) resource.findContainingObjectById(AllocationContext.class,
-                AllocationPackage.Literals.ALLOCATION_CONTEXT, resource.getInternalId(writtenContext));
-
-        Assert.assertTrue(this.equalityHelper.comparePartition(this.testModel, readModel, readModel.eClass()));
-
-        resource.getGraphDatabaseService().shutdown();
     }
 
     @Override
     @Test
-    public void createThenReadReferencing() {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+    public void createThenReadReferencing() throws DBException {
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_REFERENCING, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
         final AssemblyContext context = SystemDataFactory.findAssemblyContext(this.system,
                 SystemDataFactory.PAYMENT_ASSEMBLY_CONTEXT);
-        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndId(
-                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT, resource.getInternalId(context));
+        final List<EObject> readReferencingComponents = resource.collectReferencingObjectsByTypeAndProperty(
+                AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
+                ModelGraphFactory.getIdentification(context));
 
         // Only the payment server allocation context is referencing the payment assembly context
         Assert.assertTrue(readReferencingComponents.size() == 1);
@@ -118,8 +109,8 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
 
     @Override
     @Test
-    public void createThenUpdateThenReadUpdated() throws NodeLookupException {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils.prepareResource(
+    public void createThenUpdateThenReadUpdated() throws NodeLookupException, DBException {
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils.prepareResource(
                 AllocationModelProviderTest.CREATE_THEN_UPDATE_THEN_READ_UPDATED, this.prefix, this.ePackage);
 
         final AllocationContext businessOrderServerAllocationContext = AllocationDataFactory
@@ -157,15 +148,17 @@ public class AllocationModelProviderTest extends AbstractEnityModelProviderTest<
      * Writes a model to the graph, reads it from the graph using
      * {@link ModelProvider#findObjectsByTypeAndName(Class, String)} and asserts that it is equal to
      * the one written to the graph.
+     *
+     * @throws DBException
      */
     @Test
-    public final void createThenReadByName() {
-        final ModelResource<Allocation> resource = ModelProviderTestUtils
+    public final void createThenReadByName() throws DBException {
+        final Neo4JModelResource<Allocation> resource = ModelProviderTestUtils
                 .prepareResource(AllocationModelProviderTest.CREATE_THEN_READ_BY_NAME, this.prefix, this.ePackage);
 
         resource.storeModelPartition(this.testModel);
 
-        final List<Allocation> readModels = resource.findObjectsByTypeAndName(this.clazz, this.eClass, "entityName",
+        final List<Allocation> readModels = resource.findObjectsByTypeAndProperty(this.clazz, this.eClass, "entityName",
                 this.testModel.getEntityName());
 
         for (final Allocation readModel : readModels) {

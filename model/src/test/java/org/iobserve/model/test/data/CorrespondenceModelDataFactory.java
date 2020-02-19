@@ -19,7 +19,8 @@ package org.iobserve.model.test.data;
  * @author Reiner Jung
  *
  */
-public final class CorrespondenceModelDataFactory {
+public final class CorrespondenceModelDataFactory { // NOPMD ClassNamingConvetions expects Utils or
+                                                    // Helper, but is Factory
 
     public static final String PCM_ENTITY_NAME = "test.org.pcm.entity";
     public static final String PCM_ENTITY_ID = "testPcmEntityId";

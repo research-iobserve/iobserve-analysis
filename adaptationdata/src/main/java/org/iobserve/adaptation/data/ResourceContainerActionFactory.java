@@ -33,7 +33,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *         "(de-)allocate", removal of resource container replication, changes to sources and
  *         targets of actions)
  */
-public final class ResourceContainerActionFactory {
+public final class ResourceContainerActionFactory { // NOPMD not a utility class, it is a factory
+                                                    // class
 
     /**
      * Empty default constructor.

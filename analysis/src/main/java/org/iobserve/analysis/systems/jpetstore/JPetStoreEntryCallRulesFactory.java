@@ -39,8 +39,10 @@ public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFil
     public EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter;
         modelGenerationFilter = new EntryCallFilterRules(true);
-        modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
-        modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");
+
+        modelGenerationFilter.addFilterRule(".*css.*");
+        modelGenerationFilter.addFilterRule(".*gif");
+        modelGenerationFilter.addFilterRule(".*images.*");
 
         return modelGenerationFilter;
     }

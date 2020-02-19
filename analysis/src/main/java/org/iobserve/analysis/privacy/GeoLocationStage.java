@@ -20,15 +20,16 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.EISOCode;
 import org.iobserve.model.privacy.GeoLocation;
 import org.iobserve.model.privacy.PrivacyFactory;
-import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -43,9 +44,9 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
-    private final ModelResource<PrivacyModel> privacyModelResource;
+    private final IModelResource<DataProtectionModel> privacyModelResource;
 
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource;
+    private final IModelResource<ResourceEnvironment> resourceEnvironmentResource;
 
     /**
      * Create a geo location filter.
@@ -55,14 +56,15 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
      * @param privacyModelResource
      *            privacy model resource
      */
-    public GeoLocationStage(final ModelResource<ResourceEnvironment> resourceEnvironmentResource,
-            final ModelResource<PrivacyModel> privacyModelResource) {
+    public GeoLocationStage(final IModelResource<ResourceEnvironment> resourceEnvironmentResource,
+            final IModelResource<DataProtectionModel> privacyModelResource) {
         this.resourceEnvironmentResource = resourceEnvironmentResource;
         this.privacyModelResource = privacyModelResource;
     }
 
     @Override
     protected void execute(final PCMDeployedEvent event) throws Exception {
+        DeploymentLock.lock();
         this.logger.debug("event received assmeblyContext={} countryCode={} resourceContainer={} service={} url={}",
                 event.getAssemblyContext().getEntityName(), event.getCountryCode(),
                 event.getResourceContainer().getEntityName(), event.getService(), event.getUrl());
@@ -70,8 +72,8 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
         final GeoLocation geoLocation = this.getGeoLocationForContainer(event.getResourceContainer());
         if (geoLocation == null) {
             /** create a geo location. */
-            final PrivacyModel privacyModel = this.privacyModelResource.getModelRootNode(PrivacyModel.class,
-                    PrivacyPackage.Literals.PRIVACY_MODEL);
+            final DataProtectionModel privacyModel = this.privacyModelResource
+                    .getModelRootNode(DataProtectionModel.class, PrivacyPackage.Literals.DATA_PROTECTION_MODEL);
             privacyModel.getResourceContainerLocations()
                     .add(this.createGeoLocation(event.getResourceContainer(), event.getCountryCode()));
             this.privacyModelResource.updatePartition(privacyModel);
@@ -81,6 +83,7 @@ public class GeoLocationStage extends AbstractConsumerStage<PCMDeployedEvent> {
             this.privacyModelResource.updatePartition(geoLocation);
         }
 
+        DeploymentLock.unlock();
         this.outputPort.send(event);
     }
 

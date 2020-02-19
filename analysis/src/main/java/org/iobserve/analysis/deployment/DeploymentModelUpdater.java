@@ -26,9 +26,9 @@ import org.iobserve.model.correspondence.CorrespondenceFactory;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
 import org.iobserve.model.correspondence.Part;
-import org.iobserve.model.persistence.neo4j.DBException;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
-import org.iobserve.model.persistence.neo4j.ModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -50,21 +50,23 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final ModelResource<Allocation> allocationModelResource;
+    private final IModelResource<Allocation> allocationModelResource;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
-    private final ModelResource<CorrespondenceModel> correspondenceModelResource;
+    private final IModelResource<CorrespondenceModel> correspondenceModelResource;
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
+     * @param correspondenceModelResource
+     *            correspondence model resource
      * @param allocationModelResource
      *            allocation model provider
      */
-    public DeploymentModelUpdater(final ModelResource<CorrespondenceModel> correspondenceModelResource,
-            final ModelResource<Allocation> allocationModelResource) {
+    public DeploymentModelUpdater(final IModelResource<CorrespondenceModel> correspondenceModelResource,
+            final IModelResource<Allocation> allocationModelResource) {
         this.correspondenceModelResource = correspondenceModelResource;
         this.allocationModelResource = allocationModelResource;
     }
@@ -83,13 +85,15 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      */
     @Override
     protected void execute(final PCMDeployedEvent event) throws NodeLookupException, InvocationException, DBException {
+        DeploymentLock.lock();
+        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_ENTRY);
         this.logger.debug("Send event from {}", this.getInputPort().getPipe().getSourcePort().getOwningStage().getId());
         this.logger.debug("Deployment model update: assemblyContext={} resourceContainer={} service={}",
                 event.getAssemblyContext(), event.getResourceContainer(), event.getService());
         final String allocationContextName = NameFactory.createAllocationContextName(event.getAssemblyContext(),
                 event.getResourceContainer());
 
-        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndName(
+        final List<AllocationContext> allocationContext = this.allocationModelResource.findObjectsByTypeAndProperty(
                 AllocationContext.class, AllocationPackage.Literals.ALLOCATION_CONTEXT, "entityName",
                 allocationContextName);
         if (allocationContext.isEmpty()) {
@@ -131,6 +135,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         }
 
         // signal deployment update
+        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.MODEL_UPDATE_EXIT);
+        DeploymentLock.unlock();
         this.deployedNotifyOutputPort.send(event);
     }
 

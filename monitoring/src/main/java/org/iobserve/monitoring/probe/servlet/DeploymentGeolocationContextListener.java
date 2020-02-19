@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.servlet;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -42,7 +45,7 @@ import org.iobserve.common.record.ServletUndeployedEvent;
  */
 public class DeploymentGeolocationContextListener extends AbstractDeploymentContextListener {
 
-    public static final String COUNTRY_CODE = "countryCode";
+    public static final String COUNTRY_CODE = "country-code.txt";
 
     /**
      * Create an deployment geolocation context listener.
@@ -60,20 +63,24 @@ public class DeploymentGeolocationContextListener extends AbstractDeploymentCont
         final String context = servletContext.getServletContextName();
 
         final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
-        final String countryCodeNumber = servletContext
-                .getInitParameter(DeploymentGeolocationContextListener.COUNTRY_CODE);
 
-        final ISOCountryCode countryCode;
-
-        if (countryCodeNumber == null) {
-            final ISOCountryCode[] values = ISOCountryCode.values();
-            countryCode = values[(int) (Math.random() * values.length)];
-        } else {
-            countryCode = ISOCountryCode.getEnum(Short.valueOf(countryCodeNumber));
-        }
+        final ISOCountryCode countryCode = this.readCountryCode();
 
         this.monitoringCtrl.newMonitoringRecord(new Privacy_ServletDeployedEvent(this.timeSource.getTime(), service,
                 context, deploymentId, countryCode));
+    }
+
+    private ISOCountryCode readCountryCode() {
+        final File file = new File(DeploymentGeolocationContextListener.COUNTRY_CODE);
+        try {
+            if (file.exists()) {
+                return ISOCountryCode.valueOf(Files.lines(file.toPath()).findFirst().get());
+            } else {
+                return ISOCountryCode.EVIL_EMPIRE;
+            }
+        } catch (final IOException e) {
+            return ISOCountryCode.EVIL_EMPIRE;
+        }
     }
 
     @Override

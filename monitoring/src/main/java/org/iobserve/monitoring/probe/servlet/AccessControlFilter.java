@@ -34,6 +34,9 @@ import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.core.registry.SessionRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
  * this class (i) registers session and trace information into the thread-local data structures
@@ -72,6 +75,8 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     /** Host name of the host the code is running on. */
     protected static final String VM_NAME = SessionAndTraceRegistrationPayloadFilter.CTRLINST.getHostname();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessControlFilter.class);
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
         // no parameters required
@@ -80,14 +85,31 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
+        AccessControlFilter.LOGGER.debug("filter access control {}", request.getRemoteHost());
         if (AccessControlFilter.CTRLINST.isMonitoringEnabled()) {
+            AccessControlFilter.LOGGER.debug("Monitoring enabled");
             if (request instanceof HttpServletRequest) {
                 final String remoteAddr = request.getRemoteAddr();
-                if (this.isInWhiteList(remoteAddr, this.computeLocationId((HttpServletRequest) request))) {
+                final String operationSignature = this.computeOperationSignature((HttpServletRequest) request);
+                AccessControlFilter.LOGGER.debug("HTTP request {} {}", remoteAddr, operationSignature);
+                if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
                     chain.doFilter(request, response);
-                } else {
+                } else if (this.isInList(EListType.BLACKLIST, remoteAddr, operationSignature)) {
                     ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
                     chain.doFilter(request, response);
+                } else {
+                    try {
+                        Thread.sleep(200);
+                        if (this.isInList(EListType.WHITELIST, remoteAddr, operationSignature)) {
+                            chain.doFilter(request, response);
+                        } else {
+                            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            chain.doFilter(request, response);
+                        }
+                    } catch (final InterruptedException e) {
+                        ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        chain.doFilter(request, response);
+                    }
                 }
             }
         } else {
@@ -95,30 +117,79 @@ public class AccessControlFilter implements Filter, IMonitoringProbe {
         }
     }
 
-    private String computeLocationId(final HttpServletRequest request) {
-        String parameters = null;
-        final Enumeration<String> names = request.getParameterNames();
-        while (names.hasMoreElements()) {
-            if (parameters == null) {
-                parameters = names.nextElement();
+    /**
+     * Create the operation signature based on the HTTP Servlet request URI and parameters.
+     *
+     * @param request
+     *            servlet request
+     * @return returns the request uri as operation signature
+     */
+    private String computeOperationSignature(final HttpServletRequest request) {
+        final String parameters;
+        if ("GET".equals(request.getMethod())) {
+            parameters = this.createParameters(request);
+        } else {
+            String contentType = request.getContentType();
+            final int semicolon = contentType.indexOf(";");
+            if (semicolon > 0) {
+                contentType = contentType.substring(0, semicolon).trim();
             } else {
-                parameters += ", " + names.nextElement();
+                contentType = contentType.trim();
+            }
+            if ("application/json".equals(contentType)) {
+                parameters = "Object";
+            } else if ("application/x-www-form-urlencoded".equals(contentType)) {
+                parameters = this.createParameters(request);
+            } else {
+                parameters = "<unknown mime type>";
             }
         }
 
         return String.format("%s (%s)", request.getRequestURI(), parameters);
     }
 
-    private boolean isInWhiteList(final String remoteAddr, final String locationId) {
-        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST.getParameters(locationId);
-        if (parameters != null) {
-            final List<String> whitelist = parameters.get("whitelist");
-            if (whitelist != null) {
-                return whitelist.contains(remoteAddr);
+    private String createParameters(final HttpServletRequest request) {
+        String parameters = "";
+        final Enumeration<String> names = request.getParameterNames();
+        while (names.hasMoreElements()) {
+            if ("".equals(parameters)) {
+                parameters = names.nextElement();
             } else {
+                parameters += ", " + names.nextElement();
+            }
+        }
+
+        return parameters;
+    }
+
+    /**
+     * Check whether an remote address is contained in a list associated with an operation
+     * signature. The list is (in iObserve) either a whitelist or a blacklist. The whitelist
+     * contains all IP addresses which are allowed to request an operation and the blacklist
+     * contains all IPs which are not allowed to request the service.
+     *
+     * @param listType
+     *            name of the list (black or whitelist)
+     * @param remoteAddr
+     * @param operationSignature
+     * @return
+     */
+    private boolean isInList(final EListType listType, final String remoteAddr, final String operationSignature) {
+        AccessControlFilter.LOGGER.debug("isInList {} {}", listType.name(), remoteAddr);
+        final Map<String, List<String>> parameters = AccessControlFilter.CTRLINST
+                .getAllPatternParameters(operationSignature);
+        if (parameters != null) {
+            AccessControlFilter.LOGGER.debug("Has parameters for operation {}", operationSignature);
+            final List<String> valueList = parameters.get(listType.name());
+            if (valueList != null) {
+                AccessControlFilter.LOGGER.debug("Has parameters values for list {}", valueList.size());
+                return valueList.contains(remoteAddr);
+            } else {
+                AccessControlFilter.LOGGER.debug("No parameters for list.");
                 return false;
             }
         } else {
+            AccessControlFilter.LOGGER.debug("No parameters for operation {} found", operationSignature);
             return false;
         }
     }

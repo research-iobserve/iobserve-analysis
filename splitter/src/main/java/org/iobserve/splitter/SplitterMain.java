@@ -23,17 +23,16 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
-
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 /**
  * Splitter main class.
  *
  * @author Reiner Jung
  */
-public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfiguration> {
+public final class SplitterMain extends AbstractService<PipelineConfiguration, SplitterMain> {
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
@@ -60,14 +59,14 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new SplitterMain().run("Splitter", "splitter", args);
+        final SplitterMain main = new SplitterMain();
+        System.exit(main.run("Splitter", "splitter", args, main));
     }
 
     @Override
-    protected SimpleSplitterConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
+    protected PipelineConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
-            return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
+            return new PipelineConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -75,12 +74,8 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.checkDirectory(this.sourceLocation, "Source", commander)
-                    && CommandLineParameterEvaluation.checkDirectory(this.targetLocation, "Target", commander);
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.checkDirectory(this.sourceLocation, "Source", commander)
+                && ParameterEvaluationUtils.checkDirectory(this.targetLocation, "Target", commander);
     }
 
     @Override

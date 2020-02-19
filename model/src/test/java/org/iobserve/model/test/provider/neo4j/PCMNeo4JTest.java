@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.model.test.provider.neo4j;
 
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.iobserve.model.persistence.neo4j.NodeLookupException;
 import org.iobserve.model.test.data.AllocationDataFactory;
 import org.iobserve.model.test.data.RepositoryModelDataFactory;
@@ -49,13 +50,13 @@ public class PCMNeo4JTest {
     private System system;
     private Allocation allocation;
 
-    private final ModelResource<Repository> repositoryResource = ModelProviderTestUtils.prepareResource("repository",
+    private final Neo4JModelResource<Repository> repositoryResource = ModelProviderTestUtils.prepareResource("repository",
             PCMNeo4JTest.PREFIX, RepositoryPackage.eINSTANCE);
-    private final ModelResource<ResourceEnvironment> resourceEnvironmentResource = ModelProviderTestUtils
+    private final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentResource = ModelProviderTestUtils
             .prepareResource("resource-environment", PCMNeo4JTest.PREFIX, ResourceenvironmentPackage.eINSTANCE);
-    private final ModelResource<System> systemResource = ModelProviderTestUtils.prepareResource("system",
+    private final Neo4JModelResource<System> systemResource = ModelProviderTestUtils.prepareResource("system",
             PCMNeo4JTest.PREFIX, SystemPackage.eINSTANCE);
-    private final ModelResource<Allocation> allocationResource = ModelProviderTestUtils.prepareResource("allocation",
+    private final Neo4JModelResource<Allocation> allocationResource = ModelProviderTestUtils.prepareResource("allocation",
             PCMNeo4JTest.PREFIX, AllocationPackage.eINSTANCE);
 
     /**
@@ -75,9 +76,11 @@ public class PCMNeo4JTest {
      *
      * @throws NodeLookupException
      *             on node lookup errors
+     * @throws DBException
+     *             on db errors
      */
     @Test
-    public void testUpdate() throws NodeLookupException {
+    public void testUpdate() throws NodeLookupException, DBException {
         /** store model in database. */
         this.repositoryResource.storeModelPartition(this.repository);
         this.resourceEnvironmentResource.storeModelPartition(this.resourceEnvironment);

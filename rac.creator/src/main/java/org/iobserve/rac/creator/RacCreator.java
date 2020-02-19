@@ -17,9 +17,11 @@ package org.iobserve.rac.creator;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -137,8 +139,7 @@ public class RacCreator {
         }
 
         try {
-            final FileReader reader = new FileReader(filePath);
-            final BufferedReader in = new BufferedReader(reader);
+            final BufferedReader in = Files.newBufferedReader(Paths.get(filePath), StandardCharsets.UTF_8);
             String line = in.readLine();
             while (line != null) {
                 final int start = Integer.parseInt(line.substring(1, line.indexOf(';')));

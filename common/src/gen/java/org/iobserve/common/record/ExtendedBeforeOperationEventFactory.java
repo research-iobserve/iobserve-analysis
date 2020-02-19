@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2020 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ExtendedBeforeOperationEventFactory implements IRecordFactory<ExtendedBeforeOperationEvent> {
 	
-	
 	@Override
 	public ExtendedBeforeOperationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ExtendedBeforeOperationEvent(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public ExtendedBeforeOperationEvent create(final Object[] values) {
-		return new ExtendedBeforeOperationEvent(values);
-	}
-	
+			public String[] getValueNames() {
+				return ExtendedBeforeOperationEvent.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return ExtendedBeforeOperationEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return ExtendedBeforeOperationEvent.SIZE;
 	}

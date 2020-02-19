@@ -27,8 +27,19 @@ import java.util.List;
  */
 public interface IErrorMessages {
 
+    /**
+     * Get date of error messages.
+     *
+     * @return date of the messages
+     */
     Date getDate();
 
+    /**
+     * Set date of error messages.
+     *
+     * @param date
+     *            of the messages
+     */
     void setDate(Date date);
 
     /**
@@ -37,14 +48,6 @@ public interface IErrorMessages {
      * @return the contained (error) messages.
      */
     List<String> getMessages();
-
-    /**
-     * Sets the list of saved messages.
-     *
-     * @param messages
-     *            the list of messages.
-     */
-    void setMessages(List<String> messages);
 
     /**
      * Adds one message to the list.

@@ -1,0 +1,30 @@
+apply plugin: 'application'
+
+mainClassName='org.iobserve.simulate.petstore.SimulatePetStoreMain'
+
+dependencies {
+	clover "org.openclover:clover:$cloverVersion"
+	
+	compile project(":common")
+	compile project(":stages")
+	
+	compile "com.beust:jcommander:${jcommanderVersion}"
+}
+
+clover {
+	report {
+		html=true
+	}
+	
+}
+
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'simulate.petstore'
+//    }
+//}
+
+

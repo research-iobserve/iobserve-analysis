@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2020 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class PayloadAwareEntryCallEventFactory implements IRecordFactory<PayloadAwareEntryCallEvent> {
 	
-	
 	@Override
 	public PayloadAwareEntryCallEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new PayloadAwareEntryCallEvent(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public PayloadAwareEntryCallEvent create(final Object[] values) {
-		return new PayloadAwareEntryCallEvent(values);
-	}
-	
+			public String[] getValueNames() {
+				return PayloadAwareEntryCallEvent.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return PayloadAwareEntryCallEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return PayloadAwareEntryCallEvent.SIZE;
 	}

@@ -26,19 +26,14 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.hamcrest.core.Is;
+import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.neo4j.ModelProviderUtil;
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.model.test.storage.one.EnumValueExample;
-import org.iobserve.model.test.storage.one.OneFactory;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
+import org.iobserve.model.test.data.TestModelData;
 import org.iobserve.model.test.storage.one.OnePackage;
-import org.iobserve.model.test.storage.one.Other;
-import org.iobserve.model.test.storage.one.OtherInterface;
 import org.iobserve.model.test.storage.one.Root;
-import org.iobserve.model.test.storage.one.SpecialA;
-import org.iobserve.model.test.storage.one.SpecialB;
 import org.iobserve.model.test.storage.two.Link;
 import org.iobserve.model.test.storage.two.Two;
-import org.iobserve.model.test.storage.two.TwoFactory;
 import org.iobserve.model.test.storage.two.TwoPackage;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,12 +51,6 @@ public class ECoreNeo4JTest {
     private Root modelOne;
     private Two modelTwo;
 
-    private Other firstOther;
-    private Other secondOther;
-
-    private OneFactory oneFactory;
-    private TwoFactory twoFactory;
-
     private final CompareModelPartitions equalityHelper = new CompareModelPartitions();
 
     /**
@@ -74,8 +63,8 @@ public class ECoreNeo4JTest {
     public void setUp() {
         this.prefix = this.getClass().getCanonicalName();
 
-        this.createModelOne();
-        this.createModelTwo();
+        this.modelOne = TestModelData.createModelOne();
+        this.modelTwo = TestModelData.createModelTwo();
 
         final Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
@@ -92,71 +81,14 @@ public class ECoreNeo4JTest {
         }
     }
 
-    private void createModelTwo() {
-        this.twoFactory = TwoFactory.eINSTANCE;
-
-        this.modelTwo = this.twoFactory.createTwo();
-
-        this.modelTwo.getLinks().add(this.createLink(this.firstOther));
-    }
-
-    private Link createLink(final Other other) {
-        final Link link = this.twoFactory.createLink();
-        link.setReference(other);
-        return link;
-    }
-
-    private void createModelOne() {
-        this.oneFactory = OneFactory.eINSTANCE;
-
-        this.modelOne = this.oneFactory.createRoot();
-        this.modelOne.setEnumerate(EnumValueExample.B);
-        this.modelOne.setFixed("fixed value");
-        this.modelOne.setName("root name");
-
-        this.modelOne.getLabels().add("label 1");
-        this.modelOne.getLabels().add("label 2");
-        this.modelOne.getLabels().add("label 3");
-
-        this.firstOther = this.createOther("first other");
-        this.secondOther = this.createOther("second other");
-        this.modelOne.getOthers().add(this.firstOther);
-        this.modelOne.getOthers().add(this.secondOther);
-
-        this.modelOne.getIfaceOthers().add(this.createSpecialA(this.firstOther));
-        this.modelOne.getIfaceOthers().add(this.createSpecialB());
-    }
-
-    private OtherInterface createSpecialB() {
-        final SpecialA subspecial = this.oneFactory.createSpecialA();
-
-        final SpecialB special = this.oneFactory.createSpecialB();
-        special.setNext(subspecial);
-        return special;
-    }
-
-    private OtherInterface createSpecialA(final Other other) {
-        final SpecialB subspecial = this.oneFactory.createSpecialB();
-
-        final SpecialA special = this.oneFactory.createSpecialA();
-        special.setNext(subspecial);
-        special.setRelate(other);
-        return special;
-    }
-
-    private Other createOther(final String string) {
-        final Other other = this.oneFactory.createOther();
-        other.setName(string);
-
-        return other;
-    }
-
     /**
      * Test whether the model is stored correctly.
+     * 
+     * @throws DBException
      */
     @Test
-    public void testStoreResourceCreate() {
-        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
+    public void testStoreResourceCreate() throws DBException {
+        final Neo4JModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphCreate", this.prefix,
                 TwoPackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
@@ -172,15 +104,17 @@ public class ECoreNeo4JTest {
 
     /**
      * Test whether the model is stored correctly.
+     *
+     * @throws DBException
      */
     @Test
-    public void testStoreResourceAndRead() {
-        final ModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
+    public void testStoreResourceAndRead() throws DBException {
+        final Neo4JModelResource<Root> resource = ModelProviderTestUtils.prepareResource("testStoreGraphAndRead",
                 this.prefix, OnePackage.eINSTANCE);
 
         resource.storeModelPartition(this.modelOne);
 
-        final List<Root> readModel = resource.findObjectsByTypeAndName(Root.class, OnePackage.Literals.ROOT, "name",
+        final List<Root> readModel = resource.findObjectsByTypeAndProperty(Root.class, OnePackage.Literals.ROOT, "name",
                 this.modelOne.getName());
 
         Assert.assertTrue(
@@ -191,16 +125,18 @@ public class ECoreNeo4JTest {
 
     /**
      * Test create, clone and read sequence.
+     *
+     * @throws DBException
      */
     @Test
-    public void createThenCloneThenRead() {
-        final ModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
+    public void createThenCloneThenRead() throws DBException {
+        final Neo4JModelResource<Root> storeResource = ModelProviderTestUtils.prepareResource("createThenCloneThenRead",
                 this.prefix, OnePackage.eINSTANCE);
 
         storeResource.storeModelPartition(this.modelOne);
         storeResource.getGraphDatabaseService().shutdown();
 
-        final ModelResource<Root> newVersionResource = ModelProviderUtil
+        final Neo4JModelResource<Root> newVersionResource = ModelProviderUtil
                 .createNewModelResourceVersion(OnePackage.eINSTANCE, storeResource);
 
         final Root clonedModel = newVersionResource.getModelRootNode(Root.class, OnePackage.Literals.ROOT);
@@ -211,15 +147,15 @@ public class ECoreNeo4JTest {
 
     @Test
     public void createWithReferenceThenUpdate() throws Exception {
-        final ModelResource<Root> oneResource = ModelProviderTestUtils
+        final Neo4JModelResource<Root> oneResource = ModelProviderTestUtils
                 .prepareResource("createWithReferenceThenUpdate-one", this.prefix, OnePackage.eINSTANCE);
-        final ModelResource<Two> twoResource = ModelProviderTestUtils
+        final Neo4JModelResource<Two> twoResource = ModelProviderTestUtils
                 .prepareResource("createWithReferenceThenUpdate-two", this.prefix, TwoPackage.eINSTANCE);
 
         oneResource.storeModelPartition(this.modelOne);
         twoResource.storeModelPartition(this.modelTwo);
 
-        this.modelTwo.getLinks().add(this.createLink(this.secondOther));
+        this.modelTwo.getLinks().add(TestModelData.createLink(TestModelData.SECOND_OTHER));
 
         twoResource.updatePartition(this.modelTwo);
 

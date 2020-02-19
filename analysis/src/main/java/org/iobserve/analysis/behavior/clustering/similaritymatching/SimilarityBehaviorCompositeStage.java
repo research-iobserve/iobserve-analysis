@@ -16,6 +16,8 @@
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -26,9 +28,7 @@ import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

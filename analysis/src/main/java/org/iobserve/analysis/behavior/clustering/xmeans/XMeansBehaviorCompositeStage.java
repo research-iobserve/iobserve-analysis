@@ -16,6 +16,8 @@
 package org.iobserve.analysis.behavior.clustering.xmeans;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
+import kieker.common.util.classpath.InstantiationFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
@@ -30,9 +32,7 @@ import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeS
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * @author Reiner Jung
@@ -70,16 +70,17 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
         final String representativeStrategyClassName = configuration
                 .getStringProperty(XMeansBehaviorCompositeStage.REPRESENTATIVE_STRATEGY);
-        final IRepresentativeStrategy representativeStrategy = InstantiationFactory
+        final IRepresentativeStrategy representativeStrategy = InstantiationFactory.getInstance(configuration)
                 .create(IRepresentativeStrategy.class, representativeStrategyClassName, null);
         final boolean keepEmptyTransitions = true;
 
         this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
+        userSessionModelAggregator.declareActive();
 
-        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(modelGenerationFilter,
-                representativeStrategy, keepEmptyTransitions);
+        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(
+                modelGenerationFilter, representativeStrategy, keepEmptyTransitions);
 
         /** aggregation setup. */
         final String namePrefix = configuration.getStringProperty(XMeansBehaviorCompositeStage.NAME_PREFIX);

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
-	
 	@Override
 	public ServerGeoLocation create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ServerGeoLocation(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public ServerGeoLocation create(final Object[] values) {
-		return new ServerGeoLocation(values);
-	}
-	
+			public String[] getValueNames() {
+				return ServerGeoLocation.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return ServerGeoLocation.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return ServerGeoLocation.SIZE;
 	}

@@ -25,9 +25,11 @@ public abstract class AbstractTcpControlEvent {
 
     private String ip;
     private int port;
-    private String hostname;
+    private String serviceComponent;
 
-    private final String pattern;
+    private final String operationSignature;
+
+    private final long triggerTimestamp;
 
     /**
      * Creates a complete control event.
@@ -36,26 +38,32 @@ public abstract class AbstractTcpControlEvent {
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
-     * @param hostname
+     * @param serviceComponent
      *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public AbstractTcpControlEvent(final String ip, final int port, final String hostname, final String pattern) {
-        this(pattern);
+    public AbstractTcpControlEvent(final String ip, final int port, final String serviceComponent, final String pattern,
+            final long triggerTimestamp) {
+        this(pattern, triggerTimestamp);
         this.ip = ip;
         this.port = port;
-        this.hostname = hostname;
+        this.serviceComponent = serviceComponent;
     }
 
     /**
      * Creates a new control event without content except the pattern.
      *
-     * @param pattern
+     * @param operationSignature
      *            The pattern of the method that should be monitored.
+     * @param triggerTimestamp
+     *            original trigger timestamp
      */
-    public AbstractTcpControlEvent(final String pattern) {
-        this.pattern = pattern;
+    public AbstractTcpControlEvent(final String operationSignature, final long triggerTimestamp) {
+        this.operationSignature = operationSignature;
+        this.triggerTimestamp = triggerTimestamp;
     }
 
     public String getIp() {
@@ -66,12 +74,12 @@ public abstract class AbstractTcpControlEvent {
         return this.port;
     }
 
-    public String getHostname() {
-        return this.hostname;
+    public String getServiceComponent() {
+        return this.serviceComponent;
     }
 
-    public String getPattern() {
-        return this.pattern;
+    public String getOperationSignature() {
+        return this.operationSignature;
     }
 
     public void setIp(final String ip) {
@@ -83,7 +91,11 @@ public abstract class AbstractTcpControlEvent {
     }
 
     public void setHostname(final String hostname) {
-        this.hostname = hostname;
+        this.serviceComponent = hostname;
+    }
+
+    public long getTriggerTimestamp() {
+        return this.triggerTimestamp;
     }
 
 }

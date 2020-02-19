@@ -19,20 +19,19 @@ import java.io.File;
 import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
 
 import org.iobserve.model.ModelImporter;
 import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.CorrespondencePackage;
-import org.iobserve.model.persistence.neo4j.ModelResource;
-import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
+import org.iobserve.model.privacy.DataProtectionModel;
 import org.iobserve.model.privacy.PrivacyPackage;
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -53,22 +52,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  * @since 0.0.1
  */
-public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguration> {
-
-    private static final String PALLADIO_PREFIX = "org.palladiosimulator";
-
-    @Parameter(names = "--help", help = true)
-    private boolean help; // NOPMD access through reflection
-
-    @Parameter(names = { "-c",
-            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
-    private File configurationFile;
-
-    private File modelInitDirectory;
-
-    private File modelDatabaseDirectory;
-
-    private boolean pcmFeature;
+public final class AnalysisMain extends AbstractService<AnalysisConfiguration, AnalysisSettings> {
 
     /**
      * Default constructor.
@@ -84,109 +68,119 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new AnalysisMain().run("Analysis Service", "analysis", args);
+        java.lang.System.exit(new AnalysisMain().run("Analysis Service", "analysis", args, new AnalysisSettings()));
     }
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         boolean configurationGood = true;
-        try {
-            this.pcmFeature = configuration.getBooleanProperty(ConfigurationKeys.PCM_FEATURE);
-            if (this.pcmFeature) {
-                /** process configuration parameter. */
-                this.modelInitDirectory = new File(
-                        configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY));
-                if (this.modelInitDirectory == null) {
-                    AbstractServiceMain.LOGGER.info("Reuse PCM model in database.");
-                } else {
-                    configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory,
-                            "PCM startup model", commander);
-                }
-
-                this.modelDatabaseDirectory = new File(
-                        configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY));
-                configurationGood &= CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
-                        "PCM database directory", commander);
+        this.parameterConfiguration.setPcmFeature(configuration.getBooleanProperty(ConfigurationKeys.PCM_FEATURE));
+        if (this.parameterConfiguration.isPcmFeature()) {
+            /** process configuration parameter. */
+            this.parameterConfiguration.setModelInitDirectory(
+                    new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY)));
+            if (this.parameterConfiguration.getModelInitDirectory() == null) {
+                this.logger.info("Reuse PCM model in database.");
+            } else {
+                configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                        this.parameterConfiguration.getModelInitDirectory(), "PCM startup model", commander);
             }
 
-            if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE)) {
-                configurationGood &= CommandLineParameterEvaluation.createURL(
-                        configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
-                        "Management visualization URL") != null;
-            }
-
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
+            this.parameterConfiguration.setModelDatabaseDirectory(
+                    new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY)));
+            configurationGood &= ParameterEvaluationUtils.checkDirectory(
+                    this.parameterConfiguration.getModelDatabaseDirectory(), "PCM database directory", commander);
         }
+
+        if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE)) {
+            configurationGood &= ParameterEvaluationUtils.createURL(
+                    configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
+                    "Management visualization URL") != null;
+        }
+
+        return configurationGood;
     }
 
     @Override
-    protected AnalysisConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
+    protected AnalysisConfiguration createTeetimeConfiguration() throws ConfigurationException {
 
         // TODO fix ModelResource types add Types for generics
         /** Configure model handling. */
-        if (this.pcmFeature) {
+        if (this.parameterConfiguration.isPcmFeature()) {
             try {
-                final ModelImporter modelHandler = new ModelImporter(this.modelInitDirectory);
+                final ModelImporter modelHandler = new ModelImporter(
+                        this.parameterConfiguration.getModelInitDirectory());
 
                 /** initialize neo4j graphs. */
-                final ModelResource<CorrespondenceModel> correspondenceModelResource = new ModelResource<>(
-                        CorrespondencePackage.eINSTANCE, new File(this.modelDatabaseDirectory, "correspondence"));
+                final Neo4JModelResource<CorrespondenceModel> correspondenceModelResource = new Neo4JModelResource<>(
+                        CorrespondencePackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "correspondence"));
                 correspondenceModelResource.storeModelPartition(modelHandler.getCorrespondenceModel());
 
-                final ModelResource<Repository> repositoryModelResource = new ModelResource<>(
-                        RepositoryPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "repository"));
+                final Neo4JModelResource<Repository> repositoryModelResource = new Neo4JModelResource<>(
+                        RepositoryPackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "repository"));
                 repositoryModelResource.storeModelPartition(modelHandler.getRepositoryModel());
 
-                final ModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new ModelResource<>(
+                final Neo4JModelResource<ResourceEnvironment> resourceEnvironmentModelResource = new Neo4JModelResource<>(
                         ResourceenvironmentPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "resourceenvironment")); // add
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "resourceenvironment")); // add
 
                 resourceEnvironmentModelResource.storeModelPartition(modelHandler.getResourceEnvironmentModel());
 
-                final ModelResource<System> systemModelResource = new ModelResource<>(SystemPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "system"));
+                final Neo4JModelResource<System> systemModelResource = new Neo4JModelResource<>(SystemPackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "system"));
                 systemModelResource.storeModelPartition(modelHandler.getSystemModel());
 
-                final ModelResource<Allocation> allocationModelResource = new ModelResource<>(
-                        AllocationPackage.eINSTANCE, new File(this.modelDatabaseDirectory, "allocation"));
+                final Neo4JModelResource<Allocation> allocationModelResource = new Neo4JModelResource<>(
+                        AllocationPackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "allocation"));
                 allocationModelResource.storeModelPartition(modelHandler.getAllocationModel());
 
-                final ModelResource<UsageModel> usageModelResource = new ModelResource<>(UsagemodelPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "usageModel"));
+                final Neo4JModelResource<UsageModel> usageModelResource = new Neo4JModelResource<>(
+                        UsagemodelPackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "usageModel"));
                 usageModelResource.storeModelPartition(modelHandler.getUsageModel());
 
-                final ModelResource<PrivacyModel> privacyModelResource = new ModelResource<>(PrivacyPackage.eINSTANCE,
-                        new File(this.modelDatabaseDirectory, "privacy"));
+                final Neo4JModelResource<DataProtectionModel> privacyModelResource = new Neo4JModelResource<>(
+                        PrivacyPackage.eINSTANCE,
+                        new File(this.parameterConfiguration.getModelDatabaseDirectory(), "privacy"));
                 privacyModelResource.storeModelPartition(modelHandler.getPrivacyModel());
 
                 // get systemId
                 final System systemModel = systemModelResource.getModelRootNode(System.class,
                         SystemPackage.Literals.SYSTEM);
 
-                configuration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
+                this.kiekerConfiguration.setProperty(ConfigurationKeys.SYSTEM_ID, systemModel.getId());
 
-                return new AnalysisConfiguration(configuration, repositoryModelResource,
+                return new AnalysisConfiguration(this.kiekerConfiguration, repositoryModelResource,
                         resourceEnvironmentModelResource, systemModelResource, allocationModelResource,
                         usageModelResource, correspondenceModelResource);
             } catch (final IOException e) {
-                java.lang.System.err.println("Canot load all models " + e.getLocalizedMessage());
+                // TODO should be replaced by logger
+                java.lang.System.err.println("Cannot load all models " + e.getLocalizedMessage()); // NOPMD
+                                                                                                   // pmd
+                                                                                                   // bug,
+                                                                                                   // FQN
+                                                                                                   // required
+                return null;
+            } catch (final DBException e) {
+                // TODO should be replaced by logger
+                java.lang.System.err.println("Cannot store all models in DB " + e.getLocalizedMessage()); // NOPMD
+                                                                                                          // pmd
+                                                                                                          // bug,
+                                                                                                          // FQN
+                                                                                                          // required
                 return null;
             }
         } else {
-            return new AnalysisConfiguration(configuration);
+            return new AnalysisConfiguration(this.kiekerConfiguration);
         }
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.getConfigurationFile(), "Configuration File", commander);
     }
 
     @Override
@@ -199,7 +193,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
     @Override
     protected File getConfigurationFile() {
-        return this.configurationFile;
+        return this.parameterConfiguration.getConfigurationFile();
     }
 
 }

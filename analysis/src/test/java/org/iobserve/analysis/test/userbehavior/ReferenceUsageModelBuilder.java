@@ -31,7 +31,7 @@ package org.iobserve.analysis.test.userbehavior;
  *
  * @author David Peter, Robert Heinrich
  */
-public final class ReferenceUsageModelBuilder {
+public final class ReferenceUsageModelBuilder { // NOPMD is not a usual utility class, but a builder
 
     // EntryCallEvents used to create the PCM EntryLevelSystemCalls
     public static final String[] CLASS_SIGNATURE = { "de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale",

@@ -16,16 +16,16 @@
 package org.iobserve.planning;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
+import kieker.tools.common.ParameterEvaluationUtils;
+
 import org.iobserve.planning.configurations.PlanningConfigurationMockup;
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * A main class for mocking iObserve's planning service.
@@ -33,7 +33,8 @@ import org.iobserve.stages.general.ConfigurationException;
  * @author Lars Bluemke
  *
  */
-public class PlanningMainMockup extends AbstractServiceMain<PlanningConfigurationMockup> {
+public class PlanningMainMockup extends AbstractService<PlanningConfigurationMockup, PlanningMainMockup> {
+
     @Parameter(names = "--help", help = true)
     private boolean help; // NOPMD access through reflection
 
@@ -48,7 +49,8 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        new PlanningMainMockup().run("Planning Service", "planning", args);
+        final PlanningMainMockup main = new PlanningMainMockup();
+        System.exit(main.run("Planning Service", "planning", args, main));
     }
 
     @Override
@@ -56,44 +58,40 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
             final JCommander commander) {
         boolean configurationGood = true;
 
-        try {
-            final File runtimeModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(runtimeModelDirectory,
-                    "Runtime Model Directory", commander);
-
-            final File redeploymentModelDirectory = new File(
-                    configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
-                    PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-            configurationGood &= CommandLineParameterEvaluation.checkDirectory(redeploymentModelDirectory,
-                    "Redeployment Model Directory", commander);
-
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
-            configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
-                    .isEmpty();
-            configurationGood &= !configuration
-                    .getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT).isEmpty();
-
-            return configurationGood;
-        } catch (final IOException e) {
-            return false;
-        }
-    }
-
-    @Override
-    protected PlanningConfigurationMockup createConfiguration(
-            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
         final File runtimeModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(runtimeModelDirectory, "Runtime Model Directory",
+                commander);
+
         final File redeploymentModelDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
                 PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
-        final String adaptationHostname = configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
-        final int adaptationRuntimeModelInputPort = configuration
+        configurationGood &= ParameterEvaluationUtils.checkDirectory(redeploymentModelDirectory,
+                "Redeployment Model Directory", commander);
+
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME).isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT)
+                .isEmpty();
+        configurationGood &= !configuration.getStringProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT)
+                .isEmpty();
+
+        return configurationGood;
+    }
+
+    @Override
+    protected PlanningConfigurationMockup createTeetimeConfiguration() throws ConfigurationException {
+        final File runtimeModelDirectory = new File(
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.RUNTIMEMODEL_DIRECTORY_NAME);
+        final File redeploymentModelDirectory = new File(
+                this.kiekerConfiguration.getStringProperty(ConfigurationKeys.WORKING_DIRECTORY),
+                PlanningMain.REDEPLOYMENTMODEL_DIRECTORY_NAME);
+        final String adaptationHostname = this.kiekerConfiguration
+                .getStringProperty(ConfigurationKeys.ADAPTATION_HOSTNAME);
+        final int adaptationRuntimeModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_RUNTIMEMODEL_INPUTPORT);
-        final int adaptationRedeploymentModelInputPort = configuration
+        final int adaptationRedeploymentModelInputPort = this.kiekerConfiguration
                 .getIntProperty(ConfigurationKeys.ADAPTATION_REDEPLOYMENTMODEL_INPUTPORT);
 
         return new PlanningConfigurationMockup(runtimeModelDirectory, redeploymentModelDirectory, adaptationHostname,
@@ -102,11 +100,7 @@ public class PlanningMainMockup extends AbstractServiceMain<PlanningConfiguratio
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
-        try {
-            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return ParameterEvaluationUtils.isFileReadable(this.configurationFile, "Configuration File", commander);
     }
 
     @Override

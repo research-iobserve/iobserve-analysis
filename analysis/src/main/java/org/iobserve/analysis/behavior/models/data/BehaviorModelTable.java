@@ -18,6 +18,7 @@ package org.iobserve.analysis.behavior.models.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +91,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         // verify input
         final int length = signatures.size();
 
-        if (length == reverseSignatures.length && length == transitions.length) {
+        if ((length == reverseSignatures.length) && (length == transitions.length)) {
 
             for (final Integer[] transition : transitions) {
                 if (length != transition.length) {
@@ -192,7 +193,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         for (int i = 0; i < clearedTransitions.length; i++) {
             for (int j = 0; j < clearedTransitions.length; j++) {
-                clearedTransitions[i][j] = this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION
+                clearedTransitions[i][j] = (this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION)
                         && keepEmptyTransitions ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
 
             }
@@ -246,7 +247,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     public Instance toInstance() {
         final List<Double> attValues = new ArrayList<>();
 
-        // create vector from matrix
+        // add transitions
         for (int i = 0; i < this.signatures.size(); i++) {
             for (int j = 0; j < this.signatures.size(); j++) {
 
@@ -258,11 +259,26 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> {
-            if (callInformation.getRepresentativeValue() != null) {
-                attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()));
+        final Collection<Pair<Integer, AggregatedCallInformation[]>> signatureCollection = this.signatures.values();
+        for (final Pair<Integer, AggregatedCallInformation[]> pair : signatureCollection) {
+            for (final AggregatedCallInformation callInformation : pair.getValue()) {
+                if (callInformation.getRepresentativeValue() != null) { // Check for
+                                                                        // representativeValues that
+                                                                        // are null
+                    attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()));
+                } else {
+                    attValues.add(0.0);
+                }
+
             }
-        }));
+        }
+
+        // this.signatures.values().stream()
+        // .forEach(pair ->
+        // Arrays.stream(pair.getSecond())
+        // .forEach(callInformation ->
+        // attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))
+        // ));
 
         final double[] attArray = new double[attValues.size()];
 

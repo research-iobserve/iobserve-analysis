@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,22 @@ import kieker.common.record.io.IValueDeserializer;
 /**
  * @author Generic Kieker
  * 
- * @since 1.14
+ * @since 1.15
  */
 public final class Privacy_ServletDeployedEventFactory implements IRecordFactory<Privacy_ServletDeployedEvent> {
-	
 	
 	@Override
 	public Privacy_ServletDeployedEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new Privacy_ServletDeployedEvent(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public Privacy_ServletDeployedEvent create(final Object[] values) {
-		return new Privacy_ServletDeployedEvent(values);
-	}
-	
+			public String[] getValueNames() {
+				return Privacy_ServletDeployedEvent.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return Privacy_ServletDeployedEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return Privacy_ServletDeployedEvent.SIZE;
 	}

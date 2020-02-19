@@ -38,9 +38,12 @@ cpdErrorThreshold = 360
 org.gradle.jvmargs = "-XX:MaxPermSize=2048m -Xmx3g"
 
 checkstyleVersion = 8.8
-pmdAndCpdVersion = 5.2.2
-# => '5.5.0' causes many new PMD errors and PMD warnings
+pmdAndCpdVersion = 6.8.0
 fbVersion = 3.0.1
 
 cloverCoverage = 14.0
 
+# lib versions
+cloverVersion = 4.3.1
+cloverPluginVersion = 2.2.3
+jcommanderVersion = 1.72

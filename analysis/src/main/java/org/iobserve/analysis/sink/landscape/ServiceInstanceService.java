@@ -21,8 +21,10 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.service.util.Changelog;
-import org.iobserve.model.persistence.neo4j.ModelResource;
+import org.iobserve.analysis.service.util.ChangelogHelper;
+import org.iobserve.model.persistence.DBException;
+import org.iobserve.model.persistence.neo4j.ModelGraphFactory;
+import org.iobserve.model.persistence.neo4j.Neo4JModelResource;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
@@ -84,20 +86,21 @@ public class ServiceInstanceService {
      * @param systemModelGraphProvider
      *            provider for the system model
      * @return JsonObject for deleting a service instance
+     * @throws DBException
      */
 
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,
-            final String nodeId, final ModelResource<System> systemModelGraphProvider) {
+            final String nodeId, final Neo4JModelResource<System> systemModelGraphProvider) throws DBException {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
-        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndId(
+        final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider.collectReferencingObjectsByTypeAndProperty(
                 AssemblyContext.class, CompositionPackage.Literals.ASSEMBLY_CONTEXT,
-                systemModelGraphProvider.getInternalId(assemblyContext));
+                ModelGraphFactory.getIdentification(assemblyContext));
         // if so, delete all communicationInstances
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {
                 if (maybeAssemblyConnectors.get(i) instanceof AssemblyConnector) {
-                    Changelog.delete(this.communicationInstanceService
+                    ChangelogHelper.delete(this.communicationInstanceService
                             .deleteCommunicationInstance((AssemblyConnector) maybeAssemblyConnectors.get(i)));
                 }
             }

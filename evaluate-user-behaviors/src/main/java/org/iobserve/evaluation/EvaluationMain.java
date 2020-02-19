@@ -25,11 +25,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.exception.ConfigurationException;
+import kieker.tools.common.AbstractService;
 
 import teetime.framework.ExecutionException;
 
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  */
-public final class EvaluationMain extends AbstractServiceMain<EvaluationConfiguration> {
+public final class EvaluationMain extends AbstractService<EvaluationConfiguration, EvaluationMain> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationMain.class);
 
@@ -69,7 +69,8 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
      */
     public static void main(final String[] args) {
         try {
-            new EvaluationMain().run("Evaluation of behavior models.", "evaluation", args);
+            final EvaluationMain main = new EvaluationMain();
+            System.exit(main.run("Evaluation of behavior models.", "evaluation", args, main));
         } catch (final ExecutionException ex) {
             final Map<Thread, List<Exception>> exceptions = ex.getThrownExceptions();
             for (final Thread th : exceptions.keySet()) {
@@ -79,8 +80,7 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
     }
 
     @Override
-    protected EvaluationConfiguration createConfiguration(final Configuration configuration)
-            throws ConfigurationException {
+    protected EvaluationConfiguration createTeetimeConfiguration() throws ConfigurationException {
         try {
             return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
         } catch (final IOException e) {

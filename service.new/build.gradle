@@ -2,12 +2,12 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	clover 'org.openclover:clover:4.2.0'
+	clover 'org.openclover:clover:' + cloverVersion
 
 	compile project(":common")
 	compile project(":stages")
 
-	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	compile 'net.sourceforge.teetime:teetime:3.0'
     	
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
 }
@@ -42,11 +42,12 @@ artifacts {
     //archives javadocJar
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.version = version
-        pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service'
-    }
-}
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'service'
+//    }
+//}
 

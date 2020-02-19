@@ -1,0 +1,68 @@
+apply plugin: 'application'
+
+buildscript {
+    repositories {
+        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
+        maven {url "https://plugins.gradle.org/m2/"}
+    }
+    dependencies {
+//    	classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
+        classpath "io.freefair.gradle:aspectj-plugin:4.1.6"
+    }
+}
+
+project.ext {
+    aspectjVersion = "1.8.2"
+}
+
+apply plugin: "io.freefair.aspectj.base"
+// apply plugin: 'aspectj.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName='org.iobserve.drive.accounting.DriveAccountingMain'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+	clover 'org.openclover:clover:' + cloverVersion
+	
+	compile project(":stages")
+	
+	compile 'com.beust:jcommander:' + jcommanderVersion
+	
+	// monitoring
+	//ajc "org.aspectj:aspectjtools:1.8.2" 
+	compile "org.aspectj:aspectjrt:1.8.2"
+	compile "org.aspectj:aspectjweaver:1.8.2"	// for our custom AspectJ weaver (class: AspectJLoader)
+	
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'	
+	
+}
+
+
+
+clover {
+	report {
+		html=true
+	}
+	
+}
+
+// FIXME
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = version
+//        pom.groupId = 'org.iobserve'
+//        pom.artifactId = 'drive-accounting'
+//    }
+//}
+
+

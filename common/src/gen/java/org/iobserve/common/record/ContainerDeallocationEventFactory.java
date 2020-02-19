@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2019 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import kieker.common.record.io.IValueDeserializer;
  */
 public final class ContainerDeallocationEventFactory implements IRecordFactory<ContainerDeallocationEvent> {
 	
-	
 	@Override
 	public ContainerDeallocationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ContainerDeallocationEvent(deserializer);
 	}
-	
 	@Override
-	@Deprecated
-	public ContainerDeallocationEvent create(final Object[] values) {
-		return new ContainerDeallocationEvent(values);
-	}
-	
+			public String[] getValueNames() {
+				return ContainerDeallocationEvent.VALUE_NAMES; // NOPMD
+			}
+	@Override
+			public Class<?>[] getValueTypes() {
+				return ContainerDeallocationEvent.TYPES; // NOPMD
+			}
 	public int getRecordSizeInBytes() {
 		return ContainerDeallocationEvent.SIZE;
 	}
