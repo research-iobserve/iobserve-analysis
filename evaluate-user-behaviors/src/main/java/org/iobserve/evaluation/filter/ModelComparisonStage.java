@@ -62,7 +62,7 @@ public class ModelComparisonStage extends AbstractStage {
     @Override
     protected void execute() throws Exception {
         /**
-         * We cannot user else if here, as (a) there could be an input at each input port, (b) there
+         * We cannot use else if here, as (a) there could be an input at each input port, (b) there
          * could be a model at testModel but not at the referenceModel input, in an if-then-else
          * style, the test model would not be received until we have a reference model, which
          * unnecessarily would imply a sequence between both ports.
@@ -74,7 +74,7 @@ public class ModelComparisonStage extends AbstractStage {
             this.testModel = this.testModelInputPort.receive();
         }
         /** We still have to check both, as there could be nothing a both ports. */
-        if (this.referenceModel != null && this.testModel != null) {
+        if ((this.referenceModel != null) && (this.testModel != null)) {
             final ComparisonResult result = new ComparisonResult();
 
             result.getBaselineNodes().addAll(this.referenceModel.getNodes());

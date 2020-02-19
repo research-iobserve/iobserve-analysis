@@ -24,7 +24,6 @@ import java.nio.file.StandardOpenOption;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.iobserve.analysis.behavior.filter.BehaviorModelVisualizationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BehaviorModelSink extends AbstractBehaviorModelOutputSink {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelVisualizationStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelSink.class);
 
     private final ObjectMapper objectMapper;
 

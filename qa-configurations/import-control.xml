@@ -8,7 +8,7 @@
 	<allow pkg="javax"/>
     <allow pkg="kieker"/>
 	<allow pkg="teetime"/>
-
+	<allow pkg="mtree"/>
 	<allow pkg="de.uka.ipd.sdq"/>
 	
 	<allow pkg="io.fabric8.kubernetes"/>
