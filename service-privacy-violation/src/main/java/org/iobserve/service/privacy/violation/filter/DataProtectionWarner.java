@@ -33,6 +33,8 @@ import org.iobserve.analysis.deployment.DeploymentLock;
 import org.iobserve.analysis.deployment.data.IPCMDeploymentEvent;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.common.record.EventTypes;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
@@ -52,6 +54,7 @@ import org.iobserve.service.privacy.violation.transformation.analysisgraph.Verte
 import org.iobserve.service.privacy.violation.transformation.analysisgraph.Vertex.EStereoType;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.Policy;
 import org.iobserve.service.privacy.violation.transformation.privacycheck.PrivacyChecker;
+import org.iobserve.stages.data.ExperimentLoggingUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -147,7 +150,8 @@ public class DataProtectionWarner extends AbstractStage {
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
 
         if (deployedEvent != null) {
-            // ExperimentLoggingUtils.measureDeploymentEvent(deployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+            ExperimentLoggingUtils.logEvent(deployedEvent.getTimestamp(), EventTypes.DEPLOYMENT,
+                    ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received Deployment");
             this.logger.debug("CountryCode: " + deployedEvent.getCountryCode());
@@ -156,18 +160,21 @@ public class DataProtectionWarner extends AbstractStage {
             this.performPrivacyEvaluation(deployedEvent);
 
             this.logger.debug("Deployment processed");
-            // ExperimentLoggingUtils.measureDeploymentEvent(deployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
+            ExperimentLoggingUtils.logEvent(deployedEvent.getTimestamp(), EventTypes.DEPLOYMENT,
+                    ObservationPoint.PRIVACY_WARNER_EXIT);
         }
 
         if (undeployedEvent != null) {
-            // ExperimentLoggingUtils.measureDeploymentEvent(undeployedEvent, ObservationPoint.PRIVACY_WARNER_ENTRY);
+            ExperimentLoggingUtils.logEvent(undeployedEvent.getTimestamp(), EventTypes.UNDEPLOYMENT,
+                    ObservationPoint.PRIVACY_WARNER_ENTRY);
 
             this.logger.debug("Received undeployment");
 
             this.performPrivacyEvaluation(undeployedEvent);
 
             this.logger.debug("Deployment processed");
-            // ExperimentLoggingUtils.measureDeploymentEvent(undeployedEvent, ObservationPoint.PRIVACY_WARNER_EXIT);
+            ExperimentLoggingUtils.logEvent(undeployedEvent.getTimestamp(), EventTypes.UNDEPLOYMENT,
+                    ObservationPoint.PRIVACY_WARNER_EXIT);
         }
     }
 

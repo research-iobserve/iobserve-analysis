@@ -24,6 +24,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISOCountryCode;
+import org.iobserve.common.record.ObservationPoint;
 import org.iobserve.common.record.Privacy;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.AssemblyEntry;
@@ -33,6 +34,7 @@ import org.iobserve.model.correspondence.EServiceTechnology;
 import org.iobserve.model.persistence.DBException;
 import org.iobserve.model.persistence.IModelResource;
 import org.iobserve.model.persistence.neo4j.InvocationException;
+import org.iobserve.stages.data.ExperimentLoggingUtils;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.system.System;
 
@@ -74,7 +76,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
 
     @Override
     protected void execute(final IDeployedEvent event) throws InvocationException, DBException {
-        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
+        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_ENTRY);
         this.logger.debug("Received deployment event {}", event);
         final ISOCountryCode countryCode;
         if (event instanceof Privacy) {
@@ -95,7 +97,7 @@ public class DeployPCMMapperStage extends AbstractConsumerStage<IDeployedEvent> 
         } else {
             throw new InternalError("Deployment event type " + event.getClass().getCanonicalName() + " not supported.");
         }
-        // ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_EXIT);
+        ExperimentLoggingUtils.measureDeploymentEvent(event, ObservationPoint.CODE_TO_MODEL_EXIT);
     }
 
     private void performMapping(final EServiceTechnology technology, final String service, final String context,

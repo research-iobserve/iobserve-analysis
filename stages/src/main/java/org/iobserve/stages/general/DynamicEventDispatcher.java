@@ -19,10 +19,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.common.exception.ConfigurationException;
+import kieker.common.record.flow.IEventRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.common.record.ObservationPoint;
+import org.iobserve.stages.data.ExperimentLoggingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,11 +103,11 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 event);
         if (selectedOutputPort != null) {
             // collecting event observation time (if possible); only for performance tests.
-            // if (event instanceof IEventRecord) {
-            //     final IEventRecord specialEvent = (IEventRecord) event;
-            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
-            //     ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
-            // }
+            if (event instanceof IEventRecord) {
+                final IEventRecord specialEvent = (IEventRecord) event;
+                ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.EVENT_CREATION_TIME);
+                ExperimentLoggingUtils.measureDeploymentEvent(specialEvent, ObservationPoint.DISPATCHER_ENTRY);
+            }
             selectedOutputPort.send(event);
         } else {
             if (this.reportUnknown) {
@@ -116,7 +119,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
+                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }
