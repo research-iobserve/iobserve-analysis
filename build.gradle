@@ -32,8 +32,8 @@ buildscript {
 }
 
 plugins {
-    id 'eclipse'
     id 'java'
+    id 'eclipse'
     id 'maven-publish'
     id 'signing'
     id 'com.bmuschko.clover' version "$cloverPluginVersion"
@@ -81,6 +81,7 @@ clover {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
     apply plugin: 'com.bmuschko.clover'
@@ -131,7 +132,7 @@ subprojects {
 
     dependencies {
         // logging
-        compile 'org.slf4j:slf4j-api:1.7.25'
+        api 'org.slf4j:slf4j-api:1.7.25'
         compile 'org.slf4j:slf4j-log4j12:1.7.25'
                 
         // central
