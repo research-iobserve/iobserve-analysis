@@ -30,6 +30,7 @@ import org.iobserve.stages.sink.CSVFileWriter;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public class CheckLogSessionsMain extends AbstractService<PiplineConfiguration, Settings> {
 

@@ -48,8 +48,8 @@ public class PiplineConfiguration extends Configuration {
                 CallOperationObjectEvent.class, null);
         eventDispatcher.registerOutput(operationEventMatcher);
 
-        final EventPropertyCounter<TraceMetadata, String, Data> counter = new EventPropertyCounter<>(
-                new IPropertySelector<TraceMetadata, Data>() {
+        final EventPropertyCounter<TraceMetadata, String, SessionModel> counter = new EventPropertyCounter<>(
+                new IPropertySelector<TraceMetadata, SessionModel>() {
 
                     @SuppressWarnings("unchecked")
                     @Override
@@ -58,17 +58,17 @@ public class PiplineConfiguration extends Configuration {
                     }
 
                     @Override
-                    public void compute(final Data data, final TraceMetadata input) {
-                        data.setCounter(data.getCounter() + 1);
-                        if (data.getFirst() == null) {
-                            data.setFirst(input.getLoggingTimestamp());
+                    public void compute(final SessionModel sessionModel, final TraceMetadata input) {
+                        sessionModel.setCounter(sessionModel.getCounter() + 1);
+                        if (sessionModel.getFirst() == null) {
+                            sessionModel.setFirst(input.getLoggingTimestamp());
                         }
-                        data.setLast(input.getLoggingTimestamp());
+                        sessionModel.setLast(input.getLoggingTimestamp());
                     }
 
                     @Override
-                    public Data createData() {
-                        final Data data = new Data();
+                    public SessionModel createNewSessionModel() {
+                        final SessionModel data = new SessionModel();
                         data.setCounter(1);
                         return data;
                     }

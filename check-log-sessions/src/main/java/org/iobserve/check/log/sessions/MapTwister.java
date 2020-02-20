@@ -25,14 +25,15 @@ import teetime.framework.OutputPort;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
-public class MapTwister extends AbstractConsumerStage<Map<String, Data>> {
+public class MapTwister extends AbstractConsumerStage<Map<String, SessionModel>> {
 
     private final OutputPort<Map<String, Object>> outputPort = this.createOutputPort();
 
     @Override
-    protected void execute(final Map<String, Data> element) throws Exception {
-        for (final Entry<String, Data> entry : element.entrySet()) {
+    protected void execute(final Map<String, SessionModel> element) throws Exception {
+        for (final Entry<String, SessionModel> entry : element.entrySet()) {
             final Map<String, Object> row = new HashMap<>();
             row.put("sessionId", entry.getKey());
             row.put("count", entry.getValue().getCounter());

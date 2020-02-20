@@ -22,7 +22,16 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
+ * Stage to
+ *
+ * @param <I>
+ *            type of receiving events
+ * @param <T>
+ * @param <R>
+ *
  * @author Reiner Jung
+ *
+ * @since 0.0.3
  *
  */
 public class EventPropertyCounter<I, T, R> extends AbstractConsumerStage<I> {
@@ -44,7 +53,7 @@ public class EventPropertyCounter<I, T, R> extends AbstractConsumerStage<I> {
             this.selector.compute(data, element);
             this.valueMap.put(entry, data);
         } else {
-            final R data = this.selector.createData();
+            final R data = this.selector.createNewSessionModel();
             this.selector.compute(data, element);
             this.valueMap.put(entry, data);
         }

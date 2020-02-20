@@ -27,6 +27,8 @@ import org.iobserve.analysis.session.data.UserSession;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.3
+ *
  */
 public class SessionStatisticsStage extends AbstractConsumerStage<UserSession> {
 

@@ -16,10 +16,14 @@
 package org.iobserve.check.log.sessions;
 
 /**
+ * Data object representing the number of events (counter) and the first and last time of an even in
+ * a session.
+ *
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
-public class Data {
+public class SessionModel {
 
     private Integer counter;
     private Long first;

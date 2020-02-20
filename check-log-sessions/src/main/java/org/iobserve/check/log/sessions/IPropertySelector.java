@@ -18,6 +18,7 @@ package org.iobserve.check.log.sessions;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public interface IPropertySelector<I, R> {
 
@@ -25,5 +26,5 @@ public interface IPropertySelector<I, R> {
 
     void compute(R data, I input);
 
-    R createData();
+    R createNewSessionModel();
 }
