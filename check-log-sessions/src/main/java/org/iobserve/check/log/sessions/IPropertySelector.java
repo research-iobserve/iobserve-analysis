@@ -22,9 +22,9 @@ package org.iobserve.check.log.sessions;
  */
 public interface IPropertySelector<I, R> {
 
-    <T> T match(I input);
+    <T> T getUniqueIdValue(I input);
 
-    void compute(R data, I input);
+    void setLimits(R data, I input);
 
     R createNewSessionModel();
 }

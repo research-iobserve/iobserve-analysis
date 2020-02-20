@@ -22,12 +22,14 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * Stage to
+ * Stage to summarize multiple events.
  *
  * @param <I>
  *            type of receiving events
  * @param <T>
+ *            type of the id
  * @param <R>
+ *            data to be stored by id
  *
  * @author Reiner Jung
  *
@@ -47,14 +49,14 @@ public class EventPropertyCounter<I, T, R> extends AbstractConsumerStage<I> {
 
     @Override
     protected void execute(final I element) throws Exception {
-        final T entry = this.selector.match(element);
+        final T entry = this.selector.getUniqueIdValue(element);
         if (this.valueMap.containsKey(entry)) {
             final R data = this.valueMap.get(entry);
-            this.selector.compute(data, element);
+            this.selector.setLimits(data, element);
             this.valueMap.put(entry, data);
         } else {
             final R data = this.selector.createNewSessionModel();
-            this.selector.compute(data, element);
+            this.selector.setLimits(data, element);
             this.valueMap.put(entry, data);
         }
     }

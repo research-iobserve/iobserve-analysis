@@ -53,12 +53,12 @@ public class PiplineConfiguration extends Configuration {
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public String match(final TraceMetadata input) {
+                    public String getUniqueIdValue(final TraceMetadata input) {
                         return input.getSessionId();
                     }
 
                     @Override
-                    public void compute(final SessionModel sessionModel, final TraceMetadata input) {
+                    public void setLimits(final SessionModel sessionModel, final TraceMetadata input) {
                         sessionModel.setCounter(sessionModel.getCounter() + 1);
                         if (sessionModel.getFirst() == null) {
                             sessionModel.setFirst(input.getLoggingTimestamp());
