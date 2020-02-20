@@ -44,7 +44,7 @@ public class GenerateConfigurationStage extends AbstractProducerStage<AbstractTc
             "/jpetstore-account/request-user", "/jpetstore-account/update-account",
             "/jpetstore-account/insert-account" };
 
-    private final String[][] parameters = new String[][] { { "username", "password" }, { "username" }, { "Object" },
+    private final String[][] allParameters = new String[][] { { "username", "password" }, { "username" }, { "Object" },
             { "Object" } };
 
     public GenerateConfigurationStage(final String host, final int port, final List<String> whitelist, final long whiteStart,
@@ -65,24 +65,24 @@ public class GenerateConfigurationStage extends AbstractProducerStage<AbstractTc
         final String hostname = "account-service";
 
         for (int i = 0; i < this.operations.length; i++) {
-            final String operationSignature = this.createSignaturePattern(this.operations[i], this.parameters[i]);
+            final String operationSignature = this.createSignaturePattern(this.operations[i], this.allParameters[i]);
             final long triggerTimestamp = 0;
-            final Map<String, List<String>> parameters = new HashMap<>();
+            final Map<String, List<String>> accesslistsMap = new HashMap<>();
             final List<String> blacklist = new ArrayList<>();
 
             this.populateList(blacklist, this.blackStart, this.blackEnd);
 
-            parameters.put(EListType.BLACKLIST.name(), blacklist);
+            accesslistsMap.put(EListType.BLACKLIST.name(), blacklist);
 
             final List<String> completeWhitelist = new ArrayList<>(this.whitelist);
 
             completeWhitelist.add(this.ipv4Generator(127, 0, 0, 1));
             this.populateList(blacklist, this.whiteStart, this.whiteEnd);
 
-            parameters.put(EListType.WHITELIST.name(), completeWhitelist);
+            accesslistsMap.put(EListType.WHITELIST.name(), completeWhitelist);
 
             element = new TcpActivationParameterControlEvent(this.host, this.port, hostname, operationSignature,
-                    triggerTimestamp, parameters);
+                    triggerTimestamp, accesslistsMap);
 
             this.outputPort.send(element);
         }

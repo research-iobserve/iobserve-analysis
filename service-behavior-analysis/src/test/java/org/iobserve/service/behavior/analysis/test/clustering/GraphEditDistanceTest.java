@@ -15,14 +15,12 @@
  ***************************************************************************/
 package org.iobserve.service.behavior.analysis.test.clustering;
 
-//TODO allow Assert import
-import junit.framework.Assert;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.iobserve.service.behavior.analysis.clustering.GraphEditDistance;
 import org.iobserve.service.behavior.analysis.model.BehaviorModelGED;
 import org.iobserve.service.behavior.analysis.test.TestHelper;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -70,7 +68,7 @@ public class GraphEditDistanceTest {
         double result1 = this.ged.calculate(model1, model2);
         double result2 = this.ged.calculate(model2, model1);
 
-        Assert.assertEquals(result1, result2);
+        Assert.assertEquals("Distance between A and B and B and A must be the same", result1, result2, 0.0);
 
         model1 = TestHelper.createBehaviorModelA();
         model2 = TestHelper.createBehaviorModelC();
@@ -78,7 +76,7 @@ public class GraphEditDistanceTest {
         result1 = this.ged.calculate(model1, model2);
         result2 = this.ged.calculate(model2, model1);
 
-        Assert.assertEquals(result1, result2);
+        Assert.assertEquals("Distance between A and C and C and A must be the same", result1, result2, 0.0);
 
         model1 = TestHelper.createBehaviorModelA();
         model2 = TestHelper.createBehaviorModelD();
@@ -86,7 +84,7 @@ public class GraphEditDistanceTest {
         result1 = this.ged.calculate(model1, model2);
         result2 = this.ged.calculate(model2, model1);
 
-        Assert.assertEquals(result1, result2);
+        Assert.assertEquals("Distance between A and D and D and A must be the same", result1, result2, 0.0);
 
         model1 = TestHelper.createBehaviorModelA();
         model2 = TestHelper.createBehaviorModelE();
@@ -94,35 +92,35 @@ public class GraphEditDistanceTest {
         result1 = this.ged.calculate(model1, model2);
         result2 = this.ged.calculate(model2, model1);
 
-        Assert.assertEquals(result1, result2);
+        Assert.assertEquals("Distance between A and E and E and A must be the same", result1, result2, 0.0);
     }
 
     @Test
     public void valueRelevantTest() {
         final BehaviorModelGED model1 = TestHelper.createBehaviorModelA();
         final BehaviorModelGED model2 = TestHelper.createBehaviorModelB();
-        Assert.assertTrue(this.ged.calculate(model1, model2) > 0);
+        Assert.assertTrue("Distance must be greater than 0", this.ged.calculate(model1, model2) > 0);
     }
 
     @Test
     public void parameterRelevantTest() {
         final BehaviorModelGED model1 = TestHelper.createBehaviorModelA();
         final BehaviorModelGED model2 = TestHelper.createBehaviorModelC();
-        Assert.assertTrue(this.ged.calculate(model1, model2) > 0);
+        Assert.assertTrue("Distance must be greater than 0", this.ged.calculate(model1, model2) > 0);
     }
 
     @Test
     public void edgeRelevantTest() {
         final BehaviorModelGED model1 = TestHelper.createBehaviorModelA();
         final BehaviorModelGED model2 = TestHelper.createBehaviorModelD();
-        Assert.assertTrue(this.ged.calculate(model1, model2) > 0);
+        Assert.assertTrue("Distance must be greater than 0", this.ged.calculate(model1, model2) > 0);
     }
 
     @Test
     public void nodeRelevantTest() {
         final BehaviorModelGED model1 = TestHelper.createBehaviorModelA();
         final BehaviorModelGED model2 = TestHelper.createBehaviorModelE();
-        Assert.assertTrue(this.ged.calculate(model1, model2) > 0);
+        Assert.assertTrue("Distance must be greater than 0", this.ged.calculate(model1, model2) > 0);
     }
 
 }

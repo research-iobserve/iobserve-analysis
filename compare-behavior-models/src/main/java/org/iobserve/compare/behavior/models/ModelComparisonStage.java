@@ -70,7 +70,7 @@ public class ModelComparisonStage extends AbstractStage {
             this.testModel = this.testModelInputPort.receive();
         }
 
-        if ((this.referenceModel != null) && (this.testModel != null)) {
+        if (this.referenceModel != null && this.testModel != null) {
 
             ModelComparisonStage.LOGGER.debug("received a reference and a test model");
             final BehaviorModelDifference result = new BehaviorModelDifference();
@@ -101,7 +101,7 @@ public class ModelComparisonStage extends AbstractStage {
             result.setNodeUnionAmount(nodeUnionAmount);
 
             // calculate intersection amount
-            result.setNodeIntersectionAmount((referenceNodeAmount + testNodeAmount) - nodeUnionAmount);
+            result.setNodeIntersectionAmount(referenceNodeAmount + testNodeAmount - nodeUnionAmount);
 
             final int referenceEdgeAmount = this.referenceModel.getEdges().size();
             final int testEdgeAmount = this.testModel.getEdges().size();
@@ -109,7 +109,7 @@ public class ModelComparisonStage extends AbstractStage {
             final int edgeUnionAmount = referenceEdgeAmount + result.getTestModelEdges().size();
 
             result.setEdgeUnionAmount(edgeUnionAmount);
-            result.setEdgeIntersectionAmount((referenceEdgeAmount + testEdgeAmount) - edgeUnionAmount);
+            result.setEdgeIntersectionAmount(referenceEdgeAmount + testEdgeAmount - edgeUnionAmount);
 
             this.getOutputPort().send(result);
 
@@ -201,24 +201,36 @@ public class ModelComparisonStage extends AbstractStage {
                 if (matchingGroup == null) {
                     additionalEvents.addAll(eventGroup.getEvents());
                 } else {
-                    // pairwise comparison of the events. If no matching event is found -> add to
-                    // list
-                    for (final PayloadAwareEntryCallEvent event1 : eventGroup.getEvents()) {
-                        boolean matchFound = false;
-                        for (final PayloadAwareEntryCallEvent event2 : matchingGroup.getEvents()) {
-                            if (ModelComparisonStage.haveSameValues(event1, event2)) {
-                                matchFound = true;
-                            }
-
-                            break;
-                        }
-                        // no matching event
-                        if (!matchFound) {
-
-                            additionalEvents.add(event1);
-                        }
-                    }
+                    this.compareEventsPairwise(additionalEvents, eventGroup, matchingGroup);
                 }
+            }
+        }
+    }
+
+    /**
+     * Pairwise comparison of the events. If no matching event is found -> add to list.
+     *
+     * @param additionalEvents
+     *            collection of events which are the same
+     * @param eventGroup
+     *            base event group
+     * @param matchingGroup
+     *            matching event group
+     */
+    private void compareEventsPairwise(final List<PayloadAwareEntryCallEvent> additionalEvents,
+            final EventGroup eventGroup, final EventGroup matchingGroup) {
+        for (final PayloadAwareEntryCallEvent event1 : eventGroup.getEvents()) {
+            boolean matchFound = false;
+            for (final PayloadAwareEntryCallEvent event2 : matchingGroup.getEvents()) {
+                if (ModelComparisonStage.haveSameValues(event1, event2)) {
+                    matchFound = true;
+                }
+
+                break;
+            }
+            // no matching event
+            if (!matchFound) {
+                additionalEvents.add(event1);
             }
         }
     }
@@ -240,7 +252,7 @@ public class ModelComparisonStage extends AbstractStage {
         final BehaviorModelNode targetNode = model.getNodes().get(targetName);
 
         // if there are no corresponding nodes, there can't be the edge
-        if ((sourceNode == null) || (targetNode == null)) {
+        if (sourceNode == null || targetNode == null) {
             return null;
         }
 

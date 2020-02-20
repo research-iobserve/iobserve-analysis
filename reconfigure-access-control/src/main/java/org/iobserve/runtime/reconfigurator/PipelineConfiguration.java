@@ -29,19 +29,27 @@ import org.iobserve.utility.tcp.TcpProbeController;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public class PipelineConfiguration extends Configuration {
 
-    public PipelineConfiguration(final Settings parameterConfiguration) {
-        final GenerateConfigurationStage generate = new GenerateConfigurationStage(parameterConfiguration.getHost(),
-                parameterConfiguration.getPort(), this.convert(parameterConfiguration.getWhiteList()),
-                this.convert(parameterConfiguration.getWhiteStart()),
-                this.convert(parameterConfiguration.getWhiteEnd()),
-                this.convert(parameterConfiguration.getBlackStart()),
-                this.convert(parameterConfiguration.getBlackEnd()));
+    /**
+     * Create a TeeTime pipline configuration.
+     *
+     * @param configurationParameters
+     *            configuration parameters
+     */
+    public PipelineConfiguration(final Settings configurationParameters) {
+        final GenerateConfigurationStage generate = new GenerateConfigurationStage(configurationParameters.getHost(),
+                configurationParameters.getPort(), this.convert(configurationParameters.getWhiteList()),
+                this.convert(configurationParameters.getWhiteStart()),
+                this.convert(configurationParameters.getWhiteEnd()),
+                this.convert(configurationParameters.getBlackStart()),
+                this.convert(configurationParameters.getBlackEnd()));
 
-        IProbeController controller;
-        if (parameterConfiguration.getPort() == null) {
+        final IProbeController controller;
+
+        if (configurationParameters.getPort() == null) {
             controller = new DummyProbeController();
         } else {
             controller = new TcpProbeController();
