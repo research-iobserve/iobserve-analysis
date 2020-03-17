@@ -1,0 +1,126 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{array} 
+\usepackage{blindtext} 
+\begin{document}
+\title{Usage Modelling\\accuracy iobserve-analysis}
+\date{}
+\maketitle
+
+\section{Detecting and Representing User Behaviours}
+Each setup execution is evaluated with a random number of user sessions. This random number has several constraints depending on the setup.\\
+Simple Sequence, Simple Loop, Overlapping Iteration and Nested Loops are evaluated with a random number between 1 - 200 \\
+Simple Branch, Nested Branches and Loop Within Branch the amount of user sessions has to be a minimum of $number\ of\ branch\ transitions * 10$ so there is at least one session covering each branch transition. This results in 20 - 200 user sessions. \\
+Branch Within Loop the amount of user sessions has to be $2^{number\ of\ Loops} * user\ Factor$ so each branch transition in the loop has at least one session covering it. This results in 4 - 200 user sessions. \\
+%\begin{itemize}
+%	\item \textbf{SimpleSequence}: 1 - 200
+%	\item \textbf{SimpleBranch}: $number\ of\ branch\ transitions * 10$ - 200 $\rightarrow$ 20 - 200
+%	\item \textbf{SimpleLoop}: 1 - 200
+%	\item \textbf{OverlappingIteration}: 1 - 200
+%	\item \textbf{BranchWithinBranch}: $number\ of\ branch\ transitions * 10$ - 200 $\rightarrow$ 20 - 200
+%	\item \textbf{LoopWithinBranch}: $number\ of\ branch\ transitions * 10$ - 200 $\rightarrow$ 20 - 200
+%	\item \textbf{LoopWithinLoop}: 1 - 200
+%	\item \textbf{BranchWithinLoop}: $2^{number\ of\ Loops} * user\ Factor$ $\rightarrow$ 4 - 200
+%\end{itemize}
+
+In addition to the number of user sessions, the execution of each setup creates several randomized attributes. To increase the overall coverage of possible attribute combinations, each test setup is executed 5000 times, instead of the 500 times proposed in the original work.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c||c|c|c||c|c|c|}
+		\hline
+		\multirow{2}{*}{\textbf{RQ}}
+		 & \multicolumn{3}{c||}{\textbf{JC}} & \multicolumn{3}{c|}{\textbf{SCC}} \\
+		 \cline{2-7}
+		 & Min. & Max. & Mean & Min. & Max. & Mean \\
+		\hhline{|=======|}
+		Simple Sequence & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Simple Branch & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Simple Loop & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Overlapping Iteration & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Nested Branches & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Loop Within Branch & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Nested Loops & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+		Branch Within Loop & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 & 1.0 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+
+\section{Representing Workload Specifications}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|>{\centering\arraybackslash}p{6cm}||>{\centering\arraybackslash}p{5cm}|}
+		\hline
+		\textbf{Evaluated Workload Specification} & \textbf{RME} \\
+		\hhline{|==|}
+		Open Workload Specification & 0.0\%  \\
+		\hline
+		Closed Workload Specification & 13.1\%  \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\section{Detecting User Groups}
+MC and SSE presented here are the average results from 100 runs of the setup described in the master thesis. Values in columns C1, C2, C3 (and C4) only show an single exemplary result of one clustering run. The results are similar to the ones presented in the original masters thesis. With only two exceptions the metric values are consistently lower.\\
+
+\subsection{variance in user groups = 0}
+%Similar results to the ones presented in the master thesis. The calculated SSE metric results of the first two setups vary slightly, while the result of the third setup is $\frac{1}{5}$ less then the SSE from the masters thesis. 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c||c|c|c|c||c|c|}
+		\hline
+		UG & UGM & C1 & C2 & C3 & MC & SSE \\
+		\hhline{|=======|}
+		CR & 50\% & 0 & 4000 & 0 & \multirow{3}{*}{0.0\%} & \multirow{3}{*}{177.039830} \\
+		SKM & 25\% & 0 & 0 & 2000 & & \\
+		SEM & 25\% & 2000 & 0 & 0 & & \\
+		\hhline{|=======|}
+		CR & 25\% & 0 & 0 & 2000 & \multirow{3}{*}{0.0\%} & \multirow{3}{*}{190.368080} \\
+		SKM & 50\% & 4000 & 0 & 0 & & \\
+		SEM & 25\% & 0 & 2000 & 0 & & \\
+		\hhline{|=======|}
+		CR & 25\% & 2000 & 0 & 0 & \multirow{3}{*}{0.0\%} & \multirow{3}{*}{202.309114} \\
+		SKM & 25\% & 0 & 2000 & 0 & & \\
+		SEM & 50\% & 0 & 0 & 4000 & & \\
+		\hhline{|=======|}
+	\end{tabular}
+\end{table}
+
+\subsection{variance in user groups = 10}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c||c|c|c|c|c||c|c|}
+		\hline
+		UG & UGM & C1 & C2 & C3 & C4 & MC & SSE \\
+		\hhline{|========|}
+		CR & 50\% & 0 & 4000 & 0 & 0 & \multirow{3}{*}{6.008625\%} & \multirow{3}{*}{141.317894} \\
+		SKM & 25\% & 2000 & 0 & 0 & 0 & & \\
+		SEM & 25\% & 0 & 0 & 641 & 1359 & & \\
+		\hhline{|========|}
+		CR & 25\% & 0 & 0 & 0 & 2000 & \multirow{3}{*}{10.737249\%} & \multirow{3}{*}{134.331437} \\
+		SKM & 50\% & 886 & 3114 & 0 & 0 & & \\
+		SEM & 25\% & 0 & 0 & 2000 & 0 & & \\
+		\hhline{|========|}
+		CR & 25\% & 0 & 0 & 0 & 2000 & \multirow{3}{*}{13.772875\%} & \multirow{3}{*}{159.150583} \\
+		SKM & 25\% & 0 & 0 & 2000 & 0 & & \\
+		SEM & 50\% & 1215 & 2785 & 0 & 0 & & \\
+		\hhline{|========|}
+	\end{tabular}
+\end{table}
+\end{document}

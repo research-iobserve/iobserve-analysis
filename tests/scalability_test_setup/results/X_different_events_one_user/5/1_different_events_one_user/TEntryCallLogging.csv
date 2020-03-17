@@ -1,3 +1,0 @@
-TEntryCall;
-;;OperationSignature;elapsed;start;end;
-;;public org.cocome.tradingsystem.inventory.data.enterprise.IProduct org.cocome.tradingsystem.inventory.data.enterprise.StoreEnterpriseQueryProvider.queryProductByBarcode(long);663580;9419875438317470;9419875438981050;
