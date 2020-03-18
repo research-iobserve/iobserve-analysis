@@ -30,6 +30,7 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletUndeployedEvent;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -177,10 +178,24 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
             SystemModelBuilder.removeAssemblyContext(this.systemModelProvider.getModel(), assemblyContext.getId());
             this.systemModelProvider.save();
             
-            this.outputPort.send(resourceContainer);
+            if(!isResourceContainerUsed(resourceContainer)) {
+            	/* There is no allocation context affiliated with the resource container.
+				 * Send to Deallocation to remove resource container from ResourceEnvironment. */
+				this.outputPort.send(resourceContainer);
+            }
         } else {
             System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
         }
+    }
+    
+    private boolean isResourceContainerUsed(ResourceContainer container) {
+    	for(AllocationContext context : this.allocationModelProvider.getModel().getAllocationContexts_Allocation()) {
+			if(context.getResourceContainer_AllocationContext().getId().equals(container.getId())) {
+				return true;
+			}
+		}
+    	
+    	return false;
     }
 
     public OutputPort<ResourceContainer> getOutputPort() {
