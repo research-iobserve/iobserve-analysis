@@ -1,3 +1,0 @@
-$0=kieker.common.record.misc.KiekerMetadataRecord
-$1=org.iobserve.common.record.EJBDeployedEvent
-$2=org.iobserve.common.record.EJBUndeployedEvent
