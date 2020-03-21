@@ -132,10 +132,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
-        // TODO debug print, remove later
+        // debug print
         // System.out.print(String.format("Try to get correspondence for classSig=%s,
-        // operationSig=%s...",
-        // classSig, operationSig));
+        // operationSig=%s...", classSig, operationSig));
 
         // assert parameters are not null
         if ((classSig == null) || (operationSig == null)) {

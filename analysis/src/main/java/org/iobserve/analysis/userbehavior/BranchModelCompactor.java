@@ -95,9 +95,6 @@ public class BranchModelCompactor {
      *            whose child branches are merged
      */
     private void mergeChildBranches(final Branch branch) {
-    	// Potential todo: do not require all child branch sequences to be equal to be merged, 
-    	// but cluster child branch sequences and merge the clusters, for a more compacted and correct
-    	// result, if necessary.
     	// O((S(b) * b)*2)
     	// b = number branches, S(b) = sequence elements of branch
     	final List<ISequenceElement> mergeableBranchSequence = getAndRemoveMergableBranchSequence(branch);

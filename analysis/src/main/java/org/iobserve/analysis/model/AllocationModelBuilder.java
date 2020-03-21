@@ -101,13 +101,4 @@ public final class AllocationModelBuilder {
                                 .equals(resContainer.getEntityName()))
                 .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
     }
-
-    public static void addAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO add an allocation
-    }
-
-    public static void removeAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO remove allocation context
-    }
-
 }

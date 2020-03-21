@@ -39,8 +39,8 @@ import teetime.framework.OutputPort;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
- * undeployment. It processes undeployment events and uses the correspondence information in the RAC
- * to update the PCM allocation model.
+ * undeployment. It processes undeployment events and uses the correspondence information to update 
+ * the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Reiner Jung
@@ -56,11 +56,11 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
-
+    /** output port. */
     private final OutputPort<ResourceContainer> outputPort = this.createOutputPort();
 
     /**
-     * 
+     * Create new TUndeployment filter.
      *
      * @param correspondence
      *            correspondence model
@@ -82,6 +82,9 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * This method is triggered for every undeployment event.
+     * 
+     * @param event
+     *            one undeployment event to be processed
      */
     @Override
     protected void execute(final IUndeploymentRecord event) {
@@ -201,5 +204,4 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     public OutputPort<ResourceContainer> getOutputPort() {
         return this.outputPort;
     }
-
 }

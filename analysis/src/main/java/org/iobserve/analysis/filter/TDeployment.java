@@ -58,8 +58,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private final OutputPort<ResourceContainer> outputPort = this.createOutputPort();
 
     /**
-     * Most likely the constructor needs an additional field for the PCM access. But this has to be
-     * discussed with Robert.
+     * Creates new TDeallocation filter.
      *
      * @param correspondence
      *            the correspondence model access
@@ -98,13 +97,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         }
         
         ExecutionTimeLogger.getInstance().stopLogging(event);
-    }
-    
-    /**
-     * @return the OutputPort
-     */
-    public OutputPort<ResourceContainer> getOutputPort() {
-        return this.outputPort;
     }
 
     /**
@@ -175,5 +167,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         } else {
         	System.out.printf("AssemblyContext %s was not available?!\n", asmContextName);
         }
+    }
+    
+    public OutputPort<ResourceContainer> getOutputPort() {
+        return this.outputPort;
     }
 }

@@ -31,19 +31,19 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and
- * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
- * the API for multiple input ports.
+ * TEntryCall filters and maps related call events, to recreate calls which are present in the monitoring data.
+ * Once an {@link AfterOperationObjectEvent} is mapped to a previously processed {@link BeforeOperationObjectEvent} 
+ * and {@link TraceMetaData}, an EntryCallEvent, representing the finished call, is forwarded to {@link TEntryCallSequence}.
  * 
  * @author Robert Heinrich
  * @author Reiner Jung
  * @author Nicolas Boltz
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
+	
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
-
-    /** added by Alessandro Giusa see EntryCallEvent class for more information. */
+    /** map of trace meta data events. */
     private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<>();
     /** map of before operation events. */
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
@@ -51,17 +51,15 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
 
     /**
-     * Does not need additional information.
+     * Creates new TEntryCall filter.
      */
-    public TEntryCall() {
-        // do nothing
-    }
+    public TEntryCall() { }
 
     /**
      * This method is triggered for every deployment event.
      *
      * @param event
-     *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
+     *            All IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
      */
     @Override
     protected void execute(final IFlowRecord event) {
@@ -116,11 +114,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         }
     }
 
-    /**
-     * @return output port
-     */
     public OutputPort<EntryCallEvent> getOutputPort() {
         return this.outputPort;
     }
-
 }

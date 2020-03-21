@@ -1,6 +1,5 @@
 package org.iobserve.analysis.filter;
-
-import org.iobserve.analysis.model.AllocationModelProvider;
+ 
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -10,6 +9,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
+ * TDeallocation checks whether the ResourceContainer affected by the execution ofTUndeployment
+ * is empty and removes it.
  * 
  * @author Robert Heinrich
  * @author Nicolas Boltz
@@ -22,13 +23,12 @@ public class TDeallocation extends AbstractConsumerStage<ResourceContainer> {
     private final OutputPort<ResourceContainer> outputPort = this.createOutputPort();
 
     /**
-     * TDeallocation checks whether the ResourceContainer affected by the execution ofTUndeployment
-     * is empty and removes it.
+     * Creates new TDeallocation filter.
      *
      * @param resourceEvnironmentModelProvider
-     *            the resource environment model provider
+     *            resource environment model provider
      */
-    public TDeallocation(final AllocationModelProvider allocationModelProvider, final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
+    public TDeallocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
         this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
     }
 
@@ -39,11 +39,7 @@ public class TDeallocation extends AbstractConsumerStage<ResourceContainer> {
 		this.resourceEnvModelProvider.save();
 	}
 	
-    /**
-     * @return the OutputPort
-     */
     public OutputPort<ResourceContainer> getOutputPort() {
         return this.outputPort;
     }
-
 }

@@ -30,8 +30,9 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
- * Dynamic Adaptation and Evolution of Cloud Applications</i>.
+ * TEntryCallSequence maps incoming {@link EntryCallEvents} according to their session-id, recreating user sessions. 
+ * While mapping, all sessions that exceed a certain size are collected and forwarded to {@link TEntryEventSequence}.
+ * Only events that have a direct mapping to a PCM entity in the correspondence model are processed.
  *
  * @author Robert Heinrich
  * @author Nicolas Boltz
@@ -40,35 +41,33 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
-    
     /** Frequency of when to send to output port. */
 	private final int generationFrequency;
-	
 	/** count of events processed by filter. */
 	private int eventCount;
-
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** list of sessions with size bigger than TEntryCallSequence.USER_SESSION_THRESHOLD. */
     private final Map<String, UserSession> approvedSessions = new HashMap<>();
-    
+    /** list of approved sessions, which have a certain size */
     private final List<UserSession> approvedSessionsList = new ArrayList<>();
     /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
     
+    /** different variables used for logging execution time of this filter. */
     private long sessionCreationTime = 0;
-
 	private long approvedSessionsListCreationTime = 0;
-	
 	private long entryCallSequenceModelCreationTime = 0;
 
 	/**
-     * Create this filter.
+     * Creates new TEntryCallSequence filter.
      *
      * @param correspondenceModel
      *            reference to the correspondence model
+     * @param generationFrequency
+     *            frequency in which a updated usage model should be created
      */
     public TEntryCallSequence(final ICorrespondence correspondenceModel, final int generationFrequency) {
         this.correspondenceModel = correspondenceModel;
@@ -98,18 +97,14 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
             
             // collect all user sessions which have more elements as a defined threshold
             if(userSession.size() > TEntryCallSequence.USER_SESSION_THRESHOLD) {
-                //TODO maybe remove and put in new, could not be updated
             	if(!approvedSessions.containsKey(userSessionId)) {
             		approvedSessions.putIfAbsent(userSessionId, userSession);
                     approvedSessionsList.add(userSession);
             	}
 
                 this.approvedSessionsListCreationTime = System.nanoTime();
-                
                 // only if a session has changed and has more elements than the threshold
                 // the list of approved the usagemodel needs to be newly build
-                
-//                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
                 final List<UserSession> listToSend = this.approvedSessionsList;
                 // approvedSessions.values() -> O(n) + new ArrayList<>(Collection c) -> AbstractCollection.toArray() -> O(n) + Arrays.copyOf() -> ~ O(n)
                 // c.toArray is basically done in every copy constructor for lists.
@@ -125,7 +120,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
                 entryCallSequenceModelCreationTime = System.nanoTime() - entryCallSequenceModelCreationTime;
                 
                 ExecutionTimeLogger.getInstance().stopLogging(event, this);
-
                 
                 if (outputModel != null && (eventCount % generationFrequency) == 0) {
                     this.outputPort.send(outputModel);
@@ -133,14 +127,14 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
             }
         }
     }
-
-	/**
-     * @return output port
-     */
+    
     public OutputPort<EntryCallSequenceModel> getOutputPort() {
         return this.outputPort;
     }
     
+	/** Getter and Setter methods that have been added to allow more precise time logging of the filters components.
+	 *  Can be removed if the precise time logging is not needed.
+	 */
     public long getSessionCreationTime() {
 		return sessionCreationTime;
 	}

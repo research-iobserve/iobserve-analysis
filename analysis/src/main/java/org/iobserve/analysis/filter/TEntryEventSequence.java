@@ -27,9 +27,8 @@ import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 /**
- * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
- * for Dynamic Adaptation and Evolution of Cloud Applications</i> Triggers the user behavior
- * modeling process that creates a PCM usage model from an EntryCallSequenceModel.
+ * TEntryEventSequence uses the collected user sessions to trigger the user behavior modeling process, 
+ * that creates a PCM usage model from an EntryCallSequenceModel.
  *
  * @author Robert Heinrich
  * @author Nicolas Boltz
@@ -40,27 +39,24 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	private final ICorrespondence correspondenceModel;
 	/** usage model provider. */
 	private final UsageModelProvider usageModelProvider;
-
-	private final int varianceOfUserGroups;
-
-	private final int thinkTime;
-
-	private final boolean closedWorkload;
-
+	/** reference to repository model provider. */
 	private final RepositoryModelProvider repositoryModelProvider;
+	/** variance of user groups. */
+	private final int varianceOfUserGroups;
+	/** think time. */
+	private final int thinkTime;
+	/** closed workload. */
+	private final boolean closedWorkload;
 	
+	/** different variables used for logging execution time of this filter. */
 	private long timestamp = 0;
-	
 	private long modelLoadTime = -1;
-	
 	private long modelSaveTime = 0;
-	
 	private long userBehaviorTransformationTime = 0;
-	
 	private long updateModelTime = 0;
 
 	/**
-	 * Create a entry event sequence filter.
+	 * Creates new TEntryEventSequence filter.
 	 *
 	 * @param correspondenceModel
 	 *            the model mapping model elements to code
@@ -96,7 +92,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	    long timestamp = this.usageModelProvider.getTimestamp();
 	    if(this.timestamp != timestamp) {
 	    	// Resets the current usage model
-	        this.usageModelProvider.loadModel(); // --> O(?) direct reading from disc
+	        this.usageModelProvider.loadModel();
 	    }
 	    long loadOrTimestampTimeAfter = System.currentTimeMillis();
         this.modelLoadTime = loadOrTimestampTimeAfter - loadOrTimestampTimeBefore;
@@ -109,7 +105,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 				numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
 				this.repositoryModelProvider, this.correspondenceModel);
 		try {
-			
 			behaviorModeling.modelUserBehavior();
 			long userBehaviorTransformationTimeAfter= System.currentTimeMillis();
 			this.userBehaviorTransformationTime = userBehaviorTransformationTimeAfter - userBehaviorTransformationTimeBefore;
@@ -124,10 +119,9 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 			e.printStackTrace();
 		}
 
-		
 		long saveTimeBefore = System.currentTimeMillis();
 		// Sets the new usage model within iObserve
-		this.usageModelProvider.save(); // --> O(?) direct writing on disc
+		this.usageModelProvider.save();
 		long saveTimeAfter = System.currentTimeMillis();
 		this.modelSaveTime = saveTimeAfter - saveTimeBefore;
 		
@@ -136,6 +130,10 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		ExecutionTimeLogger.getInstance().stopLogging(model, this);
 	}
 
+	
+	/** Getter and Setter methods that have been added to allow more precise time logging of the filters components.
+	 *  Can be removed if the precise time logging is not needed.
+	 */
 	public long getModelLoadTime() {
 		return modelLoadTime;
 	}
@@ -156,8 +154,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		return userBehaviorTransformationTime;
 	}
 
-	public void setUserBehaviorTransformationTime(
-			long userBehaviorTransformationTime) {
+	public void setUserBehaviorTransformationTime(long userBehaviorTransformationTime) {
 		this.userBehaviorTransformationTime = userBehaviorTransformationTime;
 	}
 

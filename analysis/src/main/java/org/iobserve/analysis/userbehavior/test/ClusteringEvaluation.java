@@ -220,7 +220,6 @@ public class ClusteringEvaluation {
 	        metricResultWriter.flush();
 	        metricResultWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("Error writing clustering metrics results!");
 		}

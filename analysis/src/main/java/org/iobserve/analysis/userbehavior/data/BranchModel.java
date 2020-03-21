@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
-import java.util.List;
-
 /**
  * Represents the BranchModel of a user group. It contains the user group's behavior in form of
  * branches. It also contains the user group's specific workload and occurrence likelihood of the
@@ -42,24 +40,6 @@ public class BranchModel {
     public BranchModel(final WorkloadIntensity workloadIntensity, final double likelihoodOfUserGroup) {
         this.workloadIntensity = workloadIntensity;
         this.likelihoodOfUserGroup = likelihoodOfUserGroup;
-    }
-
-    /**
-     * get the requested branch. TODO what is the purpose of this?
-     *
-     * @param branchGuide
-     *            selector for a branch
-     * @return the selected branch
-     */
-    public Branch getExaminedBranch(final List<Integer> branchGuide) {
-        if (this.rootBranch == null) {
-            return null;
-        }
-        Branch examinedBranch = this.rootBranch;
-        for (int i = 0; i < branchGuide.size(); i++) {
-            examinedBranch = examinedBranch.getChildBranches().get(branchGuide.get(i));
-        }
-        return examinedBranch;
     }
 
     public Branch getRootBranch() {

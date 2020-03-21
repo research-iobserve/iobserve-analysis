@@ -42,7 +42,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * {@link ResourceEnvironment} to calculate the transitive closure of the deployed component and
  * create {@link LinkingResource} for each connection. In most cases the actual set of connection
  * will be just a subset of the transitive closure. This part of the implementation is used
- * currently as fallback behavior, since there is now way to check whether or not the connection is
+ * currently as fallback behavior, since there is no way to check whether or not the connection is
  * actual available. With future planed enhancements in monitoring, this will change.
  *
  * @author Robert Heinrich
@@ -77,10 +77,10 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     }
 
     /**
-     * Execute this filter.
+     * This method is triggered for every TraceMetadata event.
      *
      * @param event
-     *            event to use
+     *            one trace metadata event
      */
     @Override
     protected void execute(final TraceMetadata event) {

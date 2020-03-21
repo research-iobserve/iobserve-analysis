@@ -30,7 +30,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- *  TAllocation creates a new resource container if and only if there is no corresponding container already available.
+ * TAllocation checks whether a referenced resource container exists in the pcm model.
+ * If no resource container exists a new container is created.
  *
  * @author Robert Heinrich
  * @author Nicolas Boltz
@@ -43,21 +44,13 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
     /**
-     * Most likely the constructor needs an additional field for the PCM access. But this has to be
-     * discussed with Robert.
+     * Creates new TAllocation filter.
      *
      * @param resourceEvnironmentModelProvider
      *            the resource environment model provider
      */
     public TAllocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
         this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
-    }
-
-    /**
-     * @return the deploymentOutputPort
-     */
-    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-        return this.deploymentOutputPort;
     }
 
     /**
@@ -98,5 +91,9 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     		ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
     		this.resourceEnvModelProvider.save();
     	}
+    }
+    
+    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+        return this.deploymentOutputPort;
     }
 }
