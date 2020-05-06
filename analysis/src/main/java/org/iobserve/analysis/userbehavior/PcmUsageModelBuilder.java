@@ -183,7 +183,7 @@ public class PcmUsageModelBuilder {
                 EntryLevelSystemCall eSysCall = null;
 
                 final Optional<ArchitecturalModelElement> optionCorrespondent = this.correspondenceModelProvider
-                        .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
+                        .getCorrespondent(callElement.getClassSignature(), callElement.getOperationSignature());
                 if (optionCorrespondent.isPresent()) {
                     final ArchitecturalModelElement architecturalElement = optionCorrespondent.get();
 
