@@ -13,12 +13,14 @@ The script can be used to execute the full experiment automatically on an Linux 
 
 **How to use:**
 Paths should be altered according to the location of the script and iobserve distribution.
+Additionally comment out the 'this.traceMetaPort.send((TraceMetadata) element);' call in RecordSwitch execute method,
+as it calls TNetworkLink, which takes a lot of time and is not needed for this experiment.
 	
 An distribution of iobserve has to be build, extracted and the call in the script (under comment '# call iobserve') altered accordingly.
 This can be done by calling the gradle wrapper './gradlew build install' located in the base folder of './iobserve-analysis/'.
 The distribution is created in './iobserve-analysis/analysis-cli/build/distributions/'.
 If errors exist while building, calling './gradlew clean' can help. 
-Errors in 'rac_creator' can be ignored, as long as 'analysis' and 'analysis-cli' build without error.
+Possible build errors in 'rac_creator' can be ignored, as long as 'analysis' and 'analysis-cli' build without errors.
 
 The PCM models and monitoring data used, are located in folder 'pcm' or 'testdata'.
 There is monitoring data for experiments 'equal_events_X_users' 'X_different_events_one_user',

@@ -49,7 +49,7 @@ public final class TEntryEventSequenceTest {
     private static final int STEP_SIZE = 1;
 
     private static final String TEST_FOLDER = "D:\\Dokumente\\Uni\\HiWi\\UsageBehaviourTransformationTest\\TEntryEventSequenceTest\\";
-    private static final String TEST_DATA_FOLDER = TEST_FOLDER + "data\\";
+    private static final String TEST_DATA_FOLDER = TEST_FOLDER + "input\\";
     private static final String TEST_RESULTS_FOLDER = TEST_FOLDER + "results\\";
     private static final String OUTPUT_USAGE_MODEL = TEST_DATA_FOLDER + "OutputModel.usagemodel";
     private static final String REFERENCE_USAGE_MODEL = TEST_DATA_FOLDER + "\\ReferenceModel.usagemodel";

@@ -28,7 +28,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  *
- * will load all model and {@link ICorrespondence} model.
+ * Will load all models and {@link ICorrespondence} model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
